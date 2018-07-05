@@ -41,8 +41,6 @@ public class HifumiBot {
     private static String superuserId;
     private static boolean debug = false;
     
-    private Thread monitorThread;
-    
     public static void main(String[] args) {
         if (args.length < 3) {
             System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <output-channel-id> <superuser-id> [-d]");
@@ -77,6 +75,7 @@ public class HifumiBot {
     }
     
     private JDA jda;
+    private Thread monitorThread;
     
     public HifumiBot() {
         self = this;
