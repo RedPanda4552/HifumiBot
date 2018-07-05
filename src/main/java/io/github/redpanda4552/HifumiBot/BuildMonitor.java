@@ -88,9 +88,7 @@ public class BuildMonitor implements Runnable {
                         
                         if (cell == cells.get(0)) {
                             gitRevision = anchors.get(0).ownText();
-                        }
-                        
-                        if (cell == cells.get(3)) {
+                        } else if (cell == cells.get(3)) {
                             if (anchors.isEmpty()) {
                                 break; // No build, skip it and try next row.
                             } else {
