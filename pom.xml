@@ -55,7 +55,7 @@
     <dependency>
       <groupId>net.dv8tion</groupId>
       <artifactId>JDA</artifactId>
-      <version>3.6.0_355</version>
+      <version>3.6.0_376</version>
     </dependency>
     
     <!-- JDA uses internally for its logging -->
