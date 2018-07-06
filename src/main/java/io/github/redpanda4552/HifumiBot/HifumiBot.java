@@ -99,9 +99,7 @@ public class HifumiBot {
             e.printStackTrace();
         }
         
-        monitorThread = new Thread(new BuildMonitor(jda.getTextChannelById(outputChannelId), debug), "BuildMonitor");
-        monitorThread.start();
-        System.out.println("BuildMonitor thread started");
+        startMonitor();
     }
     
     public JDA getJDA() {
@@ -127,9 +125,19 @@ public class HifumiBot {
     }
     
     public void reinstance() {
-        monitorThread.interrupt();
+    	stopMonitor();
         HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching("Reinstancing..."));
         jda.shutdown();
         self = null;
+    }
+    
+    public void stopMonitor() {
+    	monitorThread.interrupt();
+    }
+    
+    public void startMonitor() {
+    	monitorThread = new Thread(new BuildMonitor(jda.getTextChannelById(outputChannelId), debug), "BuildMonitor");
+        monitorThread.start();
+        System.out.println("BuildMonitor thread started");
     }
 }
