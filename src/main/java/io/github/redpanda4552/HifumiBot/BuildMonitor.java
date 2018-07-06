@@ -24,11 +24,12 @@
 package io.github.redpanda4552.HifumiBot;
 
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Game;
@@ -40,7 +41,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 public class BuildMonitor implements Runnable {
 
-    private static final long SCRAPE_GAP_MS = 1000 * 60 * 15, SLEEP_TIME_MS = 1000 * 60;
+    private static final long SLEEP_TIME_MS = 1000 * 60 * 15;
     private static final String ORPHIS_PCSX2_ROOT = "https://buildbot.orphis.net/pcsx2/";
     
     private TextChannel outputChannel;
@@ -73,46 +74,26 @@ public class BuildMonitor implements Runnable {
                     }
                 }
                 
-                // Get the Orphis page
-                Document buildBotPage = Jsoup.connect(ORPHIS_PCSX2_ROOT).get();
-                Element table = buildBotPage.getElementsByClass("listing").get(0);
-                Elements rows = table.getElementsByTag("tr");
+                Document buildBotPage = Jsoup.connect(ORPHIS_PCSX2_ROOT).get();		// Get the entire Orphis page
+                Element table = buildBotPage.getElementsByClass("listing").get(0);	// Get the table
+                Element row = table.getElementsByTag("tr").get(0);					// Get first row
+                Element revisionCell = row.getElementsByTag("td").get(0); 			// Get first cell
+                gitRevision = revisionCell.getElementsByTag("a").get(0).ownText();	// Get display text
                 
-                scrape:
-                for (Element row : rows) {
-                    Elements cells = row.getElementsByTag("td");
-                    gitRevision = "";
+                if (!gitRevision.equals(lastPostedRevision)) {
+                	lastPostedRevision = gitRevision;
+                	
+                	EmbedBuilder eb = new EmbedBuilder();
+                    eb.setAuthor("New PCSX2 Development Build Available!");
+                    eb.addField("Revision:", gitRevision, false);
+                    eb.addField("Download and view changes:", ORPHIS_PCSX2_ROOT, false);
+                    eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
                     
-                    for (Element cell : cells) {
-                        Elements anchors = cell.getElementsByTag("a");
-                        
-                        if (cell == cells.get(0)) {
-                            gitRevision = anchors.get(0).ownText();
-                        } else if (cell == cells.get(3)) {
-                            if (anchors.isEmpty()) {
-                                break; // No build, skip it and try next row.
-                            } else {
-                                if (gitRevision.equals(lastPostedRevision)) {
-                                    break scrape; // Up to date, stop trying.
-                                } else {
-                                    lastPostedRevision = gitRevision;
-                                }
-                                
-                                EmbedBuilder eb = new EmbedBuilder();
-                                eb.setAuthor("New PCSX2 Development Build Available!");
-                                eb.addField("Revision:", gitRevision, false);
-                                eb.addField("Download and view changes:", ORPHIS_PCSX2_ROOT, false);
-                                eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
-                                
-                                if (outputChannel != null) {
-                                    outputChannel.sendMessage(eb.build()).complete();
-                                }
-                                
-                                break scrape;
-                            }
-                        }
-                    }
+                    if (outputChannel != null)
+                        outputChannel.sendMessage(eb.build()).complete();
                 }
+                
+                updateStatus();
                 
                 if (!sleep())
                     return;
@@ -123,30 +104,26 @@ public class BuildMonitor implements Runnable {
     }
     
     private boolean sleep() {
-        long next = System.currentTimeMillis() + SCRAPE_GAP_MS, diff = 0;
-        
-        while ((diff = next - System.currentTimeMillis()) > 0) {
-            String[] parts = gitRevision.split("-");
-            String time = String.valueOf(diff / 1000 / 60) + "m";
-            StringBuilder sb = new StringBuilder(parts[0]);
-            sb.append(" / ")
-              .append(parts[2])
-              .append(" / ")
-              .append(time);
-            
-            if (debug)
-                sb.append(" / dbg");
-              
-            HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching(sb.toString()));
-            
-            try {
-                Thread.sleep(SLEEP_TIME_MS);
-            } catch (InterruptedException e) {
-                System.out.println("BuildMonitor Interrupt!");
-                return false;
-            }
+    	try {
+            Thread.sleep(SLEEP_TIME_MS);
+        } catch (InterruptedException e) {
+            System.out.println("BuildMonitor Interrupt!");
+            return false;
         }
         
         return true;
+    }
+    
+    private void updateStatus() {
+    	String[] parts = gitRevision.split("-");
+        StringBuilder sb = new StringBuilder(parts[0]);
+        sb.append(" / ")
+          .append(parts[2])
+          .append(LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
+        
+        if (debug)
+            sb.append(" / dbg");
+          
+        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching(sb.toString()));
     }
 }
