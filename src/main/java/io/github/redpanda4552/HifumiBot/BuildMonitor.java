@@ -116,9 +116,8 @@ public class BuildMonitor implements Runnable {
     
     private void updateStatus() {
     	String[] parts = gitRevision.split("-");
-        StringBuilder sb = new StringBuilder(parts[0]);
+        StringBuilder sb = new StringBuilder(parts[2]);
         sb.append(" / ")
-          .append(parts[2])
           .append(LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
         
         if (debug)
