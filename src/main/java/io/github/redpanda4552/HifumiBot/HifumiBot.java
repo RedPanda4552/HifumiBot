@@ -125,8 +125,8 @@ public class HifumiBot {
     }
     
     public void reinstance() {
+    	HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching("Reinstancing..."));
     	stopMonitor();
-        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching("Reinstancing..."));
         jda.shutdown();
         self = null;
     }
