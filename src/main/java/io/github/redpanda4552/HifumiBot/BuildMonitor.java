@@ -24,7 +24,8 @@
 package io.github.redpanda4552.HifumiBot;
 
 import java.io.IOException;
-import java.time.LocalTime;
+import java.time.OffsetTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.jsoup.Jsoup;
@@ -118,7 +119,7 @@ public class BuildMonitor implements Runnable {
     	String[] parts = gitRevision.split("-");
         StringBuilder sb = new StringBuilder(parts[2]);
         sb.append(" / ")
-          .append(LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME));
+          .append(OffsetTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_TIME));
         
         if (debug)
             sb.append(" / dbg");
