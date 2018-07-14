@@ -75,16 +75,16 @@ public class BuildMonitor implements Runnable {
                     }
                 }
                 
-                Document buildBotPage = Jsoup.connect(ORPHIS_PCSX2_ROOT).get();		// Get the entire Orphis page
-                Element table = buildBotPage.getElementsByClass("listing").get(0);	// Get the table
-                Element row = table.getElementsByTag("tr").get(1);					// Get first row
-                Element revisionCell = row.getElementsByTag("td").get(0); 			// Get first cell
-                gitRevision = revisionCell.getElementsByTag("a").get(0).ownText();	// Get display text
+                Document buildBotPage = Jsoup.connect(ORPHIS_PCSX2_ROOT).get();        // Get the entire Orphis page
+                Element table = buildBotPage.getElementsByClass("listing").get(0);    // Get the table
+                Element row = table.getElementsByTag("tr").get(1);                    // Get first row
+                Element revisionCell = row.getElementsByTag("td").get(0);             // Get first cell
+                gitRevision = revisionCell.getElementsByTag("a").get(0).ownText();    // Get display text
                 
                 if (!gitRevision.equals(lastPostedRevision)) {
-                	lastPostedRevision = gitRevision;
-                	
-                	EmbedBuilder eb = new EmbedBuilder();
+                    lastPostedRevision = gitRevision;
+                    
+                    EmbedBuilder eb = new EmbedBuilder();
                     eb.setAuthor("New PCSX2 Development Build Available!");
                     eb.addField("Revision:", gitRevision, false);
                     eb.addField("Download and view changes:", ORPHIS_PCSX2_ROOT, false);
@@ -105,7 +105,7 @@ public class BuildMonitor implements Runnable {
     }
     
     private boolean sleep() {
-    	try {
+        try {
             Thread.sleep(SLEEP_TIME_MS);
         } catch (InterruptedException e) {
             System.out.println("BuildMonitor Interrupt!");
@@ -116,7 +116,7 @@ public class BuildMonitor implements Runnable {
     }
     
     private void updateStatus() {
-    	String[] parts = gitRevision.split("-");
+        String[] parts = gitRevision.split("-");
         StringBuilder sb = new StringBuilder(parts[2]);
         sb.append(" / ")
           .append(OffsetTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("HH:mm O")));

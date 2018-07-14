@@ -107,22 +107,22 @@ public class HifumiBot {
     }
     
     public PermissionManager getPermissionManager() {
-    	return permissionManager;
+        return permissionManager;
     }
     
     public void reinstance() {
-    	HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching("Reinstancing..."));
-    	stopMonitor();
+        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching("Reinstancing..."));
+        stopMonitor();
         jda.shutdown();
         self = null;
     }
     
     public void stopMonitor() {
-    	monitorThread.interrupt();
+        monitorThread.interrupt();
     }
     
     public void startMonitor() {
-    	monitorThread = new Thread(new BuildMonitor(jda.getTextChannelById(outputChannelId), debug), "BuildMonitor");
+        monitorThread = new Thread(new BuildMonitor(jda.getTextChannelById(outputChannelId), debug), "BuildMonitor");
         monitorThread.start();
         System.out.println("BuildMonitor thread started");
     }
