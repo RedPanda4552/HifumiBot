@@ -35,7 +35,7 @@ public class CommandReload extends AbstractCommand {
 
     @Override
     public void run(MessageChannel channel, Member sender, String[] args) {
-        if (hifumiBot.isAdmin(sender)) {
+        if (hifumiBot.getPermissionManager().hasPermission(sender)) {
             hifumiBot.reinstance();
         }
     }

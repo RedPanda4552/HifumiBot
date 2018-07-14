@@ -29,9 +29,6 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
 
 
 public class HifumiBot {
@@ -75,6 +72,7 @@ public class HifumiBot {
     }
     
     private JDA jda;
+    private PermissionManager permissionManager;
     private Thread monitorThread;
     
     public HifumiBot() {
@@ -99,6 +97,8 @@ public class HifumiBot {
             e.printStackTrace();
         }
         
+        permissionManager = new PermissionManager(superuserId);
+        
         startMonitor();
     }
     
@@ -106,22 +106,8 @@ public class HifumiBot {
         return jda;
     }
     
-    public boolean isSuperuser(User user) {
-        return user.getId().equals(superuserId);
-    }
-    
-    public boolean isAdmin(Member member) {
-        for (Role role : member.getRoles()) {
-            switch (role.getName().toLowerCase()) {
-            case "pcsx2 team":
-            case "admin":
-            case "bot admin":
-            case "bug squad":
-                return true;
-            }
-        }
-        
-        return false;
+    public PermissionManager getPermissionManager() {
+    	return permissionManager;
     }
     
     public void reinstance() {
