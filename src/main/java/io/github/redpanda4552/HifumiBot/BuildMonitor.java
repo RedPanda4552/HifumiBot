@@ -119,7 +119,7 @@ public class BuildMonitor implements Runnable {
     	String[] parts = gitRevision.split("-");
         StringBuilder sb = new StringBuilder(parts[2]);
         sb.append(" / ")
-          .append(OffsetTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_OFFSET_TIME));
+          .append(OffsetTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("HH:mm O")));
         
         if (debug)
             sb.append(" / dbg");
