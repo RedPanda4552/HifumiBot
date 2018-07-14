@@ -124,6 +124,6 @@ public class BuildMonitor implements Runnable {
         if (debug)
             sb.append(" / dbg");
           
-        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching(sb.toString()));
+        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.playing(sb.toString()));
     }
 }
