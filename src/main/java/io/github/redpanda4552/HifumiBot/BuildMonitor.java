@@ -77,7 +77,7 @@ public class BuildMonitor implements Runnable {
                 
                 Document buildBotPage = Jsoup.connect(ORPHIS_PCSX2_ROOT).get();		// Get the entire Orphis page
                 Element table = buildBotPage.getElementsByClass("listing").get(0);	// Get the table
-                Element row = table.getElementsByTag("tr").get(0);					// Get first row
+                Element row = table.getElementsByTag("tr").get(1);					// Get first row
                 Element revisionCell = row.getElementsByTag("td").get(0); 			// Get first cell
                 gitRevision = revisionCell.getElementsByTag("a").get(0).ownText();	// Get display text
                 
