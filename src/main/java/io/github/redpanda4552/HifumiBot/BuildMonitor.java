@@ -42,12 +42,13 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 public class BuildMonitor implements Runnable {
 
-    private static final long SLEEP_TIME_MS = 1000 * 60 * 15;
+    private static final long SCRAPE_TIME_MS = 1000 * 60 * 15, IO_WAIT_MS = 1000 * 60;
     private static final String ORPHIS_PCSX2_ROOT = "https://buildbot.orphis.net/pcsx2/";
     
     private TextChannel outputChannel;
     private boolean debug = false;
     private String gitRevision = "";
+    private int ioWaitMultiplier = 1;
     
     public BuildMonitor(TextChannel outputChannel, boolean debug) {
         this.outputChannel = outputChannel;
@@ -55,8 +56,8 @@ public class BuildMonitor implements Runnable {
     }
     
     public void run() {
-        try {
-            while (!Thread.interrupted()) {
+        while (!Thread.interrupted()) {
+            try {
                 MessageHistory channelHistory = outputChannel.getHistory();
                 Message lastPostedMessage;
                 
@@ -96,19 +97,21 @@ public class BuildMonitor implements Runnable {
                 
                 updateStatus();
                 
-                if (!sleep())
+                if (!sleep(SCRAPE_TIME_MS))
                     return;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                HifumiBot.getSelf().getJDA().getPresence().setGame(Game.playing("Error, retrying in " + ioWaitMultiplier + "m..."));
+                sleep(IO_WAIT_MS * ioWaitMultiplier);
+                ioWaitMultiplier *= 2;
+            } 
         }
     }
     
-    private boolean sleep() {
+    private boolean sleep(long ms) {
         try {
-            Thread.sleep(SLEEP_TIME_MS);
+            Thread.sleep(ms);
         } catch (InterruptedException e) {
-            System.out.println("BuildMonitor Interrupt!");
+            HifumiBot.getSelf().getJDA().getPresence().setGame(Game.playing("Thread Interrupted!"));
             return false;
         }
         
@@ -125,5 +128,6 @@ public class BuildMonitor implements Runnable {
             sb.append(" / dbg");
           
         HifumiBot.getSelf().getJDA().getPresence().setGame(Game.playing(sb.toString()));
+        ioWaitMultiplier = 1;
     }
 }
