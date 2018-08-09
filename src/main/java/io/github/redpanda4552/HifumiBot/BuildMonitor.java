@@ -42,7 +42,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 public class BuildMonitor implements Runnable {
 
-    private static final long SCRAPE_TIME_MS = 1000 * 60 * 15, IO_WAIT_MS = 1000 * 60;
+    private static final long SCRAPE_TIME_MS = 1000 * 60 * 10, IO_WAIT_MS = 1000 * 60;
     private static final String ORPHIS_PCSX2_ROOT = "https://buildbot.orphis.net/pcsx2/";
     
     private TextChannel outputChannel;
