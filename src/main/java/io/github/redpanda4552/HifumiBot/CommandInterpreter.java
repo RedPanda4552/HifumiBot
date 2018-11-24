@@ -29,6 +29,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.command.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.command.CommandReload;
+import io.github.redpanda4552.HifumiBot.command.CommandWiki;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -48,6 +49,7 @@ public class CommandInterpreter extends ListenerAdapter {
     public CommandInterpreter(HifumiBot hifumiBot) {
         //commandMap.put("cpu", new CommandCPU());
         commandMap.put("reload", new CommandReload(hifumiBot));
+        commandMap.put("wiki", new CommandWiki(hifumiBot));
     }
     
     @Override

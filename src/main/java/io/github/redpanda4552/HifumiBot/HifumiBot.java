@@ -23,12 +23,24 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 import javax.security.auth.login.LoginException;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 
 
 public class HifumiBot {
@@ -71,9 +83,14 @@ public class HifumiBot {
         return self;
     }
     
+    private final String FULL_GAMES_URL = "https://wiki.pcsx2.net/Complete_List_of_Games";
+    
     private JDA jda;
     private PermissionManager permissionManager;
+    private EventListener eventListener;
     private Thread monitorThread;
+    
+    private HashMap<String, String> fullGamesMap = new HashMap<String, String>();
     
     public HifumiBot() {
         self = this;
@@ -88,11 +105,21 @@ public class HifumiBot {
         }
         
         try {
+            Elements anchors = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get().getElementsByClass("wikitable").first().getElementsByTag("a");
+            
+            for (Element anchor : anchors)
+                fullGamesMap.put(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        try {
             jda = new JDABuilder(AccountType.BOT)
                     .setToken(discordBotToken)
                     .setAutoReconnect(true)
                     .addEventListener(new CommandInterpreter(this))
-                    .buildBlocking();
+                    .addEventListener(eventListener = new EventListener(this))
+                    .build().awaitReady();
         } catch (LoginException | IllegalArgumentException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -110,6 +137,14 @@ public class HifumiBot {
         return permissionManager;
     }
     
+    public EventListener getEventListener() {
+        return eventListener;
+    }
+    
+    public HashMap<String, String> getFullGamesMap() {
+        return fullGamesMap;
+    }
+    
     public void reinstance() {
         HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching("Reinstancing..."));
         stopMonitor();
@@ -125,5 +160,23 @@ public class HifumiBot {
         monitorThread = new Thread(new BuildMonitor(jda.getTextChannelById(outputChannelId), debug), "BuildMonitor");
         monitorThread.start();
         System.out.println("BuildMonitor thread started");
+    }
+    
+    public Message sendMessage(MessageChannel channel, MessageEmbed embed) {
+        return channel.sendMessage(embed).complete();
+    }
+    
+    public Message sendMessage(MessageChannel channel, String... strArr) {
+        MessageBuilder mb = new MessageBuilder();
+        
+        for (String str : strArr) {
+            mb.append(str);
+        }
+        
+        return sendMessage(channel, mb.build());
+    }
+    
+    public Message sendMessage(MessageChannel channel, Message msg) {
+        return channel.sendMessage(msg).complete();
     }
 }
