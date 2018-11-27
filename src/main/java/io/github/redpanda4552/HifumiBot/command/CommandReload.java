@@ -30,14 +30,12 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 public class CommandReload extends AbstractCommand {
 
     public CommandReload(HifumiBot hifumiBot) {
-        super(hifumiBot);
+        super(hifumiBot, true);
     }
 
     @Override
-    public void run(MessageChannel channel, Member sender, String[] args) {
-        if (hifumiBot.getPermissionManager().hasPermission(sender)) {
-            hifumiBot.reinstance();
-        }
+    public void onExecute(MessageChannel channel, Member sender, String[] args) {
+        hifumiBot.reinstance();
     }
 
 }

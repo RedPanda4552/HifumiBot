@@ -35,11 +35,11 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 public class CommandWiki extends AbstractCommand {
 
     public CommandWiki(HifumiBot hifumiBot) {
-        super(hifumiBot);
+        super(hifumiBot, false);
     }
 
     @Override
-    public void run(MessageChannel channel, Member sender, String[] args) {
+    public void onExecute(MessageChannel channel, Member sender, String[] args) {
         if (args.length == 0) {
             hifumiBot.sendMessage(channel, "I can't search for nothing! Try `!wiki <title of game here>`");
             return;

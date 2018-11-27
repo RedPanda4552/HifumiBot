@@ -30,12 +30,25 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 public abstract class AbstractCommand {
 
     protected HifumiBot hifumiBot;
+    protected boolean admin;
     
-    public AbstractCommand(HifumiBot hifumiBot) {
+    public AbstractCommand(HifumiBot hifumiBot, boolean admin) {
         this.hifumiBot = hifumiBot;
+        this.admin = admin;
     }
     
-    public abstract void run(MessageChannel channel, Member sender, String[] args);
+    /**
+     * Do a prelimiary permissions check, and execute if it passes.
+     */
+    public void run(MessageChannel channel, Member sender, String[] args) {
+        if (!isAdminCommand() || hifumiBot.getPermissionManager().hasPermission(sender))
+            onExecute(channel, sender, args);
+    }
+    
+    /**
+     * Command payload.
+     */
+    protected abstract void onExecute(MessageChannel channel, Member sender, String[] args);
     
     protected String stringify(String[] args) {
         StringBuilder sb = new StringBuilder();
@@ -44,5 +57,9 @@ public abstract class AbstractCommand {
             sb.append(arg).append(" ");
         
         return sb.toString().trim();
+    }
+    
+    protected boolean isAdminCommand() {
+        return admin;
     }
 }

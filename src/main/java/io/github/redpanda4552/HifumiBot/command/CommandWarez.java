@@ -34,22 +34,15 @@ public class CommandWarez extends AbstractCommand {
     private final String RULES_CHANNEL = "welcome-rules";
     
     public CommandWarez(HifumiBot hifumiBot) {
-        super(hifumiBot);
+        super(hifumiBot, true);
     }
 
     @Override
-    public void run(MessageChannel channel, Member sender, String[] args) {
+    public void onExecute(MessageChannel channel, Member sender, String[] args) {
         if (!(channel instanceof TextChannel)) {
             System.err.println("Not a text channel!");
             return;
         }
-            
-        
-        if (!hifumiBot.getPermissionManager().hasPermission(sender)) {
-            System.out.println("Insufficient Permissions");
-            return;
-        }
-            
         
         EmbedBuilder eb = new EmbedBuilder();
         eb.setDescription("As per ");
