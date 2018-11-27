@@ -72,4 +72,8 @@ public class CommandInterpreter extends ListenerAdapter {
         if ((toExecute = commandMap.get(command)) != null)
             toExecute.run(channel, sender, args);
     }
+    
+    public HashMap<String, AbstractCommand> getCommandMap() {
+        return commandMap;
+    }
 }

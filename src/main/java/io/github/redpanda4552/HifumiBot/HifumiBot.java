@@ -87,6 +87,7 @@ public class HifumiBot {
     
     private JDA jda;
     private PermissionManager permissionManager;
+    private CommandInterpreter commandInterpreter;
     private EventListener eventListener;
     private Thread monitorThread;
     
@@ -117,7 +118,7 @@ public class HifumiBot {
             jda = new JDABuilder(AccountType.BOT)
                     .setToken(discordBotToken)
                     .setAutoReconnect(true)
-                    .addEventListener(new CommandInterpreter(this))
+                    .addEventListener(commandInterpreter = new CommandInterpreter(this))
                     .addEventListener(eventListener = new EventListener(this))
                     .build().awaitReady();
         } catch (LoginException | IllegalArgumentException | InterruptedException e) {
@@ -135,6 +136,10 @@ public class HifumiBot {
     
     public PermissionManager getPermissionManager() {
         return permissionManager;
+    }
+    
+    public CommandInterpreter getCommandInterpreter() {
+        return commandInterpreter;
     }
     
     public EventListener getEventListener() {
