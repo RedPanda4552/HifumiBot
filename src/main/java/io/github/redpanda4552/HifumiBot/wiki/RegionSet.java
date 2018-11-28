@@ -25,7 +25,7 @@ package io.github.redpanda4552.HifumiBot.wiki;
 
 public class RegionSet {
 
-    private String region, serial, release, crc, windowsStatus, linuxStatus;
+    private String region = "", serial = "", release = "", crc = "", windowsStatus = "", linuxStatus = "";
     private int windowsStatusColor = -1, linuxStatusColor = -1;
     
     public RegionSet() {

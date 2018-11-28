@@ -65,26 +65,28 @@ public class WikiPage {
                     
                     // This is going to be hard-coded, AF, but for what it is, not worth making a super high level system.
                     for (Element tableRow : tableRows) {
-                        if (regionSet.getRegion() == null) {
+                        Elements cells = tableRow.getElementsByTag("td");
+                        
+                        Element left = cells.first();
+                        Element right = cells.last();
+                        
+                        if (regionSet.getRegion().isEmpty()) {
                             regionSet.setRegion(tableRow.text());
-                        } else if (regionSet.getSerial() == null) {
-                            Element cell = tableRow.getElementsByTag("td").last();
-                            regionSet.setSerial(cell.ownText());
-                        } else if (regionSet.getRelease() == null) {
-                            Element cell = tableRow.getElementsByTag("td").last();
-                            regionSet.setRelease(cell.text());
-                        } else if (regionSet.getCRC() == null) {
-                            Element cell = tableRow.getElementsByTag("td").last();
-                            regionSet.setCRC(cell.ownText().replace("?", "").trim());
-                        } else if (regionSet.getWindowsStatus() == null) {
-                            Element cell = tableRow.getElementsByTag("td").last();
-                            regionSet.setWindowsStatus(cell.text().replace("?", "").trim());
-                            //regionSet.setWindowsStatusColor(Integer.parseInt(tableRow.attr("bgcolor").replace("#", "0x"), 16));
-                        } else if (regionSet.getLinuxStatus() == null) {
-                            Element cell = tableRow.getElementsByTag("td").last();
-                            regionSet.setLinuxStatus(cell.text().replace("?", "").trim());
-                            //regionSet.setLinuxStatusColor(Integer.parseInt(tableRow.attr("bgcolor").replace("#", "0x"), 16));
-                        }
+                        } else if (left != null) {
+                            if (left.text().contains("Serial")) {
+                                regionSet.setSerial(right.ownText());
+                            } else if (left.text().contains("Release")) {
+                                regionSet.setRelease(right.text());
+                            } else if (left.text().contains("CRC")) {
+                                regionSet.setCRC(right.text().replace("?", "").trim());
+                            } else if (left.text().contains("Windows")) {
+                                regionSet.setWindowsStatus(right.text().replace("?", "").trim());
+                                //regionSet.setWindowsStatusColor(Integer.parseInt(tableRow.attr("bgcolor").replace("#", "0x"), 16));
+                            } else if (left.text().contains("Linux")) {
+                                regionSet.setLinuxStatus(right.text().replace("?", "").trim());
+                                //regionSet.setLinuxStatusColor(Integer.parseInt(tableRow.attr("bgcolor").replace("#", "0x"), 16));
+                            }
+                        } 
                     }
                     
                     regionSets.put(regionSet.getRegion(), regionSet);
