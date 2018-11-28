@@ -106,15 +106,6 @@ public class HifumiBot {
         }
         
         try {
-            Elements anchors = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get().getElementsByClass("wikitable").first().getElementsByTag("a");
-            
-            for (Element anchor : anchors)
-                fullGamesMap.put(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        try {
             jda = new JDABuilder(AccountType.BOT)
                     .setToken(discordBotToken)
                     .setAutoReconnect(true)
@@ -125,9 +116,25 @@ public class HifumiBot {
             e.printStackTrace();
         }
         
-        permissionManager = new PermissionManager(superuserId);
+        try {
+            updateStatus("Cloning wiki entries...");
+            Elements anchors = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get().getElementsByClass("wikitable").first().getElementsByTag("a");
+            
+            for (Element anchor : anchors)
+                fullGamesMap.put(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         
+        updateStatus("Intializing permission manager...");
+        permissionManager = new PermissionManager(superuserId);
+        updateStatus("Launching build monitor...");
         startMonitor();
+        updateStatus(">help" + (debug ? " [Debug Mode]" : ""));
+    }
+    
+    private void updateStatus(String str) {
+        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching(str));
     }
     
     public JDA getJDA() {
@@ -162,7 +169,7 @@ public class HifumiBot {
     }
     
     public void startMonitor() {
-        monitorThread = new Thread(new BuildMonitor(jda.getTextChannelById(outputChannelId), debug), "BuildMonitor");
+        monitorThread = new Thread(new BuildMonitor(jda.getTextChannelById(outputChannelId)), "BuildMonitor");
         monitorThread.start();
         System.out.println("BuildMonitor thread started");
     }

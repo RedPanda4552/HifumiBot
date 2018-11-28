@@ -24,16 +24,12 @@
 package io.github.redpanda4552.HifumiBot;
 
 import java.io.IOException;
-import java.time.OffsetTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
@@ -46,13 +42,11 @@ public class BuildMonitor implements Runnable {
     private static final String ORPHIS_PCSX2_ROOT = "https://buildbot.orphis.net/pcsx2/";
     
     private TextChannel outputChannel;
-    private boolean debug = false;
     private String gitRevision = "";
     private int ioWaitMultiplier = 1;
     
-    public BuildMonitor(TextChannel outputChannel, boolean debug) {
+    public BuildMonitor(TextChannel outputChannel) {
         this.outputChannel = outputChannel;
-        this.debug = debug;
     }
     
     public void run() {
@@ -95,12 +89,9 @@ public class BuildMonitor implements Runnable {
                         outputChannel.sendMessage(eb.build()).complete();
                 }
                 
-                updateStatus();
-                
                 if (!sleep(SCRAPE_TIME_MS))
                     return;
             } catch (IOException e) {
-                HifumiBot.getSelf().getJDA().getPresence().setGame(Game.playing("Error, retrying in " + ioWaitMultiplier + "m..."));
                 sleep(IO_WAIT_MS * ioWaitMultiplier);
                 ioWaitMultiplier *= 2;
             } 
@@ -111,23 +102,9 @@ public class BuildMonitor implements Runnable {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
-            HifumiBot.getSelf().getJDA().getPresence().setGame(Game.playing("Thread Interrupted!"));
             return false;
         }
         
         return true;
-    }
-    
-    private void updateStatus() {
-        String[] parts = gitRevision.split("-");
-        StringBuilder sb = new StringBuilder(parts[2]);
-        sb.append(" / ")
-          .append(OffsetTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("HH:mm O")));
-        
-        if (debug)
-            sb.append(" / dbg");
-          
-        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.playing(sb.toString()));
-        ioWaitMultiplier = 1;
     }
 }
