@@ -39,7 +39,7 @@ public class CommandWiki extends AbstractCommand {
     }
 
     @Override
-    public void onExecute(MessageChannel channel, Member sender, String[] args) {
+    protected void onExecute(MessageChannel channel, Member sender, String[] args) {
         if (args.length == 0) {
             hifumiBot.sendMessage(channel, "I can't search for nothing! Try `!wiki <title of game here>`");
             return;
@@ -106,5 +106,10 @@ public class CommandWiki extends AbstractCommand {
             msg.addReaction(Emotes.SIX).complete();
         
         hifumiBot.getEventListener().waitForMessage(sender.getUser().getId(), msg);
+    }
+    
+    @Override
+    protected String getHelpText() {
+        return "Search the PCSX2 wiki by game title";
     }
 }

@@ -28,6 +28,7 @@ import java.util.HashMap;
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.command.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.command.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.CommandWiki;
@@ -39,7 +40,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class CommandInterpreter extends ListenerAdapter {
 
-    private final String PREFIX = "!";
+    private final String PREFIX = ">";
     
     private HashMap<String, AbstractCommand> commandMap = new HashMap<String, AbstractCommand>();
     
@@ -52,6 +53,7 @@ public class CommandInterpreter extends ListenerAdapter {
         commandMap.put("reload", new CommandReload(hifumiBot));
         commandMap.put("wiki", new CommandWiki(hifumiBot));
         commandMap.put("warez", new CommandWarez(hifumiBot));
+        commandMap.put("help", new CommandHelp(hifumiBot));
     }
     
     @Override

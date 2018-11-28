@@ -38,7 +38,7 @@ public class CommandWarez extends AbstractCommand {
     }
 
     @Override
-    public void onExecute(MessageChannel channel, Member sender, String[] args) {
+    protected void onExecute(MessageChannel channel, Member sender, String[] args) {
         if (!(channel instanceof TextChannel)) {
             System.err.println("Not a text channel!");
             return;
@@ -66,4 +66,8 @@ public class CommandWarez extends AbstractCommand {
         hifumiBot.sendMessage(channel, eb.build());
     }
 
+    @Override
+    protected String getHelpText() {
+        return "Print a dialog about warez/piracy rules";
+    }
 }

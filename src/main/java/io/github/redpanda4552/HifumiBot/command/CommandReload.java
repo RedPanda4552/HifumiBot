@@ -34,8 +34,12 @@ public class CommandReload extends AbstractCommand {
     }
 
     @Override
-    public void onExecute(MessageChannel channel, Member sender, String[] args) {
+    protected void onExecute(MessageChannel channel, Member sender, String[] args) {
         hifumiBot.reinstance();
     }
-
+    
+    @Override
+    protected String getHelpText() {
+        return "Reload a fresh instance of HifumiBot";
+    }
 }

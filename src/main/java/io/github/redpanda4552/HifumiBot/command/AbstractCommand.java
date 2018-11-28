@@ -62,4 +62,6 @@ public abstract class AbstractCommand {
     protected boolean isAdminCommand() {
         return admin;
     }
+    
+    protected abstract String getHelpText();
 }
