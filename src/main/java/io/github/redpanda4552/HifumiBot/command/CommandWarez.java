@@ -39,10 +39,8 @@ public class CommandWarez extends AbstractCommand {
 
     @Override
     protected void onExecute(MessageChannel channel, Member sender, String[] args) {
-        if (!(channel instanceof TextChannel)) {
-            System.err.println("Not a text channel!");
+        if (!(channel instanceof TextChannel))
             return;
-        }
         
         EmbedBuilder eb = new EmbedBuilder();
         eb.setDescription("As per ");
