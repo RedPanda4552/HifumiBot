@@ -43,13 +43,15 @@ public class CommandWarez extends AbstractCommand {
             return;
         
         EmbedBuilder eb = newFootedEmbedBuilder(sender);
+        eb.setTitle("PCSX2 Anti-Warez Rules");
         eb.setDescription("As per ");
         TextChannel welcomeRules = ((TextChannel) channel).getGuild().getTextChannelsByName(RULES_CHANNEL, false).get(0);
         eb.appendDescription(welcomeRules.getAsMention())
-          .appendDescription(", our server does not support users who are found to be in possession of illegally obtained (e.g. \"pirated\", \"a friend gave me theirs\", etc) materials, such as a PS2 BIOS, game ISO, etc. ")
-          .appendDescription("This rule is enforced at the discretion of admins and moderators. ")
-          .appendDescription("You may appeal by contacting a moderator or admin. As a rule of thumb, they will want some visual proof that you actually own the item in question (physical PS2, if a BIOS, game disc, if a game ISO). ")
-          .appendDescription("\n\n**The PCSX2 team thanks you for playing fair!**");
+          .appendDescription(", our server **does not support** users who are found to be in possession of illegally obtained materials.\n")
+          .appendDescription("This rule is enforced at the discretion of admins and moderators.\n")
+          .appendDescription("You may appeal by contacting a moderator or admin. As a rule of thumb, they will want some visual proof that you actually own the item in question.\n")
+          .appendDescription("\n**The PCSX2 team thanks you for playing fair!**");
+        eb.addField("But a friend gave it to me!", "The origin of a dump is irrelevant. Dumps must be from your own discs or console to be legal.", false);
         hifumiBot.sendMessage(channel, eb.build());
     }
 
