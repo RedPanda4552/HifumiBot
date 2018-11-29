@@ -28,6 +28,7 @@ import java.util.HashMap;
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.command.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.command.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.CommandWarez;
@@ -53,6 +54,7 @@ public class CommandInterpreter extends ListenerAdapter {
         commandMap.put("reload", new CommandReload(hifumiBot));
         commandMap.put("wiki", new CommandWiki(hifumiBot));
         commandMap.put("warez", new CommandWarez(hifumiBot));
+        commandMap.put("dev", new CommandDev(hifumiBot));
         commandMap.put("help", new CommandHelp(hifumiBot));
     }
     
