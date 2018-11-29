@@ -51,7 +51,7 @@ public class CommandWarez extends AbstractCommand {
           .appendDescription("This rule is enforced at the discretion of admins and moderators.\n")
           .appendDescription("You may appeal by contacting a moderator or admin. As a rule of thumb, they will want some visual proof that you actually own the item in question.\n")
           .appendDescription("\n**The PCSX2 team thanks you for playing fair!**");
-        eb.addField("But a friend gave it to me!", "The origin of a dump is irrelevant. Dumps must be from your own discs or console to be legal.", false);
+        eb.addField("But a friend gave it to me!", "A game or BIOS dump must be from your own discs or console to be legal.", false);
         hifumiBot.sendMessage(channel, eb.build());
     }
 
