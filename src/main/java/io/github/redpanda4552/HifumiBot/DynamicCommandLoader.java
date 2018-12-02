@@ -81,6 +81,7 @@ public class DynamicCommandLoader {
             ps.setString(5, null);
             ps.setString(6, null);
             ps.executeUpdate();
+            HifumiBot.getSelf().getCommandInterpreter().refreshCommandMap();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -104,6 +105,7 @@ public class DynamicCommandLoader {
             
             ps.setString(2, name);
             ps.executeUpdate();
+            HifumiBot.getSelf().getCommandInterpreter().refreshCommandMap();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -117,6 +119,7 @@ public class DynamicCommandLoader {
             PreparedStatement ps = connection.prepareStatement("DELETE FROM commands WHERE name = ?;");
             ps.setString(1, name);
             ps.executeUpdate();
+            HifumiBot.getSelf().getCommandInterpreter().refreshCommandMap();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();

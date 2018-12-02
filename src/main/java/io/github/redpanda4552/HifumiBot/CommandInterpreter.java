@@ -47,6 +47,7 @@ public class CommandInterpreter extends ListenerAdapter {
 
     public static final String PREFIX = ">";
     
+    private HifumiBot hifumiBot;
     private HashMap<String, AbstractCommand> commandMap = new HashMap<String, AbstractCommand>();
     
     /**
@@ -54,7 +55,13 @@ public class CommandInterpreter extends ListenerAdapter {
      * HifumiBot.self has been assigned.
      */
     public CommandInterpreter(HifumiBot hifumiBot) {
+        this.hifumiBot = hifumiBot;
+        refreshCommandMap();
+    }
+    
+    public void refreshCommandMap() {
         //commandMap.put("cpu", new CommandCPU());
+        commandMap.put("help", new CommandHelp(hifumiBot));
         commandMap.put("reload", new CommandReload(hifumiBot));
         commandMap.put("wiki", new CommandWiki(hifumiBot));
         commandMap.put("warez", new CommandWarez(hifumiBot));
@@ -73,8 +80,6 @@ public class CommandInterpreter extends ListenerAdapter {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
-        commandMap.put("help", new CommandHelp(hifumiBot));
     }
     
     @Override

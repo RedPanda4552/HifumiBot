@@ -71,7 +71,7 @@ public class CommandDynCmd extends AbstractCommand {
             String helpText = stringify(args);
             
             if (hifumiBot.getDynamicCommandLoader().insertCommand(name, helpText)) {
-                hifumiBot.sendMessage(channel, "Successfully created empty command `" + name + "`. Changes will apply after the next `>reload`.");
+                hifumiBot.sendMessage(channel, "Successfully created empty command `" + name + "`.");
             } else {
                 hifumiBot.sendMessage(channel, "Failed to create command `" + name + "`.");
             }
@@ -90,7 +90,7 @@ public class CommandDynCmd extends AbstractCommand {
             String value = stringify(args);
             
             if (hifumiBot.getDynamicCommandLoader().updateCommand(name, attribute, value)) {
-                hifumiBot.sendMessage(channel, "Successfully updated command `" + name + "`. Changes will apply after the next `>reload`.");
+                hifumiBot.sendMessage(channel, "Successfully updated command `" + name + "`.");
             } else {
                 hifumiBot.sendMessage(channel, "Failed to update command `" + name + "`.");
             }
@@ -98,7 +98,7 @@ public class CommandDynCmd extends AbstractCommand {
             break;
         case "remove":
             if (hifumiBot.getDynamicCommandLoader().removeCommand(name)) {
-                hifumiBot.sendMessage(channel, "Successfully removed command `" + name + "`. Changes will apply after the next `>reload`.");
+                hifumiBot.sendMessage(channel, "Successfully removed command `" + name + "`.");
             } else {
                 hifumiBot.sendMessage(channel, "Failed to remove command `" + name + "`.");
             }
