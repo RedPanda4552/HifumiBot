@@ -83,7 +83,7 @@ public class CommandInterpreter extends ListenerAdapter {
         Member sender = event.getMember();
         Message message = event.getMessage();
         String[] args = message.getContentDisplay().split(" ");
-        String command = args[0];
+        String command = args[0].toLowerCase();
         args = ArrayUtils.remove(args, 0);
         AbstractCommand toExecute;
         

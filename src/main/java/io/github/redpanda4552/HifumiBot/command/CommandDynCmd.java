@@ -56,7 +56,7 @@ public class CommandDynCmd extends AbstractCommand {
         }
         
         String subCommand = args[0];
-        String name = args[1];
+        String name = args[1].toLowerCase();
         
         switch (subCommand.toLowerCase()) {
         case "add":
