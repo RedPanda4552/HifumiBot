@@ -23,16 +23,20 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.command.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.command.CommandDev;
+import io.github.redpanda4552.HifumiBot.command.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.CommandWiki;
+import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -41,7 +45,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class CommandInterpreter extends ListenerAdapter {
 
-    private final String PREFIX = ">";
+    public static final String PREFIX = ">";
     
     private HashMap<String, AbstractCommand> commandMap = new HashMap<String, AbstractCommand>();
     
@@ -55,6 +59,21 @@ public class CommandInterpreter extends ListenerAdapter {
         commandMap.put("wiki", new CommandWiki(hifumiBot));
         commandMap.put("warez", new CommandWarez(hifumiBot));
         commandMap.put("dev", new CommandDev(hifumiBot));
+        commandMap.put("dyncmd", new CommandDynCmd(hifumiBot));
+        
+        ResultSet res = hifumiBot.getDynamicCommandLoader().getDynamicCommands();
+        
+        try {
+            if (res == null)
+                 return;
+            
+            while (res.next()) {
+                commandMap.put(res.getString("name"), new DynamicCommand(hifumiBot, res.getBoolean("admin"), res.getString("helpText"), res.getString("title"), res.getString("body"), res.getString("imageUrl")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
         commandMap.put("help", new CommandHelp(hifumiBot));
     }
     

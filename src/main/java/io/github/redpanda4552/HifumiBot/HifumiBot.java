@@ -88,6 +88,7 @@ public class HifumiBot {
     private JDA jda;
     private PermissionManager permissionManager;
     private CommandInterpreter commandInterpreter;
+    private DynamicCommandLoader dynamicCommandLoader;
     private EventListener eventListener;
     private Thread monitorThread;
     
@@ -104,6 +105,9 @@ public class HifumiBot {
         if (outputChannelId == null || outputChannelId.isEmpty()) {
             System.out.println("Output channel id is null or empty! I won't be able to send messages!");
         }
+        
+        // This must be ready BEFORE the command interpreter's constructor fires.
+        dynamicCommandLoader = new DynamicCommandLoader();
         
         try {
             jda = new JDABuilder(AccountType.BOT)
@@ -147,6 +151,10 @@ public class HifumiBot {
     
     public CommandInterpreter getCommandInterpreter() {
         return commandInterpreter;
+    }
+    
+    public DynamicCommandLoader getDynamicCommandLoader() {
+        return dynamicCommandLoader;
     }
     
     public EventListener getEventListener() {

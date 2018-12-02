@@ -28,30 +28,29 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
-public class CommandHelp extends AbstractCommand {
+public class DynamicCommand extends AbstractCommand {
 
-    public CommandHelp(HifumiBot hifumiBot) {
-        super(hifumiBot, true);
+    private String helpText, title, body, imageUrl;
+    
+    public DynamicCommand(HifumiBot hifumiBot, boolean admin, String helpText, String title, String body, String imageUrl) {
+        super(hifumiBot, admin);
+        this.helpText = helpText;
+        this.title = title;
+        this.body = body;
+        this.imageUrl = imageUrl;
     }
 
     @Override
     protected void onExecute(MessageChannel channel, Member sender, String[] args) {
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("HifumiBot Commands");
-        eb.setDescription("A [DynCmd] tag indicates a command was custom built by an administrator.\n");
-        
-        for (String commandName : hifumiBot.getCommandInterpreter().getCommandMap().keySet()) {
-            AbstractCommand command = hifumiBot.getCommandInterpreter().getCommandMap().get(commandName);
-            
-            if (!command.isAdminCommand() || hifumiBot.getPermissionManager().hasPermission(sender))
-                eb.addField(">" + commandName, command.getHelpText() + (command instanceof DynamicCommand ? " [DynCmd]" : ""), false);
-        }
-        
-        hifumiBot.sendMessage(sender.getUser().openPrivateChannel().complete(), eb.build());
+        EmbedBuilder eb = this.newFootedEmbedBuilder(sender);
+        eb.setTitle(title);
+        eb.setDescription(body);
+        eb.setImage(imageUrl);
+        hifumiBot.sendMessage(channel, eb.build());
     }
     
     @Override
-    protected String getHelpText() {
-        return "Display this help dialog";
+    public String getHelpText() {
+        return helpText;
     }
 }
