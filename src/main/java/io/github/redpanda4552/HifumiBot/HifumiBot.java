@@ -138,7 +138,7 @@ public class HifumiBot {
     }
     
     private void updateStatus(String str) {
-        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching(str));
+        jda.getPresence().setGame(Game.watching(str));
     }
     
     public JDA getJDA() {
