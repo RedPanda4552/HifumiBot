@@ -84,7 +84,10 @@ public class CommandDynCmd extends AbstractCommand {
             }
             
             String attribute = args[2];
-            String value = args[3];
+            args = ArrayUtils.remove(args, 0);
+            args = ArrayUtils.remove(args, 0);
+            args = ArrayUtils.remove(args, 0);
+            String value = stringify(args);
             
             if (hifumiBot.getDynamicCommandLoader().updateCommand(name, attribute, value)) {
                 hifumiBot.sendMessage(channel, "Successfully updated command `" + name + "`. Changes will apply after the next `>reload`.");
