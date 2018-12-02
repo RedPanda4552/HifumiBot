@@ -68,6 +68,10 @@ public class DynamicCommandLoader {
     }
     
     public boolean insertCommand(String name, String helpText) {
+        // Check that the attempted command doesn't already exist in the interpreter. Prevents overrides of things like reload.
+        if (HifumiBot.getSelf().getCommandInterpreter().getCommandMap().containsKey(name))
+            return false;
+        
         try {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO commands (name, helpText, admin, title, body, imageUrl) VALUES (?, ?, ?, ?, ?, ?);");
             ps.setString(1, name);
