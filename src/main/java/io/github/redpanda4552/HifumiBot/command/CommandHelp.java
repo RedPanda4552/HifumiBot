@@ -24,6 +24,7 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -33,11 +34,13 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 
 public class CommandHelp extends AbstractCommand {
 
+    private final int COMMANDS_PER_PAGE = 10;
+    
     private ArrayList<MessageEmbed> helpPages;
+    private int pageCount = 0;
     
     public CommandHelp(HifumiBot hifumiBot) {
         super(hifumiBot, false);
-        rebuildHelpPages();
     }
 
     @Override
@@ -66,14 +69,16 @@ public class CommandHelp extends AbstractCommand {
     
     public void rebuildHelpPages() {
         helpPages = new ArrayList<MessageEmbed>();
+        TreeSet<String> commandNames = hifumiBot.getCommandInterpreter().getCommandNames();
+        pageCount = (int) Math.ceil((double) commandNames.size() / COMMANDS_PER_PAGE);
         EmbedBuilder eb = new EmbedBuilder();
         
-        for (String commandName : hifumiBot.getCommandInterpreter().getCommandNames()) {
+        for (String commandName : commandNames) {
             AbstractCommand command = hifumiBot.getCommandInterpreter().getCommandMap().get(commandName);
             
             eb.addField(">" + commandName, (command instanceof DynamicCommand ? " [DynCmd]" : "") + command.getHelpText(), false);
             
-            if (eb.getFields().size() >= 10) {
+            if (eb.getFields().size() >= COMMANDS_PER_PAGE) {
                 addToPages(eb);
                 eb = new EmbedBuilder();
             }
@@ -84,7 +89,7 @@ public class CommandHelp extends AbstractCommand {
     }
     
     private void addToPages(EmbedBuilder eb) {
-        eb.setTitle("HifumiBot Help Page " + (helpPages.size() + 1));
+        eb.setTitle("HifumiBot Help Page " + (helpPages.size() + 1) + " / " + pageCount);
         eb.setDescription("The prefix for all commands is \">\".\nA [DynCmd] tag in a command description means it is a custom command built by a server admin.");
         helpPages.add(eb.build());
     }
