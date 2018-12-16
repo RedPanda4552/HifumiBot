@@ -58,7 +58,6 @@ public class CommandInterpreter extends ListenerAdapter {
      */
     public CommandInterpreter(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
-        refreshCommandMap();
     }
     
     public void refreshCommandMap() {
@@ -82,6 +81,8 @@ public class CommandInterpreter extends ListenerAdapter {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
+        ((CommandHelp) commandMap.get("help")).rebuildHelpPages();
     }
     
     @Override

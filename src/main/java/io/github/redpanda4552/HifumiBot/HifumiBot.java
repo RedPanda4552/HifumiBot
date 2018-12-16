@@ -108,6 +108,9 @@ public class HifumiBot {
             e.printStackTrace();
         }
         
+        updateStatus("Caching help pages...");
+        commandInterpreter.refreshCommandMap();
+        
         try {
             updateStatus("Cloning wiki entries...");
             Elements anchors = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get().getElementsByClass("wikitable").first().getElementsByTag("a");

@@ -67,7 +67,6 @@ public class CommandHelp extends AbstractCommand {
     public void rebuildHelpPages() {
         helpPages = new ArrayList<MessageEmbed>();
         EmbedBuilder eb = new EmbedBuilder();
-        int pageNumber = 1;
         
         for (String commandName : hifumiBot.getCommandInterpreter().getCommandNames()) {
             AbstractCommand command = hifumiBot.getCommandInterpreter().getCommandMap().get(commandName);
@@ -75,11 +74,18 @@ public class CommandHelp extends AbstractCommand {
             eb.addField(">" + commandName, (command instanceof DynamicCommand ? " [DynCmd]" : "") + command.getHelpText(), false);
             
             if (eb.getFields().size() >= 10) {
-                eb.setTitle("HifumiBot Help Page" + pageNumber++);
-                eb.setDescription("The prefix for all commands is \">\".\nA [DynCmd] tag in a command description means it is a custom command built by a server admin.");
-                helpPages.add(eb.build());
+                addToPages(eb);
                 eb = new EmbedBuilder();
             }
         }
+        
+        if (eb.getFields().size() > 0)
+            addToPages(eb);
+    }
+    
+    private void addToPages(EmbedBuilder eb) {
+        eb.setTitle("HifumiBot Help Page " + (helpPages.size() + 1));
+        eb.setDescription("The prefix for all commands is \">\".\nA [DynCmd] tag in a command description means it is a custom command built by a server admin.");
+        helpPages.add(eb.build());
     }
 }
