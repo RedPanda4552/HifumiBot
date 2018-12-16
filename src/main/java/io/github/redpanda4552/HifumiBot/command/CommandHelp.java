@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 public class CommandHelp extends AbstractCommand {
 
     public CommandHelp(HifumiBot hifumiBot) {
-        super(hifumiBot, true);
+        super(hifumiBot, false);
     }
 
     @Override
