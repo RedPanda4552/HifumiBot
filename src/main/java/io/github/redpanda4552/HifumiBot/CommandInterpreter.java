@@ -25,7 +25,9 @@ package io.github.redpanda4552.HifumiBot;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Collator;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -99,6 +101,12 @@ public class CommandInterpreter extends ListenerAdapter {
         
         if ((toExecute = commandMap.get(command)) != null)
             toExecute.run(channel, sender, args);
+    }
+    
+    public TreeSet<String> getCommandNames() {
+        TreeSet<String> ret = new TreeSet<String>(Collator.getInstance());
+        ret.addAll(commandMap.keySet());
+        return ret;
     }
     
     public HashMap<String, AbstractCommand> getCommandMap() {

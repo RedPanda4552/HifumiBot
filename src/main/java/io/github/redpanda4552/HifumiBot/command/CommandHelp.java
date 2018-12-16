@@ -23,35 +23,63 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
+import java.util.ArrayList;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 
 public class CommandHelp extends AbstractCommand {
 
+    private ArrayList<MessageEmbed> helpPages;
+    
     public CommandHelp(HifumiBot hifumiBot) {
         super(hifumiBot, false);
+        rebuildHelpPages();
     }
 
     @Override
     protected void onExecute(MessageChannel channel, Member sender, String[] args) {
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("HifumiBot Commands");
-        eb.setDescription("A [DynCmd] tag indicates a command was custom built by an administrator.\n");
+        int pageNumber = 1;
         
-        for (String commandName : hifumiBot.getCommandInterpreter().getCommandMap().keySet()) {
-            AbstractCommand command = hifumiBot.getCommandInterpreter().getCommandMap().get(commandName);
-            
-            if (!command.isAdminCommand() || hifumiBot.getPermissionManager().hasPermission(sender))
-                eb.addField(">" + commandName, command.getHelpText() + (command instanceof DynamicCommand ? " [DynCmd]" : ""), false);
+        if (args.length >= 1) {
+            try {
+                pageNumber = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) { }
         }
         
-        hifumiBot.sendMessage(sender.getUser().openPrivateChannel().complete(), eb.build());
+        if (pageNumber >= helpPages.size())
+            pageNumber = helpPages.size() - 1;
+        
+        if (pageNumber < 1)
+            pageNumber = 1;
+        
+        hifumiBot.sendMessage(sender.getUser().openPrivateChannel().complete(), helpPages.get(pageNumber - 1));
     }
     
     @Override
     protected String getHelpText() {
         return "Display this help dialog";
+    }
+    
+    public void rebuildHelpPages() {
+        helpPages = new ArrayList<MessageEmbed>();
+        EmbedBuilder eb = new EmbedBuilder();
+        int pageNumber = 1;
+        
+        for (String commandName : hifumiBot.getCommandInterpreter().getCommandNames()) {
+            AbstractCommand command = hifumiBot.getCommandInterpreter().getCommandMap().get(commandName);
+            
+            eb.addField(">" + commandName, (command instanceof DynamicCommand ? " [DynCmd]" : "") + command.getHelpText(), false);
+            
+            if (eb.getFields().size() >= 10) {
+                eb.setTitle("HifumiBot Help Page" + pageNumber++);
+                eb.setDescription("The prefix for all commands is \">\".\nA [DynCmd] tag in a command description means it is a custom command built by a server admin.");
+                helpPages.add(eb.build());
+                eb = new EmbedBuilder();
+            }
+        }
     }
 }
