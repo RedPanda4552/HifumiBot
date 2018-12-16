@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.User;
 
 public class CommandDynCmd extends AbstractCommand {
 
@@ -47,7 +48,7 @@ public class CommandDynCmd extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member sender, String[] args) {
+    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
         if (args.length < 2) {
             hifumiBot.sendMessage(channel, usage);
             return;

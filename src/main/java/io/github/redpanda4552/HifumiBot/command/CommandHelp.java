@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 
 public class CommandHelp extends AbstractCommand {
 
@@ -45,7 +46,7 @@ public class CommandHelp extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member sender, String[] args) {
+    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
         int pageNumber = 1;
         
         if (args.length >= 1) {
@@ -61,7 +62,7 @@ public class CommandHelp extends AbstractCommand {
             pageNumber = 1;
         
         if (channel instanceof TextChannel) {
-            hifumiBot.sendMessage(sender.getUser().openPrivateChannel().complete(), helpPages.get(pageNumber - 1));
+            hifumiBot.sendMessage(senderMember.getUser().openPrivateChannel().complete(), helpPages.get(pageNumber - 1));
         } else {
             hifumiBot.sendMessage(channel, helpPages.get(pageNumber - 1));
         }

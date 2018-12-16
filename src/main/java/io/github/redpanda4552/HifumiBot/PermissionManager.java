@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 
 public class PermissionManager {
 
@@ -43,12 +44,15 @@ public class PermissionManager {
         return true;
     }
     
-    public boolean hasPermission(Member member) {
-        return isAdmin(member) || isSuperuser(member);
+    public boolean hasPermission(Member member, User user) {
+        return isSuperuser(user) || isAdmin(member);
     }
     
-    private boolean isSuperuser(Member member) {
-        return member.getUser().getId().equals(superuserId);
+    private boolean isSuperuser(User user) {
+        if (user == null)
+            return false;
+        
+        return user.getId().equals(superuserId);
     }
     
     private boolean isAdmin(Member member) {

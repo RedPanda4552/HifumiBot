@@ -42,6 +42,7 @@ import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -88,7 +89,8 @@ public class CommandInterpreter extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         MessageChannel channel = event.getChannel();
-        Member sender = event.getMember();
+        Member senderMember = event.getMember();
+        User senderUser = event.getAuthor();
         Message message = event.getMessage();
         String[] args = message.getContentDisplay().split(" ");
         String command = args[0].toLowerCase();
@@ -101,7 +103,7 @@ public class CommandInterpreter extends ListenerAdapter {
         command = command.replaceFirst(PREFIX, "");
         
         if ((toExecute = commandMap.get(command)) != null)
-            toExecute.run(channel, sender, args);
+            toExecute.run(channel, senderMember, senderUser, args);
     }
     
     public TreeSet<String> getCommandNames() {

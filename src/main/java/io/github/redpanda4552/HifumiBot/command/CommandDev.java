@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 
 public class CommandDev extends AbstractCommand {
 
@@ -38,11 +39,11 @@ public class CommandDev extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member sender, String[] args) {
+    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
         if (!(channel instanceof TextChannel))
             return;
         
-        EmbedBuilder eb = newFootedEmbedBuilder(sender);
+        EmbedBuilder eb = newFootedEmbedBuilder(senderMember);
         eb.setTitle("PCSX2 Development Builds");
         eb.setDescription("Looking for the latest builds of PCSX2? Check out ");
         TextChannel devBuilds = ((TextChannel) channel).getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);

@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 
 public class CommandWiki extends AbstractCommand {
 
@@ -39,7 +40,7 @@ public class CommandWiki extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member sender, String[] args) {
+    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
         if (args.length == 0) {
             hifumiBot.sendMessage(channel, "I can't search for nothing! Try `!wiki <title of game here>`");
             return;
@@ -105,7 +106,7 @@ public class CommandWiki extends AbstractCommand {
         if (i > 5)
             msg.addReaction(Emotes.SIX).complete();
         
-        hifumiBot.getEventListener().waitForMessage(sender.getUser().getId(), msg);
+        hifumiBot.getEventListener().waitForMessage(senderUser.getId(), msg);
     }
     
     @Override
