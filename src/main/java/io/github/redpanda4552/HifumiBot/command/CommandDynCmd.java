@@ -23,8 +23,6 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
-import java.util.ArrayList;
-
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
