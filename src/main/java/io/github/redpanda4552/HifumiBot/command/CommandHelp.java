@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 public class CommandHelp extends AbstractCommand {
 
@@ -59,7 +60,11 @@ public class CommandHelp extends AbstractCommand {
         if (pageNumber < 1)
             pageNumber = 1;
         
-        hifumiBot.sendMessage(sender.getUser().openPrivateChannel().complete(), helpPages.get(pageNumber - 1));
+        if (channel instanceof TextChannel) {
+            hifumiBot.sendMessage(sender.getUser().openPrivateChannel().complete(), helpPages.get(pageNumber - 1));
+        } else {
+            hifumiBot.sendMessage(channel, helpPages.get(pageNumber - 1));
+        }
     }
     
     @Override
