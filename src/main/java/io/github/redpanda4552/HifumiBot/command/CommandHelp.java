@@ -82,7 +82,7 @@ public class CommandHelp extends AbstractCommand {
         for (String commandName : commandNames) {
             AbstractCommand command = hifumiBot.getCommandInterpreter().getCommandMap().get(commandName);
             
-            eb.addField(">" + commandName, (command instanceof DynamicCommand ? " [DynCmd]" : "") + command.getHelpText(), false);
+            eb.addField(">" + commandName, (command instanceof DynamicCommand ? " [DynCmd] " : "") + command.getHelpText(), false);
             
             if (eb.getFields().size() >= COMMANDS_PER_PAGE) {
                 addToPages(eb);
