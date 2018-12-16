@@ -64,19 +64,7 @@ public class HifumiBot {
             debug = true;
         
         System.out.println("Arguments parsed");
-        
-        while (true) {
-            if (self == null) {
-                System.out.println("No self instance, creating one");
-                self = new HifumiBot();
-            }
-                
-            try {
-                Thread.sleep(1000 * 2);
-            } catch (InterruptedException e) {
-                System.out.println("HifumiBot Interrupt!");
-            }
-        }
+        self = new HifumiBot();
     }
     
     public static HifumiBot getSelf() {
@@ -165,11 +153,13 @@ public class HifumiBot {
         return fullGamesMap;
     }
     
-    public void reinstance() {
-        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching("Reinstancing..."));
+    public void shutdown(boolean reload) {
+        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching("Shutting Down..."));
         stopMonitor();
         jda.shutdown();
-        self = null;
+        
+        if (reload)
+            self = new HifumiBot();
     }
     
     public void stopMonitor() {

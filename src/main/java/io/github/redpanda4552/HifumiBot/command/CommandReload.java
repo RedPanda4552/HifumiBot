@@ -35,7 +35,7 @@ public class CommandReload extends AbstractCommand {
 
     @Override
     protected void onExecute(MessageChannel channel, Member sender, String[] args) {
-        hifumiBot.reinstance();
+        hifumiBot.shutdown(true);
     }
     
     @Override
