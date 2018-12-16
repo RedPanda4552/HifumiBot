@@ -52,6 +52,12 @@ public class PermissionManager {
     }
     
     private boolean isAdmin(Member member) {
+        // Only commands requiring admin permissions will ever need to test with this method.
+        // Thus, if we are in a private channel (where member is always null), where we don't
+        // want admin commands to ever be an option, always return false.
+        if (member == null)
+            return false;
+        
         for (Role role : member.getRoles()) {
             if (adminRoles.contains(role.getName())) {
                 return true;
