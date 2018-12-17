@@ -76,7 +76,7 @@ public class CommandHelp extends AbstractCommand {
     public void rebuildHelpPages() {
         helpPages = new ArrayList<MessageEmbed>();
         TreeSet<String> commandNames = hifumiBot.getCommandInterpreter().getCommandNames();
-        pageCount = (int) Math.ceil((double) commandNames.size() / COMMANDS_PER_PAGE);
+        pageCount = (int) Math.ceil((double) commandNames.size() / COMMANDS_PER_PAGE) - 1;
         EmbedBuilder eb = new EmbedBuilder();
         
         for (String commandName : commandNames) {
