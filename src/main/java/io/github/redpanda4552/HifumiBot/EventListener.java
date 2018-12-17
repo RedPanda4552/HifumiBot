@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class EventListener extends ListenerAdapter {
@@ -52,18 +53,27 @@ public class EventListener extends ListenerAdapter {
     }
     
     @Override
+    public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent event) {
+        onMessageReactionAdd(event.getUser().getId(), event.getMessageId(), event.getReactionEmote().getName().toLowerCase());
+    }
+    
+    @Override
     public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
-        Message msg = messages.get(event.getUser().getId());
+        onMessageReactionAdd(event.getUser().getId(), event.getMessageId(), event.getReactionEmote().getName().toLowerCase());
+    }
+    
+    private void onMessageReactionAdd(String userId, String messageId, String reactionEmoteName) {
+        Message msg = messages.get(userId);
         
         if (msg == null)
             return;
         
-        if (msg.getId().equals(event.getMessageId())) {
+        if (msg.getId().equals(messageId)) {
             String gameName = null;
             
             List<Field> fields = msg.getEmbeds().get(0).getFields();
             
-            switch (event.getReactionEmote().getName().toLowerCase()) {
+            switch (reactionEmoteName) {
             case Emotes.ONE:
                 gameName = fields.get(0).getValue();
                 break;
@@ -93,13 +103,6 @@ public class EventListener extends ListenerAdapter {
             
             for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
                 StringBuilder regionBuilder = new StringBuilder();
-                
-                /*
-                if (!regionSet.getSerial().isEmpty()) {
-                    regionBuilder.append("**Serial:\n**")
-                                 .append(regionSet.getSerial().replace(" ", "\n"));
-                }
-                */
                 
                 if (!regionSet.getCRC().isEmpty()) {
                     regionBuilder.append("\n**CRC:\n**")
@@ -131,7 +134,7 @@ public class EventListener extends ListenerAdapter {
                 eb.addField("__Known Issues:__", issueList.toString(), true);
             
             msg.editMessage(eb.build()).complete();
-            messages.remove(event.getUser().getId());
+            messages.remove(userId);
         }
     }
 }
