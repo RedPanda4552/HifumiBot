@@ -36,6 +36,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.CommandReload;
+import io.github.redpanda4552.HifumiBot.command.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.CommandWiki;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
@@ -65,6 +66,7 @@ public class CommandInterpreter extends ListenerAdapter {
         //commandMap.put("cpu", new CommandCPU());
         commandMap.put("help", new CommandHelp(hifumiBot));
         commandMap.put("reload", new CommandReload(hifumiBot));
+        commandMap.put("shutdown", new CommandShutdown(hifumiBot));
         commandMap.put("wiki", new CommandWiki(hifumiBot));
         commandMap.put("warez", new CommandWarez(hifumiBot));
         commandMap.put("dev", new CommandDev(hifumiBot));
