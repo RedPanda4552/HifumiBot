@@ -48,7 +48,7 @@ public class CommandWarez extends AbstractCommand {
         eb.setDescription("As per ");
         TextChannel welcomeRules = ((TextChannel) channel).getGuild().getTextChannelsByName(RULES_CHANNEL, false).get(0);
         eb.appendDescription(welcomeRules.getAsMention())
-          .appendDescription(", our server **does not support** users who are found to be in possession of illegally obtained materials.\n")
+          .appendDescription(", our server **does not support** users who are found to be in possession of illegally obtained materials. This also includes discussion of piracy and pirated materials.\n")
           .appendDescription("This rule is enforced at the discretion of admins and moderators.\n")
           .appendDescription("You may appeal by contacting a moderator or admin. As a rule of thumb, they will want some visual proof that you actually own the item in question.\n")
           .appendDescription("\n**The PCSX2 team thanks you for playing fair!**");
