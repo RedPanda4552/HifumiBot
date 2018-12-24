@@ -32,6 +32,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.command.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.command.CommandDX9;
 import io.github.redpanda4552.HifumiBot.command.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.CommandHelp;
@@ -71,6 +72,7 @@ public class CommandInterpreter extends ListenerAdapter {
         commandMap.put("warez", new CommandWarez(hifumiBot));
         commandMap.put("dev", new CommandDev(hifumiBot));
         commandMap.put("dyncmd", new CommandDynCmd(hifumiBot));
+        commandMap.put("dx9", new CommandDX9(hifumiBot));
         
         ResultSet res = hifumiBot.getDynamicCommandLoader().getDynamicCommands();
         
