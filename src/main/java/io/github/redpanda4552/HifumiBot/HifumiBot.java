@@ -100,7 +100,18 @@ public class HifumiBot {
             System.out.println("Output channel id is null or empty! I won't be able to send messages!");
         }
         
+        try {
+            jda = new JDABuilder(AccountType.BOT)
+                    .setToken(discordBotToken)
+                    .setAutoReconnect(true)
+                    .build().awaitReady();
+        } catch (LoginException | IllegalArgumentException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        
         // Database must be ready in order to load dynamic commands
+        updateStatus("Connecting to database...");
+        
         try {
             File file = new File(DB_LOCATION);
             file.createNewFile();
@@ -110,18 +121,8 @@ public class HifumiBot {
         }
         
         // This must be ready BEFORE the command interpreter's constructor fires.
+        updateStatus("Loading dynamic commands...");
         dynamicCommandLoader = new DynamicCommandLoader(this);
-        
-        try {
-            jda = new JDABuilder(AccountType.BOT)
-                    .setToken(discordBotToken)
-                    .setAutoReconnect(true)
-                    .addEventListener(commandInterpreter = new CommandInterpreter(this))
-                    .addEventListener(eventListener = new EventListener(this))
-                    .build().awaitReady();
-        } catch (LoginException | IllegalArgumentException | InterruptedException e) {
-            e.printStackTrace();
-        }
         
         updateStatus("Caching help pages...");
         commandInterpreter.refreshCommandMap();
@@ -138,6 +139,10 @@ public class HifumiBot {
         
         updateStatus("Intializing permission manager...");
         permissionManager = new PermissionManager(superuserId);
+        updateStatus("Init command interpreter...");
+        jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
+        updateStatus("Init event listener...");
+        jda.addEventListener(eventListener = new EventListener(this));
         updateStatus("Launching build monitor...");
         startMonitor();
         updateStatus(">help" + (debug ? " [Debug Mode]" : ""));
