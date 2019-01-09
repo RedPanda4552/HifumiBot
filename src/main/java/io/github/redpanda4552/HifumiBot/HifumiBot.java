@@ -23,7 +23,11 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 import javax.security.auth.login.LoginException;
@@ -72,6 +76,7 @@ public class HifumiBot {
     }
     
     private final String FULL_GAMES_URL = "https://wiki.pcsx2.net/Complete_List_of_Games";
+    private final String DB_LOCATION = "hifumi-commands.db";
     
     private JDA jda;
     private PermissionManager permissionManager;
@@ -79,6 +84,7 @@ public class HifumiBot {
     private DynamicCommandLoader dynamicCommandLoader;
     private EventListener eventListener;
     private Thread monitorThread;
+    private Connection connection;
     
     private HashMap<String, String> fullGamesMap = new HashMap<String, String>();
     
@@ -94,8 +100,17 @@ public class HifumiBot {
             System.out.println("Output channel id is null or empty! I won't be able to send messages!");
         }
         
+        // Database must be ready in order to load dynamic commands
+        try {
+            File file = new File(DB_LOCATION);
+            file.createNewFile();
+            connection = DriverManager.getConnection("jdbc:sqlite:" + DB_LOCATION);
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+        }
+        
         // This must be ready BEFORE the command interpreter's constructor fires.
-        dynamicCommandLoader = new DynamicCommandLoader();
+        dynamicCommandLoader = new DynamicCommandLoader(this);
         
         try {
             jda = new JDABuilder(AccountType.BOT)
@@ -154,6 +169,10 @@ public class HifumiBot {
     
     public HashMap<String, String> getFullGamesMap() {
         return fullGamesMap;
+    }
+    
+    public Connection getDatabaseConnection() {
+        return connection;
     }
     
     public void shutdown(boolean reload) {

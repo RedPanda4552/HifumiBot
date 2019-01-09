@@ -23,28 +23,22 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DynamicCommandLoader {
-
-    private final String DB_LOCATION = "hifumi-commands.db";
     
     private Connection connection;
-    
-    public DynamicCommandLoader() {
+
+    public DynamicCommandLoader(HifumiBot hifumiBot) {
+        this.connection = hifumiBot.getDatabaseConnection();
+        
         try {
-            File file = new File(DB_LOCATION);
-            file.createNewFile();
-            connection = DriverManager.getConnection("jdbc:sqlite:" + DB_LOCATION);
             PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, helpText TEXT, admin BOOLEAN, title TEXT, body TEXT, imageUrl TEXT)");
             ps.executeUpdate();
-        } catch (IOException | SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
