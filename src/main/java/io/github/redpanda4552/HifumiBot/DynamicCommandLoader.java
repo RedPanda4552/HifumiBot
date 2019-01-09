@@ -36,7 +36,7 @@ public class DynamicCommandLoader {
         this.connection = hifumiBot.getDatabaseConnection();
         
         try {
-            PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, helpText TEXT, admin BOOLEAN, title TEXT, body TEXT, imageUrl TEXT)");
+            PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS commands (name TEXT PRIMARY KEY, helpText TEXT, admin BOOLEAN, title TEXT, body TEXT, imageUrl TEXT);");
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
