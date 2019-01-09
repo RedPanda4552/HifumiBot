@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
 
@@ -105,6 +106,7 @@ public class CommandInterpreter extends ListenerAdapter {
             return;
         
         command = command.replaceFirst(PREFIX, "");
+        args = formatArgs(args);
         
         if ((toExecute = commandMap.get(command)) != null)
             toExecute.run(channel, senderMember, senderUser, args);
@@ -118,5 +120,30 @@ public class CommandInterpreter extends ListenerAdapter {
     
     public HashMap<String, AbstractCommand> getCommandMap() {
         return commandMap;
+    }
+    
+    public String[] formatArgs(String[] args) {
+        ArrayList<String> ret = new ArrayList<String>();
+        String toInsert = null;
+        boolean waitingForClose = false;
+        
+        for (String arg : args) {
+            if (!waitingForClose && arg.startsWith("\"")) {
+                waitingForClose = true;
+                toInsert = arg;
+            } else if (waitingForClose) {
+                toInsert += " " + arg;
+                
+                if (arg.endsWith("\"")) {
+                    waitingForClose = false;
+                    toInsert.replaceAll("\"", "");
+                    ret.add(toInsert);
+                }
+            } else {
+                ret.add(arg);
+            }
+        }
+        
+        return ret.toArray(new String[ret.size()]);
     }
 }

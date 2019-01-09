@@ -61,6 +61,10 @@ public abstract class AbstractCommand {
         return sb.toString().trim();
     }
     
+    protected boolean isArgSingleWord(String arg) {
+        return !arg.contains(" ");
+    }
+    
     protected boolean isAdminCommand() {
         return admin;
     }
