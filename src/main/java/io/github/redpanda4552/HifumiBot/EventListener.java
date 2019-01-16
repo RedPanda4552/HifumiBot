@@ -97,8 +97,7 @@ public class EventListener extends ListenerAdapter {
             WikiPage wikiPage = new WikiPage(hifumiBot.getFullGamesMap().get(gameName));
             msg.clearReactions().complete();
             EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle(wikiPage.getTitle());
-            eb.setDescription(wikiPage.getWikiPageUrl());
+            eb.setTitle(wikiPage.getTitle(), wikiPage.getWikiPageUrl());
             eb.setThumbnail(wikiPage.getCoverArtUrl());
             
             for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
