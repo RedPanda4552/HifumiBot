@@ -128,7 +128,7 @@ public class CommandInterpreter extends ListenerAdapter {
         boolean waitingForClose = false;
         
         for (String arg : args) {
-            if (!waitingForClose && arg.startsWith("\"")) {
+            if (!waitingForClose && arg.startsWith("\"") && !arg.endsWith("\"")) {
                 waitingForClose = true;
                 toInsert = arg;
             } else if (waitingForClose) {
