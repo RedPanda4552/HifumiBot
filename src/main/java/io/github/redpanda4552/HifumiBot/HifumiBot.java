@@ -36,6 +36,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.voting.VoteManager;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -80,6 +81,7 @@ public class HifumiBot {
     
     private JDA jda;
     private PermissionManager permissionManager;
+    private VoteManager voteManager;
     private CommandInterpreter commandInterpreter;
     private DynamicCommandLoader dynamicCommandLoader;
     private EventListener eventListener;
@@ -123,7 +125,10 @@ public class HifumiBot {
         // This must be ready BEFORE the command interpreter's constructor fires.
         updateStatus("Loading dynamic commands...");
         dynamicCommandLoader = new DynamicCommandLoader(this);
-        
+        updateStatus("Init permission manager...");
+        permissionManager = new PermissionManager(superuserId);
+        updateStatus("Init command interpreter...");
+        jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
         updateStatus("Caching help pages...");
         commandInterpreter.refreshCommandMap();
         
@@ -137,10 +142,8 @@ public class HifumiBot {
             e.printStackTrace();
         }
         
-        updateStatus("Intializing permission manager...");
-        permissionManager = new PermissionManager(superuserId);
-        updateStatus("Init command interpreter...");
-        jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
+        updateStatus("Init vote manager...");
+        voteManager = new VoteManager(this);
         updateStatus("Init event listener...");
         jda.addEventListener(eventListener = new EventListener(this));
         updateStatus("Launching build monitor...");
@@ -158,6 +161,10 @@ public class HifumiBot {
     
     public PermissionManager getPermissionManager() {
         return permissionManager;
+    }
+    
+    public VoteManager getVoteManager() {
+        return voteManager;
     }
     
     public CommandInterpreter getCommandInterpreter() {
