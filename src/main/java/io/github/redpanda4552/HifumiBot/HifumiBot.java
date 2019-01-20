@@ -112,7 +112,7 @@ public class HifumiBot {
         }
         
         // Database must be ready in order to load dynamic commands
-        updateStatus("Connecting to database...");
+        updateStatus("Starting...");
         
         try {
             File file = new File(DB_LOCATION);
@@ -123,17 +123,12 @@ public class HifumiBot {
         }
         
         // This must be ready BEFORE the command interpreter's constructor fires.
-        updateStatus("Loading dynamic commands...");
         dynamicCommandLoader = new DynamicCommandLoader(this);
-        updateStatus("Init permission manager...");
         permissionManager = new PermissionManager(superuserId);
-        updateStatus("Init command interpreter...");
         jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
-        updateStatus("Caching help pages...");
         commandInterpreter.refreshCommandMap();
         
         try {
-            updateStatus("Cloning wiki entries...");
             Elements anchors = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get().getElementsByClass("wikitable").first().getElementsByTag("a");
             
             for (Element anchor : anchors)
@@ -142,11 +137,8 @@ public class HifumiBot {
             e.printStackTrace();
         }
         
-        updateStatus("Init vote manager...");
         voteManager = new VoteManager(this);
-        updateStatus("Init event listener...");
         jda.addEventListener(eventListener = new EventListener(this));
-        updateStatus("Launching build monitor...");
         startMonitor();
         updateStatus(">help" + (debug ? " [Debug Mode]" : ""));
     }
