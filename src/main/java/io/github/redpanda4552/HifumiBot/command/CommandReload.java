@@ -1,7 +1,7 @@
 /**
  * This file is part of HifumiBot, licensed under the MIT License (MIT)
  * 
- * Copyright (c) 2017 Brian Wood
+ * Copyright (c) 2018 Brian Wood
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
