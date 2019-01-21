@@ -35,7 +35,7 @@ public class CommandWarez extends AbstractCommand {
     private final String RULES_CHANNEL = "welcome-rules";
     
     public CommandWarez(HifumiBot hifumiBot) {
-        super(hifumiBot, true);
+        super(hifumiBot, false);
     }
 
     @Override
