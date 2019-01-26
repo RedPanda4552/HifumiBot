@@ -152,8 +152,7 @@ public class CommandInterpreter extends ListenerAdapter {
                 
                 if (arg.endsWith("\"")) {
                     waitingForClose = false;
-                    toInsert.replaceAll("\"", "");
-                    ret.add(toInsert);
+                    ret.add(toInsert.replaceAll("\"", ""));
                 }
             } else {
                 ret.add(arg);
