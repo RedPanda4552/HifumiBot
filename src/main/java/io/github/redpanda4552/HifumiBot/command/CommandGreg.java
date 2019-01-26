@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CommandGreg extends AbstractCommand {
 
     public CommandGreg(HifumiBot hifumiBot) {
-        super(hifumiBot, false);
+        super(hifumiBot, false, CATEGORY_BUILTIN);
     }
 
     @Override

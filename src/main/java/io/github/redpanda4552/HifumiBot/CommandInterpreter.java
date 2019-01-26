@@ -84,7 +84,7 @@ public class CommandInterpreter extends ListenerAdapter {
                  return;
             
             while (res.next()) {
-                commandMap.put(res.getString("name"), new DynamicCommand(hifumiBot, res.getBoolean("admin"), res.getString("helpText"), res.getString("title"), res.getString("body"), res.getString("imageUrl")));
+                commandMap.put(res.getString("name"), new DynamicCommand(hifumiBot, res.getBoolean("admin"), res.getString("helpText"), res.getString("category"), res.getString("title"), res.getString("body"), res.getString("imageUrl")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -114,9 +114,23 @@ public class CommandInterpreter extends ListenerAdapter {
             toExecute.run(channel, senderMember, senderUser, args);
     }
     
-    public TreeSet<String> getCommandNames() {
-        TreeSet<String> ret = new TreeSet<String>(Collator.getInstance());
-        ret.addAll(commandMap.keySet());
+    public HashMap<String, TreeSet<String>> getCategorizedCommandNames() {
+        HashMap<String, TreeSet<String>> ret = new HashMap<String, TreeSet<String>>();
+        
+        for (String commandName : commandMap.keySet()) {
+            AbstractCommand command = commandMap.get(commandName);
+            TreeSet<String> categoryCommands = null;
+            
+            if (ret.containsKey(command.getCategory())) {
+                categoryCommands = ret.get(command.getCategory());
+            } else {
+                categoryCommands = new TreeSet<String>(Collator.getInstance());
+            }
+            
+            categoryCommands.add(commandName);
+            ret.put(command.getCategory(), categoryCommands);
+        }
+        
         return ret;
     }
     

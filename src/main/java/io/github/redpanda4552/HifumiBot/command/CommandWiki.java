@@ -36,7 +36,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CommandWiki extends AbstractCommand {
 
     public CommandWiki(HifumiBot hifumiBot) {
-        super(hifumiBot, false);
+        super(hifumiBot, false, CATEGORY_BUILTIN);
     }
 
     @Override

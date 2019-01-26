@@ -33,7 +33,7 @@ public class CommandDX9 extends AbstractCommand {
     private final String VIDEO_LINK = "https://cdn.discordapp.com/attachments/514592552389967881/525387135138660353/gone_out.mp4";
     
     public CommandDX9(HifumiBot hifumiBot) {
-        super(hifumiBot, false);
+        super(hifumiBot, false, CATEGORY_BUILTIN);
     }
 
     @Override

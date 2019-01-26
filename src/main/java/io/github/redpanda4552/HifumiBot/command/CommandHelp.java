@@ -24,8 +24,10 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeSet;
 
+import io.github.redpanda4552.HifumiBot.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
@@ -38,33 +40,43 @@ public class CommandHelp extends AbstractCommand {
 
     private final int COMMANDS_PER_PAGE = 10;
     
-    private ArrayList<MessageEmbed> helpPages;
-    private int pageCount = 0;
+    private MessageEmbed helpRoot;
+    private HashMap<String, ArrayList<MessageEmbed>> helpPages;
     
     public CommandHelp(HifumiBot hifumiBot) {
-        super(hifumiBot, false);
+        super(hifumiBot, false, CATEGORY_BUILTIN);
     }
 
     @Override
     protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
+        String category = "builtin";
         int pageNumber = 1;
+        MessageEmbed toSend = null;
         
-        if (args.length >= 1) {
-            try {
-                pageNumber = Integer.parseInt(args[0]);
-            } catch (NumberFormatException e) { }
+        if (args.length >= 1 && helpPages.get(args[0]) != null) {
+            category = args[0];
+            
+            if (args.length >= 2) {
+                try {
+                    pageNumber = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) { }
+            }
+            
+            if (pageNumber >= helpPages.get(category).size())
+                pageNumber = helpPages.get(category).size() - 1;
+            
+            if (pageNumber < 1)
+                pageNumber = 1;
+            
+            toSend = helpPages.get(category).get(pageNumber - 1);
+        } else {
+            toSend = helpRoot;
         }
         
-        if (pageNumber >= helpPages.size())
-            pageNumber = helpPages.size() - 1;
-        
-        if (pageNumber < 1)
-            pageNumber = 1;
-        
         if (channel instanceof TextChannel) {
-            hifumiBot.sendMessage(senderMember.getUser().openPrivateChannel().complete(), helpPages.get(pageNumber - 1));
+            hifumiBot.sendMessage(senderMember.getUser().openPrivateChannel().complete(), toSend);
         } else {
-            hifumiBot.sendMessage(channel, helpPages.get(pageNumber - 1));
+            hifumiBot.sendMessage(channel, toSend);
         }
     }
     
@@ -74,29 +86,42 @@ public class CommandHelp extends AbstractCommand {
     }
     
     public void rebuildHelpPages() {
-        helpPages = new ArrayList<MessageEmbed>();
-        TreeSet<String> commandNames = hifumiBot.getCommandInterpreter().getCommandNames();
-        pageCount = (int) Math.ceil((double) commandNames.size() / COMMANDS_PER_PAGE) - 1;
-        EmbedBuilder eb = new EmbedBuilder();
+        helpPages = new HashMap<String, ArrayList<MessageEmbed>>();
+        HashMap<String, TreeSet<String>> commandMap = hifumiBot.getCommandInterpreter().getCategorizedCommandNames();
         
-        for (String commandName : commandNames) {
-            AbstractCommand command = hifumiBot.getCommandInterpreter().getCommandMap().get(commandName);
+        for (String category : commandMap.keySet()) {
+            int pageCount = (int) Math.ceil((double) commandMap.get(category).size() / COMMANDS_PER_PAGE);
+            helpPages.put(category, new ArrayList<MessageEmbed>());
+            EmbedBuilder eb = new EmbedBuilder();
             
-            eb.addField(">" + commandName, (command instanceof DynamicCommand ? " [DynCmd] " : "") + command.getHelpText(), false);
-            
-            if (eb.getFields().size() >= COMMANDS_PER_PAGE) {
-                addToPages(eb);
-                eb = new EmbedBuilder();
+            for (String command : commandMap.get(category)) {
+                eb.addField(">" + command, hifumiBot.getCommandInterpreter().getCommandMap().get(command).getHelpText(), false);
+                
+                if (eb.getFields().size() >= COMMANDS_PER_PAGE) {
+                    addToPages(category, eb, pageCount);
+                    eb = new EmbedBuilder();
+                }
             }
+            
+            if (eb.getFields().size() > 0)
+                addToPages(category, eb, pageCount);
         }
         
-        if (eb.getFields().size() > 0)
-            addToPages(eb);
+        EmbedBuilder helpRootBuilder = new EmbedBuilder();
+        helpRootBuilder.setTitle("HifumiBot Help");
+        helpRootBuilder.setDescription("The prefix for all commands is \"" + CommandInterpreter.PREFIX + "\".\nTo view available commands use `" + CommandInterpreter.PREFIX + "help <category> [page]`");
+        StringBuilder sb = new StringBuilder();
+        
+        for (String category : commandMap.keySet())
+            sb.append(category).append("\n");
+        
+        helpRootBuilder.addField("Available Categories", sb.toString(), false);
+        helpRoot = helpRootBuilder.build();
     }
     
-    private void addToPages(EmbedBuilder eb) {
-        eb.setTitle("HifumiBot Help Page " + (helpPages.size() + 1) + " / " + pageCount);
-        eb.setDescription("The prefix for all commands is \">\".\nA [DynCmd] tag in a command description means it is a custom command built by a server admin.");
-        helpPages.add(eb.build());
+    private void addToPages(String category, EmbedBuilder eb, int pageCount) {
+        eb.setTitle("HifumiBot Help - " + category + " - Page " + (helpPages.get(category).size() + 1) + " / " + pageCount);
+        eb.setDescription("Use `" + CommandInterpreter.PREFIX + "help " + category + " [page]` to browse other pages.");
+        helpPages.get(category).add(eb.build());
     }
 }

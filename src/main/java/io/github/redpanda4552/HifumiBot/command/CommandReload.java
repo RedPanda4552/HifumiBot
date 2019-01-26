@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CommandReload extends AbstractCommand {
 
     public CommandReload(HifumiBot hifumiBot) {
-        super(hifumiBot, true);
+        super(hifumiBot, true, CATEGORY_BUILTIN);
     }
 
     @Override

@@ -31,12 +31,16 @@ import net.dv8tion.jda.core.entities.User;
 
 public abstract class AbstractCommand {
 
+    protected static final String CATEGORY_BUILTIN = "builtin", CATEGORY_NONE = "none";
+    
     protected HifumiBot hifumiBot;
     protected boolean admin;
+    protected String category;
     
-    public AbstractCommand(HifumiBot hifumiBot, boolean admin) {
+    public AbstractCommand(HifumiBot hifumiBot, boolean admin, String category) {
         this.hifumiBot = hifumiBot;
         this.admin = admin;
+        this.category = category != null ? category : CATEGORY_NONE;
     }
     
     /**
@@ -67,6 +71,10 @@ public abstract class AbstractCommand {
     
     protected boolean isAdminCommand() {
         return admin;
+    }
+    
+    public String getCategory() {
+        return category;
     }
     
     protected abstract String getHelpText();

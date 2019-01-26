@@ -33,8 +33,8 @@ public class DynamicCommand extends AbstractCommand {
 
     private String helpText, title, body, imageUrl;
     
-    public DynamicCommand(HifumiBot hifumiBot, boolean admin, String helpText, String title, String body, String imageUrl) {
-        super(hifumiBot, admin);
+    public DynamicCommand(HifumiBot hifumiBot, boolean admin, String helpText, String category, String title, String body, String imageUrl) {
+        super(hifumiBot, admin, category);
         this.helpText = helpText;
         this.title = title;
         this.body = body;

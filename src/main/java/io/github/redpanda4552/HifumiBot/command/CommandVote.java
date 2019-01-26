@@ -48,7 +48,7 @@ public class CommandVote extends AbstractCommand {
     };
     
     public CommandVote(HifumiBot hifumiBot) {
-        super(hifumiBot, false);
+        super(hifumiBot, false, CATEGORY_BUILTIN);
     }
 
     @Override

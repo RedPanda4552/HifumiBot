@@ -23,8 +23,6 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
@@ -37,13 +35,13 @@ public class CommandDynCmd extends AbstractCommand {
     private final MessageEmbed usage;
     
     public CommandDynCmd(HifumiBot hifumiBot) {
-        super(hifumiBot, true);
+        super(hifumiBot, true, CATEGORY_BUILTIN);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("DynCmd Usage");
-        eb.addField("Add an empty command", "`dyncmd add <name> <helpText>`", false);
+        eb.addField("Add an empty command", "`dyncmd add <name> <helpText> <category>`", false);
         eb.addField("Modify an attribute of a command", "`dyncmd set <name> <attribute> <value>`", false);
         eb.addField("Remove a command", "`dyncmd remove <name>`", false);
-        eb.addField("Command attributes (description) [accepted values]","admin (controls if admin permissions are needed) [true/false]\ntitle (display title) [any text]\nbody (display body) [any text]\nimageUrl (attached image) [url to image]", false);
+        eb.addField("Command attributes (description) [accepted values]","admin (controls if admin permissions are needed) [true/false]\ncategory (help category) [any text]\ntitle (display title) [any text]\nbody (display body) [any text]\nimageUrl (attached image) [url to image]", false);
         usage = eb.build();
     }
 
@@ -59,17 +57,12 @@ public class CommandDynCmd extends AbstractCommand {
         
         switch (subCommand.toLowerCase()) {
         case "add":
-            if (args.length < 3) {
+            if (args.length < 4) {
                 hifumiBot.sendMessage(channel, usage);
                 return;
             }
             
-            args = ArrayUtils.remove(args, 0);
-            args = ArrayUtils.remove(args, 0);
-            
-            String helpText = stringify(args);
-            
-            if (hifumiBot.getDynamicCommandLoader().insertCommand(name, helpText)) {
+            if (hifumiBot.getDynamicCommandLoader().insertCommand(name, args[2], args[3])) {
                 hifumiBot.sendMessage(channel, "Successfully created empty command `" + name + "`.");
             } else {
                 hifumiBot.sendMessage(channel, "Failed to create command `" + name + "`.");
@@ -82,13 +75,7 @@ public class CommandDynCmd extends AbstractCommand {
                 return;
             }
             
-            String attribute = args[2];
-            args = ArrayUtils.remove(args, 0);
-            args = ArrayUtils.remove(args, 0);
-            args = ArrayUtils.remove(args, 0);
-            String value = stringify(args);
-            
-            if (hifumiBot.getDynamicCommandLoader().updateCommand(name, attribute, value)) {
+            if (hifumiBot.getDynamicCommandLoader().updateCommand(name, args[2], args[3])) {
                 hifumiBot.sendMessage(channel, "Successfully updated command `" + name + "`.");
             } else {
                 hifumiBot.sendMessage(channel, "Failed to update command `" + name + "`.");

@@ -35,7 +35,7 @@ public class CommandDev extends AbstractCommand {
     private final String DEV_CHANNEL = "dev-builds";
     
     public CommandDev(HifumiBot hifumiBot) {
-        super(hifumiBot, false);
+        super(hifumiBot, false, CATEGORY_BUILTIN);
     }
 
     @Override

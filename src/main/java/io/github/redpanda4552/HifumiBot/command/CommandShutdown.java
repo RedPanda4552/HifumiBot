@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CommandShutdown extends AbstractCommand {
 
     public CommandShutdown(HifumiBot hifumiBot) {
-        super(hifumiBot, true);
+        super(hifumiBot, true, CATEGORY_BUILTIN);
     }
 
     @Override
