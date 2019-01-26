@@ -38,7 +38,6 @@ public class DynamicCommandLoader {
 
     public DynamicCommandLoader(HifumiBot hifumiBot) {
         this.connection = hifumiBot.getDatabaseConnection();
-        migrateLegacy();
         
         try {
             PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + DYNCMD_TABLE + " (name TEXT PRIMARY KEY, helpText TEXT, category TEXT, admin BOOLEAN, title TEXT, body TEXT, imageUrl TEXT);");
@@ -46,6 +45,8 @@ public class DynamicCommandLoader {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
+        migrateLegacy();
     }
     
     private boolean checkLegacyExists() {
