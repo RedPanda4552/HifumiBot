@@ -51,6 +51,7 @@ public class CommandWarez extends AbstractCommand {
           .appendDescription("You may appeal by contacting a moderator or admin. As a rule of thumb, they will want some visual proof that you actually own the item in question.\n")
           .appendDescription("\n**The PCSX2 team thanks you for playing fair!**");
         eb.addField("But a friend gave it to me!", "A game or BIOS dump must be from your own discs or console to be legal.", false);
+        hifumiBot.sendMessage(cm.getChannel(), eb.build());
     }
 
     @Override
