@@ -26,7 +26,6 @@ package io.github.redpanda4552.HifumiBot.util;
 import java.util.List;
 
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.IMentionable;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -39,10 +38,10 @@ public class CommandMeta {
     private Member member;
     private User user;
     private Message message;
-    private List<IMentionable> mentions;
+    private List<Member> mentions;
     private String[] args;
     
-    public CommandMeta(Guild guild, MessageChannel channel, Member member, User user, Message message, List<IMentionable> mentions, String[] args) {
+    public CommandMeta(Guild guild, MessageChannel channel, Member member, User user, Message message, List<Member> mentions, String[] args) {
         this.guild = guild;
         this.channel = channel;
         this.member = member;
@@ -72,7 +71,7 @@ public class CommandMeta {
         return message;
     }
     
-    public List<IMentionable> getMentions() {
+    public List<Member> getMentions() {
         return mentions;
     }
     
