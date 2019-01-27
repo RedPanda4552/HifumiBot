@@ -26,11 +26,13 @@ package io.github.redpanda4552.HifumiBot.command;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 
 public class CommandWarez extends AbstractCommand {
 
-    private final String RULES_CHANNEL = "welcome-rules";
+    private final String RULES_CHANNEL = "welcome-rules", WAREZ_ROLE_ID = "535718317864910850";
     
     public CommandWarez(HifumiBot hifumiBot) {
         super(hifumiBot, true, CATEGORY_BUILTIN);
@@ -52,6 +54,16 @@ public class CommandWarez extends AbstractCommand {
           .appendDescription("\n**The PCSX2 team thanks you for playing fair!**");
         eb.addField("But a friend gave it to me!", "A game or BIOS dump must be from your own discs or console to be legal.", false);
         hifumiBot.sendMessage(cm.getChannel(), eb.build());
+        
+        for (Member member : cm.getMentions()) {
+            if (!hifumiBot.getPermissionManager().hasPermission(member, null)) {
+                try {
+                    cm.getGuild().getController().addRolesToMember(member, cm.getGuild().getRoleById(WAREZ_ROLE_ID)).complete();
+                } catch (InsufficientPermissionException e) {
+                    hifumiBot.sendMessage(cm.getChannel(), "Failed to assign role (insufficient permissions)");
+                }
+            }
+        }
     }
 
     @Override
