@@ -29,12 +29,10 @@ import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 
 public class CommandHelp extends AbstractCommand {
 
@@ -48,17 +46,17 @@ public class CommandHelp extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
+    protected void onExecute(CommandMeta cm) {
         String category = "builtin";
         int pageNumber = 1;
         MessageEmbed toSend = null;
         
-        if (args.length >= 1 && helpPages.get(args[0]) != null) {
-            category = args[0];
+        if (cm.getArgs().length >= 1 && helpPages.get(cm.getArgs()[0]) != null) {
+            category = cm.getArgs()[0];
             
-            if (args.length >= 2) {
+            if (cm.getArgs().length >= 2) {
                 try {
-                    pageNumber = Integer.parseInt(args[1]);
+                    pageNumber = Integer.parseInt(cm.getArgs()[1]);
                 } catch (NumberFormatException e) { }
             }
             
@@ -73,10 +71,10 @@ public class CommandHelp extends AbstractCommand {
             toSend = helpRoot;
         }
         
-        if (channel instanceof TextChannel) {
-            hifumiBot.sendMessage(senderMember.getUser().openPrivateChannel().complete(), toSend);
+        if (cm.getChannel() instanceof TextChannel) {
+            hifumiBot.sendMessage(cm.getUser().openPrivateChannel().complete(), toSend);
         } else {
-            hifumiBot.sendMessage(channel, toSend);
+            hifumiBot.sendMessage(cm.getChannel(), toSend);
         }
     }
     

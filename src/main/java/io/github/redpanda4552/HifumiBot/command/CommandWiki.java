@@ -26,12 +26,10 @@ package io.github.redpanda4552.HifumiBot.command;
 import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
 
 public class CommandWiki extends AbstractCommand {
 
@@ -40,9 +38,9 @@ public class CommandWiki extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
-        if (args.length == 0) {
-            hifumiBot.sendMessage(channel, "I can't search for nothing! Try `!wiki <title of game here>`");
+    protected void onExecute(CommandMeta cm) {
+        if (cm.getArgs().length == 0) {
+            hifumiBot.sendMessage(cm.getChannel(), "I can't search for nothing! Try `!wiki <title of game here>`");
             return;
         }
         
@@ -51,13 +49,13 @@ public class CommandWiki extends AbstractCommand {
         for (String name : hifumiBot.getFullGamesMap().keySet()) {
             float toPush = 0;
             
-            for (String arg : args) {
+            for (String arg : cm.getArgs()) {
                 if (name.toLowerCase().trim().contains(arg.toLowerCase().trim()))
                     toPush++;
             }
             
             String[] nameParts = name.split(" ");
-            toPush -= 0.1f * Math.abs(nameParts.length - args.length);
+            toPush -= 0.1f * Math.abs(nameParts.length - cm.getArgs().length);
             
             if (toPush > 0)
                 results.put(name, toPush);
@@ -90,7 +88,7 @@ public class CommandWiki extends AbstractCommand {
             eb.setColor(0xff0000);
         }
         
-        Message msg = hifumiBot.sendMessage(channel, eb.build());
+        Message msg = hifumiBot.sendMessage(cm.getChannel(), eb.build());
         
         // String concatenation with unicodes is apparently punishable by build error, so we instead have this.
         if (i > 0)
@@ -106,7 +104,7 @@ public class CommandWiki extends AbstractCommand {
         if (i > 5)
             msg.addReaction(Emotes.SIX).complete();
         
-        hifumiBot.getEventListener().waitForMessage(senderUser.getId(), msg);
+        hifumiBot.getEventListener().waitForMessage(cm.getUser().getId(), msg);
     }
     
     @Override

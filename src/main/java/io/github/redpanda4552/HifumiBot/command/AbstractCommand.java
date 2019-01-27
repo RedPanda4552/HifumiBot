@@ -24,9 +24,9 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
 public abstract class AbstractCommand {
@@ -46,15 +46,15 @@ public abstract class AbstractCommand {
     /**
      * Do a prelimiary permissions check, and execute if it passes.
      */
-    public void run(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
-        if (!isAdminCommand() || hifumiBot.getPermissionManager().hasPermission(senderMember, senderUser))
-            onExecute(channel, senderMember, senderUser, args);
+    public void run(CommandMeta cm) {
+        if (!isAdminCommand() || hifumiBot.getPermissionManager().hasPermission(cm.getMember(), cm.getUser()))
+            onExecute(cm);
     }
     
     /**
      * Command payload.
      */
-    protected abstract void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args);
+    protected abstract void onExecute(CommandMeta cm);
     
     protected String stringify(String[] args) {
         StringBuilder sb = new StringBuilder();

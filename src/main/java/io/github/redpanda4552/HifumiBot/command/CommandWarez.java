@@ -24,36 +24,33 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 
 public class CommandWarez extends AbstractCommand {
 
     private final String RULES_CHANNEL = "welcome-rules";
     
     public CommandWarez(HifumiBot hifumiBot) {
-        super(hifumiBot, false, CATEGORY_BUILTIN);
+        super(hifumiBot, true, CATEGORY_BUILTIN);
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
-        if (!(channel instanceof TextChannel))
+    protected void onExecute(CommandMeta cm) {
+        if (!(cm.getChannel() instanceof TextChannel))
             return;
         
-        EmbedBuilder eb = newFootedEmbedBuilder(senderMember);
+        EmbedBuilder eb = newFootedEmbedBuilder(cm.getMember());
         eb.setTitle("PCSX2 Anti-Warez Rules");
         eb.setDescription("As per ");
-        TextChannel welcomeRules = ((TextChannel) channel).getGuild().getTextChannelsByName(RULES_CHANNEL, false).get(0);
+        TextChannel welcomeRules = cm.getGuild().getTextChannelsByName(RULES_CHANNEL, false).get(0);
         eb.appendDescription(welcomeRules.getAsMention())
           .appendDescription(", our server **does not support** users who are found to be in possession of illegally obtained materials. This also includes discussion of piracy and pirated materials.\n")
           .appendDescription("This rule is enforced at the discretion of admins and moderators.\n")
           .appendDescription("You may appeal by contacting a moderator or admin. As a rule of thumb, they will want some visual proof that you actually own the item in question.\n")
           .appendDescription("\n**The PCSX2 team thanks you for playing fair!**");
         eb.addField("But a friend gave it to me!", "A game or BIOS dump must be from your own discs or console to be legal.", false);
-        hifumiBot.sendMessage(channel, eb.build());
     }
 
     @Override

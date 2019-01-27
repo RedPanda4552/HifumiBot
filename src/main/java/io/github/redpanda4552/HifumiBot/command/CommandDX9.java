@@ -24,9 +24,7 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 
 public class CommandDX9 extends AbstractCommand {
 
@@ -37,8 +35,8 @@ public class CommandDX9 extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
-        hifumiBot.sendMessage(channel, VIDEO_LINK);
+    protected void onExecute(CommandMeta cm) {
+        hifumiBot.sendMessage(cm.getChannel(), VIDEO_LINK);
     }
 
     @Override

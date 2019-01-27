@@ -43,10 +43,9 @@ import io.github.redpanda4552.HifumiBot.command.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.CommandWiki;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
-import net.dv8tion.jda.core.entities.Member;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.Message.MentionType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -95,9 +94,6 @@ public class CommandInterpreter extends ListenerAdapter {
     
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        MessageChannel channel = event.getChannel();
-        Member senderMember = event.getMember();
-        User senderUser = event.getAuthor();
         Message message = event.getMessage();
         String[] args = message.getContentDisplay().split(" ");
         String command = args[0].toLowerCase();
@@ -110,8 +106,10 @@ public class CommandInterpreter extends ListenerAdapter {
         command = command.replaceFirst(PREFIX, "");
         args = formatArgs(args);
         
+        CommandMeta cm = new CommandMeta(event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, message.getMentions(MentionType.USER), args);
+        
         if ((toExecute = commandMap.get(command)) != null)
-            toExecute.run(channel, senderMember, senderUser, args);
+            toExecute.run(cm);
     }
     
     public HashMap<String, TreeSet<String>> getCategorizedCommandNames() {

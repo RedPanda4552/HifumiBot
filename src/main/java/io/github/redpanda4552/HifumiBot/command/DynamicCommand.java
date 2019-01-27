@@ -24,10 +24,8 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
 
 public class DynamicCommand extends AbstractCommand {
 
@@ -42,19 +40,19 @@ public class DynamicCommand extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
+    protected void onExecute(CommandMeta cm) {
         EmbedBuilder eb;
         
-        if (senderMember != null) {
-            eb = this.newFootedEmbedBuilder(senderMember);
+        if (cm.getMember() != null) {
+            eb = this.newFootedEmbedBuilder(cm.getMember());
         } else {
-            eb = this.newFootedEmbedBuilder(senderUser);
+            eb = this.newFootedEmbedBuilder(cm.getUser());
         }
         
         eb.setTitle(title);
         eb.setDescription(body);
         eb.setImage(imageUrl);
-        hifumiBot.sendMessage(channel, eb.build());
+        hifumiBot.sendMessage(cm.getChannel(), eb.build());
     }
     
     @Override

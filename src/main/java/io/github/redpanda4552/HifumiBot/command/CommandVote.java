@@ -29,12 +29,12 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import io.github.redpanda4552.HifumiBot.voting.Vote;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
 
 public class CommandVote extends AbstractCommand {
 
@@ -52,25 +52,25 @@ public class CommandVote extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
-        if (args.length < 1) {
-            showHelp(channel, senderMember);
+    protected void onExecute(CommandMeta cm) {
+        if (cm.getArgs().length < 1) {
+            showHelp(cm.getChannel(), cm.getMember());
         } else {
-            switch (args[0].trim().toLowerCase()) {
+            switch (cm.getArgs()[0].trim().toLowerCase()) {
             case "list":
-                showList(channel, senderMember);
+                showList(cm.getChannel(), cm.getMember());
                 break;
             case "start":
-                startVote(channel, senderMember, args);
+                startVote(cm.getChannel(), cm.getMember(), cm.getArgs());
                 break;
             case "stop":
-                stopVote(channel, senderMember, args);
+                stopVote(cm.getChannel(), cm.getMember(), cm.getArgs());
                 break;
             case "cast":
-                castVote(channel, senderMember, args);
+                castVote(cm.getChannel(), cm.getMember(), cm.getArgs());
                 break;
             default:
-                showHelp(channel, senderMember);
+                showHelp(cm.getChannel(), cm.getMember());
             }
         }
     }

@@ -24,11 +24,9 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
 
 public class CommandDev extends AbstractCommand {
 
@@ -39,17 +37,17 @@ public class CommandDev extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
-        if (!(channel instanceof TextChannel))
+    protected void onExecute(CommandMeta cm) {
+        if (!(cm.getChannel() instanceof TextChannel))
             return;
         
-        EmbedBuilder eb = newFootedEmbedBuilder(senderMember);
+        EmbedBuilder eb = newFootedEmbedBuilder(cm.getMember());
         eb.setTitle("PCSX2 Development Builds");
         eb.setDescription("Looking for the latest builds of PCSX2? Check out ");
-        TextChannel devBuilds = ((TextChannel) channel).getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
+        TextChannel devBuilds = cm.getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
         eb.appendDescription(devBuilds.getAsMention())
           .appendDescription(" for a link to the build bot! I post a new message there whenever a new development build is ready!");
-        hifumiBot.sendMessage(channel, eb.build());
+        hifumiBot.sendMessage(cm.getChannel(), eb.build());
     }
 
     @Override

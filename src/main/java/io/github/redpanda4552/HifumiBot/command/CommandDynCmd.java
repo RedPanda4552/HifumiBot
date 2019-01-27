@@ -24,11 +24,9 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
 
 public class CommandDynCmd extends AbstractCommand {
 
@@ -46,47 +44,47 @@ public class CommandDynCmd extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
-        if (args.length < 2) {
-            hifumiBot.sendMessage(channel, usage);
+    protected void onExecute(CommandMeta cm) {
+        if (cm.getArgs().length < 2) {
+            hifumiBot.sendMessage(cm.getChannel(), usage);
             return;
         }
         
-        String subCommand = args[0];
-        String name = args[1].toLowerCase();
+        String subCommand = cm.getArgs()[0];
+        String name = cm.getArgs()[1].toLowerCase();
         
         switch (subCommand.toLowerCase()) {
         case "add":
-            if (args.length < 4) {
-                hifumiBot.sendMessage(channel, usage);
+            if (cm.getArgs().length < 4) {
+                hifumiBot.sendMessage(cm.getChannel(), usage);
                 return;
             }
             
-            if (hifumiBot.getDynamicCommandLoader().insertCommand(name, args[2], args[3])) {
-                hifumiBot.sendMessage(channel, "Successfully created empty command `" + name + "`.");
+            if (hifumiBot.getDynamicCommandLoader().insertCommand(name, cm.getArgs()[2], cm.getArgs()[3])) {
+                hifumiBot.sendMessage(cm.getChannel(), "Successfully created empty command `" + name + "`.");
             } else {
-                hifumiBot.sendMessage(channel, "Failed to create command `" + name + "`.");
+                hifumiBot.sendMessage(cm.getChannel(), "Failed to create command `" + name + "`.");
             }
             
             break;
         case "set":
-            if (args.length < 4) {
-                hifumiBot.sendMessage(channel, usage);
+            if (cm.getArgs().length < 4) {
+                hifumiBot.sendMessage(cm.getChannel(), usage);
                 return;
             }
             
-            if (hifumiBot.getDynamicCommandLoader().updateCommand(name, args[2], args[3])) {
-                hifumiBot.sendMessage(channel, "Successfully updated command `" + name + "`.");
+            if (hifumiBot.getDynamicCommandLoader().updateCommand(name, cm.getArgs()[2], cm.getArgs()[3])) {
+                hifumiBot.sendMessage(cm.getChannel(), "Successfully updated command `" + name + "`.");
             } else {
-                hifumiBot.sendMessage(channel, "Failed to update command `" + name + "`.");
+                hifumiBot.sendMessage(cm.getChannel(), "Failed to update command `" + name + "`.");
             }
             
             break;
         case "remove":
             if (hifumiBot.getDynamicCommandLoader().removeCommand(name)) {
-                hifumiBot.sendMessage(channel, "Successfully removed command `" + name + "`.");
+                hifumiBot.sendMessage(cm.getChannel(), "Successfully removed command `" + name + "`.");
             } else {
-                hifumiBot.sendMessage(channel, "Failed to remove command `" + name + "`.");
+                hifumiBot.sendMessage(cm.getChannel(), "Failed to remove command `" + name + "`.");
             }
             
             break;

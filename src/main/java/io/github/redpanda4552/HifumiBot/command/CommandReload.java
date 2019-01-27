@@ -24,9 +24,7 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
+import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 
 public class CommandReload extends AbstractCommand {
 
@@ -35,7 +33,7 @@ public class CommandReload extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(MessageChannel channel, Member senderMember, User senderUser, String[] args) {
+    protected void onExecute(CommandMeta cm) {
         hifumiBot.shutdown(true);
     }
     
