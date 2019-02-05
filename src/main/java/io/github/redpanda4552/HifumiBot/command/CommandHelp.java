@@ -71,11 +71,7 @@ public class CommandHelp extends AbstractCommand {
             toSend = helpRoot;
         }
         
-        if (cm.getChannel() instanceof TextChannel) {
-            hifumiBot.sendMessage(cm.getUser().openPrivateChannel().complete(), toSend);
-        } else {
-            hifumiBot.sendMessage(cm.getChannel(), toSend);
-        }
+        hifumiBot.sendMessage(cm.getUser().openPrivateChannel().complete(), toSend);
     }
     
     @Override
