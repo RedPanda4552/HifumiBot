@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.TreeSet;
 
@@ -106,7 +107,7 @@ public class CommandInterpreter extends ListenerAdapter {
         command = command.replaceFirst(PREFIX, "");
         args = formatArgs(args);
         
-        CommandMeta cm = new CommandMeta(event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : null, args);
+        CommandMeta cm = new CommandMeta(event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(), args);
         
         if ((toExecute = commandMap.get(command)) != null)
             toExecute.run(cm);
