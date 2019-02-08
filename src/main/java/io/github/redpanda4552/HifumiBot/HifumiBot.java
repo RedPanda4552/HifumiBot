@@ -69,6 +69,12 @@ public class HifumiBot {
             debug = true;
         
         System.out.println("Arguments parsed");
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (self != null)
+                self.shutdown(false);
+        }));
+        
         self = new HifumiBot();
     }
     
