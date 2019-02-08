@@ -45,6 +45,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandWiki;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -105,7 +106,7 @@ public class CommandInterpreter extends ListenerAdapter {
         command = command.replaceFirst(PREFIX, "");
         args = formatArgs(args);
         
-        CommandMeta cm = new CommandMeta(event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, message.getMentionedMembers(), args);
+        CommandMeta cm = new CommandMeta(event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : null, args);
         
         if ((toExecute = commandMap.get(command)) != null)
             toExecute.run(cm);
