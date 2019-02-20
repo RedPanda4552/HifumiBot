@@ -69,7 +69,7 @@ public abstract class AbstractCommand {
         return !arg.contains(" ");
     }
     
-    protected boolean isAdminCommand() {
+    public boolean isAdminCommand() {
         return admin;
     }
     
