@@ -59,7 +59,7 @@ public class CommandHelp extends AbstractCommand {
                 } catch (NumberFormatException e) { }
             }
             
-            if (pageNumber >= helpPages.get(category).size())
+            if (pageNumber > helpPages.get(category).size())
                 pageNumber = helpPages.get(category).size() - 1;
             
             if (pageNumber < 1)
