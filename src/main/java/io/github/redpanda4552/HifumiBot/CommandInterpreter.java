@@ -108,7 +108,7 @@ public class CommandInterpreter extends ListenerAdapter {
         args = formatArgs(args);
         
         if ((toExecute = commandMap.get(command)) != null) {
-            CommandMeta cm = new CommandMeta(command, toExecute.getCategory(), event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(), args);
+            CommandMeta cm = new CommandMeta(command, toExecute.isAdminCommand(), toExecute.getCategory(), event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(), args);
             toExecute.run(cm);
         }
     }
