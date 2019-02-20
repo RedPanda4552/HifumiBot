@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CommandMeta {
 
     private String command;
+    private String category;
     private Guild guild;
     private MessageChannel channel;
     private Member member;
@@ -42,8 +43,9 @@ public class CommandMeta {
     private List<Member> mentions;
     private String[] args;
     
-    public CommandMeta(String command, Guild guild, MessageChannel channel, Member member, User user, Message message, List<Member> mentions, String[] args) {
+    public CommandMeta(String command, String category, Guild guild, MessageChannel channel, Member member, User user, Message message, List<Member> mentions, String[] args) {
         this.command = command;
+        this.category = category;
         this.guild = guild;
         this.channel = channel;
         this.member = member;
@@ -55,6 +57,10 @@ public class CommandMeta {
     
     public String getCommand() {
         return command;
+    }
+    
+    public String getCategory() {
+        return category;
     }
     
     public Guild getGuild() {

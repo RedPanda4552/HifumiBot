@@ -107,10 +107,10 @@ public class CommandInterpreter extends ListenerAdapter {
         command = command.replaceFirst(PREFIX, "");
         args = formatArgs(args);
         
-        CommandMeta cm = new CommandMeta(command, event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(), args);
-        
-        if ((toExecute = commandMap.get(command)) != null)
+        if ((toExecute = commandMap.get(command)) != null) {
+            CommandMeta cm = new CommandMeta(command, toExecute.getCategory(), event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(), args);
             toExecute.run(cm);
+        }
     }
     
     public HashMap<String, TreeSet<String>> getCategorizedCommandNames() {
