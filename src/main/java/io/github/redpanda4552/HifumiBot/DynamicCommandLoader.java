@@ -156,13 +156,21 @@ public class DynamicCommandLoader {
         try {
             PreparedStatement ps = connection.prepareStatement("UPDATE " + DYNCMD_TABLE + " SET " + attribute + " = ? WHERE name = ?;");
             
+            // Lets not SQL inject ourselves. Return false if the attribute is not one we are expecting.
             switch (attribute) {
+            case "name":
+            case "helpText":
+            case "category":
+            case "title":
+            case "body":
+            case "imageUrl":
+                ps.setString(1, value);
+                break;
             case "admin":
                 ps.setBoolean(1, Boolean.parseBoolean(value));
                 break;
             default:
-                ps.setString(1, value);
-                break;
+                return false;
             }
             
             ps.setString(2, name);
