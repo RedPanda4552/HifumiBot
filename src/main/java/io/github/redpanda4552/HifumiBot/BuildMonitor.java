@@ -91,6 +91,8 @@ public class BuildMonitor implements Runnable {
                 
                 if (!sleep(SCRAPE_TIME_MS))
                     return;
+                
+                ioWaitMultiplier = 1;
             } catch (IOException e) {
                 sleep(IO_WAIT_MS * ioWaitMultiplier);
                 ioWaitMultiplier *= 2;
