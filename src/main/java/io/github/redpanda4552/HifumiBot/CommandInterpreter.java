@@ -40,6 +40,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.CommandGreg;
 import io.github.redpanda4552.HifumiBot.command.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.CommandReload;
+import io.github.redpanda4552.HifumiBot.command.CommandSTR;
 import io.github.redpanda4552.HifumiBot.command.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.CommandWiki;
@@ -76,6 +77,7 @@ public class CommandInterpreter extends ListenerAdapter {
         commandMap.put("dyncmd", new CommandDynCmd(hifumiBot));
         commandMap.put("dx9", new CommandDX9(hifumiBot));
         commandMap.put("greg", new CommandGreg(hifumiBot));
+        commandMap.put("str", new CommandSTR(hifumiBot));
         
         ResultSet res = hifumiBot.getDynamicCommandLoader().getDynamicCommands();
         
