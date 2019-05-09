@@ -73,9 +73,19 @@ public class CommandSTR extends AbstractCommand {
             
             float toPush = 0;
             
-            for (String arg : cm.getArgs())
-                if (normalized.contains(arg.toLowerCase().trim()))
-                    toPush++;
+            for (String arg : cm.getArgs()) {
+                // Contains
+                if (normalized.contains(arg.toLowerCase().trim())) {
+                    toPush += 0.5;
+                }
+                
+                // Whole word match
+                for (String cpuPart : cpuName.replace("-", " ").split(" ")) {
+                    if (cpuPart.equals(arg.toLowerCase().trim())) {
+                        toPush += 1;
+                    }
+                }
+            }
             
             toPush -= 0.1f * Math.abs(cpuName.replace("-", " ").split(" ").length - cm.getArgs().length);
             
