@@ -34,6 +34,8 @@ import org.jsoup.select.Elements;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Message;
 
 public class CommandSTR extends AbstractCommand {
 
@@ -56,6 +58,7 @@ public class CommandSTR extends AbstractCommand {
         
         if (now - lastUpdate > REFRESH_PERIOD) {
             update();
+            lastUpdate = now;
         }
         
         // Search
@@ -64,7 +67,16 @@ public class CommandSTR extends AbstractCommand {
             return;
         }
         
-        hifumiBot.sendMessage(cm.getChannel(), "Comparing your search to " + ratingMap.size() + " CPUs...");
+        EmbedBuilder eb;
+        
+        if (cm.getMember() != null)
+            eb = newFootedEmbedBuilder(cm.getMember());
+        else
+            eb = newFootedEmbedBuilder(cm.getUser());
+        
+        eb.setTitle("Comparing your search to " + ratingMap.size() + " CPUs...");
+        eb.setColor(0xffff00);
+        Message message = hifumiBot.sendMessage(cm.getChannel(), new MessageBuilder().setEmbed(eb.build()).build());
         
         HashMap<String, Float> results = new HashMap<String, Float>();
         
@@ -87,15 +99,11 @@ public class CommandSTR extends AbstractCommand {
                 }
             }
             
-            toPush -= 0.1f * Math.abs(cpuName.replace("-", " ").split(" ").length - cm.getArgs().length);
-            
             if (toPush > 0)
                 results.put(cpuName, toPush);
             
             sleep(1); // Just to give the raspi a break...
         }
-        
-        EmbedBuilder eb;
         
         if (cm.getMember() != null)
             eb = newFootedEmbedBuilder(cm.getMember());
@@ -119,12 +127,14 @@ public class CommandSTR extends AbstractCommand {
                 highestWeight = 0;
                 eb.addField(highestName, String.valueOf(ratingMap.get(highestName)), false);
             }
+            
+            eb.setColor(0x00ff00);
         } else {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
         }
         
-        hifumiBot.sendMessage(cm.getChannel(), eb.build());
+        message.editMessage(eb.build()).complete();
     }
 
     @Override
