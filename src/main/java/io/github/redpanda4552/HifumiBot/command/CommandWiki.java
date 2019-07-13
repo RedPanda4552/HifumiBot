@@ -46,16 +46,41 @@ public class CommandWiki extends AbstractCommand {
         
         HashMap<String, Float> results = new HashMap<String, Float>();
         
+        // A basic weighting algorithm.
         for (String name : hifumiBot.getFullGamesMap().keySet()) {
             float toPush = 0;
             
+            // For each search term...
             for (String arg : cm.getArgs()) {
-                if (name.toLowerCase().trim().contains(arg.toLowerCase().trim()))
-                    toPush++;
+                boolean wasFullMatch = false;
+                // For each (space delimited) part of the name...
+                for (String namePart : name.toLowerCase().trim().split(" ")) {
+                    // If exact match...
+                    if (namePart.equals(arg)) {
+                        // One full point
+                        toPush += 1.0;
+                        wasFullMatch = true;
+                        break;
+                    }
+                }
+                
+                // If not a full match...
+                if (!wasFullMatch) {
+                    // But the arg's char sequence exists arbitrarily in the title...
+                    if (name.toLowerCase().trim().contains(arg.toLowerCase().trim())) {
+                        // Half a point
+                        toPush += 0.5;
+                    } else {
+                        // If not even, then detract half
+                        toPush -= 0.5;
+                    }
+                }
             }
             
+            // Take the difference of the number of words in the title and
+            // search, then mulitply by 0.1, subtract it from score.
             String[] nameParts = name.split(" ");
-            toPush -= 0.1f * Math.abs(nameParts.length - cm.getArgs().length);
+            toPush -= 0.1 * Math.abs(nameParts.length - cm.getArgs().length);
             
             if (toPush > 0)
                 results.put(name, toPush);
@@ -78,8 +103,9 @@ public class CommandWiki extends AbstractCommand {
                 }
                 
                 results.remove(highestName);
-                highestWeight = 0;
+                
                 eb.addField(String.valueOf(++i), highestName, false);
+                highestWeight = 0;
             }
             
             eb.setFooter("Click the reaction number matching the game you are looking for.\nThis message will self-modify with it's wiki information.", hifumiBot.getJDA().getSelfUser().getAvatarUrl());
@@ -90,21 +116,25 @@ public class CommandWiki extends AbstractCommand {
         
         Message msg = hifumiBot.sendMessage(cm.getChannel(), eb.build());
         
-        // String concatenation with unicodes is apparently punishable by build error, so we instead have this.
-        if (i > 0)
-            msg.addReaction(Emotes.ONE).complete();
-        if (i > 1)
-            msg.addReaction(Emotes.TWO).complete();
-        if (i > 2)
-            msg.addReaction(Emotes.THREE).complete();
-        if (i > 3)
-            msg.addReaction(Emotes.FOUR).complete();
-        if (i > 4)
-            msg.addReaction(Emotes.FIVE).complete();
-        if (i > 5)
-            msg.addReaction(Emotes.SIX).complete();
-        
-        hifumiBot.getEventListener().waitForMessage(cm.getUser().getId(), msg);
+        if (eb.getFields().size() == 1) {
+            hifumiBot.getEventListener().finalizeMessage(msg, eb.getFields().get(0).getValue(), cm.getUser().getId());
+        } else {
+            // String concatenation with unicodes is apparently punishable by build error, so we instead have this.
+            if (i > 0)
+                msg.addReaction(Emotes.ONE).complete();
+            if (i > 1)
+                msg.addReaction(Emotes.TWO).complete();
+            if (i > 2)
+                msg.addReaction(Emotes.THREE).complete();
+            if (i > 3)
+                msg.addReaction(Emotes.FOUR).complete();
+            if (i > 4)
+                msg.addReaction(Emotes.FIVE).complete();
+            if (i > 5)
+                msg.addReaction(Emotes.SIX).complete();
+            
+            hifumiBot.getEventListener().waitForMessage(cm.getUser().getId(), msg);
+        }
     }
     
     @Override

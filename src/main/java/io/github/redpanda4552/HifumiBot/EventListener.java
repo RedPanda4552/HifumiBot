@@ -32,6 +32,7 @@ import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed.Field;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -43,13 +44,6 @@ public class EventListener extends ListenerAdapter {
     
     public EventListener(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
-    }
-    
-    public void waitForMessage(String userId, Message msg) {
-        if (messages.containsKey(userId))
-            messages.get(userId).delete().complete();
-        
-        messages.put(userId, msg);
     }
     
     @Override
@@ -94,46 +88,61 @@ public class EventListener extends ListenerAdapter {
                 break;
             }
             
-            WikiPage wikiPage = new WikiPage(hifumiBot.getFullGamesMap().get(gameName));
+            finalizeMessage(msg, gameName, userId);
+        }
+    }
+    
+    public void waitForMessage(String userId, Message msg) {
+        if (messages.containsKey(userId))
+            messages.get(userId).delete().complete();
+        
+        messages.put(userId, msg);
+    }
+    
+    public void finalizeMessage(Message msg, String gameName, String userId) {
+        WikiPage wikiPage = new WikiPage(hifumiBot.getFullGamesMap().get(gameName));
+        
+        if (msg.getChannel() instanceof TextChannel) {
             msg.clearReactions().complete();
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle(wikiPage.getTitle(), wikiPage.getWikiPageUrl());
-            eb.setThumbnail(wikiPage.getCoverArtUrl());
+        }
+        
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle(wikiPage.getTitle(), wikiPage.getWikiPageUrl());
+        eb.setThumbnail(wikiPage.getCoverArtUrl());
+        
+        for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
+            StringBuilder regionBuilder = new StringBuilder();
             
-            for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
-                StringBuilder regionBuilder = new StringBuilder();
-                
-                if (!regionSet.getCRC().isEmpty()) {
-                    regionBuilder.append("\n**CRC:\n**")
-                                 .append(regionSet.getCRC().replace(" ", "\n"));
-                }
-                
-                if (!regionSet.getWindowsStatus().isEmpty()) {
-                    regionBuilder.append("\n**Windows Compatibility:\n**")
-                                 .append(regionSet.getWindowsStatus());
-                }
-                
-                if (!regionSet.getLinuxStatus().isEmpty()) {
-                    regionBuilder.append("\n**Linux Compatibility:\n**")
-                                 .append(regionSet.getLinuxStatus());
-                }
-                
-                if (regionBuilder.toString().isEmpty())
-                    regionBuilder.append("No information on this release.");
-                
-                eb.addField("__" + regionSet.getRegion() + "__", regionBuilder.toString(), true);
+            if (!regionSet.getCRC().isEmpty()) {
+                regionBuilder.append("\n**CRC:\n**")
+                             .append(regionSet.getCRC().replace(" ", "\n"));
             }
             
-            StringBuilder issueList = new StringBuilder();
+            if (!regionSet.getWindowsStatus().isEmpty()) {
+                regionBuilder.append("\n**Windows Compatibility:\n**")
+                             .append(regionSet.getWindowsStatus());
+            }
             
-            for (String knownIssue : wikiPage.getKnownIssues())
-                issueList.append(knownIssue).append("\n");
+            if (!regionSet.getLinuxStatus().isEmpty()) {
+                regionBuilder.append("\n**Linux Compatibility:\n**")
+                             .append(regionSet.getLinuxStatus());
+            }
             
-            if (!issueList.toString().isEmpty())
-                eb.addField("__Known Issues:__", issueList.toString(), true);
+            if (regionBuilder.toString().isEmpty())
+                regionBuilder.append("No information on this release.");
             
-            msg.editMessage(eb.build()).complete();
-            messages.remove(userId);
+            eb.addField("__" + regionSet.getRegion() + "__", regionBuilder.toString(), true);
         }
+        
+        StringBuilder issueList = new StringBuilder();
+        
+        for (String knownIssue : wikiPage.getKnownIssues())
+            issueList.append(knownIssue).append("\n");
+        
+        if (!issueList.toString().isEmpty())
+            eb.addField("__Known Issues:__", issueList.toString(), true);
+        
+        msg.editMessage(eb.build()).complete();
+        messages.remove(userId);
     }
 }
