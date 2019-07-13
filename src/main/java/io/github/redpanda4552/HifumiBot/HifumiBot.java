@@ -32,7 +32,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import io.github.redpanda4552.HifumiBot.voting.VoteManager;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -82,7 +81,6 @@ public class HifumiBot {
     
     private JDA jda;
     private PermissionManager permissionManager;
-    private VoteManager voteManager;
     private CommandInterpreter commandInterpreter;
     private DynamicCommandLoader dynamicCommandLoader;
     private EventListener eventListener;
@@ -128,7 +126,6 @@ public class HifumiBot {
             e.printStackTrace();
         }
         
-        voteManager = new VoteManager(this);
         jda.addEventListener(eventListener = new EventListener(this));
         startMonitor();
         updateStatus(">help" + (debug ? " [Debug Mode]" : ""));
@@ -144,10 +141,6 @@ public class HifumiBot {
     
     public PermissionManager getPermissionManager() {
         return permissionManager;
-    }
-    
-    public VoteManager getVoteManager() {
-        return voteManager;
     }
     
     public CommandInterpreter getCommandInterpreter() {
