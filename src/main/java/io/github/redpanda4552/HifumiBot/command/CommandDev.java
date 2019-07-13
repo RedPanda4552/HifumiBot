@@ -38,8 +38,11 @@ public class CommandDev extends AbstractCommand {
 
     @Override
     protected void onExecute(CommandMeta cm) {
-        if (!(cm.getChannel() instanceof TextChannel))
+        if (!(cm.getChannel() instanceof TextChannel)) {
+            hifumiBot.sendMessage(cm.getChannel(), "Sorry, but this command can only be used within the PCSX2 server.");
             return;
+        }
+            
         
         EmbedBuilder eb = newFootedEmbedBuilder(cm.getMember());
         eb.setTitle("PCSX2 Development Builds");
