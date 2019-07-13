@@ -78,6 +78,9 @@ public class CommandHelp extends AbstractCommand {
         return "Display this help dialog";
     }
     
+    /**
+     * Fully rebuilds the help page lists.
+     */
     public void rebuildHelpPages() {
         helpPages = new HashMap<String, ArrayList<MessageEmbed>>();
         HashMap<String, TreeSet<String>> commandMap = hifumiBot.getCommandInterpreter().getCategorizedCommandNames();

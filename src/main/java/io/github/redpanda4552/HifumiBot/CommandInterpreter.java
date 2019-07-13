@@ -66,8 +66,11 @@ public class CommandInterpreter extends ListenerAdapter {
         this.hifumiBot = hifumiBot;
     }
     
+    /**
+     * Fully rebuilds the command map.
+     */
     public void refreshCommandMap() {
-        //commandMap.put("cpu", new CommandCPU());
+        commandMap.clear();
         commandMap.put("help", new CommandHelp(hifumiBot));
         commandMap.put("reload", new CommandReload(hifumiBot));
         commandMap.put("shutdown", new CommandShutdown(hifumiBot));
