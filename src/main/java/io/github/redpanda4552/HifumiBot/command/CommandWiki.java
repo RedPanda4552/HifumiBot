@@ -48,13 +48,14 @@ public class CommandWiki extends AbstractCommand {
         
         // A basic weighting algorithm.
         for (String name : hifumiBot.getFullGamesMap().keySet()) {
+            String[] nameParts = name.toLowerCase().trim().split(" ");
             float toPush = 0;
             
             // For each search term...
             for (String arg : cm.getArgs()) {
                 boolean wasFullMatch = false;
                 // For each (space delimited) part of the name...
-                for (String namePart : name.toLowerCase().trim().split(" ")) {
+                for (String namePart : nameParts) {
                     // If exact match...
                     if (namePart.equals(arg)) {
                         // One full point
@@ -77,9 +78,6 @@ public class CommandWiki extends AbstractCommand {
                 }
             }
             
-            // Take the difference of the number of words in the title and
-            // search, then mulitply by 0.1, subtract it from score.
-            String[] nameParts = name.split(" ");
             toPush -= 0.1 * Math.abs(nameParts.length - cm.getArgs().length);
             
             if (toPush > 0)
