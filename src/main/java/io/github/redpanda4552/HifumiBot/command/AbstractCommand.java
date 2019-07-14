@@ -56,15 +56,6 @@ public abstract class AbstractCommand {
      */
     protected abstract void onExecute(CommandMeta cm);
     
-    protected String stringify(String[] args) {
-        StringBuilder sb = new StringBuilder();
-        
-        for (String arg : args)
-            sb.append(arg).append(" ");
-        
-        return sb.toString().trim();
-    }
-    
     protected boolean isArgSingleWord(String arg) {
         return !arg.contains(" ");
     }

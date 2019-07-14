@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.command;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -111,7 +112,7 @@ public class CommandSTR extends AbstractCommand {
             eb = newFootedEmbedBuilder(cm.getUser());
         
         if (results.size() > 0) {
-            eb.setTitle("Query Results for \"" + stringify(cm.getArgs()) + "\"");
+            eb.setTitle("Query Results for \"" + StringUtils.join(cm.getArgs(), " ") + "\"");
             String highestName = null;
             float highestWeight = 0;
             
