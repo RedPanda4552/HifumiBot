@@ -23,28 +23,20 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.Collator;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import io.github.redpanda4552.HifumiBot.command.AbstractCommand;
-import io.github.redpanda4552.HifumiBot.command.CommandDX9;
-import io.github.redpanda4552.HifumiBot.command.CommandDev;
-import io.github.redpanda4552.HifumiBot.command.CommandDynCmd;
-import io.github.redpanda4552.HifumiBot.command.CommandGreg;
-import io.github.redpanda4552.HifumiBot.command.CommandHelp;
-import io.github.redpanda4552.HifumiBot.command.CommandReload;
-import io.github.redpanda4552.HifumiBot.command.CommandSTR;
-import io.github.redpanda4552.HifumiBot.command.CommandShutdown;
-import io.github.redpanda4552.HifumiBot.command.CommandWarez;
-import io.github.redpanda4552.HifumiBot.command.CommandWiki;
-import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
+import io.github.redpanda4552.HifumiBot.command.*;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -54,6 +46,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 public class CommandInterpreter extends ListenerAdapter {
 
     public static final String PREFIX = ">";
+    public static final String HISTORY_TABLE = "command_history";
     
     private HifumiBot hifumiBot;
     private HashMap<String, AbstractCommand> commandMap = new HashMap<String, AbstractCommand>();
@@ -64,6 +57,13 @@ public class CommandInterpreter extends ListenerAdapter {
      */
     public CommandInterpreter(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
+        
+        try {
+            PreparedStatement ps = SQLite.prepareStatement("CREATE TABLE IF NOT EXISTS " + HISTORY_TABLE + " (timestamp DATETIME, serverId TEXT, serverName TEXT, channelId TEXT, channelName TEXT, userId TEXT, userName TEXT, command TEXT, args TEXT);");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -81,6 +81,7 @@ public class CommandInterpreter extends ListenerAdapter {
         commandMap.put("dx9", new CommandDX9(hifumiBot));
         commandMap.put("greg", new CommandGreg(hifumiBot));
         commandMap.put("str", new CommandSTR(hifumiBot));
+        commandMap.put("history", new CommandHistory(hifumiBot));
         
         ResultSet res = hifumiBot.getDynamicCommandLoader().getDynamicCommands();
         
@@ -114,6 +115,7 @@ public class CommandInterpreter extends ListenerAdapter {
         
         if ((toExecute = commandMap.get(command)) != null) {
             CommandMeta cm = new CommandMeta(command, toExecute.isAdminCommand(), toExecute.getCategory(), event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(), args);
+            addToHistory(cm);
             toExecute.run(cm);
         }
     }
@@ -164,5 +166,25 @@ public class CommandInterpreter extends ListenerAdapter {
         }
         
         return ret.toArray(new String[ret.size()]);
+    }
+    
+    private void addToHistory(CommandMeta cm) {
+        try {
+            PreparedStatement ps = SQLite.prepareStatement(
+                    "INSERT INTO " + HISTORY_TABLE + " (timestamp, serverId, serverName, channelId, channelName, userId, userName, command, args) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            ps.setString(1, OffsetDateTime.now().toString());
+            ps.setString(2, cm.getGuild() != null ? cm.getGuild().getId() : null);
+            ps.setString(3, cm.getGuild() != null ? cm.getGuild().getName() : null);
+            ps.setString(4, cm.getChannel().getId());
+            ps.setString(5, cm.getChannel().getName());
+            ps.setString(6, cm.getUser().getId());
+            ps.setString(7, cm.getUser().getName());
+            ps.setString(8, cm.getCommand());
+            ps.setString(9, StringUtils.join(cm.getArgs(), " "));
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
