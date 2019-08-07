@@ -48,11 +48,14 @@ public class CommandWarez extends AbstractCommand {
         eb.setDescription("As per ");
         TextChannel welcomeRules = cm.getGuild().getTextChannelsByName(RULES_CHANNEL, false).get(0);
         eb.appendDescription(welcomeRules.getAsMention())
-          .appendDescription(", our server **does not support** users who are found to be in possession of illegally obtained materials. This also includes discussion of piracy and pirated materials.\n")
-          .appendDescription("This rule is enforced at the discretion of admins and moderators.\n")
-          .appendDescription("You may appeal by contacting a moderator or admin. As a rule of thumb, they will want some visual proof that you actually own the item in question.\n")
-          .appendDescription("\n**The PCSX2 team thanks you for playing fair!**");
-        eb.addField("But a friend gave it to me!", "A game or BIOS dump must be from your own discs or console to be legal.", false);
+          .appendDescription(", our server **does not support** piracy.\n")
+          .appendDescription("- No help or support will be given to anyone who uses pirated games, BIOS files, or other materials\n")
+          .appendDescription("- Do not discuss how to pirate games, BIOS files, or other materials\n")
+          .appendDescription("- Do not discuss why you think piracy should be allowed\n");
+        eb.addField("Enforcement", "Enforcement is at the discretion of server staff, as they see fit.", false);
+        eb.addField("Appeal", "You may appeal a warez tag by proving that you own the item in question and disposing of any pirated copies. Staff will want to see some visual proof that you own the item (E.g. A picture of the item with your Discord username and the current date on a sticky note next to it).", false);
+        eb.addField("Your Stance On Piracy", "We are not here to argue. Please forward all complaints about copyright law to Sony, or your local government's copyright enforcement agency.", false);
+        eb.addField("\"But a friend gave it to me!\" or \"I own a copy, and just downloaded it instead!\"", "Games, BIOS files and other materials must be from discs, a console or other device that you own.", false);
         hifumiBot.sendMessage(cm.getChannel(), eb.build());
         
         for (Member member : cm.getMentions()) {
