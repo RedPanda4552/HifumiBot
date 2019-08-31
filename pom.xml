@@ -25,6 +25,8 @@
           <archive>
             <manifest>
               <mainClass>io.github.redpanda4552.HifumiBot.HifumiBot</mainClass>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
           </archive>
         </configuration>

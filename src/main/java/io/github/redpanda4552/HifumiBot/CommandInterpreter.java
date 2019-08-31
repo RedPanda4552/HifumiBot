@@ -37,6 +37,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.command.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.command.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.CommandDX9;
 import io.github.redpanda4552.HifumiBot.command.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.CommandDynCmd;
@@ -85,6 +86,7 @@ public class CommandInterpreter extends ListenerAdapter {
     public void refreshCommandMap() {
         commandMap.clear();
         commandMap.put("help", new CommandHelp(hifumiBot));
+        commandMap.put("about", new CommandAbout(hifumiBot));
         commandMap.put("reload", new CommandReload(hifumiBot));
         commandMap.put("shutdown", new CommandShutdown(hifumiBot));
         commandMap.put("wiki", new CommandWiki(hifumiBot));
