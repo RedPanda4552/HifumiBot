@@ -34,6 +34,7 @@ import org.jsoup.select.Elements;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
+import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -71,9 +72,9 @@ public class CommandSTR extends AbstractCommand {
         EmbedBuilder eb;
         
         if (cm.getMember() != null)
-            eb = newFootedEmbedBuilder(cm.getMember());
+            eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
         else
-            eb = newFootedEmbedBuilder(cm.getUser());
+            eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         
         eb.setTitle("Comparing your search to " + ratingMap.size() + " CPUs...");
         eb.setColor(0xffff00);
@@ -107,9 +108,9 @@ public class CommandSTR extends AbstractCommand {
         }
         
         if (cm.getMember() != null)
-            eb = newFootedEmbedBuilder(cm.getMember());
+            eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
         else
-            eb = newFootedEmbedBuilder(cm.getUser());
+            eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         
         if (results.size() > 0) {
             eb.setTitle("Query Results for \"" + StringUtils.join(cm.getArgs(), " ") + "\"");

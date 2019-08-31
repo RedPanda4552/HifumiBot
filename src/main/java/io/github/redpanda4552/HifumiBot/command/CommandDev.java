@@ -25,6 +25,7 @@ package io.github.redpanda4552.HifumiBot.command;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
+import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -44,7 +45,7 @@ public class CommandDev extends AbstractCommand {
         }
             
         
-        EmbedBuilder eb = newFootedEmbedBuilder(cm.getMember());
+        EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
         eb.setTitle("PCSX2 Development Builds");
         eb.setDescription("Looking for the latest builds of PCSX2? Check out ");
         TextChannel devBuilds = cm.getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
