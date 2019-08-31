@@ -34,19 +34,13 @@ public class SQLite {
     
     private static Connection connection;
     
-    public static PreparedStatement prepareStatement(String sql) {
-        try {
-            if (connection == null || connection.isClosed()) {
-                connection = DriverManager.getConnection("jdbc:sqlite:" + DB_FILENAME);
-            }
-            
-            PreparedStatement ret = connection.prepareStatement(sql);
-            
-            return ret;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public static PreparedStatement prepareStatement(String sql) throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            connection = DriverManager.getConnection("jdbc:sqlite:" + DB_FILENAME);
         }
         
-        return null;
+        PreparedStatement ret = connection.prepareStatement(sql);
+        
+        return ret;
     }
 }
