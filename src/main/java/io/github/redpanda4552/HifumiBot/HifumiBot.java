@@ -32,6 +32,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.filtering.FilterController;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -83,6 +84,7 @@ public class HifumiBot {
     private PermissionManager permissionManager;
     private CommandInterpreter commandInterpreter;
     private DynamicCommandLoader dynamicCommandLoader;
+    private FilterController filterController;
     private EventListener eventListener;
     private Thread monitorThread;
     
@@ -113,6 +115,7 @@ public class HifumiBot {
         
         // This must be ready BEFORE the command interpreter's constructor fires.
         dynamicCommandLoader = new DynamicCommandLoader(this);
+        filterController = new FilterController();
         permissionManager = new PermissionManager(superuserId);
         jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
         commandInterpreter.refreshCommandMap();
@@ -149,6 +152,10 @@ public class HifumiBot {
     
     public DynamicCommandLoader getDynamicCommandLoader() {
         return dynamicCommandLoader;
+    }
+    
+    public FilterController getFilterController() {
+        return filterController;
     }
     
     public EventListener getEventListener() {

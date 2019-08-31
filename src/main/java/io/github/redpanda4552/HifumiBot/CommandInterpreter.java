@@ -36,7 +36,20 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.redpanda4552.HifumiBot.command.*;
+import io.github.redpanda4552.HifumiBot.command.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.command.CommandDX9;
+import io.github.redpanda4552.HifumiBot.command.CommandDev;
+import io.github.redpanda4552.HifumiBot.command.CommandDynCmd;
+import io.github.redpanda4552.HifumiBot.command.CommandFilter;
+import io.github.redpanda4552.HifumiBot.command.CommandGreg;
+import io.github.redpanda4552.HifumiBot.command.CommandHelp;
+import io.github.redpanda4552.HifumiBot.command.CommandHistory;
+import io.github.redpanda4552.HifumiBot.command.CommandReload;
+import io.github.redpanda4552.HifumiBot.command.CommandSTR;
+import io.github.redpanda4552.HifumiBot.command.CommandShutdown;
+import io.github.redpanda4552.HifumiBot.command.CommandWarez;
+import io.github.redpanda4552.HifumiBot.command.CommandWiki;
+import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -82,6 +95,7 @@ public class CommandInterpreter extends ListenerAdapter {
         commandMap.put("greg", new CommandGreg(hifumiBot));
         commandMap.put("str", new CommandSTR(hifumiBot));
         commandMap.put("history", new CommandHistory(hifumiBot));
+        commandMap.put("filter", new CommandFilter(hifumiBot));
         
         ResultSet res = hifumiBot.getDynamicCommandLoader().getDynamicCommands();
         
@@ -101,7 +115,15 @@ public class CommandInterpreter extends ListenerAdapter {
     
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (event.getAuthor().getId().equals(hifumiBot.getJDA().getSelfUser().getId()))
+            return;
+        
         Message message = event.getMessage();
+        
+        if (event.getMember() != null) {
+            hifumiBot.getFilterController().filter(event.getMember(), event.getChannel(), message);
+        }
+        
         String[] args = message.getContentDisplay().split(" ");
         String command = args[0].toLowerCase();
         args = ArrayUtils.remove(args, 0);
