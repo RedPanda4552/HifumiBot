@@ -93,19 +93,21 @@ public class DynamicCommandLoader {
     
     public boolean updateCommand(String name, String attribute, String value) {
         try {
-            PreparedStatement ps = SQLite.prepareStatement("UPDATE " + DYNCMD_TABLE + " SET " + attribute + " = ? WHERE name = ?;");
+            PreparedStatement ps;
             
             // Lets not SQL inject ourselves. Return false if the attribute is not one we are expecting.
-            switch (attribute) {
+            switch (attribute.toLowerCase()) {
             case "name":
-            case "helpText":
+            case "helptext":
             case "category":
             case "title":
             case "body":
-            case "imageUrl":
+            case "imageurl":
+                ps = SQLite.prepareStatement("UPDATE " + DYNCMD_TABLE + " SET " + attribute + " = ? WHERE name = ?;");
                 ps.setString(1, value);
                 break;
             case "admin":
+                ps = SQLite.prepareStatement("UPDATE " + DYNCMD_TABLE + " SET " + attribute + " = ? WHERE name = ?;");
                 ps.setBoolean(1, Boolean.parseBoolean(value));
                 break;
             default:
