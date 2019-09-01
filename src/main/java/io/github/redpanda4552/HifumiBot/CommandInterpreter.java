@@ -52,10 +52,10 @@ import io.github.redpanda4552.HifumiBot.command.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.CommandWiki;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class CommandInterpreter extends ListenerAdapter {
 

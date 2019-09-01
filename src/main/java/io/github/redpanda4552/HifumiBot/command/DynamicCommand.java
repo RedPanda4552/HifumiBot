@@ -26,7 +26,7 @@ package io.github.redpanda4552.HifumiBot.command;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 public class DynamicCommand extends AbstractCommand {
 

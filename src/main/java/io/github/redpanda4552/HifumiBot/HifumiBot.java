@@ -34,15 +34,14 @@ import org.jsoup.select.Elements;
 
 import io.github.redpanda4552.HifumiBot.filtering.FilterController;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class HifumiBot {
 
@@ -135,7 +134,7 @@ public class HifumiBot {
     }
     
     private void updateStatus(String str) {
-        jda.getPresence().setGame(Game.watching(str));
+        jda.getPresence().setActivity(Activity.watching(str));
     }
     
     public JDA getJDA() {
@@ -167,7 +166,7 @@ public class HifumiBot {
     }
     
     public void shutdown(boolean reload) {
-        HifumiBot.getSelf().getJDA().getPresence().setGame(Game.watching("Shutting Down..."));
+        HifumiBot.getSelf().getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
         stopMonitor();
         jda.shutdown();
         
