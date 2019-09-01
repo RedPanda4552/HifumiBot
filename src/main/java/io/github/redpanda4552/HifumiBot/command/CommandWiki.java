@@ -28,8 +28,8 @@ import java.util.HashMap;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
 
 public class CommandWiki extends AbstractCommand {
 
