@@ -168,6 +168,7 @@ public class HifumiBot {
     public void shutdown(boolean reload) {
         HifumiBot.getSelf().getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
         stopMonitor();
+        getFilterController().shutdown();
         jda.shutdown();
         
         if (reload)

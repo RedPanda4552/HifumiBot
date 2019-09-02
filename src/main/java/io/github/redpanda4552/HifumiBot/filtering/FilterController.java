@@ -29,8 +29,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
@@ -50,7 +51,7 @@ public class FilterController {
 
     private final String FILTER_TABLE = "filters", ACTIVATION_WORDS_TABLE = "activation_words";
     
-    private Executor executor;
+    private ExecutorService executor;
     private HashMap<String, Filter> filters = new HashMap<String, Filter>();
     
     public FilterController() {
@@ -68,6 +69,15 @@ public class FilterController {
         }
         
         this.refreshFilters();
+    }
+    
+    public void shutdown() {
+        try {
+            executor.shutdown();
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
     
     private ResultSet getActivationWordsFromDB(String name) {
