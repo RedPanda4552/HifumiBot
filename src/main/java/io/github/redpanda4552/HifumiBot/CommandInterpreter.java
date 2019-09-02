@@ -42,7 +42,6 @@ import io.github.redpanda4552.HifumiBot.command.CommandDX9;
 import io.github.redpanda4552.HifumiBot.command.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.CommandFilter;
-import io.github.redpanda4552.HifumiBot.command.CommandGreg;
 import io.github.redpanda4552.HifumiBot.command.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.CommandHistory;
 import io.github.redpanda4552.HifumiBot.command.CommandReload;
@@ -94,7 +93,6 @@ public class CommandInterpreter extends ListenerAdapter {
         commandMap.put("dev", new CommandDev(hifumiBot));
         commandMap.put("dyncmd", new CommandDynCmd(hifumiBot));
         commandMap.put("dx9", new CommandDX9(hifumiBot));
-        commandMap.put("greg", new CommandGreg(hifumiBot));
         commandMap.put("str", new CommandSTR(hifumiBot));
         commandMap.put("history", new CommandHistory(hifumiBot));
         commandMap.put("filter", new CommandFilter(hifumiBot));
