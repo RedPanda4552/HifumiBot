@@ -32,7 +32,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import io.github.redpanda4552.HifumiBot.filtering.FilterController;
+import io.github.redpanda4552.HifumiBot.messaging.FilterController;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;

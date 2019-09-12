@@ -26,7 +26,7 @@ package io.github.redpanda4552.HifumiBot.command;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.filtering.Filter;
+import io.github.redpanda4552.HifumiBot.messaging.Filter;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;

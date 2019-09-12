@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.filtering;
+package io.github.redpanda4552.HifumiBot.messaging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
