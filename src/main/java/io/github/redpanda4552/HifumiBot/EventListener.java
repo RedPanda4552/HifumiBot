@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -44,6 +45,11 @@ public class EventListener extends ListenerAdapter {
     
     public EventListener(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
+    }
+    
+    @Override
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        hifumiBot.getNewMemberMessageController().sendMessage(event.getUser());
     }
     
     @Override

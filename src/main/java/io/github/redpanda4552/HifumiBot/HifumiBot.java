@@ -33,6 +33,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import io.github.redpanda4552.HifumiBot.messaging.FilterController;
+import io.github.redpanda4552.HifumiBot.messaging.NewMemberMessageController;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
@@ -84,6 +85,7 @@ public class HifumiBot {
     private CommandInterpreter commandInterpreter;
     private DynamicCommandLoader dynamicCommandLoader;
     private FilterController filterController;
+    private NewMemberMessageController newMemberMessageController;
     private EventListener eventListener;
     private Thread monitorThread;
     
@@ -115,6 +117,7 @@ public class HifumiBot {
         // This must be ready BEFORE the command interpreter's constructor fires.
         dynamicCommandLoader = new DynamicCommandLoader(this);
         filterController = new FilterController();
+        newMemberMessageController = new NewMemberMessageController();
         permissionManager = new PermissionManager(superuserId);
         jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
         commandInterpreter.refreshCommandMap();
@@ -155,6 +158,10 @@ public class HifumiBot {
     
     public FilterController getFilterController() {
         return filterController;
+    }
+    
+    public NewMemberMessageController getNewMemberMessageController() {
+        return newMemberMessageController;
     }
     
     public EventListener getEventListener() {

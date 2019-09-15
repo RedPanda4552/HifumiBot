@@ -48,6 +48,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.CommandSTR;
 import io.github.redpanda4552.HifumiBot.command.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.CommandWarez;
+import io.github.redpanda4552.HifumiBot.command.CommandWelcome;
 import io.github.redpanda4552.HifumiBot.command.CommandWiki;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
@@ -96,6 +97,7 @@ public class CommandInterpreter extends ListenerAdapter {
         commandMap.put("str", new CommandSTR(hifumiBot));
         commandMap.put("history", new CommandHistory(hifumiBot));
         commandMap.put("filter", new CommandFilter(hifumiBot));
+        commandMap.put("welcome", new CommandWelcome(hifumiBot));
         
         ResultSet res = hifumiBot.getDynamicCommandLoader().getDynamicCommands();
         
@@ -136,7 +138,18 @@ public class CommandInterpreter extends ListenerAdapter {
         args = formatArgs(args);
         
         if ((toExecute = commandMap.get(command)) != null) {
-            CommandMeta cm = new CommandMeta(command, toExecute.isAdminCommand(), toExecute.getCategory(), event.getGuild(), event.getChannel(), event.getMember(), event.getAuthor(), message, event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(), args);
+            CommandMeta cm = new CommandMeta(
+                    command, 
+                    toExecute.isAdminCommand(), 
+                    toExecute.getCategory(), 
+                    event.getChannel() instanceof TextChannel ? event.getGuild() : null, 
+                    event.getChannel(), 
+                    event.getMember(), 
+                    event.getAuthor(), 
+                    message, 
+                    event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(), 
+                    args
+            );
             addToHistory(cm);
             toExecute.run(cm);
         }
