@@ -78,7 +78,7 @@ public class NewMemberMessageController {
     public boolean isEnabled() {
         String title = newMemberMessage.getTitle();
         String body = newMemberMessage.getBody();
-        return (title != null && !title.isBlank()) || (body != null && !body.isBlank());
+        return (title != null && !title.trim().isEmpty()) || (body != null && !body.trim().isEmpty());
     }
     
     public void sendMessage(User user) {

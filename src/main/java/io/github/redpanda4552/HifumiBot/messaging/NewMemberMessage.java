@@ -44,7 +44,7 @@ public class NewMemberMessage {
             eb.addField(field);
         }
         
-        if ((title != null && !title.isBlank()) || (body != null && !body.isBlank()) || fields.size() > 0) {
+        if ((title != null && !title.trim().isEmpty()) || (body != null && !body.trim().isEmpty()) || fields.size() > 0) {
             embed = eb.build();
         }
     }
