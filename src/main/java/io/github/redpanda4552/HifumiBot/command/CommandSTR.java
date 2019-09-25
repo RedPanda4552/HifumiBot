@@ -43,11 +43,9 @@ public class CommandSTR extends AbstractCommand {
 
     private final String PASSMARK_STR = "https://www.cpubenchmark.net/singleThread.html";
     private final long REFRESH_PERIOD = 1000 * 60 * 60 * 4; // 4 hours
-    private final long IO_WAIT_MS = 1000;
     
     private long lastUpdate = 0;
-    private HashMap<String, String> ratingMap;
-    private int ioWaitMultiplier = 1;
+    private HashMap<String, String> ratingMap = new HashMap<String, String>();
     
     public CommandSTR(HifumiBot hifumiBot) {
         super(hifumiBot, false, "builtin");
@@ -59,8 +57,11 @@ public class CommandSTR extends AbstractCommand {
         long now = System.currentTimeMillis();
         
         if (now - lastUpdate > REFRESH_PERIOD) {
-            update();
-            lastUpdate = now;
+            if (update()) {
+                lastUpdate = now;
+            } else {
+                hifumiBot.sendMessage(cm.getChannel(), "Something went wrong when trying to reach Passmark... Going to try to use whatever info I already have!");
+            }
         }
         
         // Search
@@ -144,29 +145,23 @@ public class CommandSTR extends AbstractCommand {
         return "Look up the Single Thread Rating for a CPU";
     }
 
-    private void update() {
-        ratingMap = new HashMap<String, String>();
-        
+    private boolean update() {
+        System.out.println("Test");
         try {
-            Document doc = Jsoup.connect(PASSMARK_STR).get();
-            Elements rows = doc.getElementById("mark").getElementsByTag("tr");
+            Document doc = Jsoup.connect(PASSMARK_STR).maxBodySize(0).get();
+            Elements rows = doc.getElementsByClass("chartlist").get(0).getElementsByTag("li");
             
             for (Element row : rows) {
-                Elements columns = row.getElementsByTag("td");
-                
-                if (columns.size() < 3)
-                    continue;
-                
-                String cpuName = columns.get(0).text();
-                String rating = columns.get(1).text();
+                String cpuName = row.getElementsByClass("prdname").get(0).text();
+                String rating = row.getElementsByClass("count").get(0).text();
                 ratingMap.put(cpuName, rating);
             }
-            
-            ioWaitMultiplier = 1;
         } catch (IOException e) {
-            sleep(IO_WAIT_MS * ioWaitMultiplier);
-            ioWaitMultiplier *= 2;
+            e.printStackTrace();
+            return false;
         }
+        
+        return true;
     }
     
     private boolean sleep(long ms) {
