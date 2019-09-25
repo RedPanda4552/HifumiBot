@@ -43,9 +43,11 @@ public class CommandSTR extends AbstractCommand {
 
     private final String PASSMARK_STR = "https://www.cpubenchmark.net/singleThread.html";
     private final long REFRESH_PERIOD = 1000 * 60 * 60 * 4; // 4 hours
+    private final long IO_WAIT_MS = 1000;
     
     private long lastUpdate = 0;
     private HashMap<String, String> ratingMap;
+    private int ioWaitMultiplier = 1;
     
     public CommandSTR(HifumiBot hifumiBot) {
         super(hifumiBot, false, "builtin");
@@ -57,11 +59,8 @@ public class CommandSTR extends AbstractCommand {
         long now = System.currentTimeMillis();
         
         if (now - lastUpdate > REFRESH_PERIOD) {
-            if (!update()) {
-                hifumiBot.sendMessage(cm.getChannel(), "Failed to connect to Passmark! Using whatever I had stored previously...");
-            } else {
-                lastUpdate = now;
-            }
+            update();
+            lastUpdate = now;
         }
         
         // Search
@@ -145,8 +144,8 @@ public class CommandSTR extends AbstractCommand {
         return "Look up the Single Thread Rating for a CPU";
     }
 
-    private boolean update() {
-        HashMap<String, String> newMap = new HashMap<String, String>();
+    private void update() {
+        ratingMap = new HashMap<String, String>();
         
         try {
             Document doc = Jsoup.connect(PASSMARK_STR).get();
@@ -163,13 +162,11 @@ public class CommandSTR extends AbstractCommand {
                 ratingMap.put(cpuName, rating);
             }
             
-            ratingMap = newMap;
+            ioWaitMultiplier = 1;
         } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            sleep(IO_WAIT_MS * ioWaitMultiplier);
+            ioWaitMultiplier *= 2;
         }
-        
-        return true;
     }
     
     private boolean sleep(long ms) {
