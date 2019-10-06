@@ -47,10 +47,10 @@ public class CommandDev extends AbstractCommand {
         
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
         eb.setTitle("PCSX2 Development Builds");
-        eb.setDescription("Looking for the latest builds of PCSX2? Check out ");
+        eb.setDescription("Problems? Looking for PCSX2 updates? Consider using PCSX2 development builds! I post a message in ");
         TextChannel devBuilds = cm.getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
         eb.appendDescription(devBuilds.getAsMention())
-          .appendDescription(" for a link to the build bot! I post a new message there whenever a new development build is ready!");
+          .appendDescription(" whenever a new development build is ready!");
         hifumiBot.sendMessage(cm.getChannel(), eb.build());
     }
 

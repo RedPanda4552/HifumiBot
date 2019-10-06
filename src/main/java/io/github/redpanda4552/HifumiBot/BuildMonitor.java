@@ -40,6 +40,7 @@ public class BuildMonitor implements Runnable {
 
     private static final long SCRAPE_TIME_MS = 1000 * 60 * 10, IO_WAIT_MS = 1000 * 60;
     private static final String ORPHIS_PCSX2_ROOT = "https://buildbot.orphis.net/pcsx2/";
+    private static final String LINUX_INSTRUCTIONS = "First time installation:\n```\nsudo dpkg --add-architecture i386\nsudo apt-add-repository ppa:pcsx2-team/pcsx2-daily\nsudo apt update\nsudo apt install pcsx2-unstable\n```\nAlready installed?\n```\nsudo apt update\nsudo apt upgrade\n```";
     
     private TextChannel outputChannel;
     private String gitRevision = "";
@@ -82,7 +83,9 @@ public class BuildMonitor implements Runnable {
                     EmbedBuilder eb = new EmbedBuilder();
                     eb.setAuthor("New PCSX2 Development Build Available!");
                     eb.addField("Revision:", gitRevision, false);
-                    eb.addField("Download and view changes:", ORPHIS_PCSX2_ROOT, false);
+                    eb.addField("Windows:", ORPHIS_PCSX2_ROOT, false);
+                    eb.addField("Linux (Ubuntu/Debian):", LINUX_INSTRUCTIONS, false);
+                    eb.addField("Linux (Any)", "A guide to compile from source can be found on GitHub:\nhttps://github.com/PCSX2/pcsx2/wiki/Installing-on-Linux", false);
                     eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
                     
                     if (outputChannel != null)
