@@ -40,6 +40,7 @@ public class BuildMonitor implements Runnable {
 
     private static final long SCRAPE_TIME_MS = 1000 * 60 * 10, IO_WAIT_MS = 1000 * 60;
     private static final String ORPHIS_PCSX2_ROOT = "https://buildbot.orphis.net/pcsx2/";
+    private static final String WINDOWS_INSTRUCTIONS = "- Download the topmost (latest) build from " + ORPHIS_PCSX2_ROOT + ".\n- Extract the .7z file to somewhere like Documents or Desktop.\n- DO NOT extract it to Program Files; this folder is write protected by Windows and you won't be able to save any configuration settings.\n- Upgrading? We strongly recommend AGAINST dropping the new files over top of the old. It is better to keep the new version separate, and then move your BIOS and memory card files over to the new version.";
     private static final String LINUX_INSTRUCTIONS = "First time installation:\n```\nsudo dpkg --add-architecture i386\nsudo apt-add-repository ppa:pcsx2-team/pcsx2-daily\nsudo apt update\nsudo apt install pcsx2-unstable\n```\nAlready installed?\n```\nsudo apt update\nsudo apt upgrade\n```";
     
     private TextChannel outputChannel;
@@ -83,7 +84,7 @@ public class BuildMonitor implements Runnable {
                     EmbedBuilder eb = new EmbedBuilder();
                     eb.setAuthor("New PCSX2 Development Build Available!");
                     eb.addField("Revision:", gitRevision, false);
-                    eb.addField("Windows:", ORPHIS_PCSX2_ROOT, false);
+                    eb.addField("Windows:", WINDOWS_INSTRUCTIONS, false);
                     eb.addField("Linux (Ubuntu/Debian):", LINUX_INSTRUCTIONS, false);
                     eb.addField("Linux (Any)", "A guide to compile from source can be found on GitHub:\nhttps://github.com/PCSX2/pcsx2/wiki/Installing-on-Linux", false);
                     eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
