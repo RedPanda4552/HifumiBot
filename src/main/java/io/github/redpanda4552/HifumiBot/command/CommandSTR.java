@@ -32,6 +32,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
@@ -43,6 +44,32 @@ public class CommandSTR extends AbstractCommand {
 
     private final String PASSMARK_STR = "https://www.cpubenchmark.net/singleThread.html";
     private final long REFRESH_PERIOD = 1000 * 60 * 60 * 4; // 4 hours
+    
+    private enum CPURating {
+        OVERKILL("Overkill", 2800),
+        GREAT("Great for most", 2400),
+        GOOD("Good for most", 2000),
+        MINIMUM_3D("Okay for 3D", 1600),
+        MINIMUM_2D("Okay for 2D", 1200),
+        VERY_SLOW("Very Slow", 800),
+        AWFUL("Awful", 0);
+        
+        private String displayName;
+        private int minimum;
+        
+        private CPURating(String displayName, int minimum) {
+            this.displayName = displayName;
+            this.minimum = minimum;
+        }
+        
+        public String getDisplayName() {
+            return displayName;
+        }
+        
+        public int getMinimum() {
+            return minimum;
+        }
+    }
     
     private long lastUpdate = 0;
     private HashMap<String, String> ratingMap = new HashMap<String, String>();
@@ -66,7 +93,19 @@ public class CommandSTR extends AbstractCommand {
         
         // Search
         if (cm.getArgs().length == 0) {
-            hifumiBot.sendMessage(cm.getChannel(), "I can't search for nothing! Try `!str <cpu model here>`");
+            EmbedBuilder eb;
+            
+            if (cm.getMember() != null)
+                eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
+            else 
+                eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
+            
+            eb.setTitle("About Single Thread Ratings (STR)");
+            eb.appendDescription("**Single Thread Rating** (STR) is a benchmarking statistic used by Passmark's CPU benchmarking software. ")
+              .appendDescription("The statistic indicates how powerful a single thread on a CPU is. ")
+              .appendDescription("Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
+            eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + "str <cpu model here>`", false);
+            hifumiBot.sendMessage(cm.getChannel(), eb.build());
             return;
         }
         
@@ -128,7 +167,17 @@ public class CommandSTR extends AbstractCommand {
                 
                 results.remove(highestName);
                 highestWeight = 0;
-                eb.addField(highestName, String.valueOf(ratingMap.get(highestName)), false);
+                int highestScore = Integer.parseInt(ratingMap.get(highestName).replaceAll("[,. ]", ""));
+                String highestScoreDescription = "";
+                
+                for (int i = 0; i < CPURating.values().length; i++) {
+                    if (highestScore >= CPURating.values()[i].getMinimum()) {
+                        highestScoreDescription = CPURating.values()[i].getDisplayName();
+                        break;
+                    }
+                }
+                
+                eb.addField(highestName, highestScore + " (" + highestScoreDescription + ")", false);
             }
             
             eb.setColor(0x00ff00);
