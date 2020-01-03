@@ -202,7 +202,7 @@ public class CommandSTR extends AbstractCommand {
             
             for (Element row : rows) {
                 String cpuName = row.getElementsByClass("prdname").get(0).text();
-                String rating = row.getElementsByClass("count").get(0).text();
+                String rating = row.getElementsByClass("mark-neww").get(0).text();
                 ratingMap.put(cpuName, rating);
             }
         } catch (IOException e) {
