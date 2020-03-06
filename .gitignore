@@ -5,3 +5,4 @@ dependency-reduced-pom.xml
 target/
 hifumi-commands.db
 hifumi.sqlite3
+hifumi-conf.json

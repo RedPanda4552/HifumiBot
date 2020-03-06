@@ -24,6 +24,9 @@
 package io.github.redpanda4552.HifumiBot;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 import javax.security.auth.login.LoginException;
@@ -32,10 +35,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.command.CommandIndex;
+import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
+import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
+import io.github.redpanda4552.HifumiBot.config.Config;
+import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.messaging.FilterController;
 import io.github.redpanda4552.HifumiBot.messaging.NewMemberMessageController;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -80,10 +87,11 @@ public class HifumiBot {
     
     private final String FULL_GAMES_URL = "https://wiki.pcsx2.net/Complete_List_of_Games";
     
+    private Config config;
     private JDA jda;
     private PermissionManager permissionManager;
+    private CommandIndex commandIndex;
     private CommandInterpreter commandInterpreter;
-    private DynamicCommandLoader dynamicCommandLoader;
     private FilterController filterController;
     private NewMemberMessageController newMemberMessageController;
     private EventListener eventListener;
@@ -104,23 +112,23 @@ public class HifumiBot {
         }
         
         try {
-            jda = new JDABuilder(AccountType.BOT)
-                    .setToken(discordBotToken)
+            jda = JDABuilder.createDefault(discordBotToken)
                     .setAutoReconnect(true)
-                    .build().awaitReady();
+                    .build()
+                    .awaitReady();
         } catch (LoginException | IllegalArgumentException | InterruptedException e) {
             e.printStackTrace();
         }
         
         updateStatus("Starting...");
-        
-        // This must be ready BEFORE the command interpreter's constructor fires.
-        dynamicCommandLoader = new DynamicCommandLoader(this);
+        ConfigManager.createConfigIfNotExists();
+        config = ConfigManager.read();
+        commandIndex = new CommandIndex();
+        dbConversion();
         filterController = new FilterController();
         newMemberMessageController = new NewMemberMessageController();
         permissionManager = new PermissionManager(superuserId);
         jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
-        commandInterpreter.refreshCommandMap();
         
         try {
             Elements anchors = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get().getElementsByClass("wikitable").first().getElementsByTag("a");
@@ -134,6 +142,14 @@ public class HifumiBot {
         jda.addEventListener(eventListener = new EventListener(this));
         startMonitor();
         updateStatus(">help" + (debug ? " [Debug Mode]" : ""));
+    }
+    
+    public Config getConfig() {
+        return config;
+    }
+    
+    public CommandIndex getCommandIndex() {
+        return commandIndex;
     }
     
     private void updateStatus(String str) {
@@ -150,10 +166,6 @@ public class HifumiBot {
     
     public CommandInterpreter getCommandInterpreter() {
         return commandInterpreter;
-    }
-    
-    public DynamicCommandLoader getDynamicCommandLoader() {
-        return dynamicCommandLoader;
     }
     
     public FilterController getFilterController() {
@@ -208,5 +220,25 @@ public class HifumiBot {
     
     public Message sendMessage(MessageChannel channel, Message msg) {
         return channel.sendMessage(msg).complete();
+    }
+    
+    private void dbConversion() {
+        try {
+            PreparedStatement ps = SQLite.prepareStatement("SELECT * FROM commands_v2");
+            ResultSet res = ps.executeQuery();
+            
+            while (res.next()) {
+                DynamicCommand dyncmd = new DynamicCommand(res.getString("name"), res.getString("category"), res.getBoolean("admin"), res.getString("helpText"), res.getString("title"), res.getString("body"), res.getString("imageUrl"));
+                
+                if (!HifumiBot.getSelf().getCommandIndex().isDynamicCommand(res.getString("name"))) {
+                    HifumiBot.getSelf().getConfig().dynamicCommands.add(dyncmd);
+                }
+            }
+            
+            ConfigManager.write(HifumiBot.getSelf().getConfig());
+            HifumiBot.getSelf().getCommandIndex().rebuild();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

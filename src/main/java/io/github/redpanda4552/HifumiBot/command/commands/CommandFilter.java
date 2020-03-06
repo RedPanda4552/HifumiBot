@@ -21,13 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.command.commands;
 
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.messaging.Filter;
-import io.github.redpanda4552.HifumiBot.util.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -36,8 +36,8 @@ public class CommandFilter extends AbstractCommand {
 
     private final MessageEmbed usage;
     
-    public CommandFilter(HifumiBot hifumiBot) {
-        super(hifumiBot, true, CATEGORY_BUILTIN);
+    public CommandFilter() {
+        super("filter", CATEGORY_BUILTIN, true);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Filter Usage");
         eb.addField("List all filters", "`filter list`", false);
@@ -55,7 +55,7 @@ public class CommandFilter extends AbstractCommand {
     @Override
     protected void onExecute(CommandMeta cm) {
         if (cm.getArgs().length < 1) {
-            hifumiBot.sendMessage(cm.getChannel(), usage);
+            HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
             return;
         }
         
@@ -71,19 +71,19 @@ public class CommandFilter extends AbstractCommand {
             
             eb.setTitle("Filter List");
             
-            for (String name : hifumiBot.getFilterController().getFilterList()) {
+            for (String name : HifumiBot.getSelf().getFilterController().getFilterList()) {
                 eb.addField(name, "", true);
             }
             
-            hifumiBot.sendMessage(cm.getChannel(), eb.build());
+            HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
             break;
         case "view":
             if (cm.getArgs().length < 2) {
-                hifumiBot.sendMessage(cm.getChannel(), usage);
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
                 return;
             }
             
-            Filter filter = hifumiBot.getFilterController().getFilter(cm.getArgs()[1]);
+            Filter filter = HifumiBot.getSelf().getFilterController().getFilter(cm.getArgs()[1]);
             
             if (filter != null) {
                 if (cm.getMember() != null)
@@ -98,82 +98,82 @@ public class CommandFilter extends AbstractCommand {
                 eb.addField("Whole Word", String.valueOf(filter.wholeWord()), true);
                 eb.addField("Delete Source", String.valueOf(filter.deleteSource()), true);
                 eb.addField("Require All", String.valueOf(filter.requireAll()), true);
-                hifumiBot.sendMessage(cm.getChannel(), eb.build());
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
             } else {
-                hifumiBot.sendMessage(cm.getChannel(), "Could not find filter named `" + cm.getArgs()[1] + "`.");
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Could not find filter named `" + cm.getArgs()[1] + "`.");
             }
             
             break;
         case "reload":
-            if (hifumiBot.getFilterController().refreshFilters()) {
-                hifumiBot.sendMessage(cm.getChannel(), "Filters reloaded.");
+            if (HifumiBot.getSelf().getFilterController().refreshFilters()) {
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Filters reloaded.");
             } else {
-                hifumiBot.sendMessage(cm.getChannel(), "Cound not reload filters.");
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Cound not reload filters.");
             }
             
             break;
         case "add":
             if (cm.getArgs().length < 4) {
-                hifumiBot.sendMessage(cm.getChannel(), usage);
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
                 return;
             }
             
-            if (hifumiBot.getFilterController().insertFilter(cm.getArgs()[1], cm.getArgs()[2], cm.getArgs()[3])) {
-                hifumiBot.sendMessage(cm.getChannel(), "Successfully created empty filter `" + cm.getArgs()[1] + "`.");
+            if (HifumiBot.getSelf().getFilterController().insertFilter(cm.getArgs()[1], cm.getArgs()[2], cm.getArgs()[3])) {
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Successfully created empty filter `" + cm.getArgs()[1] + "`.");
             } else {
-                hifumiBot.sendMessage(cm.getChannel(), "Failed to create filter `" + cm.getArgs()[1] + "`.");
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Failed to create filter `" + cm.getArgs()[1] + "`.");
             }
             
             break;
         case "remove":
             if (cm.getArgs().length < 2) {
-                hifumiBot.sendMessage(cm.getChannel(), usage);
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
                 return;
             }
             
-            if (hifumiBot.getFilterController().removeFilter(cm.getArgs()[1])) {
-                hifumiBot.sendMessage(cm.getChannel(), "Successfully removed filter `" + cm.getArgs()[1] + "`.");
+            if (HifumiBot.getSelf().getFilterController().removeFilter(cm.getArgs()[1])) {
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Successfully removed filter `" + cm.getArgs()[1] + "`.");
             } else {
-                hifumiBot.sendMessage(cm.getChannel(), "Failed to remove filter `" + cm.getArgs()[1] + "`.");
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Failed to remove filter `" + cm.getArgs()[1] + "`.");
             }
             
             break;
         case "addword":
             if (cm.getArgs().length < 3) {
-                hifumiBot.sendMessage(cm.getChannel(), usage);
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
                 return;
             }
             
-            if (hifumiBot.getFilterController().addActivationWord(cm.getArgs()[1], cm.getArgs()[2])) {
-                hifumiBot.sendMessage(cm.getChannel(), "Successfully added word to filter `" + cm.getArgs()[1] + "`.");
+            if (HifumiBot.getSelf().getFilterController().addActivationWord(cm.getArgs()[1], cm.getArgs()[2])) {
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Successfully added word to filter `" + cm.getArgs()[1] + "`.");
             } else {
-                hifumiBot.sendMessage(cm.getChannel(), "Failed to add word to filter `" + cm.getArgs()[1] + "`.");
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Failed to add word to filter `" + cm.getArgs()[1] + "`.");
             }
             
             break;
         case "removeword":
             if (cm.getArgs().length < 3) {
-                hifumiBot.sendMessage(cm.getChannel(), usage);
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
                 return;
             }
             
-            if (hifumiBot.getFilterController().removeActivationWord(cm.getArgs()[1], cm.getArgs()[2])) {
-                hifumiBot.sendMessage(cm.getChannel(), "Successfully removed word from filter `" + cm.getArgs()[1] + "`.");
+            if (HifumiBot.getSelf().getFilterController().removeActivationWord(cm.getArgs()[1], cm.getArgs()[2])) {
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Successfully removed word from filter `" + cm.getArgs()[1] + "`.");
             } else {
-                hifumiBot.sendMessage(cm.getChannel(), "Failed to remove word from filter `" + cm.getArgs()[1] + "`.");
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Failed to remove word from filter `" + cm.getArgs()[1] + "`.");
             }
             
             break;
         case "set":
             if (cm.getArgs().length < 4) {
-                hifumiBot.sendMessage(cm.getChannel(), usage);
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
                 return;
             }
             
-            if (hifumiBot.getFilterController().updateFilter(cm.getArgs()[1], cm.getArgs()[2], cm.getArgs()[3])) {
-                hifumiBot.sendMessage(cm.getChannel(), "Successfully updated filter `" + cm.getArgs()[1] + "`.");
+            if (HifumiBot.getSelf().getFilterController().updateFilter(cm.getArgs()[1], cm.getArgs()[2], cm.getArgs()[3])) {
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Successfully updated filter `" + cm.getArgs()[1] + "`.");
             } else {
-                hifumiBot.sendMessage(cm.getChannel(), "Failed to update filter `" + cm.getArgs()[1] + "`.");
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Failed to update filter `" + cm.getArgs()[1] + "`.");
             }
             
             break;
@@ -181,7 +181,7 @@ public class CommandFilter extends AbstractCommand {
     }
 
     @Override
-    protected String getHelpText() {
+    public String getHelpText() {
         return "Manage text filters";
     }
 

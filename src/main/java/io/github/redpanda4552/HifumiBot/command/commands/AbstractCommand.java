@@ -21,27 +21,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.util.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 
-public class CommandDX9 extends AbstractCommand {
+public abstract class AbstractCommand {
 
-    private final String VIDEO_LINK = "https://cdn.discordapp.com/attachments/514592552389967881/525387135138660353/gone_out.mp4";
+    protected static final String CATEGORY_BUILTIN = "builtin", CATEGORY_NONE = "none";
     
-    public CommandDX9(HifumiBot hifumiBot) {
-        super(hifumiBot, false, CATEGORY_BUILTIN);
+    protected String name, category;
+    protected boolean admin;
+    
+    public AbstractCommand(String name, String category, boolean admin) {
+        this.name = name;
+        this.category = category != null ? category : CATEGORY_NONE;
+        this.admin = admin;
     }
-
-    @Override
-    protected void onExecute(CommandMeta cm) {
-        hifumiBot.sendMessage(cm.getChannel(), VIDEO_LINK);
+    
+    /**
+     * Do a prelimiary permissions check, and execute if it passes.
+     */
+    public void run(CommandMeta cm) {
+        if (!isAdminCommand() || HifumiBot.getSelf().getPermissionManager().hasPermission(cm.getMember(), cm.getUser()))
+            onExecute(cm);
     }
-
-    @Override
-    protected String getHelpText() {
-        return "Get this trash out of here!";
+    
+    /**
+     * Command payload.
+     */
+    protected abstract void onExecute(CommandMeta cm);
+    
+    protected boolean isArgSingleWord(String arg) {
+        return !arg.contains(" ");
     }
-
+    
+    public boolean isAdminCommand() {
+        return admin;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public String getCategory() {
+        return category;
+    }
+    
+    public abstract String getHelpText();
 }

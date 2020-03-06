@@ -21,8 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.util;
+package io.github.redpanda4552.HifumiBot.command;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -43,6 +45,7 @@ public class CommandMeta {
     private Message message;
     private List<Member> mentions;
     private String[] args;
+    private HashMap<String, String> switches;
     
     public CommandMeta(String command, boolean admin, String category, Guild guild, MessageChannel channel, Member member, User user, Message message, List<Member> mentions, String[] args) {
         this.command = command;
@@ -54,7 +57,44 @@ public class CommandMeta {
         this.user = user;
         this.message = message;
         this.mentions = mentions;
-        this.args = args;
+        formatArgs(args);
+    }
+    
+    private void formatArgs(String[] args) {
+        ArrayList<String> newArgs = new ArrayList<String>();
+        switches = new HashMap<String, String>();
+        String toInsert = null, switchStart = null;
+        boolean openQuote = false, openSwitch = false;
+        
+        for (String arg : args) {
+            if (openQuote) {
+                toInsert += " " + arg;
+                
+                if (arg.endsWith("\"")) {
+                    openQuote = false;
+                    
+                    if (openSwitch) {
+                        openSwitch = false;
+                        switches.put(switchStart, toInsert.replaceAll("\"", ""));
+                    } else {
+                        newArgs.add(toInsert.replaceAll("\"", ""));
+                    }
+                }
+            } else if (!openSwitch && arg.startsWith("-")) {
+                openSwitch = true;
+                switchStart = arg.replaceFirst("-+", "");
+            } else if (!openQuote && arg.startsWith("\"") && !arg.endsWith("\"")) {
+                openQuote = true;
+                toInsert = arg;
+            } else if (openSwitch) {
+                openSwitch = false;
+                switches.put(switchStart, arg);
+            } else {
+                newArgs.add(arg);
+            }
+        }
+        
+        this.args = newArgs.toArray(new String[newArgs.size()]);
     }
     
     public String getCommand() {
@@ -95,5 +135,9 @@ public class CommandMeta {
     
     public String[] getArgs() {
         return args;
+    }
+    
+    public HashMap<String, String> getSwitches() {
+        return switches;
     }
 }

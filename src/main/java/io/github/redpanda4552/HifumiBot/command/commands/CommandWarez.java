@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.util.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -35,8 +35,8 @@ public class CommandWarez extends AbstractCommand {
 
     private final String RULES_CHANNEL = "welcome-rules", WAREZ_ROLE_ID = "535718317864910850";
     
-    public CommandWarez(HifumiBot hifumiBot) {
-        super(hifumiBot, true, CATEGORY_BUILTIN);
+    public CommandWarez() {
+        super("warez", CATEGORY_BUILTIN, true);
     }
 
     @Override
@@ -57,21 +57,21 @@ public class CommandWarez extends AbstractCommand {
         eb.addField("Appeal", "You may appeal a warez tag by proving that you own the item in question and disposing of any pirated copies. Staff will want to see some visual proof that you own the item (E.g. A picture of the item with your Discord username and the current date on a sticky note next to it).", false);
         eb.addField("Your Stance On Piracy", "We are not here to argue. Please forward all complaints about copyright law to Sony, or your local government's copyright enforcement agency.", false);
         eb.addField("\"But a friend gave it to me!\" or \"I own a copy, and just downloaded it instead!\"", "Games, BIOS files and other materials must be from discs, a console or other device that you own.", false);
-        hifumiBot.sendMessage(cm.getChannel(), eb.build());
+        HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
         
         for (Member member : cm.getMentions()) {
-            if (!hifumiBot.getPermissionManager().hasPermission(member, null)) {
+            if (!HifumiBot.getSelf().getPermissionManager().hasPermission(member, null)) {
                 try {
                     cm.getGuild().addRoleToMember(member, cm.getGuild().getRoleById(WAREZ_ROLE_ID)).complete();
                 } catch (InsufficientPermissionException e) {
-                    hifumiBot.sendMessage(cm.getChannel(), "Failed to assign role (insufficient permissions)");
+                    HifumiBot.getSelf().sendMessage(cm.getChannel(), "Failed to assign role (insufficient permissions)");
                 }
             }
         }
     }
 
     @Override
-    protected String getHelpText() {
+    public String getHelpText() {
         return "Print a dialog about warez/piracy rules";
     }
 }

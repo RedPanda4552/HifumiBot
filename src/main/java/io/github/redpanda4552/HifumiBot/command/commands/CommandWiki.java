@@ -21,33 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.command.commands;
 
 import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.util.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
 public class CommandWiki extends AbstractCommand {
 
-    public CommandWiki(HifumiBot hifumiBot) {
-        super(hifumiBot, false, CATEGORY_BUILTIN);
+    public CommandWiki() {
+        super("wiki", CATEGORY_BUILTIN, false);
     }
 
     @Override
     protected void onExecute(CommandMeta cm) {
         if (cm.getArgs().length == 0) {
-            hifumiBot.sendMessage(cm.getChannel(), "I can't search for nothing! Try `!wiki <title of game here>`");
+            HifumiBot.getSelf().sendMessage(cm.getChannel(), "I can't search for nothing! Try `!wiki <title of game here>`");
             return;
         }
         
         HashMap<String, Float> results = new HashMap<String, Float>();
         
         // A basic weighting algorithm.
-        for (String name : hifumiBot.getFullGamesMap().keySet()) {
+        for (String name : HifumiBot.getSelf().getFullGamesMap().keySet()) {
             String[] nameParts = name.toLowerCase().trim().split(" ");
             float toPush = 0;
             
@@ -106,16 +106,16 @@ public class CommandWiki extends AbstractCommand {
                 highestWeight = 0;
             }
             
-            eb.setFooter("Click the reaction number matching the game you are looking for.\nThis message will self-modify with it's wiki information.", hifumiBot.getJDA().getSelfUser().getAvatarUrl());
+            eb.setFooter("Click the reaction number matching the game you are looking for.\nThis message will self-modify with it's wiki information.", HifumiBot.getSelf().getJDA().getSelfUser().getAvatarUrl());
         } else {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
         }
         
-        Message msg = hifumiBot.sendMessage(cm.getChannel(), eb.build());
+        Message msg = HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
         
         if (eb.getFields().size() == 1) {
-            hifumiBot.getEventListener().finalizeMessage(msg, eb.getFields().get(0).getValue(), cm.getUser().getId());
+            HifumiBot.getSelf().getEventListener().finalizeMessage(msg, eb.getFields().get(0).getValue(), cm.getUser().getId());
         } else {
             // String concatenation with unicodes is apparently punishable by build error, so we instead have this.
             if (i > 0)
@@ -131,12 +131,12 @@ public class CommandWiki extends AbstractCommand {
             if (i > 5)
                 msg.addReaction(Emotes.SIX).complete();
             
-            hifumiBot.getEventListener().waitForMessage(cm.getUser().getId(), msg);
+            HifumiBot.getSelf().getEventListener().waitForMessage(cm.getUser().getId(), msg);
         }
     }
     
     @Override
-    protected String getHelpText() {
+    public String getHelpText() {
         return "Search the PCSX2 wiki by game title";
     }
 }

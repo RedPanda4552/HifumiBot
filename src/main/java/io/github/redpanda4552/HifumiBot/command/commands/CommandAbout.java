@@ -21,23 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.OffsetDateTime;
+package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.SQLite;
-import io.github.redpanda4552.HifumiBot.util.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 public class CommandAbout extends AbstractCommand {
 
-    public CommandAbout(HifumiBot hifumiBot) {
-        super(hifumiBot, false, CATEGORY_BUILTIN);
+    public CommandAbout() {
+        super("about", CATEGORY_BUILTIN, false);
     }
 
     @Override
@@ -55,40 +49,11 @@ public class CommandAbout extends AbstractCommand {
         eb.addField("Created By", "pandubz", true);
         String version = getClass().getPackage().getImplementationVersion();
         eb.addField("Version", version != null ? version : "[Debug Mode]", true);
-        
-        try {
-            PreparedStatement ps = SQLite.prepareStatement(
-                    "SELECT COUNT(timestamp) commandCount " + 
-                    "FROM command_history " + 
-                    "WHERE timestamp > ?;"
-            );
-            ps.setString(1, OffsetDateTime.now().minusDays(1).toString());
-            ResultSet res = ps.executeQuery();
-            
-            if (res.next()) {
-                eb.addField("Commands Processed (24 hours)", res.getString("commandCount"), true);
-            }
-            
-            ps = SQLite.prepareStatement(
-                    "SELECT COUNT(timestamp) commandCount " + 
-                    "FROM command_history;"
-            );
-            
-            res = ps.executeQuery();
-            
-            if (res.next()) {
-                eb.addField("Commands Processed (all time)", res.getString("commandCount"), true);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
         HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
     }
 
     @Override
-    protected String getHelpText() {
+    public String getHelpText() {
         return "Info about HifumiBot";
     }
-
 }

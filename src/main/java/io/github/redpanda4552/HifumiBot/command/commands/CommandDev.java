@@ -21,67 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.TextChannel;
 
-public class DynamicCommand extends AbstractCommand {
+public class CommandDev extends AbstractCommand {
 
-    private String helpText, title, body, imageURL;
+    private final String DEV_CHANNEL = "dev-builds";
     
-    public DynamicCommand(String name, String category, boolean admin, String helpText, String title, String body, String imageURL) {
-        super(name, category, admin);
-        this.helpText = helpText;
-        this.title = title;
-        this.body = body;
-        this.imageURL = imageURL;
+    public CommandDev() {
+        super("dev", CATEGORY_BUILTIN, false);
     }
 
     @Override
     protected void onExecute(CommandMeta cm) {
-        EmbedBuilder eb;
-        
-        if (cm.getMember() != null) {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
+        if (!(cm.getChannel() instanceof TextChannel)) {
+            HifumiBot.getSelf().sendMessage(cm.getChannel(), "Sorry, but this command can only be used within the PCSX2 server.");
+            return;
         }
+            
         
-        eb.setTitle(title);
-        eb.setDescription(body);
-        eb.setImage(imageURL);
+        EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
+        eb.setTitle("PCSX2 Development Builds");
+        eb.setDescription("Problems? Looking for PCSX2 updates? Consider using PCSX2 development builds! I post a message in ");
+        TextChannel devBuilds = cm.getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
+        eb.appendDescription(devBuilds.getAsMention())
+          .appendDescription(" whenever a new development build is ready!");
         HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
     }
-    
+
     @Override
     public String getHelpText() {
-        return helpText;
+        return "Print a dialog about development builds";
     }
-    
-    public void setCategory(String category) {
-        this.category = category;
-    }
-    
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-    
-    public void setHelpText(String helpText) {
-        this.helpText = helpText;
-    }
-    
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    
-    public void setBody(String body) {
-        this.body = body;
-    }
-    
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
-    }
+
 }

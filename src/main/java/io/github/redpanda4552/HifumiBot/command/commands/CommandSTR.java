@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.command.commands;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,9 +32,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import io.github.redpanda4552.HifumiBot.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.util.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
+import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -74,8 +74,8 @@ public class CommandSTR extends AbstractCommand {
     private long lastUpdate = 0;
     private HashMap<String, String> ratingMap = new HashMap<String, String>();
     
-    public CommandSTR(HifumiBot hifumiBot) {
-        super(hifumiBot, false, "builtin");
+    public CommandSTR() {
+        super("str", CATEGORY_BUILTIN, false);
         update();
     }
 
@@ -87,7 +87,7 @@ public class CommandSTR extends AbstractCommand {
             if (update()) {
                 lastUpdate = now;
             } else {
-                hifumiBot.sendMessage(cm.getChannel(), "Something went wrong when trying to reach Passmark... Going to try to use whatever info I already have!");
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Something went wrong when trying to reach Passmark... Going to try to use whatever info I already have!");
             }
         }
         
@@ -105,7 +105,7 @@ public class CommandSTR extends AbstractCommand {
               .appendDescription("The statistic indicates how powerful a single thread on a CPU is. ")
               .appendDescription("Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
             eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + "str <cpu model here>`", false);
-            hifumiBot.sendMessage(cm.getChannel(), eb.build());
+            HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
             return;
         }
         
@@ -118,7 +118,7 @@ public class CommandSTR extends AbstractCommand {
         
         eb.setTitle("Comparing your search to " + ratingMap.size() + " CPUs...");
         eb.setColor(0xffff00);
-        Message message = hifumiBot.sendMessage(cm.getChannel(), new MessageBuilder().setEmbed(eb.build()).build());
+        Message message = HifumiBot.getSelf().sendMessage(cm.getChannel(), new MessageBuilder().setEmbed(eb.build()).build());
         
         HashMap<String, Float> results = new HashMap<String, Float>();
         
@@ -190,12 +190,11 @@ public class CommandSTR extends AbstractCommand {
     }
 
     @Override
-    protected String getHelpText() {
+    public String getHelpText() {
         return "Look up the Single Thread Rating for a CPU";
     }
 
     private boolean update() {
-        System.out.println("Test");
         try {
             Document doc = Jsoup.connect(PASSMARK_STR).maxBodySize(0).get();
             Elements rows = doc.getElementsByClass("chartlist").get(0).getElementsByTag("li");
