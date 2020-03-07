@@ -46,12 +46,12 @@ public class CommandSTR extends AbstractCommand {
     private final long REFRESH_PERIOD = 1000 * 60 * 60 * 4; // 4 hours
     
     private enum CPURating {
-        OVERKILL("Overkill", 8400),
-        GREAT("Great for most", 7200),
-        GOOD("Good for most", 6000),
-        MINIMUM_3D("Okay for some 3D", 4800),
-        MINIMUM_2D("Okay for some 2D", 3600),
-        VERY_SLOW("Very Slow", 2400),
+        OVERKILL("Overkill", 2800),
+        GREAT("Great for most", 2400),
+        GOOD("Good for most", 2000),
+        MINIMUM_3D("Okay for 3D", 1600),
+        MINIMUM_2D("Okay for 2D", 1200),
+        VERY_SLOW("Very Slow", 800),
         AWFUL("Awful", 0);
         
         private String displayName;
