@@ -54,11 +54,6 @@ public class CommandInterpreter extends ListenerAdapter {
             return;
         
         Message message = event.getMessage();
-        
-        if (event.getMember() != null) {
-            hifumiBot.getFilterController().filter(event.getMember(), event.getChannel(), message);
-        }
-        
         String[] args = message.getContentDisplay().split(" ");
         String command = args[0].toLowerCase();
         args = ArrayUtils.remove(args, 0);

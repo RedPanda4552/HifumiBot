@@ -24,9 +24,6 @@
 package io.github.redpanda4552.HifumiBot;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 import javax.security.auth.login.LoginException;
@@ -37,10 +34,8 @@ import org.jsoup.select.Elements;
 
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
-import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.messaging.FilterController;
 import io.github.redpanda4552.HifumiBot.messaging.NewMemberMessageController;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.JDA;
@@ -92,7 +87,6 @@ public class HifumiBot {
     private PermissionManager permissionManager;
     private CommandIndex commandIndex;
     private CommandInterpreter commandInterpreter;
-    private FilterController filterController;
     private NewMemberMessageController newMemberMessageController;
     private EventListener eventListener;
     private Thread monitorThread;
@@ -124,8 +118,6 @@ public class HifumiBot {
         ConfigManager.createConfigIfNotExists();
         config = ConfigManager.read();
         commandIndex = new CommandIndex();
-        dbConversion();
-        filterController = new FilterController();
         newMemberMessageController = new NewMemberMessageController();
         permissionManager = new PermissionManager(superuserId);
         jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
@@ -168,10 +160,6 @@ public class HifumiBot {
         return commandInterpreter;
     }
     
-    public FilterController getFilterController() {
-        return filterController;
-    }
-    
     public NewMemberMessageController getNewMemberMessageController() {
         return newMemberMessageController;
     }
@@ -187,7 +175,6 @@ public class HifumiBot {
     public void shutdown(boolean reload) {
         HifumiBot.getSelf().getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
         stopMonitor();
-        getFilterController().shutdown();
         jda.shutdown();
         
         if (reload)
@@ -220,25 +207,5 @@ public class HifumiBot {
     
     public Message sendMessage(MessageChannel channel, Message msg) {
         return channel.sendMessage(msg).complete();
-    }
-    
-    private void dbConversion() {
-        try {
-            PreparedStatement ps = SQLite.prepareStatement("SELECT * FROM commands_v2");
-            ResultSet res = ps.executeQuery();
-            
-            while (res.next()) {
-                DynamicCommand dyncmd = new DynamicCommand(res.getString("name"), res.getString("category"), res.getBoolean("admin"), res.getString("helpText"), res.getString("title"), res.getString("body"), res.getString("imageUrl"));
-                
-                if (!HifumiBot.getSelf().getCommandIndex().isDynamicCommand(res.getString("name"))) {
-                    HifumiBot.getSelf().getConfig().dynamicCommands.add(dyncmd);
-                }
-            }
-            
-            ConfigManager.write(HifumiBot.getSelf().getConfig());
-            HifumiBot.getSelf().getCommandIndex().rebuild();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

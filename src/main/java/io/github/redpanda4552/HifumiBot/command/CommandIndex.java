@@ -76,8 +76,6 @@ public class CommandIndex {
         commandMap.put(dx9.getName(), dx9);
         CommandSTR str = new CommandSTR();
         commandMap.put(str.getName(), str);
-        CommandFilter filter = new CommandFilter();
-        commandMap.put(filter.getName(), filter);
         CommandWelcome welcome = new CommandWelcome();
         commandMap.put(welcome.getName(), welcome);
         
