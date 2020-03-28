@@ -198,12 +198,16 @@ public class CommandSTR extends AbstractCommand {
         System.out.println("Test");
         try {
             Document doc = Jsoup.connect(PASSMARK_STR).maxBodySize(0).get();
-            Elements rows = doc.getElementsByClass("chartlist").get(0).getElementsByTag("li");
+            Elements charts = doc.getElementsByClass("chartlist");
             
-            for (Element row : rows) {
-                String cpuName = row.getElementsByClass("prdname").get(0).text();
-                String rating = row.getElementsByClass("count").get(0).text();
-                ratingMap.put(cpuName, rating);
+            for (Element chart : charts) {
+                Elements rows = chart.getElementsByTag("li");
+                
+                for (Element row : rows) {
+                    String cpuName = row.getElementsByClass("prdname").get(0).text();
+                    String rating = row.getElementsByClass("count").get(0).text();
+                    ratingMap.put(cpuName, rating);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
