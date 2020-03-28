@@ -21,25 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.config;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.util.CommandMeta;
+import java.util.ArrayList;
 
-public class CommandShutdown extends AbstractCommand {
+import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 
-    public CommandShutdown(HifumiBot hifumiBot) {
-        super(hifumiBot, true, CATEGORY_BUILTIN);
+public class Config {
+
+    public ArrayList<DynamicCommand> dynamicCommands;
+    
+    public Config() {
+        dynamicCommands = new ArrayList<DynamicCommand>();
     }
-
-    @Override
-    protected void onExecute(CommandMeta cm) {
-        hifumiBot.shutdown(false);
-    }
-
-    @Override
-    protected String getHelpText() {
-        return "Fully shutdown HifumiBot, with no attempt to reload a new instance.";
-    }
-
 }

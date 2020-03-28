@@ -21,42 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.util.CommandMeta;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
+import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 
-public class CommandDev extends AbstractCommand {
+public class CommandDX9 extends AbstractCommand {
 
-    private final String DEV_CHANNEL = "dev-builds";
+    private final String VIDEO_LINK = "https://cdn.discordapp.com/attachments/514592552389967881/525387135138660353/gone_out.mp4";
     
-    public CommandDev(HifumiBot hifumiBot) {
-        super(hifumiBot, false, CATEGORY_BUILTIN);
+    public CommandDX9() {
+        super("dx9", CATEGORY_BUILTIN, false);
     }
 
     @Override
     protected void onExecute(CommandMeta cm) {
-        if (!(cm.getChannel() instanceof TextChannel)) {
-            hifumiBot.sendMessage(cm.getChannel(), "Sorry, but this command can only be used within the PCSX2 server.");
-            return;
-        }
-            
-        
-        EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        eb.setTitle("PCSX2 Development Builds");
-        eb.setDescription("Problems? Looking for PCSX2 updates? Consider using PCSX2 development builds! I post a message in ");
-        TextChannel devBuilds = cm.getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
-        eb.appendDescription(devBuilds.getAsMention())
-          .appendDescription(" whenever a new development build is ready!");
-        hifumiBot.sendMessage(cm.getChannel(), eb.build());
+        HifumiBot.getSelf().sendMessage(cm.getChannel(), VIDEO_LINK);
     }
 
     @Override
-    protected String getHelpText() {
-        return "Print a dialog about development builds";
+    public String getHelpText() {
+        return "Get this trash out of here!";
     }
 
 }
