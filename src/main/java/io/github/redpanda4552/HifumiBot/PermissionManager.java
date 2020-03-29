@@ -48,7 +48,7 @@ public class PermissionManager {
         return isSuperuser(user) || isAdmin(member);
     }
     
-    private boolean isSuperuser(User user) {
+    public boolean isSuperuser(User user) {
         if (user == null)
             return false;
         

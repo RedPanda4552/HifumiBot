@@ -32,7 +32,18 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.commands.*;
+import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandAbout;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandDX9;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandDynCmd;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandPFP;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandReload;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandSTR;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandWelcome;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -78,7 +89,8 @@ public class CommandIndex {
         commandMap.put(str.getName(), str);
         CommandWelcome welcome = new CommandWelcome();
         commandMap.put(welcome.getName(), welcome);
-        
+        CommandPFP pfp = new CommandPFP();
+        commandMap.put(pfp.getName(), pfp);
         
         for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getConfig().dynamicCommands) {
             commandMap.put(dynamicCommand.getName(), dynamicCommand);
