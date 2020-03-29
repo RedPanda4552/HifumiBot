@@ -35,6 +35,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDX9;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandPFP;
@@ -69,28 +70,30 @@ public class CommandIndex {
      */
     public void rebuild() {
         commandMap.clear();
-        CommandHelp help = new CommandHelp();
-        commandMap.put(help.getName(), help);
         CommandAbout about = new CommandAbout();
         commandMap.put(about.getName(), about);
+        CommandDev dev = new CommandDev();
+        commandMap.put(dev.getName(), dev);
+        CommandDX9 dx9 = new CommandDX9();
+        commandMap.put(dx9.getName(), dx9);
+        CommandDynCmd dyncmd = new CommandDynCmd();
+        commandMap.put(dyncmd.getName(), dyncmd);
+        CommandHelp help = new CommandHelp();
+        commandMap.put(help.getName(), help);
+        CommandPFP pfp = new CommandPFP();
+        commandMap.put(pfp.getName(), pfp);
         CommandReload reload = new CommandReload();
         commandMap.put(reload.getName(), reload);
         CommandShutdown shutdown = new CommandShutdown();
         commandMap.put(shutdown.getName(), shutdown);
-        CommandWiki wiki = new CommandWiki();
-        commandMap.put(wiki.getName(), wiki);
-        CommandWarez warez = new CommandWarez();
-        commandMap.put(warez.getName(), warez);
-        CommandDynCmd dyncmd = new CommandDynCmd();
-        commandMap.put(dyncmd.getName(), dyncmd);
-        CommandDX9 dx9 = new CommandDX9();
-        commandMap.put(dx9.getName(), dx9);
         CommandSTR str = new CommandSTR();
         commandMap.put(str.getName(), str);
+        CommandWarez warez = new CommandWarez();
+        commandMap.put(warez.getName(), warez);
         CommandWelcome welcome = new CommandWelcome();
         commandMap.put(welcome.getName(), welcome);
-        CommandPFP pfp = new CommandPFP();
-        commandMap.put(pfp.getName(), pfp);
+        CommandWiki wiki = new CommandWiki();
+        commandMap.put(wiki.getName(), wiki);
         
         for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getConfig().dynamicCommands) {
             commandMap.put(dynamicCommand.getName(), dynamicCommand);
