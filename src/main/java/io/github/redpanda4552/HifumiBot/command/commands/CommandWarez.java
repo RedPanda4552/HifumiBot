@@ -33,7 +33,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class CommandWarez extends AbstractCommand {
 
-    private final String RULES_CHANNEL = "welcome-rules", WAREZ_ROLE_ID = "535718317864910850";
+    public static final String RULES_CHANNEL = "welcome-rules", WAREZ_ROLE_ID = "535718317864910850";
     
     public CommandWarez() {
         super("warez", CATEGORY_BUILTIN, true);

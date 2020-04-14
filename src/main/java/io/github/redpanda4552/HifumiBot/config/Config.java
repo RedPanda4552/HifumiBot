@@ -23,15 +23,19 @@
  */
 package io.github.redpanda4552.HifumiBot.config;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 
 public class Config {
-
+    
     public ArrayList<DynamicCommand> dynamicCommands;
+    public HashMap<String, OffsetDateTime> warezUsers;
     
     public Config() {
         dynamicCommands = new ArrayList<DynamicCommand>();
+        warezUsers = new HashMap<String, OffsetDateTime>();
     }
 }

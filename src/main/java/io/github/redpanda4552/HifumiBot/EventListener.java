@@ -23,17 +23,23 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
+import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -48,8 +54,35 @@ public class EventListener extends ListenerAdapter {
     }
     
     @Override
+    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
+        for (Role role : event.getRoles()) {
+            if (role.getId().equals(CommandWarez.WAREZ_ROLE_ID) && !HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId())) {
+                HifumiBot.getSelf().getConfig().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
+                ConfigManager.write(HifumiBot.getSelf().getConfig());
+                return;
+            }
+        }
+    }
+    
+    @Override
+    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
+        for (Role role : event.getRoles()) {
+            if (role.getId().equals(CommandWarez.WAREZ_ROLE_ID)) {
+                HifumiBot.getSelf().getConfig().warezUsers.remove(event.getUser().getId());
+                ConfigManager.write(HifumiBot.getSelf().getConfig());
+                return;
+            }
+        }
+    }
+    
+    @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         hifumiBot.getNewMemberMessageController().sendMessage(event.getUser());
+        
+        if (HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId())) {
+            Role role = event.getGuild().getRoleById(CommandWarez.WAREZ_ROLE_ID);
+            event.getGuild().addRoleToMember(event.getMember(), role).complete();
+        }
     }
     
     @Override
