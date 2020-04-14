@@ -52,7 +52,6 @@ public class ConfigManager {
         try {
             InputStream iStream = Files.newInputStream(file.toPath());
             String json = new String(iStream.readAllBytes());
-            System.out.println(json);
             Gson gson = new Gson();
             return gson.fromJson(json, Config.class);
         } catch (IOException e) {
