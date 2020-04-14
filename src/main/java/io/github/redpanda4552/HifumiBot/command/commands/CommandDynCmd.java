@@ -52,7 +52,6 @@ public class CommandDynCmd extends AbstractCommand {
     protected void onExecute(CommandMeta cm) {
         if (cm.getArgs().length < 2) {
             HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
-            System.err.println("arg count < 2");
             return;
         }
         
@@ -140,7 +139,7 @@ public class CommandDynCmd extends AbstractCommand {
         MessageBuilder mb = new MessageBuilder();
         
         for (String str : results) {
-            mb.append(str);
+            mb.append(str).append("\n");
         }
         
         HifumiBot.getSelf().sendMessage(channel, mb.build());
