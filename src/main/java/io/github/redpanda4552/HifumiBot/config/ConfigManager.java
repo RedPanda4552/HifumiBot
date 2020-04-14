@@ -35,7 +35,7 @@ import com.google.gson.GsonBuilder;
 public class ConfigManager {
 
     private static final String CONFIG_PATH = "./hifumi-conf.json";
-    private static final File file = new File(CONFIG_PATH);
+    public static final File file = new File(CONFIG_PATH);
     
     public static void createConfigIfNotExists() {
         try {

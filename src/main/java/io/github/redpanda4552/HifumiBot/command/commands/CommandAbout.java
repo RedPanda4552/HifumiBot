@@ -25,6 +25,7 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 
@@ -49,6 +50,7 @@ public class CommandAbout extends AbstractCommand {
         eb.addField("Created By", "pandubz", true);
         String version = getClass().getPackage().getImplementationVersion();
         eb.addField("Version", version != null ? version : "[Debug Mode]", true);
+        eb.addField("Config Size", (ConfigManager.file.length() / 1024) + " KB", true);
         HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
     }
 
