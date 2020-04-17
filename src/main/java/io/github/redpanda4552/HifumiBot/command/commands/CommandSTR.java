@@ -104,6 +104,7 @@ public class CommandSTR extends AbstractCommand {
             eb.appendDescription("**Single Thread Rating** (STR) is a benchmarking statistic used by Passmark's CPU benchmarking software. ")
               .appendDescription("The statistic indicates how powerful a single thread on a CPU is. ")
               .appendDescription("Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
+            eb.addField("Direct link", "https://www.cpubenchmark.net/singleThread.html", false);
             eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + "str <cpu model here>`", false);
             HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
             return;
