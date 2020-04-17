@@ -24,11 +24,13 @@
 package io.github.redpanda4552.HifumiBot;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
@@ -45,6 +47,8 @@ import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEv
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class EventListener extends ListenerAdapter {
+    
+    private static final String BOT_TALK_CHANNEL_ID = "352232087736025090";
     
     private HifumiBot hifumiBot;
     private HashMap<String, Message> messages = new HashMap<String, Message>();
@@ -80,8 +84,19 @@ public class EventListener extends ListenerAdapter {
         hifumiBot.getNewMemberMessageController().sendMessage(event.getUser());
         
         if (HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId())) {
+            // First assign the warez role
             Role role = event.getGuild().getRoleById(CommandWarez.WAREZ_ROLE_ID);
             event.getGuild().addRoleToMember(event.getMember(), role).complete();
+            
+            // Then send a notification 
+            EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(HifumiBot.getSelf().getJDA().getSelfUser());
+            eb.setTitle("Warez Member Rejoined");
+            eb.setDescription("A user who was previously warez'd has rejoined the server.");
+            eb.addField("User Name", event.getUser().getName(), true);
+            eb.addField("Display Name", event.getMember().getEffectiveName(), true);
+            String dateStr = HifumiBot.getSelf().getConfig().warezUsers.get(event.getUser().getId()).format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
+            eb.addField("Warez Date", dateStr, true);
+            HifumiBot.getSelf().sendMessage(event.getGuild().getTextChannelById(BOT_TALK_CHANNEL_ID), eb.build());
         }
     }
     
