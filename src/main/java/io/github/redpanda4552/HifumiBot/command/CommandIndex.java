@@ -37,6 +37,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDX9;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDynCmd;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandReload;
@@ -78,6 +79,8 @@ public class CommandIndex {
         commandMap.put(dx9.getName(), dx9);
         CommandDynCmd dyncmd = new CommandDynCmd();
         commandMap.put(dyncmd.getName(), dyncmd);
+        CommandGPU gpu = new CommandGPU();
+        commandMap.put(gpu.getName(), gpu);
         CommandHelp help = new CommandHelp();
         commandMap.put(help.getName(), help);
         CommandPFP pfp = new CommandPFP();
