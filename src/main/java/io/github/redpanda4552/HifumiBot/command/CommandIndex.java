@@ -91,6 +91,7 @@ public class CommandIndex {
         commandMap.put(shutdown.getName(), shutdown);
         CommandSTR str = new CommandSTR();
         commandMap.put(str.getName(), str);
+        commandMap.put("cpu", str); // Alias for str
         CommandWarez warez = new CommandWarez();
         commandMap.put(warez.getName(), warez);
         CommandWelcome welcome = new CommandWelcome();
