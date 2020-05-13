@@ -41,6 +41,7 @@ public class WikiPage {
     private String title, wikiPageUrl, coverArtUrl;
     private HashMap<String, RegionSet> regionSets = new HashMap<String, RegionSet>();
     private ArrayList<String> knownIssues = new ArrayList<String>();
+    private ArrayList<String> fixedIssues = new ArrayList<String>();
     
     public WikiPage(String url) {
         try {
@@ -93,23 +94,25 @@ public class WikiPage {
                 }
             }
             
-            Element currentElement = page.getElementById("mw-content-text").getElementById("Known_Issues");
-            
-            if (currentElement != null && currentElement.hasParent())
-                currentElement = currentElement.parent();
-            
-            while (currentElement != null && currentElement.nextElementSibling() != null) {
-                currentElement = currentElement.nextElementSibling();
-                
-                if (currentElement.tagName().equals("h2")) {
-                    break;
-                } else if (currentElement.tagName().equals("h3")) {
-                    knownIssues.add(currentElement.text());
-                }
-            }
-            
+            scanSection(page.getElementById("mw-content-text").getElementById("Known_Issues"), knownIssues);
+            scanSection(page.getElementById("mw-content-text").getElementById("Fixed_Issues"), fixedIssues);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    
+    private void scanSection(Element currentElement, ArrayList<String> destination) {
+        if (currentElement != null && currentElement.hasParent())
+            currentElement = currentElement.parent();
+        
+        while (currentElement != null && currentElement.nextElementSibling() != null) {
+            currentElement = currentElement.nextElementSibling();
+            
+            if (currentElement.tagName().equals("h2")) {
+                break;
+            } else if (currentElement.tagName().equals("h3")) {
+                destination.add(currentElement.text());
+            }
         }
     }
     
@@ -131,5 +134,9 @@ public class WikiPage {
     
     public ArrayList<String> getKnownIssues() {
         return knownIssues;
+    }
+    
+    public ArrayList<String> getFixedIssues() {
+        return fixedIssues;
     }
 }

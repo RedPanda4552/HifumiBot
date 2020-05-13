@@ -196,6 +196,14 @@ public class EventListener extends ListenerAdapter {
         if (!issueList.toString().isEmpty())
             eb.addField("__Known Issues:__", issueList.toString(), true);
         
+        StringBuilder fixedList = new StringBuilder();
+        
+        for (String fixedIssue : wikiPage.getFixedIssues())
+            fixedList.append(fixedIssue).append("\n");
+        
+        if (!fixedList.toString().isEmpty())
+            eb.addField("__Fixed Issues:__", fixedList.toString(), true);
+        
         msg.editMessage(eb.build()).complete();
         messages.remove(userId);
     }
