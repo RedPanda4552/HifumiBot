@@ -72,11 +72,12 @@ public class BuildMonitor implements Runnable {
                     }
                 }
                 
-                Document buildBotPage = Jsoup.connect(ORPHIS_PCSX2_ROOT).get();        // Get the entire Orphis page
+                Document buildBotPage = Jsoup.connect(ORPHIS_PCSX2_ROOT).get();       // Get the entire Orphis page
                 Element table = buildBotPage.getElementsByClass("listing").get(0);    // Get the table
                 Element row = table.getElementsByTag("tr").get(1);                    // Get first row
                 Element revisionCell = row.getElementsByTag("td").get(0);             // Get first cell
                 gitRevision = revisionCell.getElementsByTag("a").get(0).ownText();    // Get display text
+                Element commitCell = row.getElementsByTag("td").get(4);               // Get last cell
                 
                 if (!gitRevision.equals(lastPostedRevision)) {
                     lastPostedRevision = gitRevision;
@@ -84,6 +85,7 @@ public class BuildMonitor implements Runnable {
                     EmbedBuilder eb = new EmbedBuilder();
                     eb.setAuthor("New PCSX2 Development Build Available!");
                     eb.addField("Revision:", gitRevision, false);
+                    eb.addField("Commit:", commitCell.ownText(), false);
                     eb.addField("Windows:", WINDOWS_INSTRUCTIONS, false);
                     eb.addField("Linux (Ubuntu/Debian):", LINUX_INSTRUCTIONS, false);
                     eb.addField("Linux (Any)", "A guide to compile from source can be found on GitHub:\nhttps://github.com/PCSX2/pcsx2/wiki/Installing-on-Linux", false);
