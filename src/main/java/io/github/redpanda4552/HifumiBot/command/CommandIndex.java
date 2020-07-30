@@ -44,7 +44,6 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandSTR;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandWelcome;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -94,8 +93,6 @@ public class CommandIndex {
         commandMap.put("cpu", str); // Alias for str
         CommandWarez warez = new CommandWarez();
         commandMap.put(warez.getName(), warez);
-        CommandWelcome welcome = new CommandWelcome();
-        commandMap.put(welcome.getName(), welcome);
         CommandWiki wiki = new CommandWiki();
         commandMap.put(wiki.getName(), wiki);
         

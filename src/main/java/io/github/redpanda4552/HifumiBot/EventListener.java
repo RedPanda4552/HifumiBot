@@ -81,8 +81,6 @@ public class EventListener extends ListenerAdapter {
     
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        hifumiBot.getNewMemberMessageController().sendMessage(event.getUser());
-        
         if (HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId())) {
             // First assign the warez role
             Role role = event.getGuild().getRoleById(CommandWarez.WAREZ_ROLE_ID);

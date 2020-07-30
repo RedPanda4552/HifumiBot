@@ -36,7 +36,6 @@ import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.messaging.NewMemberMessageController;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -89,7 +88,6 @@ public class HifumiBot {
     private PermissionManager permissionManager;
     private CommandIndex commandIndex;
     private CommandInterpreter commandInterpreter;
-    private NewMemberMessageController newMemberMessageController;
     private EventListener eventListener;
     private Thread monitorThread;
     
@@ -122,7 +120,6 @@ public class HifumiBot {
         ConfigManager.createConfigIfNotExists();
         config = ConfigManager.read();
         commandIndex = new CommandIndex();
-        newMemberMessageController = new NewMemberMessageController();
         permissionManager = new PermissionManager(superuserId);
         jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
         
@@ -162,10 +159,6 @@ public class HifumiBot {
     
     public CommandInterpreter getCommandInterpreter() {
         return commandInterpreter;
-    }
-    
-    public NewMemberMessageController getNewMemberMessageController() {
-        return newMemberMessageController;
     }
     
     public EventListener getEventListener() {
