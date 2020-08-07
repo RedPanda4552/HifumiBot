@@ -152,7 +152,7 @@ public class EventListener extends ListenerAdapter {
     }
     
     public void finalizeMessage(Message msg, String gameName, String userId) {
-        WikiPage wikiPage = new WikiPage(hifumiBot.getFullGamesMap().get(gameName));
+        WikiPage wikiPage = new WikiPage(hifumiBot.getWikiIndex().getWikiPageUrl(gameName));
         
         if (msg.getChannel() instanceof TextChannel) {
             msg.clearReactions().complete();

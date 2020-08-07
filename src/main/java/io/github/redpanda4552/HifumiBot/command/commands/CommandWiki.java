@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -40,14 +41,14 @@ public class CommandWiki extends AbstractCommand {
     @Override
     protected void onExecute(CommandMeta cm) {
         if (cm.getArgs().length == 0) {
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), "I can't search for nothing! Try `!wiki <title of game here>`");
+            HifumiBot.getSelf().sendMessage(cm.getChannel(), "I can't search for nothing! Try `" + CommandInterpreter.PREFIX + "wiki <title of game here>`");
             return;
         }
         
         HashMap<String, Float> results = new HashMap<String, Float>();
         
         // A basic weighting algorithm.
-        for (String name : HifumiBot.getSelf().getFullGamesMap().keySet()) {
+        for (String name : HifumiBot.getSelf().getWikiIndex().getAllTitles()) {
             String[] nameParts = name.toLowerCase().trim().split(" ");
             float toPush = 0;
             

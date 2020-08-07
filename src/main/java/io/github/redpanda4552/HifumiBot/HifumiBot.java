@@ -23,20 +23,13 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
-import java.io.IOException;
-import java.util.HashMap;
-
 import javax.security.auth.login.LoginException;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
+import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -81,17 +74,17 @@ public class HifumiBot {
         return self;
     }
     
-    private final String FULL_GAMES_URL = "https://wiki.pcsx2.net/Complete_List_of_Games";
-    
-    private Config config;
     private JDA jda;
-    private PermissionManager permissionManager;
+    private Config config;
+    
+    private Scheduler scheduler;
+    private WikiIndex wikiIndex;
     private CommandIndex commandIndex;
+    private PermissionManager permissionManager;
     private CommandInterpreter commandInterpreter;
     private EventListener eventListener;
-    private Thread monitorThread;
     
-    private HashMap<String, String> fullGamesMap = new HashMap<String, String>();
+    private Thread monitorThread;
     
     public HifumiBot() {
         self = this;
@@ -119,26 +112,28 @@ public class HifumiBot {
         updateStatus("Starting...");
         ConfigManager.createConfigIfNotExists();
         config = ConfigManager.read();
+        scheduler = new Scheduler();
+        wikiIndex = new WikiIndex();
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
         jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
-        
-        try {
-            Elements anchors = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get().getElementsByClass("wikitable").first().getElementsByTag("a");
-            
-            for (Element anchor : anchors)
-                fullGamesMap.put(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
         jda.addEventListener(eventListener = new EventListener(this));
+        
+        // Schedule repeating tasks
+        scheduler.scheduleRepeating(() -> {
+            HifumiBot.getSelf().getWikiIndex().refresh();
+        }, 1000 * 60 * 60 * 24);
+        
         startMonitor();
         updateStatus(">help" + (debug ? " [Debug Mode]" : ""));
     }
     
     public Config getConfig() {
         return config;
+    }
+    
+    public WikiIndex getWikiIndex() {
+        return wikiIndex;
     }
     
     public CommandIndex getCommandIndex() {
@@ -163,10 +158,6 @@ public class HifumiBot {
     
     public EventListener getEventListener() {
         return eventListener;
-    }
-    
-    public HashMap<String, String> getFullGamesMap() {
-        return fullGamesMap;
     }
     
     public void shutdown(boolean reload) {
