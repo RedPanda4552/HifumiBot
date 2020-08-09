@@ -23,6 +23,8 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,9 +32,11 @@ import java.util.concurrent.TimeUnit;
 public class Scheduler {
 
     private ScheduledExecutorService threadPool;
+    private HashMap<String, Runnable> runnables;
     
     public Scheduler() {
         this.threadPool = Executors.newScheduledThreadPool(4);
+        this.runnables = new HashMap<String, Runnable>();
     }
     
     /**
@@ -40,8 +44,20 @@ public class Scheduler {
      * @param runnable - The Runnable or lambda to schedule
      * @param period - Period in milliseconds between runs
      */
-    public void scheduleRepeating(Runnable runnable, long period) {
+    public void scheduleRepeating(String name, Runnable runnable, long period) {
+        this.runnables.put(name, runnable);
         this.threadPool.scheduleAtFixedRate(runnable, period, period, TimeUnit.MILLISECONDS);
+    }
+    
+    public boolean executeImmediate(String name) {
+        Runnable runnable = this.runnables.get(name);
+        
+        if (runnable != null) {
+            this.threadPool.execute(runnable);
+            return true;
+        }
+        
+        return false;
     }
     
     /**
@@ -49,5 +65,9 @@ public class Scheduler {
      */
     public void shutdown() {
         threadPool.shutdown();
+    }
+    
+    public Set<String> getRunnableNames() {
+        return this.runnables.keySet();
     }
 }

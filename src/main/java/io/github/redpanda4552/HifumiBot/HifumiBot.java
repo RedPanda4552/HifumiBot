@@ -79,12 +79,13 @@ public class HifumiBot {
     
     private Scheduler scheduler;
     private WikiIndex wikiIndex;
+    private CpuIndex cpuIndex;
+    private GpuIndex gpuIndex;
+    private BuildMonitor buildMonitor;
     private CommandIndex commandIndex;
     private PermissionManager permissionManager;
     private CommandInterpreter commandInterpreter;
     private EventListener eventListener;
-    
-    private Thread monitorThread;
     
     public HifumiBot() {
         self = this;
@@ -114,17 +115,31 @@ public class HifumiBot {
         config = ConfigManager.read();
         scheduler = new Scheduler();
         wikiIndex = new WikiIndex();
+        cpuIndex = new CpuIndex();
+        gpuIndex = new GpuIndex();
+        buildMonitor = new BuildMonitor(jda.getTextChannelById(outputChannelId));
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
         jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
         jda.addEventListener(eventListener = new EventListener(this));
         
         // Schedule repeating tasks
-        scheduler.scheduleRepeating(() -> {
+        scheduler.scheduleRepeating("wiki", () -> {
             HifumiBot.getSelf().getWikiIndex().refresh();
         }, 1000 * 60 * 60 * 24);
         
-        startMonitor();
+        scheduler.scheduleRepeating("cpu", () -> {
+            HifumiBot.getSelf().getCpuIndex().refresh();
+        }, 1000 * 60 * 60 * 24);
+        
+        scheduler.scheduleRepeating("gpu", () -> {
+            HifumiBot.getSelf().getGpuIndex().refresh();
+        }, 1000 * 60 * 60 * 24);
+        
+        scheduler.scheduleRepeating("dev", () -> {
+            HifumiBot.getSelf().getBuildMonitor().refresh();
+        }, 1000 * 60 * 10);
+        
         updateStatus(">help" + (debug ? " [Debug Mode]" : ""));
     }
     
@@ -132,8 +147,24 @@ public class HifumiBot {
         return config;
     }
     
+    public Scheduler getScheduler() {
+        return scheduler;
+    }
+    
     public WikiIndex getWikiIndex() {
         return wikiIndex;
+    }
+    
+    public CpuIndex getCpuIndex() {
+        return cpuIndex;
+    }
+    
+    public GpuIndex getGpuIndex() {
+        return gpuIndex;
+    }
+    
+    public BuildMonitor getBuildMonitor() {
+        return buildMonitor;
     }
     
     public CommandIndex getCommandIndex() {
@@ -162,21 +193,10 @@ public class HifumiBot {
     
     public void shutdown(boolean reload) {
         HifumiBot.getSelf().getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
-        stopMonitor();
         jda.shutdown();
         
         if (reload)
             self = new HifumiBot();
-    }
-    
-    public void stopMonitor() {
-        monitorThread.interrupt();
-    }
-    
-    public void startMonitor() {
-        monitorThread = new Thread(new BuildMonitor(jda.getTextChannelById(outputChannelId)), "BuildMonitor");
-        monitorThread.start();
-        System.out.println("BuildMonitor thread started");
     }
     
     public Message sendMessage(MessageChannel channel, MessageEmbed embed) {

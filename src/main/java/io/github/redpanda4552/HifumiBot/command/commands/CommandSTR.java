@@ -23,28 +23,20 @@
  */
 package io.github.redpanda4552.HifumiBot.command.commands;
 
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.CpuIndex;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.Message;
 
 public class CommandSTR extends AbstractCommand {
 
-    private final String PASSMARK_STR = "https://www.cpubenchmark.net/singleThread.html";
-    private final long REFRESH_PERIOD = 1000 * 60 * 60 * 4; // 4 hours
-    
     private enum CPURating {
         OVERKILL("Overkill", 2800),
         GREAT("Great for most", 2400),
@@ -71,59 +63,38 @@ public class CommandSTR extends AbstractCommand {
         }
     }
     
-    private long lastUpdate = 0;
-    private HashMap<String, String> ratingMap = new HashMap<String, String>();
-    
     public CommandSTR() {
         super("str", CATEGORY_BUILTIN, false);
-        update();
     }
 
     @Override
     protected void onExecute(CommandMeta cm) {
-        long now = System.currentTimeMillis();
-        
-        if (now - lastUpdate > REFRESH_PERIOD) {
-            if (update()) {
-                lastUpdate = now;
-            } else {
-                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Something went wrong when trying to reach Passmark... Going to try to use whatever info I already have!");
-            }
-        }
-        
         // Search
         if (cm.getArgs().length == 0) {
             EmbedBuilder eb;
             
-            if (cm.getMember() != null)
+            if (cm.getMember() != null) {
                 eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-            else 
+            } else { 
                 eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
+            }
             
             eb.setTitle("About Single Thread Ratings (STR)");
             eb.appendDescription("**Single Thread Rating** (STR) is a benchmarking statistic used by Passmark's CPU benchmarking software. ")
               .appendDescription("The statistic indicates how powerful a single thread on a CPU is. ")
               .appendDescription("Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
-            eb.addField("Direct link", "https://www.cpubenchmark.net/singleThread.html", false);
+            eb.addField("Direct link", CpuIndex.PASSMARK_STR_URL, false);
             eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + "str <cpu model here>`", false);
             HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
             return;
         }
         
-        EmbedBuilder eb;
-        
-        if (cm.getMember() != null)
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        else
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
-        
-        eb.setTitle("Comparing your search to " + ratingMap.size() + " CPUs...");
-        eb.setColor(0xffff00);
-        Message message = HifumiBot.getSelf().sendMessage(cm.getChannel(), new MessageBuilder().setEmbed(eb.build()).build());
+        CpuIndex cpuIndex = HifumiBot.getSelf().getCpuIndex();
         
         HashMap<String, Float> results = new HashMap<String, Float>();
+        Set<String> s = cpuIndex.getAllCpus();
         
-        for (String cpuName : ratingMap.keySet()) {
+        for (String cpuName : s) {
             String normalized = cpuName.toLowerCase().trim();
             
             float toPush = 0;
@@ -142,16 +113,18 @@ public class CommandSTR extends AbstractCommand {
                 }
             }
             
-            if (toPush > 0)
+            if (toPush > 0) {
                 results.put(cpuName, toPush);
-            
-            sleep(1); // Just to give the raspi a break...
+            }
         }
         
-        if (cm.getMember() != null)
+        EmbedBuilder eb;
+        
+        if (cm.getMember() != null) {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        else
+        } else {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
+        }
         
         if (results.size() > 0) {
             eb.setTitle("Query Results for \"" + StringUtils.join(cm.getArgs(), " ") + "\"");
@@ -168,7 +141,7 @@ public class CommandSTR extends AbstractCommand {
                 
                 results.remove(highestName);
                 highestWeight = 0;
-                int highestScore = Integer.parseInt(ratingMap.get(highestName).replaceAll("[,. ]", ""));
+                int highestScore = Integer.parseInt(cpuIndex.getCpuRating(highestName).replaceAll("[,. ]", ""));
                 String highestScoreDescription = "";
                 
                 for (int i = 0; i < CPURating.values().length; i++) {
@@ -187,43 +160,16 @@ public class CommandSTR extends AbstractCommand {
             eb.setColor(0xff0000);
         }
         
-        message.editMessage(eb.build()).complete();
+        try {
+            HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
     }
 
     @Override
     public String getHelpText() {
         return "Look up the Single Thread Rating for a CPU";
-    }
-
-    private boolean update() {
-        try {
-            Document doc = Jsoup.connect(PASSMARK_STR).maxBodySize(0).get();
-            Elements charts = doc.getElementsByClass("chartlist");
-            
-            for (Element chart : charts) {
-                Elements rows = chart.getElementsByTag("li");
-                
-                for (Element row : rows) {
-                    String cpuName = row.getElementsByClass("prdname").get(0).text();
-                    String rating = row.getElementsByClass("count").get(0).text();
-                    ratingMap.put(cpuName, rating);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        
-        return true;
-    }
-    
-    private boolean sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            return false;
-        }
-        
-        return true;
     }
 }

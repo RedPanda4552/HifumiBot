@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.wiki;
+package io.github.redpanda4552.HifumiBot;
 
 import java.io.IOException;
 import java.util.Set;
@@ -32,30 +32,33 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import io.github.redpanda4552.HifumiBot.util.Refreshable;
+public class CpuIndex {
 
-public class WikiIndex implements Refreshable {
-
-    private static final String FULL_GAMES_URL = "https://wiki.pcsx2.net/Complete_List_of_Games";
+    public static final String PASSMARK_STR_URL = "https://www.cpubenchmark.net/singleThread.html";
     
-    private ConcurrentHashMap<String, String> fullGamesMap = new ConcurrentHashMap<String, String>();
+    private ConcurrentHashMap<String, String> cpuMap = new ConcurrentHashMap<String, String>();
     
-    public WikiIndex() {
+    public CpuIndex() {
         this.refresh();
     }
     
-    @Override
     public synchronized void refresh() {
         try {
-            // Attempt to retrieve the games list, if successful, wipe the
-            // current map and repopulate it.
-            Document doc = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get();
-            Elements anchors = doc.getElementsByClass("wikitable").first().getElementsByTag("a");
-                    
-            this.clear();
+            Document doc = Jsoup.connect(PASSMARK_STR_URL).maxBodySize(0).get();
+            Elements charts = doc.getElementsByClass("chartlist");
             
-            for (Element anchor : anchors) {
-                this.addGame(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
+            if (charts.size() > 0) {
+                this.clear();
+                
+                for (Element chart : charts) {
+                    Elements rows = chart.getElementsByTag("li");
+                    
+                    for (Element row : rows) {
+                        String cpuName = row.getElementsByClass("prdname").get(0).text();
+                        String rating = row.getElementsByClass("count").get(0).text();
+                        this.addCpu(cpuName, rating);
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,18 +66,18 @@ public class WikiIndex implements Refreshable {
     }
     
     public synchronized void clear() {
-        fullGamesMap.clear();
+        cpuMap.clear();
     }
     
-    public synchronized void addGame(String title, String wikiPageUrl) {
-        fullGamesMap.put(title, wikiPageUrl);
+    public synchronized void addCpu(String name, String rating) {
+        cpuMap.put(name, rating);
     }
     
-    public synchronized Set<String> getAllTitles() {
-        return fullGamesMap.keySet();
+    public synchronized Set<String> getAllCpus() {
+        return cpuMap.keySet();
     }
     
-    public synchronized String getWikiPageUrl(String title) {
-        return fullGamesMap.get(title);
+    public synchronized String getCpuRating(String name) {
+        return cpuMap.get(name);
     }
 }

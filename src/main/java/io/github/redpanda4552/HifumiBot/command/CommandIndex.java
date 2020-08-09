@@ -41,6 +41,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandReload;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandSTR;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
@@ -86,6 +87,8 @@ public class CommandIndex {
         commandMap.put(pfp.getName(), pfp);
         CommandReload reload = new CommandReload();
         commandMap.put(reload.getName(), reload);
+        CommandRun run = new CommandRun();
+        commandMap.put(run.getName(), run);
         CommandShutdown shutdown = new CommandShutdown();
         commandMap.put(shutdown.getName(), shutdown);
         CommandSTR str = new CommandSTR();

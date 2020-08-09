@@ -29,6 +29,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import io.github.redpanda4552.HifumiBot.util.Refreshable;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -36,83 +37,66 @@ import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-public class BuildMonitor implements Runnable {
+public class BuildMonitor implements Refreshable {
 
-    private static final long SCRAPE_TIME_MS = 1000 * 60 * 10, IO_WAIT_MS = 1000 * 60;
     private static final String ORPHIS_PCSX2_ROOT = "https://buildbot.orphis.net/pcsx2/";
     private static final String WINDOWS_INSTRUCTIONS = "- Download the topmost (latest) build from " + ORPHIS_PCSX2_ROOT + ".\n- Extract the .7z file to somewhere like Documents or Desktop.\n- DO NOT extract it to Program Files; this folder is write protected by Windows and you won't be able to save any configuration settings.\n- Upgrading? We strongly recommend AGAINST dropping the new files over top of the old. It is better to keep the new version separate, and then move your BIOS and memory card files over to the new version.";
     private static final String LINUX_INSTRUCTIONS = "First time installation:\n```\nsudo dpkg --add-architecture i386\nsudo apt-add-repository ppa:pcsx2-team/pcsx2-daily\nsudo apt update\nsudo apt install pcsx2-unstable\n```\nAlready installed?\n```\nsudo apt update\nsudo apt upgrade\n```";
     
     private TextChannel outputChannel;
     private String gitRevision = "";
-    private int ioWaitMultiplier = 1;
     
     public BuildMonitor(TextChannel outputChannel) {
         this.outputChannel = outputChannel;
+        this.refresh();
     }
     
-    public void run() {
-        while (!Thread.interrupted()) {
-            try {
-                MessageHistory channelHistory = outputChannel.getHistory();
-                Message lastPostedMessage;
-                
-                do {
-                    lastPostedMessage = channelHistory.retrievePast(1).complete().get(0);
-                } while (lastPostedMessage.getEmbeds().size() == 0);
-                
-                MessageEmbed lastPostedEmbed = lastPostedMessage.getEmbeds().get(0);
-                String lastPostedRevision = "";
-                
-                // Look for the revision field in the latest embed
-                for (Field field : lastPostedEmbed.getFields()) {
-                    if (field.getName().equals("Revision:")) {
-                        lastPostedRevision = field.getValue();
-                        break;
-                    }
-                }
-                
-                Document buildBotPage = Jsoup.connect(ORPHIS_PCSX2_ROOT).get();       // Get the entire Orphis page
-                Element table = buildBotPage.getElementsByClass("listing").get(0);    // Get the table
-                Element row = table.getElementsByTag("tr").get(1);                    // Get first row
-                Element revisionCell = row.getElementsByTag("td").get(0);             // Get first cell
-                gitRevision = revisionCell.getElementsByTag("a").get(0).ownText();    // Get display text
-                Element commitCell = row.getElementsByTag("td").get(4);               // Get last cell
-                
-                if (!gitRevision.equals(lastPostedRevision)) {
-                    lastPostedRevision = gitRevision;
-                    
-                    EmbedBuilder eb = new EmbedBuilder();
-                    eb.setAuthor("New PCSX2 Development Build Available!");
-                    eb.addField("Revision:", gitRevision, false);
-                    eb.addField("Commit:", commitCell.ownText(), false);
-                    eb.addField("Windows:", WINDOWS_INSTRUCTIONS, false);
-                    eb.addField("Linux (Ubuntu/Debian):", LINUX_INSTRUCTIONS, false);
-                    eb.addField("Linux (Any)", "A guide to compile from source can be found on GitHub:\nhttps://github.com/PCSX2/pcsx2/wiki/Installing-on-Linux", false);
-                    eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
-                    
-                    if (outputChannel != null)
-                        outputChannel.sendMessage(eb.build()).complete();
-                }
-                
-                if (!sleep(SCRAPE_TIME_MS))
-                    return;
-                
-                ioWaitMultiplier = 1;
-            } catch (IOException e) {
-                sleep(IO_WAIT_MS * ioWaitMultiplier);
-                ioWaitMultiplier *= 2;
-            } 
-        }
-    }
-    
-    private boolean sleep(long ms) {
+    @Override
+    public synchronized void refresh() {
         try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            return false;
-        }
-        
-        return true;
+            MessageHistory channelHistory = outputChannel.getHistory();
+            Message lastPostedMessage;
+            
+            do {
+                lastPostedMessage = channelHistory.retrievePast(1).complete().get(0);
+            } while (lastPostedMessage.getEmbeds().size() == 0);
+            
+            MessageEmbed lastPostedEmbed = lastPostedMessage.getEmbeds().get(0);
+            String lastPostedRevision = "";
+            
+            // Look for the revision field in the latest embed
+            for (Field field : lastPostedEmbed.getFields()) {
+                if (field.getName().equals("Revision:")) {
+                    lastPostedRevision = field.getValue();
+                    break;
+                }
+            }
+            
+            Document buildBotPage = Jsoup.connect(ORPHIS_PCSX2_ROOT).get();       // Get the entire Orphis page
+            Element table = buildBotPage.getElementsByClass("listing").get(0);    // Get the table
+            Element row = table.getElementsByTag("tr").get(1);                    // Get first row
+            Element revisionCell = row.getElementsByTag("td").get(0);             // Get first cell
+            gitRevision = revisionCell.getElementsByTag("a").get(0).ownText();    // Get display text
+            Element commitCell = row.getElementsByTag("td").get(4);               // Get last cell
+            
+            if (!gitRevision.equals(lastPostedRevision)) {
+                lastPostedRevision = gitRevision;
+                
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setAuthor("New PCSX2 Development Build Available!");
+                eb.addField("Revision:", gitRevision, false);
+                eb.addField("Commit:", commitCell.ownText(), false);
+                eb.addField("Windows:", WINDOWS_INSTRUCTIONS, false);
+                eb.addField("Linux (Ubuntu/Debian):", LINUX_INSTRUCTIONS, false);
+                eb.addField("Linux (Any)", "A guide to compile from source can be found on GitHub:\nhttps://github.com/PCSX2/pcsx2/wiki/Installing-on-Linux", false);
+                eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
+                
+                if (outputChannel != null) {
+                    outputChannel.sendMessage(eb.build()).complete();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
     }
 }
