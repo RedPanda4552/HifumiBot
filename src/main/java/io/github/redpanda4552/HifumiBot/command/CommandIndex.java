@@ -42,7 +42,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandRun;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandSTR;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
@@ -73,6 +73,8 @@ public class CommandIndex {
         commandMap.clear();
         CommandAbout about = new CommandAbout();
         commandMap.put(about.getName(), about);
+        CommandCPU cpu = new CommandCPU();
+        commandMap.put(cpu.getName(), cpu);
         CommandDev dev = new CommandDev();
         commandMap.put(dev.getName(), dev);
         CommandDX9 dx9 = new CommandDX9();
@@ -91,9 +93,6 @@ public class CommandIndex {
         commandMap.put(run.getName(), run);
         CommandShutdown shutdown = new CommandShutdown();
         commandMap.put(shutdown.getName(), shutdown);
-        CommandSTR str = new CommandSTR();
-        commandMap.put(str.getName(), str);
-        commandMap.put("cpu", str); // Alias for str
         CommandWarez warez = new CommandWarez();
         commandMap.put(warez.getName(), warez);
         CommandWiki wiki = new CommandWiki();
