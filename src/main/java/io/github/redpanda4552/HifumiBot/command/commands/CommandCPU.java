@@ -41,8 +41,8 @@ public class CommandCPU extends AbstractCommand {
         OVERKILL("Overkill", 2800),
         GREAT("Great for most", 2400),
         GOOD("Good for most", 2000),
-        MINIMUM_3D("Okay for 3D", 1600),
-        MINIMUM_2D("Okay for 2D", 1200),
+        MINIMUM_3D("Okay for some 3D", 1600),
+        MINIMUM_2D("Okay for some 2D", 1200),
         VERY_SLOW("Very Slow", 800),
         AWFUL("Awful", 0);
         
