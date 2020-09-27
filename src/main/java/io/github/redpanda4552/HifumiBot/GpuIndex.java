@@ -33,6 +33,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.util.Messaging;
+
 public class GpuIndex {
 
     public static final String PASSMARK_HIGH_END = "https://www.videocardbenchmark.net/high_end_gpus.html";
@@ -65,18 +67,22 @@ public class GpuIndex {
     private HashMap<String, String> refresh(String url) throws IOException {
         HashMap<String, String> ret = new HashMap<String, String>();
         
-        Document doc = Jsoup.connect(url).maxBodySize(0).get();
-        Element mark = doc.getElementById("mark");
-        Elements charts = mark.getElementsByClass("chartlist");
-        
-        for (Element chart : charts) {
-            Elements rows = chart.getElementsByTag("li");
+        try {
+            Document doc = Jsoup.connect(url).maxBodySize(0).get();
+            Element mark = doc.getElementById("mark");
+            Elements charts = mark.getElementsByClass("chartlist");
             
-            for (Element row : rows) {
-                String gpuName = row.getElementsByClass("prdname").get(0).text();
-                String rating = row.getElementsByClass("count").get(0).text();
-                ret.put(gpuName, rating);
+            for (Element chart : charts) {
+                Elements rows = chart.getElementsByTag("li");
+                
+                for (Element row : rows) {
+                    String gpuName = row.getElementsByClass("prdname").get(0).text();
+                    String rating = row.getElementsByClass("count").get(0).text();
+                    ret.put(gpuName, rating);
+                }
             }
+        } catch (IOException e) {
+            Messaging.sendErrorToSystemOutputChannel(e);
         }
         
         return ret;

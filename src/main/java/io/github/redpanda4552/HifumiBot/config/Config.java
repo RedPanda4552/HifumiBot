@@ -31,10 +31,12 @@ import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 
 public class Config {
     
+    public String systemOutputChannelId;
     public ArrayList<DynamicCommand> dynamicCommands;
     public HashMap<String, OffsetDateTime> warezUsers;
     
     public Config() {
+        systemOutputChannelId = new String("");
         dynamicCommands = new ArrayList<DynamicCommand>();
         warezUsers = new HashMap<String, OffsetDateTime>();
     }

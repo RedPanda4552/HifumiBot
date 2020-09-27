@@ -29,6 +29,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Refreshable;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -96,7 +97,7 @@ public class BuildMonitor implements Refreshable {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Messaging.sendErrorToSystemOutputChannel(e);
         } 
     }
 }
