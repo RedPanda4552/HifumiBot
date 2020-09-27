@@ -113,6 +113,9 @@ public class HifumiBot {
         updateStatus("Starting...");
         ConfigManager.createConfigIfNotExists();
         config = ConfigManager.read();
+        // Write back the config so that if any new fields were added after an
+        // update, they are written to disk
+        ConfigManager.write(config);
         scheduler = new Scheduler();
         wikiIndex = new WikiIndex();
         cpuIndex = new CpuIndex();
@@ -197,6 +200,11 @@ public class HifumiBot {
         
         if (reload)
             self = new HifumiBot();
+    }
+    
+    public Message sendMessage(String channelId, MessageEmbed embed) {
+        MessageChannel channel = this.getJDA().getTextChannelById(channelId);
+        return channel.sendMessage(embed).complete();
     }
     
     public Message sendMessage(MessageChannel channel, MessageEmbed embed) {

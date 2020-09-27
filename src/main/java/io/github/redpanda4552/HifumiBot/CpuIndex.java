@@ -32,6 +32,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.util.Messaging;
+
 public class CpuIndex {
 
     public static final String PASSMARK_STR_URL = "https://www.cpubenchmark.net/singleThread.html";
@@ -61,7 +63,7 @@ public class CpuIndex {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Messaging.sendErrorToSystemOutputChannel(e);
         }
     }
     

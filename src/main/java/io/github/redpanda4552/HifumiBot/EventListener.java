@@ -48,7 +48,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class EventListener extends ListenerAdapter {
     
-    private static final String BOT_TALK_CHANNEL_ID = "352232087736025090";
+//    private static final String BOT_TALK_CHANNEL_ID = "352232087736025090";
     
     private HifumiBot hifumiBot;
     private HashMap<String, Message> messages = new HashMap<String, Message>();
@@ -94,7 +94,7 @@ public class EventListener extends ListenerAdapter {
             eb.addField("Display Name", event.getMember().getEffectiveName(), true);
             String dateStr = HifumiBot.getSelf().getConfig().warezUsers.get(event.getUser().getId()).format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.addField("Warez Date", dateStr, true);
-            HifumiBot.getSelf().sendMessage(event.getGuild().getTextChannelById(BOT_TALK_CHANNEL_ID), eb.build());
+            HifumiBot.getSelf().sendMessage(event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().systemOutputChannelId), eb.build());
         }
     }
     

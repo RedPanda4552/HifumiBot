@@ -32,6 +32,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Refreshable;
 
 public class WikiIndex implements Refreshable {
@@ -58,7 +59,7 @@ public class WikiIndex implements Refreshable {
                 this.addGame(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Messaging.sendErrorToSystemOutputChannel(e);
         }
     }
     
