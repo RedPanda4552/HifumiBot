@@ -35,7 +35,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class CommandSTR extends AbstractCommand {
+public class CommandCPU extends AbstractCommand {
 
     private enum CPURating {
         OVERKILL("Overkill", 2800),
@@ -63,8 +63,8 @@ public class CommandSTR extends AbstractCommand {
         }
     }
     
-    public CommandSTR() {
-        super("str", CATEGORY_BUILTIN, false);
+    public CommandCPU() {
+        super("cpu", CATEGORY_BUILTIN, false);
     }
 
     @Override
