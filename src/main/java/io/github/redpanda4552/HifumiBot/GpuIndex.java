@@ -82,7 +82,7 @@ public class GpuIndex {
                 }
             }
         } catch (IOException e) {
-            Messaging.sendErrorToSystemOutputChannel(e);
+            Messaging.sendErrorToSystemOutputChannel("GpuIndex", "refresh", e);
         }
         
         return ret;

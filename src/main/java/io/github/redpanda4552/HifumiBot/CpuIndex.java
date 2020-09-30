@@ -63,7 +63,7 @@ public class CpuIndex {
                 }
             }
         } catch (IOException e) {
-            Messaging.sendErrorToSystemOutputChannel(e);
+            Messaging.sendErrorToSystemOutputChannel("CpuIndex", "refresh", e);
         }
     }
     
