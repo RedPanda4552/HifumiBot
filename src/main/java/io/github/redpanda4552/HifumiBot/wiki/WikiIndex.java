@@ -59,7 +59,7 @@ public class WikiIndex implements Refreshable {
                 this.addGame(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
             }
         } catch (IOException e) {
-            Messaging.sendErrorToSystemOutputChannel(e);
+            Messaging.sendErrorToSystemOutputChannel("WikiIndex", "refresh", e);
         }
     }
     

@@ -30,9 +30,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 
 public class Messaging {
 
-    public static void sendErrorToSystemOutputChannel(Exception e) {
+    public static void sendErrorToSystemOutputChannel(String className, String methodName, Exception e) {
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("An exception occurred");
+        eb.setTitle("Exception caught in " + className + "." + methodName);
         eb.addField("Message", e.getMessage(), false);
         StringBuilder sb = new StringBuilder();
         

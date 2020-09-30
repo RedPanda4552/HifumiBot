@@ -97,7 +97,7 @@ public class BuildMonitor implements Refreshable {
                 }
             }
         } catch (IOException e) {
-            Messaging.sendErrorToSystemOutputChannel(e);
+            Messaging.sendErrorToSystemOutputChannel("BuildMonitor", "refresh", e);
         } 
     }
 }
