@@ -84,7 +84,7 @@ public class CommandCPU extends AbstractCommand {
               .appendDescription("The statistic indicates how powerful a single thread on a CPU is. ")
               .appendDescription("Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
             eb.addField("Direct link", CpuIndex.PASSMARK_STR_URL, false);
-            eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + "str <cpu model here>`", false);
+            eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + this.getName() + " <cpu model here>`", false);
             HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
             return;
         }
