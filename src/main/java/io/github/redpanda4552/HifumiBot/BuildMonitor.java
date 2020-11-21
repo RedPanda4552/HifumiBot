@@ -88,7 +88,7 @@ public class BuildMonitor implements Refreshable {
                 eb.addField("Revision:", gitRevision, false);
                 eb.addField("Commit:", commitCell.ownText(), false);
                 eb.addField("Windows:", WINDOWS_INSTRUCTIONS, false);
-                eb.addField("Linux (Ubuntu/Debian):", LINUX_INSTRUCTIONS, false);
+                eb.addField("Ubuntu:", LINUX_INSTRUCTIONS, false);
                 eb.addField("Linux (Any)", "A guide to compile from source can be found on GitHub:\nhttps://github.com/PCSX2/pcsx2/wiki/Installing-on-Linux", false);
                 eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
                 
