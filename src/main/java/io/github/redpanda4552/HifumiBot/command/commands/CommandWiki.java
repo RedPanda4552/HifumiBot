@@ -25,9 +25,12 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 
 import java.util.HashMap;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -44,49 +47,11 @@ public class CommandWiki extends AbstractCommand {
             HifumiBot.getSelf().sendMessage(cm.getChannel(), "I can't search for nothing! Try `" + CommandInterpreter.PREFIX + "wiki <title of game here>`");
             return;
         }
-        
-        HashMap<String, Float> results = new HashMap<String, Float>();
-        
-        // A basic weighting algorithm.
-        for (String name : HifumiBot.getSelf().getWikiIndex().getAllTitles()) {
-            String[] nameParts = name.toLowerCase().trim().split(" ");
-            float toPush = 0;
-            
-            // For each search term...
-            for (String arg : cm.getArgs()) {
-                boolean wasFullMatch = false;
-                // For each (space delimited) part of the name...
-                for (String namePart : nameParts) {
-                    // If exact match...
-                    if (namePart.equals(arg)) {
-                        // One full point
-                        toPush += 1.0;
-                        wasFullMatch = true;
-                        break;
-                    }
-                }
-                
-                // If not a full match...
-                if (!wasFullMatch) {
-                    // But the arg's char sequence exists arbitrarily in the title...
-                    if (name.toLowerCase().trim().contains(arg.toLowerCase().trim())) {
-                        // Half a point
-                        toPush += 0.5;
-                    } else {
-                        // If not even, then detract half
-                        toPush -= 0.5;
-                    }
-                }
-            }
-            
-            toPush -= 0.1 * Math.abs(nameParts.length - cm.getArgs().length);
-            
-            if (toPush > 0)
-                results.put(name, toPush);
-        }
-        
+
         EmbedBuilder eb = new EmbedBuilder();
         int i = 0;
+        
+        HashMap<String, Float> results = SimpleSearch.search(HifumiBot.getSelf().getWikiIndex().getAllTitles(), StringUtils.join(cm.getArgs(), " "));
         
         if (results.size() > 0) {
             eb.setTitle("Query Results");

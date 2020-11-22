@@ -32,6 +32,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 public class CommandGPU extends AbstractCommand {
@@ -94,32 +95,6 @@ public class CommandGPU extends AbstractCommand {
         }
         
         GpuIndex gpuIndex = HifumiBot.getSelf().getGpuIndex();
-        HashMap<String, Float> results = new HashMap<String, Float>();
-        
-        for (String gpuName : gpuIndex.getAllGpus()) {
-            String normalized = gpuName.toLowerCase().trim();
-            
-            float toPush = 0;
-            
-            for (String arg : cm.getArgs()) {
-                // Contains
-                if (normalized.contains(arg.toLowerCase().trim())) {
-                    toPush += 0.5;
-                }
-                
-                // Whole word match
-                for (String gpuPart : normalized.replace("-", " ").split(" ")) {
-                    if (gpuPart.equals(arg.toLowerCase().trim())) {
-                        toPush += 1;
-                    }
-                }
-            }
-            
-            if (toPush > 0) {
-                results.put(gpuName, toPush);
-            }
-        }
-        
         EmbedBuilder eb;
         
         if (cm.getMember() != null) {
@@ -127,6 +102,8 @@ public class CommandGPU extends AbstractCommand {
         } else {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
+        
+        HashMap<String, Float> results = SimpleSearch.search(gpuIndex.getAllGpus(), StringUtils.join(cm.getArgs(), " "));
         
         if (results.size() > 0) {
             eb.setTitle("Query Results for \"" + StringUtils.join(cm.getArgs(), " ") + "\"");

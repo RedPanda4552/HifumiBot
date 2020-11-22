@@ -24,7 +24,6 @@
 package io.github.redpanda4552.HifumiBot.command.commands;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,9 +32,12 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 public class CommandCPU extends AbstractCommand {
+    
+    private static final int MAX_RESULTS = 5;
 
     private enum CPURating {
         OVERKILL("Overkill", 2800),
@@ -90,34 +92,6 @@ public class CommandCPU extends AbstractCommand {
         }
         
         CpuIndex cpuIndex = HifumiBot.getSelf().getCpuIndex();
-        
-        HashMap<String, Float> results = new HashMap<String, Float>();
-        Set<String> s = cpuIndex.getAllCpus();
-        
-        for (String cpuName : s) {
-            String normalized = cpuName.toLowerCase().trim();
-            
-            float toPush = 0;
-            
-            for (String arg : cm.getArgs()) {
-                // Contains
-                if (normalized.contains(arg.toLowerCase().trim())) {
-                    toPush += 0.5;
-                }
-                
-                // Whole word match
-                for (String cpuPart : cpuName.replace("-", " ").split(" ")) {
-                    if (cpuPart.equals(arg.toLowerCase().trim())) {
-                        toPush += 1;
-                    }
-                }
-            }
-            
-            if (toPush > 0) {
-                results.put(cpuName, toPush);
-            }
-        }
-        
         EmbedBuilder eb;
         
         if (cm.getMember() != null) {
@@ -126,12 +100,14 @@ public class CommandCPU extends AbstractCommand {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
         
+        HashMap<String, Float> results = SimpleSearch.search(cpuIndex.getAllCpus(), StringUtils.join(cm.getArgs(), " "));
+        
         if (results.size() > 0) {
             eb.setTitle("Query Results for \"" + StringUtils.join(cm.getArgs(), " ") + "\"");
             String highestName = null;
             float highestWeight = 0;
             
-            while (!results.isEmpty() && eb.getFields().size() < 5) {
+            while (!results.isEmpty() && eb.getFields().size() < MAX_RESULTS) {
                 for (String cpuName : results.keySet()) {
                     if (results.get(cpuName) > highestWeight) {
                         highestName = cpuName;
