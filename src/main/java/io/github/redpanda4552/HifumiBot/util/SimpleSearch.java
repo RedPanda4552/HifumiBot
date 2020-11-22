@@ -59,7 +59,7 @@ public class SimpleSearch {
             
             toPush += jaccard.apply(normalized, query);
             
-            if (toPush > 0.1) {
+            if (toPush >= 0.5) {
                 ret.put(str, toPush);
             }
         }
