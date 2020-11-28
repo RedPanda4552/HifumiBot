@@ -144,7 +144,7 @@ public class PnachParser implements Runnable {
                                     }
                                     // Param 4
                                     try {
-                                        Integer value = Integer.parseInt(params[4], 16);
+                                        Integer value = Integer.parseUnsignedInt(params[4].toUpperCase(), 16);
                                         
                                         if (params[3].equals("byte") || (params[3].equals("extended") && leading == 0)) {
                                             if (Integer.compareUnsigned(value, 0xff) > 0) {
