@@ -56,7 +56,7 @@ public class CommandRun extends AbstractCommand {
             return;
         } else {
             String name = cm.getArgs()[0];
-            boolean result = HifumiBot.getSelf().getScheduler().executeImmediate(name);
+            boolean result = HifumiBot.getSelf().getScheduler().runScheduledNow(name);
             
             if (result) {
                 HifumiBot.getSelf().sendMessage(cm.getChannel(), "Sent an execute request for runnable '" + name + "' to the thread pool; it will run whenever a thread is available to host it.");
