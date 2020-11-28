@@ -34,8 +34,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.Refreshable;
 
-public class GpuIndex {
+public class GpuIndex implements Refreshable {
 
     public static final String PASSMARK_HIGH_END = "https://www.videocardbenchmark.net/high_end_gpus.html";
     public static final String PASSMARK_MID_HIGH = "https://www.videocardbenchmark.net/mid_range_gpus.html";
