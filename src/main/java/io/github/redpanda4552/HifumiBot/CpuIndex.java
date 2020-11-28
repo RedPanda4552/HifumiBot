@@ -33,8 +33,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.Refreshable;
 
-public class CpuIndex {
+public class CpuIndex implements Refreshable {
 
     public static final String PASSMARK_STR_URL = "https://www.cpubenchmark.net/singleThread.html";
     
