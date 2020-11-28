@@ -27,12 +27,21 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
 public class EmbedUtil {
 
     public static EmbedBuilder newFootedEmbedBuilderForFilters() {
         return newFootedEmbedBuilder(null, HifumiBot.getSelf().getJDA().getSelfUser().getAvatarUrl());
+    }
+    
+    public static EmbedBuilder newFootedEmbedBuilder(Message msg) {
+        if (msg.getMember() != null) {
+            return EmbedUtil.newFootedEmbedBuilder(msg.getMember());
+        } else {
+            return EmbedUtil.newFootedEmbedBuilder(msg.getAuthor());
+        }
     }
     
     public static EmbedBuilder newFootedEmbedBuilder(CommandMeta cm) {
