@@ -39,6 +39,10 @@ public class Scheduler {
         this.runnables = new HashMap<String, Runnable>();
     }
     
+    public void runOnce(Runnable runnable) {
+        this.threadPool.submit(runnable);
+    }
+    
     /**
      * Schedule a Runnable
      * @param runnable - The Runnable or lambda to schedule
@@ -49,7 +53,7 @@ public class Scheduler {
         this.threadPool.scheduleAtFixedRate(runnable, period, period, TimeUnit.MILLISECONDS);
     }
     
-    public boolean executeImmediate(String name) {
+    public boolean runScheduledNow(String name) {
         Runnable runnable = this.runnables.get(name);
         
         if (runnable != null) {
