@@ -235,7 +235,7 @@ public class CommandIndex {
         }
         
         EmbedBuilder helpRootBuilder = new EmbedBuilder();
-        helpRootBuilder.setTitle("HifumiBot Help");
+        helpRootBuilder.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName() + " Help");
         helpRootBuilder.setDescription("The prefix for all commands is \"" + CommandInterpreter.PREFIX + "\".\nTo view available commands use `" + CommandInterpreter.PREFIX + "help <category> [page]`");
         StringBuilder sb = new StringBuilder();
         
@@ -247,7 +247,7 @@ public class CommandIndex {
     }
     
     private void addToPages(String category, EmbedBuilder eb, int pageCount) {
-        eb.setTitle("HifumiBot Help - " + category + " - Page " + (helpPages.get(category).size() + 1) + " / " + pageCount);
+        eb.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName() + " Help - " + category + " - Page " + (helpPages.get(category).size() + 1) + " / " + pageCount);
         eb.setDescription("Use `" + CommandInterpreter.PREFIX + "help " + category + " [page]` to browse other pages.");
         helpPages.get(category).add(eb.build());
     }

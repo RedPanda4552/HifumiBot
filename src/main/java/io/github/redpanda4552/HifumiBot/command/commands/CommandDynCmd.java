@@ -132,7 +132,7 @@ public class CommandDynCmd extends AbstractCommand {
 
     @Override
     public String getHelpText() {
-        return "Add a dynamic command to HifumiBot";
+        return "Add a dynamic command to " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
     }
 
     private void sendResults(MessageChannel channel, String name, ArrayList<String> results) {

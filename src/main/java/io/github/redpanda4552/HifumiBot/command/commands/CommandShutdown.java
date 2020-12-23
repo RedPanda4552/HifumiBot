@@ -39,7 +39,7 @@ public class CommandShutdown extends AbstractCommand {
 
     @Override
     public String getHelpText() {
-        return "Fully shutdown HifumiBot, with no attempt to reload a new instance.";
+        return "Fully shutdown " + HifumiBot.getSelf().getJDA().getSelfUser().getName() + ", with no attempt to reload a new instance.";
     }
 
 }
