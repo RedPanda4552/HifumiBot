@@ -39,6 +39,6 @@ public class CommandReload extends AbstractCommand {
     
     @Override
     public String getHelpText() {
-        return "Reload a fresh instance of HifumiBot";
+        return "Reload a fresh instance of " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
     }
 }

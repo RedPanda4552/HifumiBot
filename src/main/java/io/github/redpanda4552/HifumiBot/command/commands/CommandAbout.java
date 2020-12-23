@@ -45,8 +45,8 @@ public class CommandAbout extends AbstractCommand {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
         
-        eb.setTitle("About HifumiBot");
-        eb.setDescription("A helper bot for the PCSX2 server.");
+        eb.setTitle("About " + HifumiBot.getSelf().getJDA().getSelfUser().getName());
+        eb.setDescription("Originally created for the PCSX2 Discord server.");
         eb.addField("Created By", "pandubz", true);
         String version = getClass().getPackage().getImplementationVersion();
         eb.addField("Version", version != null ? version : "[Debug Mode]", true);
@@ -56,6 +56,6 @@ public class CommandAbout extends AbstractCommand {
 
     @Override
     public String getHelpText() {
-        return "Info about HifumiBot";
+        return "Info about " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
     }
 }
