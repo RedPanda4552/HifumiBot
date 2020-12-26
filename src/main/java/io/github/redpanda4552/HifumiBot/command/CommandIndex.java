@@ -34,6 +34,7 @@ import java.util.TreeSet;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandAbout;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandAdmin;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDX9;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDev;
@@ -74,6 +75,8 @@ public class CommandIndex {
         commandMap.clear();
         CommandAbout about = new CommandAbout();
         commandMap.put(about.getName(), about);
+        CommandAdmin admin = new CommandAdmin();
+        commandMap.put(admin.getName(), admin);
         CommandCPU cpu = new CommandCPU();
         commandMap.put(cpu.getName(), cpu);
         CommandDev dev = new CommandDev();
