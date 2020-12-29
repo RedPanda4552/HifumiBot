@@ -29,6 +29,7 @@ import java.util.HashMap;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 public class CommandHelp extends AbstractCommand {
 
@@ -63,7 +64,12 @@ public class CommandHelp extends AbstractCommand {
             toSend = HifumiBot.getSelf().getCommandIndex().getHelpRootPage();
         }
         
-        HifumiBot.getSelf().sendMessage(cm.getUser().openPrivateChannel().complete(), toSend);
+        try {
+            HifumiBot.getSelf().sendMessage(cm.getUser().openPrivateChannel().complete(), toSend);
+        } catch (ErrorResponseException e) {
+            HifumiBot.getSelf().sendMessage(cm.getChannel(), "Sorry, `help` works through DMs to avoid clutter, but your DMs are not open to members of this server!");
+        }
+        
     }
     
     @Override
