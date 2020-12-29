@@ -42,6 +42,7 @@ public class CommandDynCmd extends AbstractCommand {
         super("dyncmd", CATEGORY_BUILTIN, true);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("DynCmd Usage");
+        eb.addField("View", "`dyncmd get <name>`", false);
         eb.addField("Create/Modify", "`dyncmd set <name> [options]`", false);
         eb.addField("Delete", "`dyncmd del <name>`", false);
         eb.addField("Options", "`-a, --admin <true|false>\n-c, --category <category>\n-h, --helptext <help text>\n-t, --title <title>\n-b, --body <body>\n-i, --imageurl <image URL>`", false);
@@ -58,10 +59,43 @@ public class CommandDynCmd extends AbstractCommand {
         String subCommand = cm.getArgs()[0];
         String name = cm.getArgs()[1].toLowerCase();
         ArrayList<String> results = new ArrayList<String>();
+        DynamicCommand dyncmd = null;
         
         switch (subCommand.toLowerCase()) {
+        case "get":
+            if (!HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name)) {
+                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Specified command is not a dynamic command");
+                return;
+            }
+            
+            dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
+            
+            results.add("Admin Only: " + dyncmd.getAdmin());
+            
+            if (dyncmd.getCategory() != null && !dyncmd.getCategory().isBlank()) {
+                results.add("Category: " + dyncmd.getCategory());
+            }
+            
+            if (dyncmd.getHelpText() != null && !dyncmd.getHelpText().isBlank()) {
+                results.add("Help Text: " + dyncmd.getHelpText());
+            }
+            
+            if (dyncmd.getTitle() != null && !dyncmd.getTitle().isBlank()) {
+                results.add("Title: " + dyncmd.getTitle());
+            }
+            
+            if (dyncmd.getBody() != null && !dyncmd.getBody().isBlank()) {
+                results.add("Body:\n```" + dyncmd.getBody() + "```");
+            }
+            
+            if (dyncmd.getImageURL() != null && !dyncmd.getImageURL().isBlank()) {
+                results.add("Image URL: `" + dyncmd.getImageURL() + "`");
+            }
+            
+            sendResults(cm.getChannel(), dyncmd.getName(), results);
+            break;
         case "set":
-            DynamicCommand dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
+            dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
             
             if (HifumiBot.getSelf().getCommandIndex().isCommand(name) && !HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name)) {
                 HifumiBot.getSelf().sendMessage(cm.getChannel(), "You cannot create a dynamic command with the same name as a builtin command");
