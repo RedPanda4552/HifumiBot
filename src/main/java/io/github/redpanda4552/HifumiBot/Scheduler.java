@@ -69,6 +69,10 @@ public class Scheduler {
      */
     public void shutdown() {
         threadPool.shutdown();
+        
+        try {
+            threadPool.awaitTermination(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) { }
     }
     
     public Set<String> getRunnableNames() {

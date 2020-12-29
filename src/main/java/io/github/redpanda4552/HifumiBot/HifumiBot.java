@@ -196,7 +196,8 @@ public class HifumiBot {
     }
     
     public void shutdown(boolean reload) {
-        HifumiBot.getSelf().getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
+        this.getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
+        this.getScheduler().shutdown();
         jda.shutdown();
         
         if (reload)
