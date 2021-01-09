@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.util;
+package io.github.redpanda4552.HifumiBot.parse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
