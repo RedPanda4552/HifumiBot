@@ -27,7 +27,7 @@ import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
-import io.github.redpanda4552.HifumiBot.util.PnachParser;
+import io.github.redpanda4552.HifumiBot.parse.PnachParser;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class CommandPnachTest extends AbstractCommand {
