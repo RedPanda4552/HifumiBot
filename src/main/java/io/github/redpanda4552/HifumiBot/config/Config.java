@@ -32,12 +32,14 @@ import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 public class Config {
     
     public String systemOutputChannelId;
+    public String pastebinApiKey;
     public ArrayList<String> adminRoles;
     public ArrayList<DynamicCommand> dynamicCommands;
     public HashMap<String, OffsetDateTime> warezUsers;
     
     public Config() {
         systemOutputChannelId = new String("");
+        pastebinApiKey = new String("");
         adminRoles = new ArrayList<String>();
         dynamicCommands = new ArrayList<DynamicCommand>();
         warezUsers = new HashMap<String, OffsetDateTime>();

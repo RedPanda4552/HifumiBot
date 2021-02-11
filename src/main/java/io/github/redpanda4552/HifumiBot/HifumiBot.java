@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import okhttp3.OkHttpClient;
 
 public class HifumiBot {
 
@@ -77,6 +78,7 @@ public class HifumiBot {
     
     private JDA jda;
     private Config config;
+    private final OkHttpClient http;
     
     private Scheduler scheduler;
     private WikiIndex wikiIndex;
@@ -90,6 +92,7 @@ public class HifumiBot {
     
     public HifumiBot() {
         self = this;
+        this.http = new OkHttpClient();
         
         if (discordBotToken == null || discordBotToken.isEmpty()) {
             System.out.println("Attempted to start with a null or empty Discord bot token!");
@@ -149,6 +152,10 @@ public class HifumiBot {
     
     public Config getConfig() {
         return config;
+    }
+    
+    public OkHttpClient getHttpClient() {
+        return http;
     }
     
     public Scheduler getScheduler() {
