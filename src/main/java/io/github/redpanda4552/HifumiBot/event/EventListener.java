@@ -62,7 +62,7 @@ public class EventListener extends ListenerAdapter {
     
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        ChatFilter.applyFilters(event.getMessage());
+        ChatFilter.applyFilters(event);
         HifumiBot.getSelf().getCommandInterpreter().execute(event);
     }
     
