@@ -1,0 +1,61 @@
+/**
+ * This file is part of HifumiBot, licensed under the MIT License (MIT)
+ * 
+ * Copyright (c) 2020 RedPanda4552 (https://github.com/RedPanda4552)
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package io.github.redpanda4552.HifumiBot.parse;
+
+public enum EmulogParserError {
+    
+    TLB_MISS("(X) TLB miss. Usually caused by bad cheats, widescreen patches or disc dumps.\nGames can sometimes still function normally but usually just crash."),
+    TRAP_EXCEPTION("(X) Trap exception. Usually thrown to signal the game has died. Though very\nunlikely, PCSX2 can on rare occasions still recover and continue."),
+    
+    IOP_FD_FAIL("(!) Game failed to open a file on IOP."),
+    
+    IOP_UNKNOWN_WRITE("(!) Unknown write by IOP."),
+    
+    VU0_TRIPLE_BRANCH("(!) Triple branch detected in VU0."),
+    VU1_TRIPLE_BRANCH("(!) Triple branch detected in VU1."),
+    
+    SSTATE_FAIL("(!) Savestate load failed."),
+    
+    AUTO_EJECT("(*) Memory card auto-ejected."),
+    AUTO_EJECT_INSERT("(*) Memory card inserted after auto-eject."),
+    
+    SSTATE_LOAD("(*) Loaded a savestate."),
+    SSTATE_SAVE("(*) Saved a savestate."),
+    
+    GAMEDB_PATCH_LOADED("(*) Loaded a patch from gamedb."),
+    WIDESCREEN_PATCH_LOADED("(*) Loaded widescreen patches from a file."),
+    WIDESCREEN_ARCHIVE_LOADED("(*) Loaded widescreen patches from the archive."),
+    CHEAT_LOADED("(*) Loaded cheats from a file.")
+    ;
+
+    private String displayString;
+    
+    private EmulogParserError(String displayString) {
+        this.displayString = displayString;
+    }
+    
+    public String getDisplayString() {
+        return displayString;
+    }
+}
