@@ -48,8 +48,7 @@ public class CommandInterpreter extends ListenerAdapter {
         this.hifumiBot = hifumiBot;
     }
     
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
+    public void execute(MessageReceivedEvent event) {
         if (event.getAuthor().getId().equals(hifumiBot.getJDA().getSelfUser().getId()))
             return;
         

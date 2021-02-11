@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 
+import io.github.redpanda4552.HifumiBot.ChatFilter;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
@@ -43,6 +44,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -56,6 +58,12 @@ public class EventListener extends ListenerAdapter {
     
     public EventListener(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
+    }
+    
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        ChatFilter.applyFilters(event.getMessage());
+        HifumiBot.getSelf().getCommandInterpreter().execute(event);
     }
     
     @Override
