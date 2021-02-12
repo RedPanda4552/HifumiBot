@@ -31,12 +31,14 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ChatFilter {
 
-    private static final Pattern serverInvitePattern = Pattern.compile("https*://discord.gg/\\w+");
+    private static final Pattern serverInvitePattern = Pattern.compile(".*https*://discord\\.gg/\\w+.*");
     
     public static void applyFilters(MessageReceivedEvent event) {
+/*
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(event.getMember(), event.getMember().getUser())) {
             return;
         }
+*/
         
         filterServerInvites(event.getMessage());
     }
