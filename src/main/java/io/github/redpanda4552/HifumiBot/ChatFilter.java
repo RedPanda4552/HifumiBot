@@ -34,11 +34,9 @@ public class ChatFilter {
     private static final Pattern serverInvitePattern = Pattern.compile(".*https*://discord\\.gg/\\w+.*");
     
     public static void applyFilters(MessageReceivedEvent event) {
-/*
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(event.getMember(), event.getMember().getUser())) {
             return;
         }
-*/
         
         filterServerInvites(event.getMessage());
     }
