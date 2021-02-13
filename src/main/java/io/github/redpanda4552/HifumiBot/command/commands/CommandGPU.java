@@ -32,6 +32,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 
@@ -90,7 +91,7 @@ public class CommandGPU extends AbstractCommand {
             eb.addField("Mid-Low GPUs", GpuIndex.PASSMARK_MID_LOW, false);
             eb.addField("Low End GPUs", GpuIndex.PASSMARK_LOW_END, false);
             eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + this.getName() + " <gpu model here>`", false);
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+            Messaging.sendMessage(cm.getChannel(), eb.build());
             return;
         }
         
@@ -145,7 +146,7 @@ public class CommandGPU extends AbstractCommand {
             eb.setColor(0xff0000);
         }
         
-        HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessage(cm.getChannel(), eb.build());
     }
     
     @Override

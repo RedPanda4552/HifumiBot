@@ -33,6 +33,7 @@ import javax.imageio.ImageIO;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Message.Attachment;
@@ -59,10 +60,10 @@ public class CommandPFP extends AbstractCommand {
             if (attachment.isImage()) {
                 try {
                     setAvatar(attachment.getUrl());
-                    HifumiBot.getSelf().sendMessage(cm.getChannel(), "Avatar set!");
+                    Messaging.sendMessage(cm.getChannel(), "Avatar set!");
                 } catch (IOException e) {
                     e.printStackTrace();
-                    HifumiBot.getSelf().sendMessage(cm.getChannel(), "An error occurred while setting the avatar: "+ e.getMessage());
+                    Messaging.sendMessage(cm.getChannel(), "An error occurred while setting the avatar: "+ e.getMessage());
                 }
                 
                 return;
@@ -73,17 +74,17 @@ public class CommandPFP extends AbstractCommand {
             if (embed.getType() == EmbedType.IMAGE) {
                 try {
                     setAvatar(embed.getImage().getUrl());
-                    HifumiBot.getSelf().sendMessage(cm.getChannel(), "Avatar set!");
+                    Messaging.sendMessage(cm.getChannel(), "Avatar set!");
                 } catch (IOException e) {
                     e.printStackTrace();
-                    HifumiBot.getSelf().sendMessage(cm.getChannel(), "An error occurred while setting the avatar: "+ e.getMessage());
+                    Messaging.sendMessage(cm.getChannel(), "An error occurred while setting the avatar: "+ e.getMessage());
                 }
                 
                 return;
             }
         }
         
-        HifumiBot.getSelf().sendMessage(cm.getChannel(), "No images found in this message! Either attach one or include a link in the command arguments.");
+        Messaging.sendMessage(cm.getChannel(), "No images found in this message! Either attach one or include a link in the command arguments.");
     }
 
     @Override

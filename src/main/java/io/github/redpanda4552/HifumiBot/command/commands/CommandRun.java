@@ -27,6 +27,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 public class CommandRun extends AbstractCommand {
@@ -52,16 +53,16 @@ public class CommandRun extends AbstractCommand {
             }
             
             eb.addField("Available runnables", sb.toString(), false);
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+            Messaging.sendMessage(cm.getChannel(), eb.build());
             return;
         } else {
             String name = cm.getArgs()[0];
             boolean result = HifumiBot.getSelf().getScheduler().runScheduledNow(name);
             
             if (result) {
-                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Sent an execute request for runnable '" + name + "' to the thread pool; it will run whenever a thread is available to host it.");
+                Messaging.sendMessage(cm.getChannel(), "Sent an execute request for runnable '" + name + "' to the thread pool; it will run whenever a thread is available to host it.");
             } else {
-                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Could not find a runnable with name '" + name + "'; use `" + CommandInterpreter.PREFIX + this.getName() + "` with no args for a list of available runnables.");
+                Messaging.sendMessage(cm.getChannel(), "Could not find a runnable with name '" + name + "'; use `" + CommandInterpreter.PREFIX + this.getName() + "` with no args for a list of available runnables.");
             }
         }
     }

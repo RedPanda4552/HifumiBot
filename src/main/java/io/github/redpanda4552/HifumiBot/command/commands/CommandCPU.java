@@ -32,6 +32,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 
@@ -87,7 +88,7 @@ public class CommandCPU extends AbstractCommand {
               .appendDescription("Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
             eb.addField("Direct link", CpuIndex.PASSMARK_STR_URL, false);
             eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + this.getName() + " <cpu model here>`", false);
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+            Messaging.sendMessage(cm.getChannel(), eb.build());
             return;
         }
         
@@ -137,7 +138,7 @@ public class CommandCPU extends AbstractCommand {
         }
         
         try {
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+            Messaging.sendMessage(cm.getChannel(), eb.build());
         } catch (Exception e) {
             e.printStackTrace();
         }

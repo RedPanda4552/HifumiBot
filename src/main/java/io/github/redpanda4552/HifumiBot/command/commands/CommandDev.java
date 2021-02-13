@@ -23,9 +23,9 @@
  */
 package io.github.redpanda4552.HifumiBot.command.commands;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 
@@ -40,7 +40,7 @@ public class CommandDev extends AbstractCommand {
     @Override
     protected void onExecute(CommandMeta cm) {
         if (!(cm.getChannel() instanceof TextChannel)) {
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), "Sorry, but this command can only be used within the PCSX2 server.");
+            Messaging.sendMessage(cm.getChannel(), "Sorry, but this command can only be used within the PCSX2 server.");
             return;
         }
             
@@ -51,7 +51,7 @@ public class CommandDev extends AbstractCommand {
         TextChannel devBuilds = cm.getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
         eb.appendDescription(devBuilds.getAsMention())
           .appendDescription(" whenever a new development build is ready!");
-        HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessage(cm.getChannel(), eb.build());
     }
 
     @Override
