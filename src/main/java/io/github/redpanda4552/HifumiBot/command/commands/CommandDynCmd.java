@@ -29,6 +29,7 @@ import java.util.HashMap;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -52,7 +53,7 @@ public class CommandDynCmd extends AbstractCommand {
     @Override
     protected void onExecute(CommandMeta cm) {
         if (cm.getArgs().length < 2) {
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
+            Messaging.sendMessage(cm.getChannel(), usage);
             return;
         }
         
@@ -64,7 +65,7 @@ public class CommandDynCmd extends AbstractCommand {
         switch (subCommand.toLowerCase()) {
         case "get":
             if (!HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name)) {
-                HifumiBot.getSelf().sendMessage(cm.getChannel(), "Specified command is not a dynamic command");
+                Messaging.sendMessage(cm.getChannel(), "Specified command is not a dynamic command");
                 return;
             }
             
@@ -98,7 +99,7 @@ public class CommandDynCmd extends AbstractCommand {
             dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
             
             if (HifumiBot.getSelf().getCommandIndex().isCommand(name) && !HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name)) {
-                HifumiBot.getSelf().sendMessage(cm.getChannel(), "You cannot create a dynamic command with the same name as a builtin command");
+                Messaging.sendMessage(cm.getChannel(), "You cannot create a dynamic command with the same name as a builtin command");
                 return;
             } else if (dyncmd == null) {
                 dyncmd = new DynamicCommand(name, CATEGORY_NONE, false, "", null, null, null);
@@ -159,7 +160,7 @@ public class CommandDynCmd extends AbstractCommand {
             
             break;
         default:
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), usage);
+            Messaging.sendMessage(cm.getChannel(), usage);
             break;
         }
     }
@@ -176,6 +177,6 @@ public class CommandDynCmd extends AbstractCommand {
             mb.append(str).append("\n");
         }
         
-        HifumiBot.getSelf().sendMessage(channel, mb.build());
+        Messaging.sendMessage(channel, mb.build());
     }
 }

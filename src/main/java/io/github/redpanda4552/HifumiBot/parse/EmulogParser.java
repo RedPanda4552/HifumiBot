@@ -74,13 +74,13 @@ public class EmulogParser implements Runnable {
         try {
             url = new URL(attachment.getUrl());
         } catch (MalformedURLException e) {
-            HifumiBot.getSelf().sendMessage(message.getChannel(), ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
+            Messaging.sendMessage(message.getChannel(), ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
             return;
         }
         
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            HifumiBot.getSelf().sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Checking your emulog.txt for information/errors...");
+            Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Checking your emulog.txt for information/errors...");
             int lineNumber = 0;
             String line;
             
@@ -173,12 +173,12 @@ public class EmulogParser implements Runnable {
             try {
                 Response res = HifumiBot.getSelf().getHttpClient().newCall(req).execute();
                 String pastebinURL = res.body().string();
-                HifumiBot.getSelf().sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
+                Messaging.sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
             } catch (IOException e) {
                 Messaging.sendErrorToSystemOutputChannel("EmulogParser", "run", e);
             }
         } catch (IOException e) {
-            HifumiBot.getSelf().sendMessage(message.getChannel(), ":x: Something went wrong while opening the emulog... Try again?");
+            Messaging.sendMessage(message.getChannel(), ":x: Something went wrong while opening the emulog... Try again?");
             return;
         }
     }

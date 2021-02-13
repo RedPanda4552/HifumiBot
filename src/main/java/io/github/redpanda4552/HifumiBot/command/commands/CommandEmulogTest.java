@@ -28,6 +28,7 @@ import java.util.List;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class CommandEmulogTest extends AbstractCommand {
@@ -41,14 +42,14 @@ public class CommandEmulogTest extends AbstractCommand {
         List<Attachment> attachments = cm.getMessage().getAttachments();
         
         if (attachments.size() != 1) {
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), "No file attached! Please attach your emulog to your message.");
+            Messaging.sendMessage(cm.getChannel(), "No file attached! Please attach your emulog to your message.");
             return;
         }
         
         Attachment attachment = attachments.get(0);
         
         if (!attachment.getFileName().equalsIgnoreCase("emulog.txt")) {
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), "Attached file was not an emulog!");
+            Messaging.sendMessage(cm.getChannel(), "Attached file was not an emulog!");
             return;
         }
         

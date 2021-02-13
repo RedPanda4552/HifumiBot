@@ -27,8 +27,34 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class Messaging {
+    
+    public static Message sendMessage(String channelId, MessageEmbed embed) {
+        return Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(channelId), embed);
+    }
+    
+    public static Message sendMessage(MessageChannel channel, MessageEmbed embed) {
+        return channel.sendMessage(embed).complete();
+    }
+    
+    public static Message sendMessage(MessageChannel channel, String... strArr) {
+        MessageBuilder mb = new MessageBuilder();
+        
+        for (String str : strArr) {
+            mb.append(str);
+        }
+        
+        return Messaging.sendMessage(channel, mb.build());
+    }
+    
+    public static Message sendMessage(MessageChannel channel, Message msg) {
+        return channel.sendMessage(msg).complete();
+    }
 
     public static void sendErrorToSystemOutputChannel(String className, String methodName, Exception e) {
         EmbedBuilder eb = new EmbedBuilder();
@@ -53,6 +79,6 @@ public class Messaging {
             eb.addField("Caused By Stack Trace", StringUtils.abbreviate(sb.toString(), 1024), false);
         }
         
-        HifumiBot.getSelf().sendMessage(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
+        Messaging.sendMessage(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
     }
 }

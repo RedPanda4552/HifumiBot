@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -57,14 +58,14 @@ public class CommandWarez extends AbstractCommand {
         eb.addField("Appeal", "You may appeal a warez tag by proving that you own the item in question and disposing of any pirated copies. Staff will want to see some visual proof that you own the item (E.g. A picture of the item with your Discord username and the current date on a sticky note next to it).", false);
         eb.addField("Your Stance On Piracy", "We are not here to argue. Please forward all complaints about copyright law to Sony, or your local government's copyright enforcement agency.", false);
         eb.addField("\"But a friend gave it to me!\" or \"I own a copy, and just downloaded it instead!\"", "Games, BIOS files and other materials must be from discs, a console or other device that you own.", false);
-        HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessage(cm.getChannel(), eb.build());
         
         for (Member member : cm.getMentions()) {
             if (!HifumiBot.getSelf().getPermissionManager().hasPermission(member, null)) {
                 try {
                     cm.getGuild().addRoleToMember(member, cm.getGuild().getRoleById(WAREZ_ROLE_ID)).complete();
                 } catch (InsufficientPermissionException e) {
-                    HifumiBot.getSelf().sendMessage(cm.getChannel(), "Failed to assign role (insufficient permissions)");
+                    Messaging.sendMessage(cm.getChannel(), "Failed to assign role (insufficient permissions)");
                 }
             }
         }

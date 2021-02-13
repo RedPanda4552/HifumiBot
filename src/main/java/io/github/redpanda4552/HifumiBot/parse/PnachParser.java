@@ -31,8 +31,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
@@ -61,13 +61,13 @@ public class PnachParser implements Runnable {
         try {
             url = new URL(attachment.getUrl());
         } catch (MalformedURLException e) {
-            HifumiBot.getSelf().sendMessage(message.getChannel(), ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
+            Messaging.sendMessage(message.getChannel(), ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
             return;
         }
         
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            HifumiBot.getSelf().sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Testing your PNACH ( " + attachment.getFileName() + " )");
+            Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Testing your PNACH ( " + attachment.getFileName() + " )");
             int lineNumber = 0;
             String line;
             
@@ -212,11 +212,11 @@ public class PnachParser implements Runnable {
                 eb.setDescription(":white_check_mark: No issues found.");
             }
             
-            HifumiBot.getSelf().sendMessage(message.getChannel(), eb.build());
+            Messaging.sendMessage(message.getChannel(), eb.build());
             
             reader.close();
         } catch (IOException e) {
-            HifumiBot.getSelf().sendMessage(message.getChannel(), ":x: Something went wrong while opening the PNACH... Try again?");
+            Messaging.sendMessage(message.getChannel(), ":x: Something went wrong while opening the PNACH... Try again?");
             return;
         }
     }

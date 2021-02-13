@@ -23,8 +23,8 @@
  */
 package io.github.redpanda4552.HifumiBot.command.commands;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 
 public class CommandDX9 extends AbstractCommand {
 
@@ -36,7 +36,7 @@ public class CommandDX9 extends AbstractCommand {
 
     @Override
     protected void onExecute(CommandMeta cm) {
-        HifumiBot.getSelf().sendMessage(cm.getChannel(), VIDEO_LINK);
+        Messaging.sendMessage(cm.getChannel(), VIDEO_LINK);
     }
 
     @Override

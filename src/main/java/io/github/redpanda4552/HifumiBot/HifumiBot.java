@@ -33,11 +33,7 @@ import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import okhttp3.OkHttpClient;
@@ -209,28 +205,5 @@ public class HifumiBot {
         
         if (reload)
             self = new HifumiBot();
-    }
-    
-    public Message sendMessage(String channelId, MessageEmbed embed) {
-        MessageChannel channel = this.getJDA().getTextChannelById(channelId);
-        return channel.sendMessage(embed).complete();
-    }
-    
-    public Message sendMessage(MessageChannel channel, MessageEmbed embed) {
-        return channel.sendMessage(embed).complete();
-    }
-    
-    public Message sendMessage(MessageChannel channel, String... strArr) {
-        MessageBuilder mb = new MessageBuilder();
-        
-        for (String str : strArr) {
-            mb.append(str);
-        }
-        
-        return sendMessage(channel, mb.build());
-    }
-    
-    public Message sendMessage(MessageChannel channel, Message msg) {
-        return channel.sendMessage(msg).complete();
     }
 }

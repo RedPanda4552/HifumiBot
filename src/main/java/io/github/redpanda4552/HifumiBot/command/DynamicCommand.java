@@ -23,9 +23,9 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 public class DynamicCommand extends AbstractCommand {
@@ -53,7 +53,7 @@ public class DynamicCommand extends AbstractCommand {
         eb.setTitle(title);
         eb.setDescription(body);
         eb.setImage(imageURL);
-        HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessage(cm.getChannel(), eb.build());
     }
     
     @Override

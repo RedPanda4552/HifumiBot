@@ -28,6 +28,7 @@ import java.util.List;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class CommandPnachTest extends AbstractCommand {
@@ -41,14 +42,14 @@ public class CommandPnachTest extends AbstractCommand {
         List<Attachment> attachments = cm.getMessage().getAttachments();
         
         if (attachments.size() != 1) {
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), "No file attached! Please attach your PNACH to your message.");
+            Messaging.sendMessage(cm.getChannel(), "No file attached! Please attach your PNACH to your message.");
             return;
         }
         
         Attachment attachment = attachments.get(0);
         
         if (!attachment.getFileExtension().equalsIgnoreCase("pnach")) {
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), "Attached file was not a PNACH!");
+            Messaging.sendMessage(cm.getChannel(), "Attached file was not a PNACH!");
             return;
         }
         

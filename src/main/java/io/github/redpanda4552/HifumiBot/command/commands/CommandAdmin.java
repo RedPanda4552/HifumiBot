@@ -29,6 +29,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -55,12 +56,12 @@ public class CommandAdmin extends AbstractCommand {
                             
                             if (!adminRoles.contains(newRole)) {
                                 adminRoles.add(newRole);
-                                HifumiBot.getSelf().sendMessage(cm.getChannel(), ":white_check_mark: Role `" + newRole + "` added to admin role list.");
+                                Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Role `" + newRole + "` added to admin role list.");
                             } else {
-                                HifumiBot.getSelf().sendMessage(cm.getChannel(), ":x: Role `" + newRole + "` is already an admin role.");
+                                Messaging.sendMessage(cm.getChannel(), ":x: Role `" + newRole + "` is already an admin role.");
                             }
                         } else {
-                            HifumiBot.getSelf().sendMessage(cm.getChannel(), ":x: Role `" + newRole + "` does not exist.");
+                            Messaging.sendMessage(cm.getChannel(), ":x: Role `" + newRole + "` does not exist.");
                         }
                         
                         break;
@@ -72,9 +73,9 @@ public class CommandAdmin extends AbstractCommand {
                         
                         if (adminRoles.contains(deleteRole)) {
                             adminRoles.remove(deleteRole);
-                            HifumiBot.getSelf().sendMessage(cm.getChannel(), ":white_check_mark: Role `" + deleteRole + "` removed from admin role list.");
+                            Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Role `" + deleteRole + "` removed from admin role list.");
                         } else {
-                            HifumiBot.getSelf().sendMessage(cm.getChannel(), ":x: Role `" + deleteRole + "` is not an admin role.");
+                            Messaging.sendMessage(cm.getChannel(), ":x: Role `" + deleteRole + "` is not an admin role.");
                         }
                         
                         break;
@@ -91,7 +92,7 @@ public class CommandAdmin extends AbstractCommand {
                         eb.setDescription("Nothing here! ¯\\_(ツ)_/¯");
                     }
                     
-                    HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+                    Messaging.sendMessage(cm.getChannel(), eb.build());
                     break;
                 default:
                     showHelpDialog(cm);
@@ -107,7 +108,7 @@ public class CommandAdmin extends AbstractCommand {
         eb.addField("Add Role", CommandInterpreter.PREFIX + "admin add <role>", false);
         eb.addField("Remove Role", CommandInterpreter.PREFIX + "admin del <role>", false);
         eb.addField("List Roles", CommandInterpreter.PREFIX + "admin list", false);
-        HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessage(cm.getChannel(), eb.build());
     }
 
     @Override

@@ -33,6 +33,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
@@ -103,7 +104,7 @@ public class EventListener extends ListenerAdapter {
             eb.addField("Display Name", event.getMember().getEffectiveName(), true);
             String dateStr = HifumiBot.getSelf().getConfig().warezUsers.get(event.getUser().getId()).format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.addField("Warez Date", dateStr, true);
-            HifumiBot.getSelf().sendMessage(event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().systemOutputChannelId), eb.build());
+            Messaging.sendMessage(event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().systemOutputChannelId), eb.build());
         }
     }
     

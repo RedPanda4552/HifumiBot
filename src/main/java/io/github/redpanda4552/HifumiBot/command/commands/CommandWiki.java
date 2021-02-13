@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -44,7 +45,7 @@ public class CommandWiki extends AbstractCommand {
     @Override
     protected void onExecute(CommandMeta cm) {
         if (cm.getArgs().length == 0) {
-            HifumiBot.getSelf().sendMessage(cm.getChannel(), "I can't search for nothing! Try `" + CommandInterpreter.PREFIX + "wiki <title of game here>`");
+            Messaging.sendMessage(cm.getChannel(), "I can't search for nothing! Try `" + CommandInterpreter.PREFIX + "wiki <title of game here>`");
             return;
         }
 
@@ -78,7 +79,7 @@ public class CommandWiki extends AbstractCommand {
             eb.setColor(0xff0000);
         }
         
-        Message msg = HifumiBot.getSelf().sendMessage(cm.getChannel(), eb.build());
+        Message msg = Messaging.sendMessage(cm.getChannel(), eb.build());
         
         if (eb.getFields().size() == 1) {
             HifumiBot.getSelf().getEventListener().finalizeMessage(msg, eb.getFields().get(0).getValue(), cm.getUser().getId());
