@@ -23,6 +23,7 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -33,6 +34,18 @@ public class PermissionManager {
     
     public PermissionManager(String superuserId) {
         this.superuserId = superuserId;
+    }
+    
+    public boolean hasPermission(CommandMeta cm) {
+        return hasPermission(cm.getMember(), cm.getUser());
+    }
+    
+    public boolean hasPermission(Member member) {
+        return hasPermission(member, member.getUser());
+    }
+    
+    public boolean hasPermission(User user) {
+        return hasPermission(null, user);
     }
     
     public boolean hasPermission(Member member, User user) {
