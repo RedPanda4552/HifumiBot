@@ -32,9 +32,8 @@ import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class CommandInterpreter extends ListenerAdapter {
+public class CommandInterpreter {
 
     public static final String PREFIX = ">";
     
