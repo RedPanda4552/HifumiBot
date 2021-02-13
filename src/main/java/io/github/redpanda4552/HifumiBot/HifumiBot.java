@@ -123,7 +123,7 @@ public class HifumiBot {
         buildMonitor = new BuildMonitor(jda.getTextChannelById(outputChannelId));
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
-        jda.addEventListener(commandInterpreter = new CommandInterpreter(this));
+        commandInterpreter = new CommandInterpreter(this);
         jda.addEventListener(eventListener = new EventListener(this));
         
         // Schedule repeating tasks
