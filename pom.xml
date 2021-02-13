@@ -2,14 +2,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.redpanda4552</groupId>
     <artifactId>HifumiBot</artifactId>
-    <version>3.5.1</version>
+    <version>3.5.2</version>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
         <!-- Dependency Versions -->
-        <jda.version>4.2.0_224</jda.version>
+        <jda.version>4.2.0_228</jda.version>
         <logback.version>1.2.3</logback.version>
         <jsoup.version>1.13.1</jsoup.version>
         <commonslang.version>3.11</commonslang.version>
