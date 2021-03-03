@@ -31,7 +31,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ChatFilter {
 
-    private static final Pattern serverInvitePattern = Pattern.compile(".*https*://discord\\.gg/\\w+.*");
+    private static final Pattern serverInvitePattern1 = Pattern.compile(".*https*://discord\\.gg/\\w+.*");
+    private static final Pattern serverInvitePattern2 = Pattern.compile(".*https*://discord\\.com/invite/\\w+.*");
     
     public static void applyFilters(MessageReceivedEvent event) {
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(event.getMember(), event.getAuthor())) {
@@ -42,10 +43,18 @@ public class ChatFilter {
     }
     
     private static void filterServerInvites(Message msg) {
-        Matcher m = serverInvitePattern.matcher(msg.getContentDisplay());
+        Matcher m1 = serverInvitePattern1.matcher(msg.getContentDisplay());
         
-        if (m.matches()) {
+        if (m1.matches()) {
             msg.delete().complete();
+            return;
+        }
+        
+        Matcher m2 = serverInvitePattern2.matcher(msg.getContentDisplay());
+        
+        if (m2.matches()) {
+            msg.delete().complete();
+            return;
         }
     }
 }
