@@ -32,13 +32,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
-import net.dv8tion.jda.api.EmbedBuilder;
+import io.github.redpanda4552.HifumiBot.util.Pastebin;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
-public class PnachParser implements Runnable {
+public class PnachParser extends AbstractParser {
 
     private static final String CRC_FILE_NAME_PATTERN = "[0-9a-fA-F]{8}\\.pnach";
     
@@ -189,42 +188,45 @@ public class PnachParser implements Runnable {
                 }
             }
             
-            EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(message);
-            eb.setTitle(attachment.getFileName(), attachment.getUrl());
-            boolean descriptionSet = false;
+            reader.close();
             
-            for (PnachParserError ppe : errorMap.keySet()) {
-                ArrayList<Integer> lines = errorMap.get(ppe);
+            StringBuilder bodyBuilder = new StringBuilder();
+            bodyBuilder.append("\n").append("============================== Pnach Parse Results =============================").append("\n");
+            bodyBuilder.append("(*) = Information (!) = Warning (X) = Critical").append("\n\n");
+            
+            for (PnachParserError epe : errorMap.keySet()) {
+                ArrayList<Integer> lines = errorMap.get(epe);
                 
                 if (lines.size() > 0) {
-                    if (!descriptionSet) {
-                        eb.setDescription(":warning: **Warnings and/or errors found, please review.**\n\nWarnings (:warning:) are not critical but may be a good idea to look into.\nErrors (:x:) are critical issues and will likely result in a non-functioning PNACH.");
-                        descriptionSet = true;
-                    }
-                    
-                    String linesText = "";
+                    bodyBuilder.append("--------------------------------------------------------------------------------").append("\n");
+                    bodyBuilder.append(epe.getDisplayString()).append("\n\n");
+                    bodyBuilder.append("Affected Lines:").append("\n");
+                    StringBuilder lineBuilder = new StringBuilder();
                     
                     for (Integer i : lines) {
-                        if (!linesText.isBlank()) {
-                            linesText += ", ";
+                        if (lineBuilder.length() + String.valueOf(i).length() + String.valueOf(LINE_NUM_SEPARATOR).length() > MAX_LINE_LENGTH) {
+                            bodyBuilder.append(lineBuilder.toString()).append("\n");
+                            lineBuilder = new StringBuilder();
+                        } else if (lineBuilder.length() != 0) {
+                            lineBuilder.append(LINE_NUM_SEPARATOR);
                         }
                         
-                        linesText += i.toString();
+                        lineBuilder.append(i);
                     }
                     
-                    eb.addField(ppe.getDisplayString(), "Lines: " + linesText, false);
+                    if (lineBuilder.length() != 0) {
+                        bodyBuilder.append(lineBuilder.toString()).append("\n");
+                    }
                 }
             }
             
-            if (!descriptionSet) {
-                eb.setDescription(":white_check_mark: No issues found.");
-            }
+            bodyBuilder.append("\n\n").append("============================ End Pnach Parse Results ===========================").append("\n");
             
-            Messaging.sendMessage(message.getChannel(), eb.build());
-            
-            reader.close();
+            String pastebinURL = Pastebin.sendPaste("Pnach - " + message.getAuthor().getName(), bodyBuilder.toString());
+            Messaging.sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
         } catch (IOException e) {
-            Messaging.sendMessage(message.getChannel(), ":x: Something went wrong while opening the PNACH... Try again?");
+            Messaging.sendMessage(message.getChannel(), ":x: Something went wrong... Try again?");
+            Messaging.sendErrorToSystemOutputChannel("EmulogParser", "run", e);
             return;
         }
     }
