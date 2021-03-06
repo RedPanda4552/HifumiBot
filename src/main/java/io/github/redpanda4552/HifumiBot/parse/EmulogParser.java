@@ -37,14 +37,9 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Pastebin;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import okhttp3.MediaType;
 
-public class EmulogParser implements Runnable {
+public class EmulogParser extends AbstractParser {
 
-    private static final int MAX_LINE_LENGTH = 80;
-    private static final String LINE_NUM_SEPARATOR = ", ";
-    public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-    
     private final Message message;
     private final Attachment attachment;
     
