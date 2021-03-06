@@ -29,6 +29,8 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.RoleUtils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -75,6 +77,15 @@ public class CommandInterpreter {
                     event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(), 
                     args
             );
+            
+            if (!cm.getChannel().getId().equals(HifumiBot.getSelf().getConfig().commandChannelId) 
+                    && cm.getMember() != null 
+                    && !HifumiBot.getSelf().getPermissionManager().hasPermission(cm)
+                    && !RoleUtils.memberHasRole(cm.getMember(), HifumiBot.getSelf().getConfig().commandsInAllChannelsRoles)) {
+                Messaging.sendMessage(event.getChannel(), "Hey! Please use " + HifumiBot.getSelf().getJDA().getTextChannelById(HifumiBot.getSelf().getConfig().commandChannelId).getAsMention() + " for any bot commands. Thanks!");
+                return;
+            }
+            
             toExecute.run(cm);
         }
     }
