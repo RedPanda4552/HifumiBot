@@ -21,31 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.config;
+package io.github.redpanda4552.HifumiBot.util;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
-import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 
-public class Config {
-    
-    public String systemOutputChannelId;
-    public String pastebinApiKey;
-    public ArrayList<String> adminRoles;
-    public String commandChannelId;
-    public ArrayList<String> commandsInAllChannelsRoles;
-    public ArrayList<DynamicCommand> dynamicCommands;
-    public HashMap<String, OffsetDateTime> warezUsers;
-    
-    public Config() {
-        systemOutputChannelId = new String("");
-        pastebinApiKey = new String("");
-        adminRoles = new ArrayList<String>();
-        commandChannelId = new String("");
-        commandsInAllChannelsRoles = new ArrayList<String>();
-        dynamicCommands = new ArrayList<DynamicCommand>();
-        warezUsers = new HashMap<String, OffsetDateTime>();
+public class RoleUtils {
+
+    /**
+     * Check if a member has a Role contained in the specified list
+     * @param member - The Member to check
+     * @param roles - The List of Roles to compare against
+     * @return True if the Member has a Role contained in the List, false otherwise. 
+     */
+    public static boolean memberHasRole(Member member, List<String> roles) {
+        for (Role role : member.getRoles()) {
+            if (roles.contains(role.getName())) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
