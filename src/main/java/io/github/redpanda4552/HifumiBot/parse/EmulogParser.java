@@ -33,15 +33,11 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.Pastebin;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class EmulogParser implements Runnable {
 
@@ -157,28 +153,11 @@ public class EmulogParser implements Runnable {
             
             bodyBuilder.append("\n\n").append("=========================== End Emulog Parse Results ===========================").append("\n");
             
-            RequestBody body = new FormBody.Builder()
-                    .add("api_paste_private", "1")
-                    .add("api_option", "paste")
-                    .add("api_user_key", "")
-                    .add("api_paste_name", "Emulog - " + message.getAuthor().getName())
-                    .add("api_paste_expire_date", "10M")
-                    .add("api_dev_key", HifumiBot.getSelf().getConfig().pastebinApiKey)
-                    .add("api_paste_code", bodyBuilder.toString())
-                    .build();
-            Request req = new Request.Builder()
-                    .url("https://pastebin.com/api/api_post.php")
-                    .post(body)
-                    .build();
-            try {
-                Response res = HifumiBot.getSelf().getHttpClient().newCall(req).execute();
-                String pastebinURL = res.body().string();
-                Messaging.sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
-            } catch (IOException e) {
-                Messaging.sendErrorToSystemOutputChannel("EmulogParser", "run", e);
-            }
+            String pastebinURL = Pastebin.sendPaste("Emulog - " + message.getAuthor().getName(), bodyBuilder.toString());
+            Messaging.sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
         } catch (IOException e) {
-            Messaging.sendMessage(message.getChannel(), ":x: Something went wrong while opening the emulog... Try again?");
+            Messaging.sendMessage(message.getChannel(), ":x: Something went wrong... Try again?");
+            Messaging.sendErrorToSystemOutputChannel("EmulogParser", "run", e);
             return;
         }
     }
