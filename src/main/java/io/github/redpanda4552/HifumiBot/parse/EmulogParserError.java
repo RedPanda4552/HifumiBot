@@ -27,6 +27,7 @@ public enum EmulogParserError {
     
     TLB_MISS("(X) TLB miss. Usually caused by bad cheats, widescreen patches or disc dumps.\nGames can sometimes still function normally but usually just crash."),
     TRAP_EXCEPTION("(X) Trap exception. Usually thrown to signal the game has died. Though very\nunlikely, PCSX2 can on rare occasions still recover and continue."),
+    UNKNOWN_VIF1("(X) Unknown VIF1 command. Usually a symptom caused by another severe problem, and a sign that emulation is about to fail."),
     
     IOP_FD_FAIL("(!) Game failed to open a file on IOP."),
     
