@@ -79,6 +79,7 @@ public class CommandInterpreter {
             );
             
             if (!cm.getChannel().getId().equals(HifumiBot.getSelf().getConfig().commandChannelId) 
+                    && !HifumiBot.getSelf().getConfig().whitelistedCommandChannelIds.contains(cm.getChannel().getId())
                     && cm.getMember() != null 
                     && !HifumiBot.getSelf().getPermissionManager().hasPermission(cm)
                     && !RoleUtils.memberHasRole(cm.getMember(), HifumiBot.getSelf().getConfig().commandsInAllChannelsRoles)) {
