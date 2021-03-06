@@ -25,6 +25,7 @@ package io.github.redpanda4552.HifumiBot.parse;
 
 public enum PnachParserError {
     
+    FILE_NAME(":x: File name is not a valid CRC"),
     START_LOWERCASE(":x: Starting keyword is not lower case."),
     PARAM_COUNT(":x: Incorrect number of parameters; there should be 5 parameters, separated by commas."),
     SECOND_EQUALS(":x: Illegal second occurrence of `=` character."),

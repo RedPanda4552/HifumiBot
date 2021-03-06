@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -39,6 +40,8 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class PnachParser implements Runnable {
 
+    private static final String CRC_FILE_NAME_PATTERN = "[0-9a-fA-F]{8}\\.pnach";
+    
     private final Message message;
     private final Attachment attachment;
     
@@ -68,6 +71,11 @@ public class PnachParser implements Runnable {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
             Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Testing your PNACH ( " + attachment.getFileName() + " )");
+            
+            if (!Pattern.matches(CRC_FILE_NAME_PATTERN, attachment.getFileName())) {
+                addError(PnachParserError.FILE_NAME, -1);
+            }
+            
             int lineNumber = 0;
             String line;
             
