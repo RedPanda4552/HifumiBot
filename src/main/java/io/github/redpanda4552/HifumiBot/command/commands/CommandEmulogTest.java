@@ -34,7 +34,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 public class CommandEmulogTest extends AbstractCommand {
 
     public CommandEmulogTest() {
-        super("emulogtest", CATEGORY_BUILTIN, false);
+        super("emulogtest", CATEGORY_BUILTIN, false, false);
     }
 
     @Override

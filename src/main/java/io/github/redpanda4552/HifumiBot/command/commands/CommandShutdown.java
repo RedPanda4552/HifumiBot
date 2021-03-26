@@ -29,7 +29,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 public class CommandShutdown extends AbstractCommand {
 
     public CommandShutdown() {
-        super("shutdown", CATEGORY_BUILTIN, true);
+        super("shutdown", CATEGORY_BUILTIN, true, false);
     }
 
     @Override

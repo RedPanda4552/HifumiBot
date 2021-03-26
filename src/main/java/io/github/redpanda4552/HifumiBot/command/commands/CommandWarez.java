@@ -37,7 +37,7 @@ public class CommandWarez extends AbstractCommand {
     public static final String RULES_CHANNEL = "welcome-rules", WAREZ_ROLE_ID = "535718317864910850";
     
     public CommandWarez() {
-        super("warez", CATEGORY_BUILTIN, true);
+        super("warez", CATEGORY_BUILTIN, true, false);
     }
 
     @Override

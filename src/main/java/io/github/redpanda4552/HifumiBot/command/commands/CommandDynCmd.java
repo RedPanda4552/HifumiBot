@@ -40,7 +40,7 @@ public class CommandDynCmd extends AbstractCommand {
     private final MessageEmbed usage;
     
     public CommandDynCmd() {
-        super("dyncmd", CATEGORY_BUILTIN, true);
+        super("dyncmd", CATEGORY_BUILTIN, true, false);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("DynCmd Usage");
         eb.addField("View", "`dyncmd get <name>`", false);
@@ -102,7 +102,7 @@ public class CommandDynCmd extends AbstractCommand {
                 Messaging.sendMessage(cm.getChannel(), "You cannot create a dynamic command with the same name as a builtin command");
                 return;
             } else if (dyncmd == null) {
-                dyncmd = new DynamicCommand(name, CATEGORY_NONE, false, "", null, null, null);
+                dyncmd = new DynamicCommand(name, CATEGORY_NONE, false, false, "", null, null, null);
             }
             HashMap<String, String> switches = cm.getSwitches();
             

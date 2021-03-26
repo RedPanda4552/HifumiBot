@@ -33,7 +33,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 public class CommandRun extends AbstractCommand {
 
     public CommandRun() {
-        super("run", CATEGORY_BUILTIN, true);
+        super("run", CATEGORY_BUILTIN, true, false);
     }
 
     @Override

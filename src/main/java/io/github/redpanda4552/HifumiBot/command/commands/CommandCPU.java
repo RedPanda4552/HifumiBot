@@ -67,7 +67,7 @@ public class CommandCPU extends AbstractCommand {
     }
     
     public CommandCPU() {
-        super("cpu", CATEGORY_BUILTIN, false);
+        super("cpu", CATEGORY_BUILTIN, false, true);
     }
 
     @Override

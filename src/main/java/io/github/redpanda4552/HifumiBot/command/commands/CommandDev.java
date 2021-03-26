@@ -34,7 +34,7 @@ public class CommandDev extends AbstractCommand {
     private final String DEV_CHANNEL = "dev-builds";
     
     public CommandDev() {
-        super("dev", CATEGORY_BUILTIN, false);
+        super("dev", CATEGORY_BUILTIN, false, true);
     }
 
     @Override

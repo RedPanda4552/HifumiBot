@@ -31,7 +31,7 @@ public class CommandDX9 extends AbstractCommand {
     private final String VIDEO_LINK = "https://cdn.discordapp.com/attachments/514592552389967881/525387135138660353/gone_out.mp4";
     
     public CommandDX9() {
-        super("dx9", CATEGORY_BUILTIN, false);
+        super("dx9", CATEGORY_BUILTIN, false, false);
     }
 
     @Override

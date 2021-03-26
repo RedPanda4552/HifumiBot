@@ -66,7 +66,7 @@ public class CommandGPU extends AbstractCommand {
     }
     
     public CommandGPU() {
-        super("gpu", CATEGORY_BUILTIN, false);
+        super("gpu", CATEGORY_BUILTIN, false, true);
     }
     
     @Override

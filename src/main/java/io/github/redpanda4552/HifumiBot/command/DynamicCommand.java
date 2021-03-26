@@ -32,8 +32,8 @@ public class DynamicCommand extends AbstractCommand {
 
     private String helpText, title, body, imageURL;
     
-    public DynamicCommand(String name, String category, boolean admin, String helpText, String title, String body, String imageURL) {
-        super(name, category, admin);
+    public DynamicCommand(String name, String category, boolean admin, boolean restrictChannel, String helpText, String title, String body, String imageURL) {
+        super(name, category, admin, restrictChannel);
         this.helpText = helpText;
         this.title = title;
         this.body = body;

@@ -32,11 +32,13 @@ public abstract class AbstractCommand {
     
     protected String name, category;
     protected boolean admin;
+    protected boolean restrictChannel;
     
-    public AbstractCommand(String name, String category, boolean admin) {
+    public AbstractCommand(String name, String category, boolean admin, boolean restrictChannel) {
         this.name = name;
         this.category = category != null ? category : CATEGORY_NONE;
         this.admin = admin;
+        this.restrictChannel = restrictChannel;
     }
     
     /**

@@ -39,7 +39,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class CommandWiki extends AbstractCommand {
 
     public CommandWiki() {
-        super("wiki", CATEGORY_BUILTIN, false);
+        super("wiki", CATEGORY_BUILTIN, false, false);
     }
 
     @Override
