@@ -34,7 +34,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 public class CommandPnachTest extends AbstractCommand {
 
     public CommandPnachTest() {
-        super("pnachtest", CATEGORY_BUILTIN, false);
+        super("pnachtest", CATEGORY_BUILTIN, false, false);
     }
 
     @Override

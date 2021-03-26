@@ -35,7 +35,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 public class CommandHelp extends AbstractCommand {
 
     public CommandHelp() {
-        super("help", CATEGORY_BUILTIN, false);
+        super("help", CATEGORY_BUILTIN, false, false);
     }
 
     @Override

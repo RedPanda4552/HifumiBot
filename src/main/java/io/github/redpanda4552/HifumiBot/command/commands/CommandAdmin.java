@@ -36,7 +36,7 @@ import net.dv8tion.jda.api.entities.Guild;
 public class CommandAdmin extends AbstractCommand {
 
     public CommandAdmin() {
-        super("admin", CATEGORY_BUILTIN, true);
+        super("admin", CATEGORY_BUILTIN, true, false);
     }
 
     @Override

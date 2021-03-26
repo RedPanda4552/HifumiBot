@@ -33,7 +33,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 public class CommandAbout extends AbstractCommand {
 
     public CommandAbout() {
-        super("about", CATEGORY_BUILTIN, false);
+        super("about", CATEGORY_BUILTIN, false, false);
     }
 
     @Override

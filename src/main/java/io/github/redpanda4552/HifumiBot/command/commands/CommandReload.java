@@ -29,7 +29,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 public class CommandReload extends AbstractCommand {
 
     public CommandReload() {
-        super("reload", CATEGORY_BUILTIN, true);
+        super("reload", CATEGORY_BUILTIN, true, false);
     }
 
     @Override

@@ -42,7 +42,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class CommandPFP extends AbstractCommand {
 
     public CommandPFP() {
-        super("pfp", CATEGORY_BUILTIN, true);
+        super("pfp", CATEGORY_BUILTIN, true, false);
     }
 
     @Override
