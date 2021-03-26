@@ -111,6 +111,8 @@ public class EmulogParser extends AbstractParser {
                     addError(EmulogParserError.AUTO_EJECT, lineNumber);
                 } else if (line.startsWith("Re-inserting auto-ejected memcard")) {
                     addError(EmulogParserError.AUTO_EJECT_INSERT, lineNumber);
+                } else if (line.startsWith("isoFile error: Block index is past the end of file!")) {
+                    addError(EmulogParserError.BLOCK_INDEX_EOF, lineNumber);
                 }
             }
             
