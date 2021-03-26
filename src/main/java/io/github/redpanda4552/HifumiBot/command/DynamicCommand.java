@@ -73,10 +73,6 @@ public class DynamicCommand extends AbstractCommand {
         this.category = category;
     }
     
-    public boolean getAdmin() {
-        return this.admin;
-    }
-    
     public void setAdmin(boolean admin) {
         this.admin = admin;
     }

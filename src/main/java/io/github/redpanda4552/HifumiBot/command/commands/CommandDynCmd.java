@@ -71,7 +71,7 @@ public class CommandDynCmd extends AbstractCommand {
             
             dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
             
-            results.add("Admin Only: " + dyncmd.getAdmin());
+            results.add("Admin Only: " + dyncmd.isAdminCommand());
             
             if (dyncmd.getCategory() != null && !dyncmd.getCategory().isBlank()) {
                 results.add("Category: " + dyncmd.getCategory());

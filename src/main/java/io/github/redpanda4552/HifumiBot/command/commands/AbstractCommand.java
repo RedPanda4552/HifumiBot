@@ -70,5 +70,9 @@ public abstract class AbstractCommand {
         return category;
     }
     
+    public boolean isRestricted() {
+        return restrictChannel;
+    }
+    
     public abstract String getHelpText();
 }
