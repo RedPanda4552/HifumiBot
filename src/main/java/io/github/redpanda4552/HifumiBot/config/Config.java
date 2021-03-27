@@ -34,9 +34,8 @@ public class Config {
     public String systemOutputChannelId;
     public String pastebinApiKey;
     public ArrayList<String> adminRoles;
-    public String commandChannelId;
-    public ArrayList<String> whitelistedCommandChannelIds;
-    public ArrayList<String> commandsInAllChannelsRoles;
+    public String restrictedCommandChannelId;
+    public ArrayList<String> restrictedCommandBypassRoles;
     public ArrayList<DynamicCommand> dynamicCommands;
     public HashMap<String, OffsetDateTime> warezUsers;
     
@@ -44,9 +43,8 @@ public class Config {
         systemOutputChannelId = new String("");
         pastebinApiKey = new String("");
         adminRoles = new ArrayList<String>();
-        commandChannelId = new String("");
-        whitelistedCommandChannelIds = new ArrayList<String>();
-        commandsInAllChannelsRoles = new ArrayList<String>();
+        restrictedCommandChannelId = new String("");
+        restrictedCommandBypassRoles = new ArrayList<String>();
         dynamicCommands = new ArrayList<DynamicCommand>();
         warezUsers = new HashMap<String, OffsetDateTime>();
     }
