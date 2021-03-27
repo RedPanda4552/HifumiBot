@@ -105,6 +105,10 @@ public class CommandInterpreter {
             return false;
         }
         
+        if (cm.getGuild() == null) {
+            return false;
+        }
+        
         if (RoleUtils.memberHasRole(cm.getMember(), HifumiBot.getSelf().getConfig().restrictedCommandBypassRoles)) {
             return false;
         }
