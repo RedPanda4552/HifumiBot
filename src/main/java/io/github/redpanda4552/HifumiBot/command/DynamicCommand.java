@@ -100,4 +100,8 @@ public class DynamicCommand extends AbstractCommand {
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
     }
+    
+    public void setRestricted(boolean restricted) {
+        this.restrictChannel = restricted;
+    }
 }

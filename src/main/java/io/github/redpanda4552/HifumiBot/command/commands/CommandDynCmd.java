@@ -46,7 +46,17 @@ public class CommandDynCmd extends AbstractCommand {
         eb.addField("View", "`dyncmd get <name>`", false);
         eb.addField("Create/Modify", "`dyncmd set <name> [options]`", false);
         eb.addField("Delete", "`dyncmd del <name>`", false);
-        eb.addField("Options", "`-a, --admin <true|false>\n-c, --category <category>\n-h, --helptext <help text>\n-t, --title <title>\n-b, --body <body>\n-i, --imageurl <image URL>`", false);
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("`-a, --admin <true|false>\n");
+        sb.append("-c, --category <category>\n");
+        sb.append("-h, --helptext <help text>\n");
+        sb.append("-t, --title <title>\n");
+        sb.append("-b, --body <body>\n");
+        sb.append("-i, --imageurl <image URL>\n");
+        sb.append("-r, --restrict <true|false>`");
+        
+        eb.addField("Options", sb.toString(), false);
         usage = eb.build();
     }
 
@@ -140,6 +150,12 @@ public class CommandDynCmd extends AbstractCommand {
                 case "i":
                     dyncmd.setImageURL(switchValue);
                     results.add(":white_check_mark: New Image URL: " + switchValue);
+                    break;
+                case "restrict":
+                case "r":
+                    boolean restricted = Boolean.valueOf(switchValue);
+                    dyncmd.setRestricted(restricted);
+                    results.add(":white_check_mark: Restricted channels: " + restricted);
                     break;
                 default:
                     results.add(":warning: Unrecognized switch " + switchName + " with value " + switchValue);
