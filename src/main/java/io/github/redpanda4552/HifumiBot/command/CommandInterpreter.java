@@ -78,16 +78,36 @@ public class CommandInterpreter {
                     args
             );
             
-            if (!cm.getChannel().getId().equals(HifumiBot.getSelf().getConfig().commandChannelId) 
-                    && !HifumiBot.getSelf().getConfig().whitelistedCommandChannelIds.contains(cm.getChannel().getId())
-                    && cm.getMember() != null 
-                    && !HifumiBot.getSelf().getPermissionManager().hasPermission(cm)
-                    && !RoleUtils.memberHasRole(cm.getMember(), HifumiBot.getSelf().getConfig().commandsInAllChannelsRoles)) {
-                Messaging.sendMessage(event.getChannel(), "Hey! Please use " + HifumiBot.getSelf().getJDA().getTextChannelById(HifumiBot.getSelf().getConfig().commandChannelId).getAsMention() + " for any bot commands. Thanks!");
+            if (isCommandRestricted(cm)) {
+                Messaging.sendMessage(event.getChannel(), "Hey there! Please use " + HifumiBot.getSelf().getJDA().getTextChannelById(HifumiBot.getSelf().getConfig().restrictedCommandChannelId).getAsMention() + " for this bot command. Thanks!");
                 return;
             }
             
             toExecute.run(cm);
         }
+    }
+    
+    private boolean isCommandRestricted(CommandMeta cm) {
+        if (HifumiBot.getSelf().getConfig().restrictedCommandChannelId.isBlank()) {
+            return false;
+        }
+        
+        if (!HifumiBot.getSelf().getCommandIndex().getCommand(cm.getCommand()).isRestricted()) {
+            return false;
+        }
+        
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(cm)) {
+            return false;
+        }
+        
+        if (cm.getChannel().getId().equals(HifumiBot.getSelf().getConfig().restrictedCommandChannelId)) {
+            return false;
+        }
+        
+        if (RoleUtils.memberHasRole(cm.getMember(), HifumiBot.getSelf().getConfig().restrictedCommandBypassRoles)) {
+            return false;
+        }
+        
+        return true;
     }
 }
