@@ -68,6 +68,7 @@ public class CommandInterpreter {
             CommandMeta cm = new CommandMeta(
                     command, 
                     toExecute.isAdminCommand(), 
+                    toExecute.isRestricted(),
                     toExecute.getCategory(), 
                     event.getChannel() instanceof TextChannel ? event.getGuild() : null, 
                     event.getChannel(), 
@@ -92,7 +93,7 @@ public class CommandInterpreter {
             return false;
         }
         
-        if (!HifumiBot.getSelf().getCommandIndex().getCommand(cm.getCommand()).isRestricted()) {
+        if (!cm.isRestricted()) {
             return false;
         }
         
