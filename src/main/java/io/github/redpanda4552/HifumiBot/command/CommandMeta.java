@@ -37,6 +37,7 @@ public class CommandMeta {
 
     private String command;
     private boolean admin;
+    private boolean restricted;
     private String category;
     private Guild guild;
     private MessageChannel channel;
@@ -47,9 +48,10 @@ public class CommandMeta {
     private String[] args;
     private HashMap<String, String> switches;
     
-    public CommandMeta(String command, boolean admin, String category, Guild guild, MessageChannel channel, Member member, User user, Message message, List<Member> mentions, String[] args) {
+    public CommandMeta(String command, boolean admin, boolean restricted, String category, Guild guild, MessageChannel channel, Member member, User user, Message message, List<Member> mentions, String[] args) {
         this.command = command;
         this.admin = admin;
+        this.restricted = restricted;
         this.category = category;
         this.guild = guild;
         this.channel = channel;
@@ -103,6 +105,10 @@ public class CommandMeta {
     
     public boolean isAdmin() {
         return admin;
+    }
+    
+    public boolean isRestricted() {
+        return restricted;
     }
     
     public String getCategory() {
