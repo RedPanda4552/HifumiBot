@@ -154,7 +154,7 @@ public class EmulogParser extends AbstractParser {
             Messaging.sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
         } catch (IOException e) {
             Messaging.sendMessage(message.getChannel(), ":x: Something went wrong... Try again?");
-            Messaging.sendErrorToSystemOutputChannel("EmulogParser", "run", e);
+            Messaging.logException("EmulogParser", "run", e);
             return;
         }
     }

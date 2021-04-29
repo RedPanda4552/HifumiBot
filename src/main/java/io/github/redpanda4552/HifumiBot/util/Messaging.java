@@ -34,6 +34,10 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class Messaging {
     
+    public static Message sendMessage(String channelId, String... msg) {
+        return Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(channelId), msg);
+    }
+    
     public static Message sendMessage(String channelId, MessageEmbed embed) {
         return Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(channelId), embed);
     }
@@ -55,8 +59,15 @@ public class Messaging {
     public static Message sendMessage(MessageChannel channel, Message msg) {
         return channel.sendMessage(msg).complete();
     }
+    
+    public static void logInfo(String className, String methodName, String msg) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle("Info from " + className + "." + methodName);
+        eb.addField("Message", msg, false);
+        Messaging.sendMessage(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
+    }
 
-    public static void sendErrorToSystemOutputChannel(String className, String methodName, Exception e) {
+    public static void logException(String className, String methodName, Exception e) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Exception caught in " + className + "." + methodName);
         eb.addField("Message", e.getMessage(), false);

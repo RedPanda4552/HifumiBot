@@ -83,7 +83,7 @@ public class GpuIndex implements Refreshable {
                 }
             }
         } catch (IOException e) {
-            Messaging.sendErrorToSystemOutputChannel("GpuIndex", "refresh", e);
+            Messaging.logException("GpuIndex", "refresh", e);
         }
         
         return ret;
