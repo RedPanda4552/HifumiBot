@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -46,6 +47,7 @@ public class ChatFilter {
         Matcher m1 = serverInvitePattern1.matcher(msg.getContentDisplay());
         
         if (m1.matches()) {
+            Messaging.logInfo("ChatFilter", "filterServerInvites", "User " + msg.getAuthor().getAsMention() + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```" + msg.getContentStripped() + "```");
             msg.delete().complete();
             return;
         }
@@ -53,6 +55,7 @@ public class ChatFilter {
         Matcher m2 = serverInvitePattern2.matcher(msg.getContentDisplay());
         
         if (m2.matches()) {
+            Messaging.logInfo("ChatFilter", "filterServerInvites", "User " + msg.getAuthor().getAsMention() + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```" + msg.getContentStripped() + "```");
             msg.delete().complete();
             return;
         }
