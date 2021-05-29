@@ -41,22 +41,17 @@ import okhttp3.OkHttpClient;
 public class HifumiBot {
 
     private static HifumiBot self;
-    private static String discordBotToken, outputChannelId;
+    private static String discordBotToken;
     private static String superuserId;
-    private static boolean debug = false;
     
     public static void main(String[] args) {
-        if (args.length < 3) {
-            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <output-channel-id> <superuser-id> [-d]");
+        if (args.length < 2) {
+            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id>");
             return;
         }
         
         discordBotToken = args[0];
-        outputChannelId = args[1];
-        superuserId = args[2];
-        
-        if (args.length >= 4 && args[3].equalsIgnoreCase("-d"))
-            debug = true;
+        superuserId = args[1];
         
         System.out.println("Arguments parsed");
         
@@ -95,10 +90,6 @@ public class HifumiBot {
             return;
         }
         
-        if (outputChannelId == null || outputChannelId.isEmpty()) {
-            System.out.println("Output channel id is null or empty! I won't be able to send messages!");
-        }
-        
         try {
             jda = JDABuilder.createDefault(discordBotToken)
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
@@ -120,7 +111,7 @@ public class HifumiBot {
         wikiIndex = new WikiIndex();
         cpuIndex = new CpuIndex();
         gpuIndex = new GpuIndex();
-        buildMonitor = new BuildMonitor(jda.getTextChannelById(outputChannelId));
+        buildMonitor = new BuildMonitor(jda.getTextChannelById(HifumiBot.getSelf().getConfig().devBuildOutputChannelId));
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
         commandInterpreter = new CommandInterpreter(this);
@@ -143,7 +134,7 @@ public class HifumiBot {
             HifumiBot.getSelf().getBuildMonitor().refresh();
         }, 1000 * 60 * 10);
         
-        updateStatus(">help" + (debug ? " [Debug Mode]" : ""));
+        updateStatus(">help");
     }
     
     public Config getConfig() {
