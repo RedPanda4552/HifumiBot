@@ -34,10 +34,10 @@ public class SimpleSearch {
 
     public static synchronized HashMap<String, Float> search(Collection<String> searchAgainst, String query) {
         HashMap<String, Float> ret = new HashMap<String, Float>();
-        query = query.toLowerCase().trim();
+        query = query.toLowerCase().trim().replaceAll("[^\\w\\s]", "");
         
         for (String str : searchAgainst) {
-            String normalized = str.toLowerCase().trim();
+            String normalized = str.toLowerCase().trim().replaceAll("[^\\w\\s]", "");
             
             float toPush = 0;
             
