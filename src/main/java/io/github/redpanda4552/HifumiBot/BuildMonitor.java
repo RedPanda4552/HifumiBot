@@ -60,15 +60,22 @@ public class BuildMonitor implements Refreshable {
             Message lastPostedMessage = null;
             MessageEmbed lastPostedEmbed = null;
             String lastPostedRevision = null;
-            List<Message> historyMessages = channelHistory.retrievePast(1).complete();
             
-            if (!historyMessages.isEmpty()) {
-                do {
-                    lastPostedMessage = historyMessages.get(0);
-                } while (lastPostedMessage.getEmbeds().size() == 0);
-                
-                lastPostedEmbed = lastPostedMessage.getEmbeds().get(0);
+            do {
+                List<Message> historyMessages = channelHistory.retrievePast(1).complete();
 
+                if (historyMessages.isEmpty()) {
+                    break;
+                }
+                
+                lastPostedMessage = historyMessages.get(0);
+            } while (lastPostedMessage.getEmbeds().size() == 0);
+            
+            if (lastPostedMessage != null) {
+                lastPostedEmbed = lastPostedMessage.getEmbeds().get(0);
+            }
+            
+            if (lastPostedEmbed != null) {
                 // Look for the revision field in the latest embed
                 for (Field field : lastPostedEmbed.getFields()) {
                     if (field.getName().equals("Revision:")) {
