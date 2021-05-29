@@ -34,8 +34,6 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class CommandWarez extends AbstractCommand {
 
-    public static final String RULES_CHANNEL = "welcome-rules", WAREZ_ROLE_ID = "535718317864910850";
-    
     public CommandWarez() {
         super("warez", CATEGORY_BUILTIN, true, false);
     }
@@ -48,7 +46,7 @@ public class CommandWarez extends AbstractCommand {
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
         eb.setTitle("PCSX2 Anti-Warez Rules");
         eb.setDescription("As per ");
-        TextChannel welcomeRules = cm.getGuild().getTextChannelsByName(RULES_CHANNEL, false).get(0);
+        TextChannel welcomeRules = cm.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().rulesChannelId);
         eb.appendDescription(welcomeRules.getAsMention())
           .appendDescription(", our server **does not support** piracy.\n")
           .appendDescription("- No help or support will be given to anyone who uses pirated games, BIOS files, or other materials\n")
@@ -63,7 +61,7 @@ public class CommandWarez extends AbstractCommand {
         for (Member member : cm.getMentions()) {
             if (!HifumiBot.getSelf().getPermissionManager().hasPermission(member, null)) {
                 try {
-                    cm.getGuild().addRoleToMember(member, cm.getGuild().getRoleById(WAREZ_ROLE_ID)).complete();
+                    cm.getGuild().addRoleToMember(member, cm.getGuild().getRoleById(HifumiBot.getSelf().getConfig().warezRoleId)).complete();
                 } catch (InsufficientPermissionException e) {
                     Messaging.sendMessage(cm.getChannel(), "Failed to assign role (insufficient permissions)");
                 }
