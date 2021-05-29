@@ -33,6 +33,8 @@ public class Config {
     
     public String devBuildOutputChannelId;
     public String systemOutputChannelId;
+    public String rulesChannelId;
+    public String warezRoleId;
     public String pastebinApiKey;
     public ArrayList<String> adminRoles;
     public String restrictedCommandChannelId;
@@ -43,6 +45,8 @@ public class Config {
     public Config() {
         devBuildOutputChannelId = new String("");
         systemOutputChannelId = new String("");
+        rulesChannelId = new String("");
+        warezRoleId = new String("");
         pastebinApiKey = new String("");
         adminRoles = new ArrayList<String>();
         restrictedCommandChannelId = new String("");

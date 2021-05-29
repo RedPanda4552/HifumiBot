@@ -30,7 +30,6 @@ import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.ChatFilter;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -52,8 +51,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class EventListener extends ListenerAdapter {
     
-//    private static final String BOT_TALK_CHANNEL_ID = "352232087736025090";
-    
     private HifumiBot hifumiBot;
     private HashMap<String, Message> messages = new HashMap<String, Message>();
     
@@ -70,7 +67,7 @@ public class EventListener extends ListenerAdapter {
     @Override
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
         for (Role role : event.getRoles()) {
-            if (role.getId().equals(CommandWarez.WAREZ_ROLE_ID) && !HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId())) {
+            if (role.getId().equals(HifumiBot.getSelf().getConfig().warezRoleId) && !HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId())) {
                 HifumiBot.getSelf().getConfig().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
                 return;
@@ -81,7 +78,7 @@ public class EventListener extends ListenerAdapter {
     @Override
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
         for (Role role : event.getRoles()) {
-            if (role.getId().equals(CommandWarez.WAREZ_ROLE_ID)) {
+            if (role.getId().equals(HifumiBot.getSelf().getConfig().warezRoleId)) {
                 HifumiBot.getSelf().getConfig().warezUsers.remove(event.getUser().getId());
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
                 return;
@@ -93,7 +90,7 @@ public class EventListener extends ListenerAdapter {
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId())) {
             // First assign the warez role
-            Role role = event.getGuild().getRoleById(CommandWarez.WAREZ_ROLE_ID);
+            Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().warezRoleId);
             event.getGuild().addRoleToMember(event.getMember(), role).complete();
             
             // Then send a notification 
