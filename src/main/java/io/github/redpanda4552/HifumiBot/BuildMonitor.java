@@ -24,6 +24,7 @@
 package io.github.redpanda4552.HifumiBot;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -59,10 +60,11 @@ public class BuildMonitor implements Refreshable {
             Message lastPostedMessage = null;
             MessageEmbed lastPostedEmbed = null;
             String lastPostedRevision = null;
+            List<Message> historyMessages = channelHistory.retrievePast(1).complete();
             
-            if (!channelHistory.retrievePast(1).complete().isEmpty()) {
+            if (!historyMessages.isEmpty()) {
                 do {
-                    lastPostedMessage = channelHistory.retrievePast(1).complete().get(0);
+                    lastPostedMessage = historyMessages.get(0);
                 } while (lastPostedMessage.getEmbeds().size() == 0);
                 
                 lastPostedEmbed = lastPostedMessage.getEmbeds().get(0);
