@@ -56,20 +56,23 @@ public class BuildMonitor implements Refreshable {
     public synchronized void refresh() {
         try {
             MessageHistory channelHistory = outputChannel.getHistory();
-            Message lastPostedMessage;
+            Message lastPostedMessage = null;
+            MessageEmbed lastPostedEmbed = null;
+            String lastPostedRevision = null;
             
-            do {
-                lastPostedMessage = channelHistory.retrievePast(1).complete().get(0);
-            } while (lastPostedMessage.getEmbeds().size() == 0);
-            
-            MessageEmbed lastPostedEmbed = lastPostedMessage.getEmbeds().get(0);
-            String lastPostedRevision = "";
-            
-            // Look for the revision field in the latest embed
-            for (Field field : lastPostedEmbed.getFields()) {
-                if (field.getName().equals("Revision:")) {
-                    lastPostedRevision = field.getValue();
-                    break;
+            if (!channelHistory.retrievePast(1).complete().isEmpty()) {
+                do {
+                    lastPostedMessage = channelHistory.retrievePast(1).complete().get(0);
+                } while (lastPostedMessage.getEmbeds().size() == 0);
+                
+                lastPostedEmbed = lastPostedMessage.getEmbeds().get(0);
+
+                // Look for the revision field in the latest embed
+                for (Field field : lastPostedEmbed.getFields()) {
+                    if (field.getName().equals("Revision:")) {
+                        lastPostedRevision = field.getValue();
+                        break;
+                    }
                 }
             }
             
@@ -80,9 +83,7 @@ public class BuildMonitor implements Refreshable {
             gitRevision = revisionCell.getElementsByTag("a").get(0).ownText();    // Get display text
             Element commitCell = row.getElementsByTag("td").get(4);               // Get last cell
             
-            if (!gitRevision.equals(lastPostedRevision)) {
-                lastPostedRevision = gitRevision;
-                
+            if (lastPostedRevision == null || !gitRevision.equals(lastPostedRevision)) {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setAuthor("New PCSX2 Development Build Available!");
                 eb.addField("Revision:", gitRevision, false);
