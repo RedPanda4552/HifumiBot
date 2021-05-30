@@ -30,22 +30,27 @@ import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class CommandAbout extends AbstractCommand {
+public class CommandAbout extends AbstractCommand
+{
 
-    public CommandAbout() {
+    public CommandAbout()
+    {
         super("about", CATEGORY_BUILTIN, false, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
+    protected void onExecute(CommandMeta cm)
+    {
         EmbedBuilder eb;
-        
-        if (cm.getMember() != null) {
+
+        if (cm.getMember() != null)
+        {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else {
+        } else
+        {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
-        
+
         eb.setTitle("About " + HifumiBot.getSelf().getJDA().getSelfUser().getName());
         eb.setDescription("Originally created for the PCSX2 Discord server.");
         eb.addField("Created By", "pandubz", true);
@@ -56,7 +61,8 @@ public class CommandAbout extends AbstractCommand {
     }
 
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Info about " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
     }
 }

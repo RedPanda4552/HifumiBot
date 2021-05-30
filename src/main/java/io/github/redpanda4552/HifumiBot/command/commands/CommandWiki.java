@@ -36,55 +36,72 @@ import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
-public class CommandWiki extends AbstractCommand {
+public class CommandWiki extends AbstractCommand
+{
 
-    public CommandWiki() {
+    public CommandWiki()
+    {
         super("wiki", CATEGORY_BUILTIN, false, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
-        if (cm.getArgs().length == 0) {
-            Messaging.sendMessage(cm.getChannel(), "I can't search for nothing! Try `" + CommandInterpreter.PREFIX + "wiki <title of game here>`");
+    protected void onExecute(CommandMeta cm)
+    {
+        if (cm.getArgs().length == 0)
+        {
+            Messaging.sendMessage(cm.getChannel(),
+                    "I can't search for nothing! Try `" + CommandInterpreter.PREFIX + "wiki <title of game here>`");
             return;
         }
 
         EmbedBuilder eb = new EmbedBuilder();
         int i = 0;
-        
-        HashMap<String, Float> results = SimpleSearch.search(HifumiBot.getSelf().getWikiIndex().getAllTitles(), StringUtils.join(cm.getArgs(), " "));
-        
-        if (results.size() > 0) {
+
+        HashMap<String, Float> results = SimpleSearch.search(HifumiBot.getSelf().getWikiIndex().getAllTitles(),
+                StringUtils.join(cm.getArgs(), " "));
+
+        if (results.size() > 0)
+        {
             eb.setTitle("Query Results");
             String highestName = null;
             float highestWeight = 0;
-            
-            while (!results.isEmpty() && i < 6) {
-                for (String name : results.keySet()) {
-                    if (results.get(name) > highestWeight) {
+
+            while (!results.isEmpty() && i < 6)
+            {
+                for (String name : results.keySet())
+                {
+                    if (results.get(name) > highestWeight)
+                    {
                         highestName = name;
                         highestWeight = results.get(name);
                     }
                 }
-                
+
                 results.remove(highestName);
-                
+
                 eb.addField(String.valueOf(++i), highestName, false);
                 highestWeight = 0;
             }
-            
-            eb.setFooter("Click the reaction number matching the game you are looking for.\nThis message will self-modify with it's wiki information.", HifumiBot.getSelf().getJDA().getSelfUser().getAvatarUrl());
-        } else {
+
+            eb.setFooter(
+                    "Click the reaction number matching the game you are looking for.\nThis message will self-modify with it's wiki information.",
+                    HifumiBot.getSelf().getJDA().getSelfUser().getAvatarUrl());
+        } else
+        {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
         }
-        
+
         Message msg = Messaging.sendMessage(cm.getChannel(), eb.build());
-        
-        if (eb.getFields().size() == 1) {
-            HifumiBot.getSelf().getEventListener().finalizeMessage(msg, eb.getFields().get(0).getValue(), cm.getUser().getId());
-        } else {
-            // String concatenation with unicodes is apparently punishable by build error, so we instead have this.
+
+        if (eb.getFields().size() == 1)
+        {
+            HifumiBot.getSelf().getEventListener().finalizeMessage(msg, eb.getFields().get(0).getValue(),
+                    cm.getUser().getId());
+        } else
+        {
+            // String concatenation with unicodes is apparently punishable by build error,
+            // so we instead have this.
             if (i > 0)
                 msg.addReaction(Emotes.ONE).complete();
             if (i > 1)
@@ -97,13 +114,14 @@ public class CommandWiki extends AbstractCommand {
                 msg.addReaction(Emotes.FIVE).complete();
             if (i > 5)
                 msg.addReaction(Emotes.SIX).complete();
-            
+
             HifumiBot.getSelf().getEventListener().waitForMessage(cm.getUser().getId(), msg);
         }
     }
-    
+
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Search the PCSX2 wiki by game title";
     }
 }

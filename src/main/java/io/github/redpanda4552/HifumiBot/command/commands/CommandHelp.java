@@ -32,49 +32,62 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
-public class CommandHelp extends AbstractCommand {
+public class CommandHelp extends AbstractCommand
+{
 
-    public CommandHelp() {
+    public CommandHelp()
+    {
         super("help", CATEGORY_BUILTIN, false, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
+    protected void onExecute(CommandMeta cm)
+    {
         String category = "builtin";
         int pageNumber = 1;
         MessageEmbed toSend = null;
         HashMap<String, ArrayList<MessageEmbed>> helpPages = HifumiBot.getSelf().getCommandIndex().getHelpPages();
-        
-        if (cm.getArgs().length >= 1 && helpPages.get(cm.getArgs()[0]) != null) {
+
+        if (cm.getArgs().length >= 1 && helpPages.get(cm.getArgs()[0]) != null)
+        {
             category = cm.getArgs()[0];
-            
-            if (cm.getArgs().length >= 2) {
-                try {
+
+            if (cm.getArgs().length >= 2)
+            {
+                try
+                {
                     pageNumber = Integer.parseInt(cm.getArgs()[1]);
-                } catch (NumberFormatException e) { }
+                } catch (NumberFormatException e)
+                {
+                }
             }
-            
+
             if (pageNumber > helpPages.get(category).size())
                 pageNumber = helpPages.get(category).size() - 1;
-            
+
             if (pageNumber < 1)
                 pageNumber = 1;
-            
+
             toSend = helpPages.get(category).get(pageNumber - 1);
-        } else {
+        } else
+        {
             toSend = HifumiBot.getSelf().getCommandIndex().getHelpRootPage();
         }
-        
-        try {
+
+        try
+        {
             Messaging.sendMessage(cm.getUser().openPrivateChannel().complete(), toSend);
-        } catch (ErrorResponseException e) {
-            Messaging.sendMessage(cm.getChannel(), "Sorry, `help` works through DMs to avoid clutter, but your DMs are not open to members of this server!");
+        } catch (ErrorResponseException e)
+        {
+            Messaging.sendMessage(cm.getChannel(),
+                    "Sorry, `help` works through DMs to avoid clutter, but your DMs are not open to members of this server!");
         }
-        
+
     }
-    
+
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Display this help dialog";
     }
 }

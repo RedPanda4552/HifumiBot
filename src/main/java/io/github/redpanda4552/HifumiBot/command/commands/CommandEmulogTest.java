@@ -31,34 +31,40 @@ import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
-public class CommandEmulogTest extends AbstractCommand {
+public class CommandEmulogTest extends AbstractCommand
+{
 
-    public CommandEmulogTest() {
+    public CommandEmulogTest()
+    {
         super("emulogtest", CATEGORY_BUILTIN, false, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
+    protected void onExecute(CommandMeta cm)
+    {
         List<Attachment> attachments = cm.getMessage().getAttachments();
-        
-        if (attachments.size() != 1) {
+
+        if (attachments.size() != 1)
+        {
             Messaging.sendMessage(cm.getChannel(), "No file attached! Please attach your emulog to your message.");
             return;
         }
-        
+
         Attachment attachment = attachments.get(0);
-        
-        if (!attachment.getFileName().equalsIgnoreCase("emulog.txt")) {
+
+        if (!attachment.getFileName().equalsIgnoreCase("emulog.txt"))
+        {
             Messaging.sendMessage(cm.getChannel(), "Attached file was not an emulog!");
             return;
         }
-        
+
         EmulogParser ep = new EmulogParser(cm.getMessage(), attachment);
         HifumiBot.getSelf().getScheduler().runOnce(ep);
     }
 
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Check an emulog for information/errors";
     }
 

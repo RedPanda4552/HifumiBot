@@ -26,53 +26,61 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 
-public abstract class AbstractCommand {
+public abstract class AbstractCommand
+{
 
     protected static final String CATEGORY_BUILTIN = "builtin", CATEGORY_NONE = "none";
-    
+
     protected String name, category;
     protected boolean admin;
     protected boolean restrictChannel;
-    
-    public AbstractCommand(String name, String category, boolean admin, boolean restrictChannel) {
+
+    public AbstractCommand(String name, String category, boolean admin, boolean restrictChannel)
+    {
         this.name = name;
         this.category = category != null ? category : CATEGORY_NONE;
         this.admin = admin;
         this.restrictChannel = restrictChannel;
     }
-    
+
     /**
      * Do a prelimiary permissions check, and execute if it passes.
      */
-    public void run(CommandMeta cm) {
+    public void run(CommandMeta cm)
+    {
         if (!isAdminCommand() || HifumiBot.getSelf().getPermissionManager().hasPermission(cm.getMember(), cm.getUser()))
             onExecute(cm);
     }
-    
+
     /**
      * Command payload.
      */
     protected abstract void onExecute(CommandMeta cm);
-    
-    protected boolean isArgSingleWord(String arg) {
+
+    protected boolean isArgSingleWord(String arg)
+    {
         return !arg.contains(" ");
     }
-    
-    public boolean isAdminCommand() {
+
+    public boolean isAdminCommand()
+    {
         return admin;
     }
-    
-    public String getName() {
+
+    public String getName()
+    {
         return name;
     }
-    
-    public String getCategory() {
+
+    public String getCategory()
+    {
         return category;
     }
-    
-    public boolean isRestricted() {
+
+    public boolean isRestricted()
+    {
         return restrictChannel;
     }
-    
+
     public abstract String getHelpText();
 }

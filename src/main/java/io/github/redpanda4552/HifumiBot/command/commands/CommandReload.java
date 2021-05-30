@@ -26,19 +26,23 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 
-public class CommandReload extends AbstractCommand {
+public class CommandReload extends AbstractCommand
+{
 
-    public CommandReload() {
+    public CommandReload()
+    {
         super("reload", CATEGORY_BUILTIN, true, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
+    protected void onExecute(CommandMeta cm)
+    {
         HifumiBot.getSelf().shutdown(true);
     }
-    
+
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Reload a fresh instance of " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
     }
 }

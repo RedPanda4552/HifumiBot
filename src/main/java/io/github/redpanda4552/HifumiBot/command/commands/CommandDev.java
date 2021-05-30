@@ -29,33 +29,37 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-public class CommandDev extends AbstractCommand {
+public class CommandDev extends AbstractCommand
+{
 
     private final String DEV_CHANNEL = "dev-builds";
-    
-    public CommandDev() {
+
+    public CommandDev()
+    {
         super("dev", CATEGORY_BUILTIN, false, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
-        if (!(cm.getChannel() instanceof TextChannel)) {
+    protected void onExecute(CommandMeta cm)
+    {
+        if (!(cm.getChannel() instanceof TextChannel))
+        {
             Messaging.sendMessage(cm.getChannel(), "Sorry, but this command can only be used within the PCSX2 server.");
             return;
         }
-            
-        
+
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
         eb.setTitle("PCSX2 Development Builds");
-        eb.setDescription("Problems? Looking for PCSX2 updates? Consider using PCSX2 development builds! I post a message in ");
+        eb.setDescription(
+                "Problems? Looking for PCSX2 updates? Consider using PCSX2 development builds! I post a message in ");
         TextChannel devBuilds = cm.getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
-        eb.appendDescription(devBuilds.getAsMention())
-          .appendDescription(" whenever a new development build is ready!");
+        eb.appendDescription(devBuilds.getAsMention()).appendDescription(" whenever a new development build is ready!");
         Messaging.sendMessage(cm.getChannel(), eb.build());
     }
 
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Print a dialog about development builds";
     }
 

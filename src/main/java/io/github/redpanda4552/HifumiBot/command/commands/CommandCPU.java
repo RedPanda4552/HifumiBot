@@ -36,117 +36,139 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class CommandCPU extends AbstractCommand {
-    
+public class CommandCPU extends AbstractCommand
+{
+
     private static final int MAX_RESULTS = 5;
 
-    private enum CPURating {
-        OVERKILL("Overkill", 2800),
-        GREAT("Great for most", 2400),
-        GOOD("Good for most", 2000),
-        MINIMUM_3D("Okay for some 3D", 1600),
-        MINIMUM_2D("Okay for some 2D", 1200),
-        VERY_SLOW("Very Slow", 800),
+    private enum CPURating
+    {
+        OVERKILL("Overkill", 2800), GREAT("Great for most", 2400), GOOD("Good for most", 2000),
+        MINIMUM_3D("Okay for some 3D", 1600), MINIMUM_2D("Okay for some 2D", 1200), VERY_SLOW("Very Slow", 800),
         AWFUL("Awful", 0);
-        
+
         private String displayName;
         private int minimum;
-        
-        private CPURating(String displayName, int minimum) {
+
+        private CPURating(String displayName, int minimum)
+        {
             this.displayName = displayName;
             this.minimum = minimum;
         }
-        
-        public String getDisplayName() {
+
+        public String getDisplayName()
+        {
             return displayName;
         }
-        
-        public int getMinimum() {
+
+        public int getMinimum()
+        {
             return minimum;
         }
     }
-    
-    public CommandCPU() {
+
+    public CommandCPU()
+    {
         super("cpu", CATEGORY_BUILTIN, false, true);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
+    protected void onExecute(CommandMeta cm)
+    {
         // Search
-        if (cm.getArgs().length == 0) {
+        if (cm.getArgs().length == 0)
+        {
             EmbedBuilder eb;
-            
-            if (cm.getMember() != null) {
+
+            if (cm.getMember() != null)
+            {
                 eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-            } else { 
+            } else
+            {
                 eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
             }
-            
+
             eb.setTitle("About Single Thread Ratings (STR)");
-            eb.appendDescription("**Single Thread Rating** (STR) is a benchmarking statistic used by Passmark's CPU benchmarking software. ")
-              .appendDescription("The statistic indicates how powerful a single thread on a CPU is. ")
-              .appendDescription("Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
+            eb.appendDescription(
+                    "**Single Thread Rating** (STR) is a benchmarking statistic used by Passmark's CPU benchmarking software. ")
+                    .appendDescription("The statistic indicates how powerful a single thread on a CPU is. ")
+                    .appendDescription(
+                            "Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
             eb.addField("Direct link", CpuIndex.PASSMARK_STR_URL, false);
-            eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + this.getName() + " <cpu model here>`", false);
+            eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + this.getName() + " <cpu model here>`",
+                    false);
             Messaging.sendMessage(cm.getChannel(), eb.build());
             return;
         }
-        
+
         CpuIndex cpuIndex = HifumiBot.getSelf().getCpuIndex();
         EmbedBuilder eb;
-        
-        if (cm.getMember() != null) {
+
+        if (cm.getMember() != null)
+        {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else {
+        } else
+        {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
-        
-        HashMap<String, Float> results = SimpleSearch.search(cpuIndex.getAllCpus(), StringUtils.join(cm.getArgs(), " "));
-        
-        if (results.size() > 0) {
+
+        HashMap<String, Float> results = SimpleSearch.search(cpuIndex.getAllCpus(),
+                StringUtils.join(cm.getArgs(), " "));
+
+        if (results.size() > 0)
+        {
             eb.setTitle("Query Results for \"" + StringUtils.join(cm.getArgs(), " ") + "\"");
             String highestName = null;
             float highestWeight = 0;
-            
-            while (!results.isEmpty() && eb.getFields().size() < MAX_RESULTS) {
-                for (String cpuName : results.keySet()) {
-                    if (results.get(cpuName) > highestWeight) {
+
+            while (!results.isEmpty() && eb.getFields().size() < MAX_RESULTS)
+            {
+                for (String cpuName : results.keySet())
+                {
+                    if (results.get(cpuName) > highestWeight)
+                    {
                         highestName = cpuName;
                         highestWeight = results.get(cpuName);
                     }
                 }
-                
+
                 results.remove(highestName);
                 highestWeight = 0;
                 int highestScore = Integer.parseInt(cpuIndex.getCpuRating(highestName).replaceAll("[,. ]", ""));
                 String highestScoreDescription = "";
-                
-                for (int i = 0; i < CPURating.values().length; i++) {
-                    if (highestScore >= CPURating.values()[i].getMinimum()) {
+
+                for (int i = 0; i < CPURating.values().length; i++)
+                {
+                    if (highestScore >= CPURating.values()[i].getMinimum())
+                    {
                         highestScoreDescription = CPURating.values()[i].getDisplayName();
                         break;
                     }
                 }
-                
+
                 eb.addField(highestName, highestScore + " (" + highestScoreDescription + ")", false);
             }
-            
+
             eb.setColor(0x00ff00);
-        } else {
+        } else
+        {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
         }
-        
-        try {
+
+        try
+        {
             Messaging.sendMessage(cm.getChannel(), eb.build());
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
-        
+
     }
 
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Look up the Single Thread Rating for a CPU";
     }
 }

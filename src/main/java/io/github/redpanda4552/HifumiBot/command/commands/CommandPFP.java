@@ -39,60 +39,77 @@ import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-public class CommandPFP extends AbstractCommand {
+public class CommandPFP extends AbstractCommand
+{
 
-    public CommandPFP() {
+    public CommandPFP()
+    {
         super("pfp", CATEGORY_BUILTIN, true, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
-        if (cm.getUser() == null || !HifumiBot.getSelf().getPermissionManager().isSuperuser(cm.getUser())) {
+    protected void onExecute(CommandMeta cm)
+    {
+        if (cm.getUser() == null || !HifumiBot.getSelf().getPermissionManager().isSuperuser(cm.getUser()))
+        {
             return;
         }
-        
+
         List<Attachment> attachments = cm.getMessage().getAttachments();
         List<MessageEmbed> embeds = cm.getMessage().getEmbeds();
-        
-        if (attachments.size() > 0) {
+
+        if (attachments.size() > 0)
+        {
             Attachment attachment = attachments.get(0);
-            
-            if (attachment.isImage()) {
-                try {
+
+            if (attachment.isImage())
+            {
+                try
+                {
                     setAvatar(attachment.getUrl());
                     Messaging.sendMessage(cm.getChannel(), "Avatar set!");
-                } catch (IOException e) {
+                } catch (IOException e)
+                {
                     e.printStackTrace();
-                    Messaging.sendMessage(cm.getChannel(), "An error occurred while setting the avatar: "+ e.getMessage());
+                    Messaging.sendMessage(cm.getChannel(),
+                            "An error occurred while setting the avatar: " + e.getMessage());
                 }
-                
+
                 return;
             }
-        } else if (embeds.size() > 0) {
+        } else if (embeds.size() > 0)
+        {
             MessageEmbed embed = embeds.get(0);
-            
-            if (embed.getType() == EmbedType.IMAGE) {
-                try {
+
+            if (embed.getType() == EmbedType.IMAGE)
+            {
+                try
+                {
                     setAvatar(embed.getImage().getUrl());
                     Messaging.sendMessage(cm.getChannel(), "Avatar set!");
-                } catch (IOException e) {
+                } catch (IOException e)
+                {
                     e.printStackTrace();
-                    Messaging.sendMessage(cm.getChannel(), "An error occurred while setting the avatar: "+ e.getMessage());
+                    Messaging.sendMessage(cm.getChannel(),
+                            "An error occurred while setting the avatar: " + e.getMessage());
                 }
-                
+
                 return;
             }
         }
-        
-        Messaging.sendMessage(cm.getChannel(), "No images found in this message! Either attach one or include a link in the command arguments.");
+
+        Messaging.sendMessage(cm.getChannel(),
+                "No images found in this message! Either attach one or include a link in the command arguments.");
     }
 
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Set Hifumi's avatar";
     }
-    
-    private void setAvatar(String imageUrl) throws IOException {
+
+    private void setAvatar(String imageUrl) throws IOException
+    {
         URL url = new URL(imageUrl);
         BufferedImage bImage = ImageIO.read(url);
         ByteArrayOutputStream oStream = new ByteArrayOutputStream();
