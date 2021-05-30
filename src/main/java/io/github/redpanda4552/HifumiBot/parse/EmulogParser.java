@@ -69,7 +69,8 @@ public class EmulogParser extends AbstractParser
         try
         {
             url = new URL(attachment.getUrl());
-        } catch (MalformedURLException e)
+        }
+        catch (MalformedURLException e)
         {
             Messaging.sendMessage(message.getChannel(),
                     ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
@@ -92,13 +93,16 @@ public class EmulogParser extends AbstractParser
                 if (line.contains("TLB Miss"))
                 {
                     addError(EmulogParserError.TLB_MISS, lineNumber);
-                } else if (line.startsWith("Trap exception"))
+                }
+                else if (line.startsWith("Trap exception"))
                 {
                     addError(EmulogParserError.TRAP_EXCEPTION, lineNumber);
-                } else if (line.startsWith("[GameDB] Found patch with CRC"))
+                }
+                else if (line.startsWith("[GameDB] Found patch with CRC"))
                 {
                     addError(EmulogParserError.GAMEDB_PATCH_LOADED, lineNumber);
-                } else if ((m = iopFDFailPattern.matcher(line)).matches())
+                }
+                else if ((m = iopFDFailPattern.matcher(line)).matches())
                 {
                     String group = m.group(1);
 
@@ -110,34 +114,42 @@ public class EmulogParser extends AbstractParser
                         {
                             addError(EmulogParserError.IOP_FD_FAIL, lineNumber);
                         }
-                    } catch (NumberFormatException e)
-                    {
                     }
-                } else if (line.startsWith("microVU0 Warning: Branch, Branch, Branch!"))
+                    catch (NumberFormatException e) { }
+                }
+                else if (line.startsWith("microVU0 Warning: Branch, Branch, Branch!"))
                 {
                     addError(EmulogParserError.VU0_TRIPLE_BRANCH, lineNumber);
-                } else if (line.startsWith("microVU1 Warning: Branch, Branch, Branch!"))
+                }
+                else if (line.startsWith("microVU1 Warning: Branch, Branch, Branch!"))
                 {
                     addError(EmulogParserError.VU1_TRIPLE_BRANCH, lineNumber);
-                } else if ((m = iopUnknownWrite.matcher(line)).matches())
+                }
+                else if ((m = iopUnknownWrite.matcher(line)).matches())
                 {
                     addError(EmulogParserError.IOP_UNKNOWN_WRITE, lineNumber);
-                } else if (line.startsWith("Loading savestate"))
+                }
+                else if (line.startsWith("Loading savestate"))
                 {
                     addError(EmulogParserError.SSTATE_LOAD, lineNumber);
-                } else if (line.startsWith("Saving savestate"))
+                }
+                else if (line.startsWith("Saving savestate"))
                 {
                     addError(EmulogParserError.SSTATE_SAVE, lineNumber);
-                } else if (line.startsWith("Savestate is corrupt or incomplete"))
+                }
+                else if (line.startsWith("Savestate is corrupt or incomplete"))
                 {
                     addError(EmulogParserError.SSTATE_FAIL, lineNumber);
-                } else if (line.startsWith("Auto-ejecting memcard"))
+                }
+                else if (line.startsWith("Auto-ejecting memcard"))
                 {
                     addError(EmulogParserError.AUTO_EJECT, lineNumber);
-                } else if (line.startsWith("Re-inserting auto-ejected memcard"))
+                }
+                else if (line.startsWith("Re-inserting auto-ejected memcard"))
                 {
                     addError(EmulogParserError.AUTO_EJECT_INSERT, lineNumber);
-                } else if (line.startsWith("isoFile error: Block index is past the end of file!"))
+                }
+                else if (line.startsWith("isoFile error: Block index is past the end of file!"))
                 {
                     addError(EmulogParserError.BLOCK_INDEX_EOF, lineNumber);
                 }
@@ -171,7 +183,8 @@ public class EmulogParser extends AbstractParser
                         {
                             bodyBuilder.append(lineBuilder.toString()).append("\n");
                             lineBuilder = new StringBuilder();
-                        } else if (lineBuilder.length() != 0)
+                        }
+                        else if (lineBuilder.length() != 0)
                         {
                             lineBuilder.append(LINE_NUM_SEPARATOR);
                         }
@@ -193,7 +206,8 @@ public class EmulogParser extends AbstractParser
             String pastebinURL = Pastebin.sendPaste("Emulog - " + message.getAuthor().getName(),
                     bodyBuilder.toString());
             Messaging.sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Messaging.sendMessage(message.getChannel(), ":x: Something went wrong... Try again?");
             Messaging.logException("EmulogParser", "run", e);

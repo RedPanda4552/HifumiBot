@@ -83,7 +83,8 @@ public class CommandCPU extends AbstractCommand
             if (cm.getMember() != null)
             {
                 eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-            } else
+            }
+            else
             {
                 eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
             }
@@ -107,7 +108,8 @@ public class CommandCPU extends AbstractCommand
         if (cm.getMember() != null)
         {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else
+        }
+        else
         {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
@@ -150,7 +152,8 @@ public class CommandCPU extends AbstractCommand
             }
 
             eb.setColor(0x00ff00);
-        } else
+        }
+        else
         {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
@@ -159,7 +162,8 @@ public class CommandCPU extends AbstractCommand
         try
         {
             Messaging.sendMessage(cm.getChannel(), eb.build());
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }

@@ -86,24 +86,29 @@ public class CommandMeta
                     {
                         openSwitch = false;
                         switches.put(switchStart, toInsert.replaceAll("\"", ""));
-                    } else
+                    }
+                    else
                     {
                         newArgs.add(toInsert.replaceAll("\"", ""));
                     }
                 }
-            } else if (!openSwitch && arg.startsWith("-"))
+            }
+            else if (!openSwitch && arg.startsWith("-"))
             {
                 openSwitch = true;
                 switchStart = arg.replaceFirst("-+", "");
-            } else if (!openQuote && arg.startsWith("\"") && !arg.endsWith("\""))
+            }
+            else if (!openQuote && arg.startsWith("\"") && !arg.endsWith("\""))
             {
                 openQuote = true;
                 toInsert = arg;
-            } else if (openSwitch)
+            }
+            else if (openSwitch)
             {
                 openSwitch = false;
                 switches.put(switchStart, arg);
-            } else
+            }
+            else
             {
                 newArgs.add(arg);
             }

@@ -81,9 +81,8 @@ public class Scheduler
         try
         {
             threadPool.awaitTermination(30, TimeUnit.SECONDS);
-        } catch (InterruptedException e)
-        {
         }
+        catch (InterruptedException e) { }
     }
 
     public Set<String> getRunnableNames()

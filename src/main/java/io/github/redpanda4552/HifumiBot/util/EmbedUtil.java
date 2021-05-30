@@ -43,7 +43,8 @@ public class EmbedUtil
         if (msg.getMember() != null)
         {
             return EmbedUtil.newFootedEmbedBuilder(msg.getMember());
-        } else
+        }
+        else
         {
             return EmbedUtil.newFootedEmbedBuilder(msg.getAuthor());
         }
@@ -54,7 +55,8 @@ public class EmbedUtil
         if (cm.getMember() != null)
         {
             return EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else
+        }
+        else
         {
             return EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }

@@ -61,7 +61,8 @@ public class CommandRun extends AbstractCommand
             eb.addField("Available runnables", sb.toString(), false);
             Messaging.sendMessage(cm.getChannel(), eb.build());
             return;
-        } else
+        }
+        else
         {
             String name = cm.getArgs()[0];
             boolean result = HifumiBot.getSelf().getScheduler().runScheduledNow(name);
@@ -70,7 +71,8 @@ public class CommandRun extends AbstractCommand
             {
                 Messaging.sendMessage(cm.getChannel(), "Sent an execute request for runnable '" + name
                         + "' to the thread pool; it will run whenever a thread is available to host it.");
-            } else
+            }
+            else
             {
                 Messaging.sendMessage(cm.getChannel(),
                         "Could not find a runnable with name '" + name + "'; use `" + CommandInterpreter.PREFIX

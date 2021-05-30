@@ -51,7 +51,8 @@ public class DynamicCommand extends AbstractCommand
         if (cm.getMember() != null)
         {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else
+        }
+        else
         {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }

@@ -47,7 +47,8 @@ public class ConfigManager
                 file.createNewFile();
                 write(new Config());
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -61,7 +62,8 @@ public class ConfigManager
             String json = new String(iStream.readAllBytes());
             Gson gson = new Gson();
             return gson.fromJson(json, Config.class);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -77,7 +79,8 @@ public class ConfigManager
             Gson gson = new GsonBuilder().create();
             String json = gson.toJson(config);
             oStream.write(json.getBytes());
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
