@@ -147,10 +147,12 @@ public class CommandIndex
         if (cmd == null)
         {
             return null;
-        } else if (cmd instanceof DynamicCommand)
+        }
+        else if (cmd instanceof DynamicCommand)
         {
             return (DynamicCommand) cmd;
-        } else
+        }
+        else
         {
             return null;
         }
@@ -228,7 +230,8 @@ public class CommandIndex
             if (ret.containsKey(command.getCategory()))
             {
                 categoryCommands = ret.get(command.getCategory());
-            } else
+            }
+            else
             {
                 categoryCommands = new TreeSet<String>(Collator.getInstance());
             }

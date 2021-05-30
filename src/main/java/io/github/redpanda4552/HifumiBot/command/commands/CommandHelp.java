@@ -57,9 +57,8 @@ public class CommandHelp extends AbstractCommand
                 try
                 {
                     pageNumber = Integer.parseInt(cm.getArgs()[1]);
-                } catch (NumberFormatException e)
-                {
                 }
+                catch (NumberFormatException e) { }
             }
 
             if (pageNumber > helpPages.get(category).size())
@@ -69,7 +68,8 @@ public class CommandHelp extends AbstractCommand
                 pageNumber = 1;
 
             toSend = helpPages.get(category).get(pageNumber - 1);
-        } else
+        }
+        else
         {
             toSend = HifumiBot.getSelf().getCommandIndex().getHelpRootPage();
         }
@@ -77,7 +77,8 @@ public class CommandHelp extends AbstractCommand
         try
         {
             Messaging.sendMessage(cm.getUser().openPrivateChannel().complete(), toSend);
-        } catch (ErrorResponseException e)
+        }
+        catch (ErrorResponseException e)
         {
             Messaging.sendMessage(cm.getChannel(),
                     "Sorry, `help` works through DMs to avoid clutter, but your DMs are not open to members of this server!");

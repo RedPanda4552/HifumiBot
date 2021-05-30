@@ -76,7 +76,8 @@ public class CommandWarez extends AbstractCommand
                 {
                     cm.getGuild().addRoleToMember(member,
                             cm.getGuild().getRoleById(HifumiBot.getSelf().getConfig().warezRoleId)).complete();
-                } catch (InsufficientPermissionException e)
+                }
+                catch (InsufficientPermissionException e)
                 {
                     Messaging.sendMessage(cm.getChannel(), "Failed to assign role (insufficient permissions)");
                 }

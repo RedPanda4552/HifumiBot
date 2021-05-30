@@ -64,7 +64,8 @@ public class GpuIndex implements Refreshable
             gpuMap.putAll(midHigh);
             gpuMap.putAll(midLow);
             gpuMap.putAll(lowEnd);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -91,7 +92,8 @@ public class GpuIndex implements Refreshable
                     ret.put(gpuName, rating);
                 }
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Messaging.logException("GpuIndex", "refresh", e);
         }

@@ -68,7 +68,8 @@ public class CommandPFP extends AbstractCommand
                 {
                     setAvatar(attachment.getUrl());
                     Messaging.sendMessage(cm.getChannel(), "Avatar set!");
-                } catch (IOException e)
+                }
+                catch (IOException e)
                 {
                     e.printStackTrace();
                     Messaging.sendMessage(cm.getChannel(),
@@ -77,7 +78,8 @@ public class CommandPFP extends AbstractCommand
 
                 return;
             }
-        } else if (embeds.size() > 0)
+        }
+        else if (embeds.size() > 0)
         {
             MessageEmbed embed = embeds.get(0);
 
@@ -87,7 +89,8 @@ public class CommandPFP extends AbstractCommand
                 {
                     setAvatar(embed.getImage().getUrl());
                     Messaging.sendMessage(cm.getChannel(), "Avatar set!");
-                } catch (IOException e)
+                }
+                catch (IOException e)
                 {
                     e.printStackTrace();
                     Messaging.sendMessage(cm.getChannel(),

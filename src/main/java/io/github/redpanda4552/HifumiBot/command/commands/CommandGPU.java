@@ -107,7 +107,8 @@ public class CommandGPU extends AbstractCommand
         if (cm.getMember() != null)
         {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else
+        }
+        else
         {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
@@ -140,9 +141,8 @@ public class CommandGPU extends AbstractCommand
                 try
                 {
                     highestScore = Integer.parseInt(gpuIndex.getGpuRating(highestName).replaceAll("[,. ]", ""));
-                } catch (NumberFormatException e)
-                {
                 }
+                catch (NumberFormatException e) { }
 
                 String highestScoreDescription = "";
 
@@ -159,7 +159,8 @@ public class CommandGPU extends AbstractCommand
             }
 
             eb.setColor(0x00ff00);
-        } else
+        }
+        else
         {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);

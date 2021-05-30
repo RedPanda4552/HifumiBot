@@ -67,7 +67,8 @@ public class PnachParser extends AbstractParser
         try
         {
             url = new URL(attachment.getUrl());
-        } catch (MalformedURLException e)
+        }
+        catch (MalformedURLException e)
         {
             Messaging.sendMessage(message.getChannel(),
                     ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
@@ -96,7 +97,8 @@ public class PnachParser extends AbstractParser
                 if (line.isBlank() || line.startsWith("//"))
                 {
                     continue;
-                } else if (line.contains("="))
+                }
+                else if (line.contains("="))
                 {
                     int firstEquals = line.indexOf('=');
                     String lineStart = line.substring(0, firstEquals);
@@ -104,11 +106,13 @@ public class PnachParser extends AbstractParser
                     if (lineStart.equals("author") || lineStart.equals("comment") || lineStart.equals("gametitle"))
                     {
                         continue;
-                    } else if (lineStart.equalsIgnoreCase("author") || lineStart.equalsIgnoreCase("comment")
+                    }
+                    else if (lineStart.equalsIgnoreCase("author") || lineStart.equalsIgnoreCase("comment")
                             || lineStart.equalsIgnoreCase("gametitle"))
                     {
                         addError(PnachParserError.START_LOWERCASE, lineNumber);
-                    } else if (lineStart.equals("patch"))
+                    }
+                    else if (lineStart.equals("patch"))
                     {
                         int lastEquals = line.lastIndexOf('=');
 
@@ -130,7 +134,8 @@ public class PnachParser extends AbstractParser
                                         {
                                             addError(PnachParserError.FIRST_RANGE, lineNumber);
                                         }
-                                    } catch (NumberFormatException e)
+                                    }
+                                    catch (NumberFormatException e)
                                     {
                                         addError(PnachParserError.FIRST_NAN, lineNumber);
                                     }
@@ -139,10 +144,12 @@ public class PnachParser extends AbstractParser
                                     if (params[1].equals("EE") || params[1].equals("IOP"))
                                     {
                                         // Do nothing
-                                    } else if (params[1].equalsIgnoreCase("EE") || params[1].equalsIgnoreCase("IOP"))
+                                    }
+                                    else if (params[1].equalsIgnoreCase("EE") || params[1].equalsIgnoreCase("IOP"))
                                     {
                                         addError(PnachParserError.SECOND_CAPS, lineNumber);
-                                    } else
+                                    }
+                                    else
                                     {
                                         addError(PnachParserError.SECOND_CPU, lineNumber);
                                     }
@@ -161,17 +168,20 @@ public class PnachParser extends AbstractParser
                                             {
                                                 addError(PnachParserError.THIRD_LEAD_UNCHECKED, lineNumber);
                                             }
-                                        } else
+                                        }
+                                        else
                                         {
                                             if (leading != 0)
                                             {
                                                 addError(PnachParserError.THIRD_LEAD_NOT_ALLOWED, lineNumber);
-                                            } else if (addr >= 0x02000000)
+                                            }
+                                            else if (addr >= 0x02000000)
                                             {
                                                 addError(PnachParserError.THIRD_RANGE, lineNumber);
                                             }
                                         }
-                                    } catch (NumberFormatException e)
+                                    }
+                                    catch (NumberFormatException e)
                                     {
                                         addError(PnachParserError.THIRD_ADDRESS, lineNumber);
                                     }
@@ -181,13 +191,15 @@ public class PnachParser extends AbstractParser
                                             || params[3].equals("extended"))
                                     {
                                         // do nothing
-                                    } else if (params[3].equalsIgnoreCase("byte") || params[3].equalsIgnoreCase("short")
+                                    }
+                                    else if (params[3].equalsIgnoreCase("byte") || params[3].equalsIgnoreCase("short")
                                             || params[3].equalsIgnoreCase("word")
                                             || params[3].equalsIgnoreCase("double")
                                             || params[3].equalsIgnoreCase("extended"))
                                     {
                                         addError(PnachParserError.FOURTH_LOWERCASE, lineNumber);
-                                    } else
+                                    }
+                                    else
                                     {
                                         addError(PnachParserError.FOURTH_TYPE, lineNumber);
                                     }
@@ -203,42 +215,51 @@ public class PnachParser extends AbstractParser
                                             {
                                                 addError(PnachParserError.FIFTH_SCOPE, lineNumber);
                                             }
-                                        } else if (params[3].equals("short")
+                                        }
+                                        else if (params[3].equals("short")
                                                 || (params[3].equals("extended") && leading == 1))
                                         {
                                             if (Integer.compareUnsigned(value, 0xffff) > 0)
                                             {
                                                 addError(PnachParserError.FIFTH_SCOPE, lineNumber);
                                             }
-                                        } else if (params[3].equals("word")
+                                        }
+                                        else if (params[3].equals("word")
                                                 || (params[3].equals("extended") && leading == 2))
                                         {
                                             // Nothing to report on
-                                        } else if (params[3].equals("double"))
+                                        }
+                                        else if (params[3].equals("double"))
                                         {
                                             // Nothing to report on
                                         }
-                                    } catch (NumberFormatException e)
+                                    }
+                                    catch (NumberFormatException e)
                                     {
                                         addError(PnachParserError.FIFTH_VALUE, lineNumber);
                                     }
-                                } else
+                                }
+                                else
                                 {
                                     addError(PnachParserError.PARAM_COUNT, lineNumber);
                                 }
-                            } catch (IndexOutOfBoundsException e)
+                            }
+                            catch (IndexOutOfBoundsException e)
                             {
                                 addError(PnachParserError.MISSING_RIGHT, lineNumber);
                             }
-                        } else
+                        }
+                        else
                         {
                             addError(PnachParserError.SECOND_EQUALS, lineNumber);
                         }
-                    } else
+                    }
+                    else
                     {
                         addError(PnachParserError.START_KEYWORD, lineNumber);
                     }
-                } else
+                }
+                else
                 {
                     addError(PnachParserError.NO_EQUALS, lineNumber);
                 }
@@ -272,7 +293,8 @@ public class PnachParser extends AbstractParser
                         {
                             bodyBuilder.append(lineBuilder.toString()).append("\n");
                             lineBuilder = new StringBuilder();
-                        } else if (lineBuilder.length() != 0)
+                        }
+                        else if (lineBuilder.length() != 0)
                         {
                             lineBuilder.append(LINE_NUM_SEPARATOR);
                         }
@@ -293,7 +315,8 @@ public class PnachParser extends AbstractParser
 
             String pastebinURL = Pastebin.sendPaste("Pnach - " + message.getAuthor().getName(), bodyBuilder.toString());
             Messaging.sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Messaging.sendMessage(message.getChannel(), ":x: Something went wrong... Try again?");
             Messaging.logException("EmulogParser", "run", e);

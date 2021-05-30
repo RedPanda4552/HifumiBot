@@ -126,7 +126,8 @@ public class CommandDynCmd extends AbstractCommand
                 Messaging.sendMessage(cm.getChannel(),
                         "You cannot create a dynamic command with the same name as a builtin command");
                 return;
-            } else if (dyncmd == null)
+            }
+            else if (dyncmd == null)
             {
                 dyncmd = new DynamicCommand(name, CATEGORY_NONE, false, false, "", null, null, null);
             }
@@ -189,7 +190,8 @@ public class CommandDynCmd extends AbstractCommand
             {
                 HifumiBot.getSelf().getCommandIndex().deleteCommand(name);
                 results.add(":white_check_mark: Deleted command '" + name + "'");
-            } else
+            }
+            else
             {
                 results.add(":warning: No command found with name '" + name + "'");
             }

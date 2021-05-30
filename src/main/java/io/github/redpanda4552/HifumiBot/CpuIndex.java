@@ -70,7 +70,8 @@ public class CpuIndex implements Refreshable
                     }
                 }
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Messaging.logException("CpuIndex", "refresh", e);
         }

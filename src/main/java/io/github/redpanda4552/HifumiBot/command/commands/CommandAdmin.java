@@ -49,7 +49,8 @@ public class CommandAdmin extends AbstractCommand
             if (cm.getArgs().length == 0)
             {
                 showHelpDialog(cm);
-            } else
+            }
+            else
             {
                 switch (cm.getArgs()[0].toLowerCase())
                 {
@@ -68,12 +69,14 @@ public class CommandAdmin extends AbstractCommand
                                 adminRoles.add(newRole);
                                 Messaging.sendMessage(cm.getChannel(),
                                         ":white_check_mark: Role `" + newRole + "` added to admin role list.");
-                            } else
+                            }
+                            else
                             {
                                 Messaging.sendMessage(cm.getChannel(),
                                         ":x: Role `" + newRole + "` is already an admin role.");
                             }
-                        } else
+                        }
+                        else
                         {
                             Messaging.sendMessage(cm.getChannel(), ":x: Role `" + newRole + "` does not exist.");
                         }
@@ -91,7 +94,8 @@ public class CommandAdmin extends AbstractCommand
                             adminRoles.remove(deleteRole);
                             Messaging.sendMessage(cm.getChannel(),
                                     ":white_check_mark: Role `" + deleteRole + "` removed from admin role list.");
-                        } else
+                        }
+                        else
                         {
                             Messaging.sendMessage(cm.getChannel(),
                                     ":x: Role `" + deleteRole + "` is not an admin role.");

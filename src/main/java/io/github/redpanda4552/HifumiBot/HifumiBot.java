@@ -100,7 +100,8 @@ public class HifumiBot
         {
             jda = JDABuilder.createDefault(discordBotToken).enableIntents(GatewayIntent.GUILD_MEMBERS)
                     .setMemberCachePolicy(MemberCachePolicy.ALL).setAutoReconnect(true).build().awaitReady();
-        } catch (LoginException | IllegalArgumentException | InterruptedException e)
+        }
+        catch (LoginException | IllegalArgumentException | InterruptedException e)
         {
             e.printStackTrace();
         }

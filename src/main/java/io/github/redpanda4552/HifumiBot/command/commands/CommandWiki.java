@@ -86,7 +86,8 @@ public class CommandWiki extends AbstractCommand
             eb.setFooter(
                     "Click the reaction number matching the game you are looking for.\nThis message will self-modify with it's wiki information.",
                     HifumiBot.getSelf().getJDA().getSelfUser().getAvatarUrl());
-        } else
+        }
+        else
         {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
@@ -98,7 +99,8 @@ public class CommandWiki extends AbstractCommand
         {
             HifumiBot.getSelf().getEventListener().finalizeMessage(msg, eb.getFields().get(0).getValue(),
                     cm.getUser().getId());
-        } else
+        }
+        else
         {
             // String concatenation with unicodes is apparently punishable by build error,
             // so we instead have this.

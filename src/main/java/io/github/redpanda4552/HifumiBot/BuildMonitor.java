@@ -121,7 +121,8 @@ public class BuildMonitor implements Refreshable
                     outputChannel.sendMessage(eb.build()).complete();
                 }
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Messaging.logException("BuildMonitor", "refresh", e);
         }

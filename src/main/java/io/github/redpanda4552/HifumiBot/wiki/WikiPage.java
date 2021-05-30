@@ -81,23 +81,28 @@ public class WikiPage
                         if (regionSet.getRegion().isEmpty())
                         {
                             regionSet.setRegion(tableRow.text());
-                        } else if (left != null)
+                        }
+                        else if (left != null)
                         {
                             if (left.text().contains("Serial"))
                             {
                                 regionSet.setSerial(right.ownText());
-                            } else if (left.text().contains("Release"))
+                            }
+                            else if (left.text().contains("Release"))
                             {
                                 regionSet.setRelease(right.text());
-                            } else if (left.text().contains("CRC"))
+                            }
+                            else if (left.text().contains("CRC"))
                             {
                                 regionSet.setCRC(right.text().replace("?", "").trim());
-                            } else if (left.text().contains("Windows"))
+                            }
+                            else if (left.text().contains("Windows"))
                             {
                                 regionSet.setWindowsStatus(right.text().replace("?", "").trim());
                                 // regionSet.setWindowsStatusColor(Integer.parseInt(tableRow.attr("bgcolor").replace("#",
                                 // "0x"), 16));
-                            } else if (left.text().contains("Linux"))
+                            }
+                            else if (left.text().contains("Linux"))
                             {
                                 regionSet.setLinuxStatus(right.text().replace("?", "").trim());
                                 // regionSet.setLinuxStatusColor(Integer.parseInt(tableRow.attr("bgcolor").replace("#",
@@ -112,7 +117,8 @@ public class WikiPage
 
             scanSection(page.getElementById("mw-content-text").getElementById("Known_Issues"), knownIssues);
             scanSection(page.getElementById("mw-content-text").getElementById("Fixed_Issues"), fixedIssues);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
         }
@@ -130,7 +136,8 @@ public class WikiPage
             if (currentElement.tagName().equals("h2"))
             {
                 break;
-            } else if (currentElement.tagName().equals("h3"))
+            }
+            else if (currentElement.tagName().equals("h3"))
             {
                 destination.add(currentElement.text());
             }
