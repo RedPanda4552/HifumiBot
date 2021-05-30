@@ -23,12 +23,15 @@
  */
 package io.github.redpanda4552.HifumiBot.command.commands;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class CommandEmulogTest extends AbstractCommand
@@ -43,23 +46,33 @@ public class CommandEmulogTest extends AbstractCommand
     protected void onExecute(CommandMeta cm)
     {
         List<Attachment> attachments = cm.getMessage().getAttachments();
-
-        if (attachments.size() != 1)
+        
+        boolean emulogFound = checkAttachmentsForEmulog(cm.getMessage(), attachments);
+        
+        if (!emulogFound)
         {
-            Messaging.sendMessage(cm.getChannel(), "No file attached! Please attach your emulog to your message.");
-            return;
+            for (String arg : cm.getArgs())
+            {
+                try
+                {
+                    new URL(arg);
+                    int lastSlash = arg.lastIndexOf("/");
+                    
+                    if (lastSlash > 0 && arg.length() > lastSlash + 1)
+                    {
+                        Message msg = cm.getChannel().retrieveMessageById(arg.substring(lastSlash + 1)).complete();
+                        emulogFound = checkAttachmentsForEmulog(cm.getMessage(), msg.getAttachments());
+                        break;
+                    }
+                }
+                catch (MalformedURLException e) { }
+            }
         }
 
-        Attachment attachment = attachments.get(0);
-
-        if (!attachment.getFileName().equalsIgnoreCase("emulog.txt"))
+        if (!emulogFound)
         {
-            Messaging.sendMessage(cm.getChannel(), "Attached file was not an emulog!");
-            return;
+            Messaging.sendMessage(cm.getChannel(), "No emulog.txt found! Please attach your emulog to your message, **OR** include a Discord message link to a message containing an emulog.txt attachment.");
         }
-
-        EmulogParser ep = new EmulogParser(cm.getMessage(), attachment);
-        HifumiBot.getSelf().getScheduler().runOnce(ep);
     }
 
     @Override
@@ -68,4 +81,18 @@ public class CommandEmulogTest extends AbstractCommand
         return "Check an emulog for information/errors";
     }
 
+    private boolean checkAttachmentsForEmulog(Message msg, List<Attachment> attachments)
+    {
+        for (Attachment attachment : attachments)
+        {
+            if (attachment.getFileName().equalsIgnoreCase("emulog.txt"))
+            {
+                EmulogParser ep = new EmulogParser(msg, attachment);
+                HifumiBot.getSelf().getScheduler().runOnce(ep);
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }
