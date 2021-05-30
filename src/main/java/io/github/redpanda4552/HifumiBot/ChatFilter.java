@@ -36,17 +36,17 @@ public class ChatFilter
     private static final Pattern serverInvitePattern1 = Pattern.compile(".*https*://discord\\.gg/\\w+.*");
     private static final Pattern serverInvitePattern2 = Pattern.compile(".*https*://discord\\.com/invite/\\w+.*");
 
-    public static void applyFilters(MessageReceivedEvent event)
+    public static boolean applyFilters(MessageReceivedEvent event)
     {
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(event.getMember(), event.getAuthor()))
         {
-            return;
+            return false;
         }
 
-        filterServerInvites(event.getMessage());
+        return filterServerInvites(event.getMessage());
     }
 
-    private static void filterServerInvites(Message msg)
+    private static boolean filterServerInvites(Message msg)
     {
         Matcher m1 = serverInvitePattern1.matcher(msg.getContentDisplay());
 
@@ -56,7 +56,7 @@ public class ChatFilter
                     + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```"
                     + msg.getContentStripped() + "```");
             msg.delete().complete();
-            return;
+            return true;
         }
 
         Matcher m2 = serverInvitePattern2.matcher(msg.getContentDisplay());
@@ -67,7 +67,9 @@ public class ChatFilter
                     + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```"
                     + msg.getContentStripped() + "```");
             msg.delete().complete();
-            return;
+            return true;
         }
+        
+        return false;
     }
 }
