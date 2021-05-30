@@ -32,6 +32,8 @@ import java.nio.file.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import io.github.redpanda4552.HifumiBot.util.Messaging;
+
 public class ConfigManager
 {
 
@@ -50,7 +52,7 @@ public class ConfigManager
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Messaging.logException("ConfigManager", "createConfigIfNotExists", e);
         }
     }
 
@@ -65,7 +67,7 @@ public class ConfigManager
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Messaging.logException("ConfigManager", "read", e);
         }
 
         return null;
@@ -82,7 +84,7 @@ public class ConfigManager
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Messaging.logException("ConfigManager", "write", e);
         }
     }
 }

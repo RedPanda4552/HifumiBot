@@ -53,25 +53,18 @@ public class GpuIndex implements Refreshable
 
     public synchronized void refresh()
     {
-        try
-        {
-            HashMap<String, String> highEnd = this.refresh(PASSMARK_HIGH_END);
-            HashMap<String, String> midHigh = this.refresh(PASSMARK_MID_HIGH);
-            HashMap<String, String> midLow = this.refresh(PASSMARK_MID_LOW);
-            HashMap<String, String> lowEnd = this.refresh(PASSMARK_LOW_END);
-            this.clear();
-            gpuMap.putAll(highEnd);
-            gpuMap.putAll(midHigh);
-            gpuMap.putAll(midLow);
-            gpuMap.putAll(lowEnd);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        HashMap<String, String> highEnd = this.refresh(PASSMARK_HIGH_END);
+        HashMap<String, String> midHigh = this.refresh(PASSMARK_MID_HIGH);
+        HashMap<String, String> midLow = this.refresh(PASSMARK_MID_LOW);
+        HashMap<String, String> lowEnd = this.refresh(PASSMARK_LOW_END);
+        this.clear();
+        gpuMap.putAll(highEnd);
+        gpuMap.putAll(midHigh);
+        gpuMap.putAll(midLow);
+        gpuMap.putAll(lowEnd);
     }
 
-    private HashMap<String, String> refresh(String url) throws IOException
+    private HashMap<String, String> refresh(String url)
     {
         HashMap<String, String> ret = new HashMap<String, String>();
 
