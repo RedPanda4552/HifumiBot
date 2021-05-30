@@ -36,11 +36,11 @@ public class SimpleSearch
     public static synchronized HashMap<String, Float> search(Collection<String> searchAgainst, String query)
     {
         HashMap<String, Float> ret = new HashMap<String, Float>();
-        query = query.toLowerCase().trim().replaceAll("[^\\w\\s]", "");
+        query = query.toLowerCase().trim().replaceAll("[-_]", " ").replaceAll("[^\\w\\s]", "");
 
         for (String str : searchAgainst)
         {
-            String normalized = str.toLowerCase().trim().replaceAll("[^\\w\\s]", "");
+            String normalized = str.toLowerCase().trim().replaceAll("[-_]", " ").replaceAll("[^\\w\\s]", "");
 
             float toPush = 0;
 
@@ -48,28 +48,25 @@ public class SimpleSearch
 
             for (String token : tokenizedQuery)
             {
+                if (token.isBlank())
+                    continue;
+                
                 // Contains
                 if (normalized.contains(token))
-                {
                     toPush += 0.5;
-                }
 
                 // Whole word match
                 for (String part : normalized.replaceAll("[^\\d\\w]", " ").split(" "))
                 {
                     if (part.equals(token))
-                    {
                         toPush += 1;
-                    }
                 }
             }
 
             toPush += jaccard.apply(normalized, query);
 
             if (toPush >= 0.5)
-            {
                 ret.put(str, toPush);
-            }
         }
 
         return ret;
