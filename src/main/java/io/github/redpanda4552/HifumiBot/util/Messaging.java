@@ -77,6 +77,12 @@ public class Messaging
 
     public static void logException(String className, String methodName, Exception e)
     {
+        if (HifumiBot.getSelf().getJDA() == null)
+        {
+            e.printStackTrace();
+            return;
+        }
+        
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Exception caught in " + className + "." + methodName);
         eb.addField("Message", e.getMessage(), false);

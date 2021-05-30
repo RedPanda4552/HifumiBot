@@ -32,6 +32,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.util.Messaging;
+
 public class WikiPage
 {
 
@@ -120,7 +122,7 @@ public class WikiPage
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            Messaging.logException("WikiPage", "(constructor)", e);
         }
     }
 

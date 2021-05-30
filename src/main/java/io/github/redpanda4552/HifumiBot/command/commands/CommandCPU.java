@@ -159,15 +159,7 @@ public class CommandCPU extends AbstractCommand
             eb.setColor(0xff0000);
         }
 
-        try
-        {
-            Messaging.sendMessage(cm.getChannel(), eb.build());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
+        Messaging.sendMessage(cm.getChannel(), eb.build());
     }
 
     @Override

@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -71,7 +72,6 @@ public class CommandPFP extends AbstractCommand
                 }
                 catch (IOException e)
                 {
-                    e.printStackTrace();
                     Messaging.sendMessage(cm.getChannel(),
                             "An error occurred while setting the avatar: " + e.getMessage());
                 }
@@ -92,7 +92,6 @@ public class CommandPFP extends AbstractCommand
                 }
                 catch (IOException e)
                 {
-                    e.printStackTrace();
                     Messaging.sendMessage(cm.getChannel(),
                             "An error occurred while setting the avatar: " + e.getMessage());
                 }
@@ -111,7 +110,7 @@ public class CommandPFP extends AbstractCommand
         return "Set Hifumi's avatar";
     }
 
-    private void setAvatar(String imageUrl) throws IOException
+    private void setAvatar(String imageUrl) throws IOException, MalformedURLException
     {
         URL url = new URL(imageUrl);
         BufferedImage bImage = ImageIO.read(url);

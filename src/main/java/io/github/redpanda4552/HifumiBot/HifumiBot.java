@@ -30,6 +30,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -103,7 +104,7 @@ public class HifumiBot
         }
         catch (LoginException | IllegalArgumentException | InterruptedException e)
         {
-            e.printStackTrace();
+            Messaging.logException("HifumiBot", "(constructor)", e);
         }
 
         updateStatus("Starting...");
