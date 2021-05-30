@@ -32,42 +32,53 @@ import java.nio.file.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class ConfigManager {
+public class ConfigManager
+{
 
     private static final String CONFIG_PATH = "./hifumi-conf.json";
     public static final File file = new File(CONFIG_PATH);
-    
-    public static void createConfigIfNotExists() {
-        try {
-            if (file.exists() == false) {
+
+    public static void createConfigIfNotExists()
+    {
+        try
+        {
+            if (file.exists() == false)
+            {
                 file.createNewFile();
                 write(new Config());
             }
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
         }
     }
-    
-    public static Config read() {
-        try {
+
+    public static Config read()
+    {
+        try
+        {
             InputStream iStream = Files.newInputStream(file.toPath());
             String json = new String(iStream.readAllBytes());
             Gson gson = new Gson();
             return gson.fromJson(json, Config.class);
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
         }
-        
+
         return null;
     }
-    
-    public static void write(Config config) {
-        try {
+
+    public static void write(Config config)
+    {
+        try
+        {
             OutputStream oStream = Files.newOutputStream(file.toPath());
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String json = gson.toJson(config);
             oStream.write(json.getBytes());
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
         }
     }

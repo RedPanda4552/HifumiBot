@@ -33,65 +33,86 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 
-public class CommandAdmin extends AbstractCommand {
+public class CommandAdmin extends AbstractCommand
+{
 
-    public CommandAdmin() {
+    public CommandAdmin()
+    {
         super("admin", CATEGORY_BUILTIN, true, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
-        if (HifumiBot.getSelf().getPermissionManager().isSuperuser(cm.getUser())) {
-            if (cm.getArgs().length == 0) {
+    protected void onExecute(CommandMeta cm)
+    {
+        if (HifumiBot.getSelf().getPermissionManager().isSuperuser(cm.getUser()))
+        {
+            if (cm.getArgs().length == 0)
+            {
                 showHelpDialog(cm);
-            } else {
-                switch (cm.getArgs()[0].toLowerCase()) {
+            } else
+            {
+                switch (cm.getArgs()[0].toLowerCase())
+                {
                 case "add":
-                    if (cm.getArgs().length == 2) {
+                    if (cm.getArgs().length == 2)
+                    {
                         String newRole = cm.getArgs()[1];
-                        Guild guild = HifumiBot.getSelf().getJDA().getGuildById(cm.getGuild().getId()); 
-                        
-                        if (guild.getRolesByName(newRole, false).size() == 1) {
+                        Guild guild = HifumiBot.getSelf().getJDA().getGuildById(cm.getGuild().getId());
+
+                        if (guild.getRolesByName(newRole, false).size() == 1)
+                        {
                             ArrayList<String> adminRoles = HifumiBot.getSelf().getConfig().adminRoles;
-                            
-                            if (!adminRoles.contains(newRole)) {
+
+                            if (!adminRoles.contains(newRole))
+                            {
                                 adminRoles.add(newRole);
-                                Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Role `" + newRole + "` added to admin role list.");
-                            } else {
-                                Messaging.sendMessage(cm.getChannel(), ":x: Role `" + newRole + "` is already an admin role.");
+                                Messaging.sendMessage(cm.getChannel(),
+                                        ":white_check_mark: Role `" + newRole + "` added to admin role list.");
+                            } else
+                            {
+                                Messaging.sendMessage(cm.getChannel(),
+                                        ":x: Role `" + newRole + "` is already an admin role.");
                             }
-                        } else {
+                        } else
+                        {
                             Messaging.sendMessage(cm.getChannel(), ":x: Role `" + newRole + "` does not exist.");
                         }
-                        
+
                         break;
                     }
                 case "del":
-                    if (cm.getArgs().length == 2) {
+                    if (cm.getArgs().length == 2)
+                    {
                         String deleteRole = cm.getArgs()[1];
                         ArrayList<String> adminRoles = HifumiBot.getSelf().getConfig().adminRoles;
-                        
-                        if (adminRoles.contains(deleteRole)) {
+
+                        if (adminRoles.contains(deleteRole))
+                        {
                             adminRoles.remove(deleteRole);
-                            Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Role `" + deleteRole + "` removed from admin role list.");
-                        } else {
-                            Messaging.sendMessage(cm.getChannel(), ":x: Role `" + deleteRole + "` is not an admin role.");
+                            Messaging.sendMessage(cm.getChannel(),
+                                    ":white_check_mark: Role `" + deleteRole + "` removed from admin role list.");
+                        } else
+                        {
+                            Messaging.sendMessage(cm.getChannel(),
+                                    ":x: Role `" + deleteRole + "` is not an admin role.");
                         }
-                        
+
                         break;
                     }
                 case "list":
                     EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm);
                     eb.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName() + " - Admin Role List");
-                    
-                    for (String role : HifumiBot.getSelf().getConfig().adminRoles) {
+
+                    for (String role : HifumiBot.getSelf().getConfig().adminRoles)
+                    {
                         eb.addField(role, " ", true);
                     }
-                    
-                    if (HifumiBot.getSelf().getConfig().adminRoles.isEmpty()) {
+
+                    if (HifumiBot.getSelf().getConfig().adminRoles.isEmpty())
+                    {
                         eb.setDescription("Nothing here! ¯\\_(ツ)_/¯");
                     }
-                    
+
                     Messaging.sendMessage(cm.getChannel(), eb.build());
                     break;
                 default:
@@ -101,8 +122,9 @@ public class CommandAdmin extends AbstractCommand {
             }
         }
     }
-    
-    private void showHelpDialog(CommandMeta cm) {
+
+    private void showHelpDialog(CommandMeta cm)
+    {
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm);
         eb.setTitle("Add or remove admin roles");
         eb.addField("Add Role", CommandInterpreter.PREFIX + "admin add <role>", false);
@@ -112,7 +134,8 @@ public class CommandAdmin extends AbstractCommand {
     }
 
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Assign or revoke admin permissions for a role";
     }
 

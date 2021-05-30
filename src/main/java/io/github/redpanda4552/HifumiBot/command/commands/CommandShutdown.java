@@ -26,20 +26,25 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 
-public class CommandShutdown extends AbstractCommand {
+public class CommandShutdown extends AbstractCommand
+{
 
-    public CommandShutdown() {
+    public CommandShutdown()
+    {
         super("shutdown", CATEGORY_BUILTIN, true, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
+    protected void onExecute(CommandMeta cm)
+    {
         HifumiBot.getSelf().shutdown(false);
     }
 
     @Override
-    public String getHelpText() {
-        return "Fully shutdown " + HifumiBot.getSelf().getJDA().getSelfUser().getName() + ", with no attempt to reload a new instance.";
+    public String getHelpText()
+    {
+        return "Fully shutdown " + HifumiBot.getSelf().getJDA().getSelfUser().getName()
+                + ", with no attempt to reload a new instance.";
     }
 
 }

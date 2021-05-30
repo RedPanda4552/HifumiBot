@@ -29,8 +29,9 @@ import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 
-public class Config {
-    
+public class Config
+{
+
     public String devBuildOutputChannelId;
     public String systemOutputChannelId;
     public String rulesChannelId;
@@ -41,8 +42,9 @@ public class Config {
     public ArrayList<String> restrictedCommandBypassRoles;
     public ArrayList<DynamicCommand> dynamicCommands;
     public HashMap<String, OffsetDateTime> warezUsers;
-    
-    public Config() {
+
+    public Config()
+    {
         devBuildOutputChannelId = new String("");
         systemOutputChannelId = new String("");
         rulesChannelId = new String("");

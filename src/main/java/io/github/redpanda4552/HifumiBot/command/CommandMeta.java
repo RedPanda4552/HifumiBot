@@ -33,7 +33,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
-public class CommandMeta {
+public class CommandMeta
+{
 
     private String command;
     private boolean admin;
@@ -47,8 +48,10 @@ public class CommandMeta {
     private List<Member> mentions;
     private String[] args;
     private HashMap<String, String> switches;
-    
-    public CommandMeta(String command, boolean admin, boolean restricted, String category, Guild guild, MessageChannel channel, Member member, User user, Message message, List<Member> mentions, String[] args) {
+
+    public CommandMeta(String command, boolean admin, boolean restricted, String category, Guild guild,
+            MessageChannel channel, Member member, User user, Message message, List<Member> mentions, String[] args)
+    {
         this.command = command;
         this.admin = admin;
         this.restricted = restricted;
@@ -61,89 +64,111 @@ public class CommandMeta {
         this.mentions = mentions;
         formatArgs(args);
     }
-    
-    private void formatArgs(String[] args) {
+
+    private void formatArgs(String[] args)
+    {
         ArrayList<String> newArgs = new ArrayList<String>();
         switches = new HashMap<String, String>();
         String toInsert = null, switchStart = null;
         boolean openQuote = false, openSwitch = false;
-        
-        for (String arg : args) {
-            if (openQuote) {
+
+        for (String arg : args)
+        {
+            if (openQuote)
+            {
                 toInsert += " " + arg;
-                
-                if (arg.endsWith("\"")) {
+
+                if (arg.endsWith("\""))
+                {
                     openQuote = false;
-                    
-                    if (openSwitch) {
+
+                    if (openSwitch)
+                    {
                         openSwitch = false;
                         switches.put(switchStart, toInsert.replaceAll("\"", ""));
-                    } else {
+                    } else
+                    {
                         newArgs.add(toInsert.replaceAll("\"", ""));
                     }
                 }
-            } else if (!openSwitch && arg.startsWith("-")) {
+            } else if (!openSwitch && arg.startsWith("-"))
+            {
                 openSwitch = true;
                 switchStart = arg.replaceFirst("-+", "");
-            } else if (!openQuote && arg.startsWith("\"") && !arg.endsWith("\"")) {
+            } else if (!openQuote && arg.startsWith("\"") && !arg.endsWith("\""))
+            {
                 openQuote = true;
                 toInsert = arg;
-            } else if (openSwitch) {
+            } else if (openSwitch)
+            {
                 openSwitch = false;
                 switches.put(switchStart, arg);
-            } else {
+            } else
+            {
                 newArgs.add(arg);
             }
         }
-        
+
         this.args = newArgs.toArray(new String[newArgs.size()]);
     }
-    
-    public String getCommand() {
+
+    public String getCommand()
+    {
         return command;
     }
-    
-    public boolean isAdmin() {
+
+    public boolean isAdmin()
+    {
         return admin;
     }
-    
-    public boolean isRestricted() {
+
+    public boolean isRestricted()
+    {
         return restricted;
     }
-    
-    public String getCategory() {
+
+    public String getCategory()
+    {
         return category;
     }
-    
-    public Guild getGuild() {
+
+    public Guild getGuild()
+    {
         return guild;
     }
-    
-    public MessageChannel getChannel() {
+
+    public MessageChannel getChannel()
+    {
         return channel;
     }
-    
-    public Member getMember() {
+
+    public Member getMember()
+    {
         return member;
     }
-    
-    public User getUser() {
+
+    public User getUser()
+    {
         return user;
     }
-    
-    public Message getMessage() {
+
+    public Message getMessage()
+    {
         return message;
     }
-    
-    public List<Member> getMentions() {
+
+    public List<Member> getMentions()
+    {
         return mentions;
     }
-    
-    public String[] getArgs() {
+
+    public String[] getArgs()
+    {
         return args;
     }
-    
-    public HashMap<String, String> getSwitches() {
+
+    public HashMap<String, String> getSwitches()
+    {
         return switches;
     }
 }

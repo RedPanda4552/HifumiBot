@@ -30,32 +30,42 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class ChatFilter {
+public class ChatFilter
+{
 
     private static final Pattern serverInvitePattern1 = Pattern.compile(".*https*://discord\\.gg/\\w+.*");
     private static final Pattern serverInvitePattern2 = Pattern.compile(".*https*://discord\\.com/invite/\\w+.*");
-    
-    public static void applyFilters(MessageReceivedEvent event) {
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(event.getMember(), event.getAuthor())) {
+
+    public static void applyFilters(MessageReceivedEvent event)
+    {
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(event.getMember(), event.getAuthor()))
+        {
             return;
         }
-        
+
         filterServerInvites(event.getMessage());
     }
-    
-    private static void filterServerInvites(Message msg) {
+
+    private static void filterServerInvites(Message msg)
+    {
         Matcher m1 = serverInvitePattern1.matcher(msg.getContentDisplay());
-        
-        if (m1.matches()) {
-            Messaging.logInfo("ChatFilter", "filterServerInvites", "User " + msg.getAuthor().getAsMention() + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```" + msg.getContentStripped() + "```");
+
+        if (m1.matches())
+        {
+            Messaging.logInfo("ChatFilter", "filterServerInvites", "User " + msg.getAuthor().getAsMention()
+                    + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```"
+                    + msg.getContentStripped() + "```");
             msg.delete().complete();
             return;
         }
-        
+
         Matcher m2 = serverInvitePattern2.matcher(msg.getContentDisplay());
-        
-        if (m2.matches()) {
-            Messaging.logInfo("ChatFilter", "filterServerInvites", "User " + msg.getAuthor().getAsMention() + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```" + msg.getContentStripped() + "```");
+
+        if (m2.matches())
+        {
+            Messaging.logInfo("ChatFilter", "filterServerInvites", "User " + msg.getAuthor().getAsMention()
+                    + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```"
+                    + msg.getContentStripped() + "```");
             msg.delete().complete();
             return;
         }

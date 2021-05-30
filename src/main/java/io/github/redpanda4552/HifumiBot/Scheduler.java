@@ -29,53 +29,65 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Scheduler {
+public class Scheduler
+{
 
     private ScheduledExecutorService threadPool;
     private HashMap<String, Runnable> runnables;
-    
-    public Scheduler() {
+
+    public Scheduler()
+    {
         this.threadPool = Executors.newScheduledThreadPool(4);
         this.runnables = new HashMap<String, Runnable>();
     }
-    
-    public void runOnce(Runnable runnable) {
+
+    public void runOnce(Runnable runnable)
+    {
         this.threadPool.submit(runnable);
     }
-    
+
     /**
      * Schedule a Runnable
+     * 
      * @param runnable - The Runnable or lambda to schedule
-     * @param period - Period in milliseconds between runs
+     * @param period   - Period in milliseconds between runs
      */
-    public void scheduleRepeating(String name, Runnable runnable, long period) {
+    public void scheduleRepeating(String name, Runnable runnable, long period)
+    {
         this.runnables.put(name, runnable);
         this.threadPool.scheduleAtFixedRate(runnable, period, period, TimeUnit.MILLISECONDS);
     }
-    
-    public boolean runScheduledNow(String name) {
+
+    public boolean runScheduledNow(String name)
+    {
         Runnable runnable = this.runnables.get(name);
-        
-        if (runnable != null) {
+
+        if (runnable != null)
+        {
             this.threadPool.execute(runnable);
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Shutdown the thread pool and all of its tasks
      */
-    public void shutdown() {
+    public void shutdown()
+    {
         threadPool.shutdown();
-        
-        try {
+
+        try
+        {
             threadPool.awaitTermination(30, TimeUnit.SECONDS);
-        } catch (InterruptedException e) { }
+        } catch (InterruptedException e)
+        {
+        }
     }
-    
-    public Set<String> getRunnableNames() {
+
+    public Set<String> getRunnableNames()
+    {
         return this.runnables.keySet();
     }
 }

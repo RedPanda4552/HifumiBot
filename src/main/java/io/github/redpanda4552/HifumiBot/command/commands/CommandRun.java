@@ -30,45 +30,58 @@ import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class CommandRun extends AbstractCommand {
+public class CommandRun extends AbstractCommand
+{
 
-    public CommandRun() {
+    public CommandRun()
+    {
         super("run", CATEGORY_BUILTIN, true, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
-        if (cm.getArgs().length == 0) {
+    protected void onExecute(CommandMeta cm)
+    {
+        if (cm.getArgs().length == 0)
+        {
             EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
             eb.setTitle("Run a background runnable immediately");
             eb.setDescription("`" + CommandInterpreter.PREFIX + this.getName() + " <runnable>`");
             StringBuilder sb = new StringBuilder();
-            
-            for (String name : HifumiBot.getSelf().getScheduler().getRunnableNames()) {
-                if (sb.length() != 0) {
+
+            for (String name : HifumiBot.getSelf().getScheduler().getRunnableNames())
+            {
+                if (sb.length() != 0)
+                {
                     sb.append(", ");
                 }
-                
+
                 sb.append(name);
             }
-            
+
             eb.addField("Available runnables", sb.toString(), false);
             Messaging.sendMessage(cm.getChannel(), eb.build());
             return;
-        } else {
+        } else
+        {
             String name = cm.getArgs()[0];
             boolean result = HifumiBot.getSelf().getScheduler().runScheduledNow(name);
-            
-            if (result) {
-                Messaging.sendMessage(cm.getChannel(), "Sent an execute request for runnable '" + name + "' to the thread pool; it will run whenever a thread is available to host it.");
-            } else {
-                Messaging.sendMessage(cm.getChannel(), "Could not find a runnable with name '" + name + "'; use `" + CommandInterpreter.PREFIX + this.getName() + "` with no args for a list of available runnables.");
+
+            if (result)
+            {
+                Messaging.sendMessage(cm.getChannel(), "Sent an execute request for runnable '" + name
+                        + "' to the thread pool; it will run whenever a thread is available to host it.");
+            } else
+            {
+                Messaging.sendMessage(cm.getChannel(),
+                        "Could not find a runnable with name '" + name + "'; use `" + CommandInterpreter.PREFIX
+                                + this.getName() + "` with no args for a list of available runnables.");
             }
         }
     }
 
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return "Forcefully execute a runnable background task that normally executes on a schedule.";
     }
 

@@ -49,84 +49,106 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEve
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class EventListener extends ListenerAdapter {
-    
+public class EventListener extends ListenerAdapter
+{
+
     private HifumiBot hifumiBot;
     private HashMap<String, Message> messages = new HashMap<String, Message>();
-    
-    public EventListener(HifumiBot hifumiBot) {
+
+    public EventListener(HifumiBot hifumiBot)
+    {
         this.hifumiBot = hifumiBot;
     }
-    
+
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
+    public void onMessageReceived(MessageReceivedEvent event)
+    {
         ChatFilter.applyFilters(event);
         HifumiBot.getSelf().getCommandInterpreter().execute(event);
     }
-    
+
     @Override
-    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
-        for (Role role : event.getRoles()) {
-            if (role.getId().equals(HifumiBot.getSelf().getConfig().warezRoleId) && !HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId())) {
+    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event)
+    {
+        for (Role role : event.getRoles())
+        {
+            if (role.getId().equals(HifumiBot.getSelf().getConfig().warezRoleId)
+                    && !HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId()))
+            {
                 HifumiBot.getSelf().getConfig().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
                 return;
             }
         }
     }
-    
+
     @Override
-    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
-        for (Role role : event.getRoles()) {
-            if (role.getId().equals(HifumiBot.getSelf().getConfig().warezRoleId)) {
+    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event)
+    {
+        for (Role role : event.getRoles())
+        {
+            if (role.getId().equals(HifumiBot.getSelf().getConfig().warezRoleId))
+            {
                 HifumiBot.getSelf().getConfig().warezUsers.remove(event.getUser().getId());
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
                 return;
             }
         }
     }
-    
+
     @Override
-    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        if (HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId())) {
+    public void onGuildMemberJoin(GuildMemberJoinEvent event)
+    {
+        if (HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId()))
+        {
             // First assign the warez role
             Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().warezRoleId);
             event.getGuild().addRoleToMember(event.getMember(), role).complete();
-            
-            // Then send a notification 
+
+            // Then send a notification
             EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(HifumiBot.getSelf().getJDA().getSelfUser());
             eb.setTitle("Warez Member Rejoined");
             eb.setDescription("A user who was previously warez'd has rejoined the server.");
             eb.addField("User Name", event.getUser().getName(), true);
             eb.addField("Display Name", event.getMember().getEffectiveName(), true);
-            String dateStr = HifumiBot.getSelf().getConfig().warezUsers.get(event.getUser().getId()).format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
+            String dateStr = HifumiBot.getSelf().getConfig().warezUsers.get(event.getUser().getId())
+                    .format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.addField("Warez Date", dateStr, true);
-            Messaging.sendMessage(event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().systemOutputChannelId), eb.build());
+            Messaging.sendMessage(
+                    event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().systemOutputChannelId),
+                    eb.build());
         }
     }
-    
+
     @Override
-    public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent event) {
-        onMessageReactionAdd(event.getUser().getId(), event.getMessageId(), event.getReactionEmote().getName().toLowerCase());
+    public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent event)
+    {
+        onMessageReactionAdd(event.getUser().getId(), event.getMessageId(),
+                event.getReactionEmote().getName().toLowerCase());
     }
-    
+
     @Override
-    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
-        onMessageReactionAdd(event.getUser().getId(), event.getMessageId(), event.getReactionEmote().getName().toLowerCase());
+    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event)
+    {
+        onMessageReactionAdd(event.getUser().getId(), event.getMessageId(),
+                event.getReactionEmote().getName().toLowerCase());
     }
-    
-    private void onMessageReactionAdd(String userId, String messageId, String reactionEmoteName) {
+
+    private void onMessageReactionAdd(String userId, String messageId, String reactionEmoteName)
+    {
         Message msg = messages.get(userId);
-        
+
         if (msg == null)
             return;
-        
-        if (msg.getId().equals(messageId)) {
+
+        if (msg.getId().equals(messageId))
+        {
             String gameName = null;
-            
+
             List<Field> fields = msg.getEmbeds().get(0).getFields();
-            
-            switch (reactionEmoteName) {
+
+            switch (reactionEmoteName)
+            {
             case Emotes.ONE:
                 gameName = fields.get(0).getValue();
                 break;
@@ -146,69 +168,73 @@ public class EventListener extends ListenerAdapter {
                 gameName = fields.get(5).getValue();
                 break;
             }
-            
+
             finalizeMessage(msg, gameName, userId);
         }
     }
-    
-    public void waitForMessage(String userId, Message msg) {
+
+    public void waitForMessage(String userId, Message msg)
+    {
         if (messages.containsKey(userId))
             messages.get(userId).delete().complete();
-        
+
         messages.put(userId, msg);
     }
-    
-    public void finalizeMessage(Message msg, String gameName, String userId) {
+
+    public void finalizeMessage(Message msg, String gameName, String userId)
+    {
         WikiPage wikiPage = new WikiPage(hifumiBot.getWikiIndex().getWikiPageUrl(gameName));
-        
-        if (msg.getChannel() instanceof TextChannel) {
+
+        if (msg.getChannel() instanceof TextChannel)
+        {
             msg.clearReactions().complete();
         }
-        
+
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(wikiPage.getTitle(), wikiPage.getWikiPageUrl());
         eb.setThumbnail(wikiPage.getCoverArtUrl());
-        
-        for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
+
+        for (RegionSet regionSet : wikiPage.getRegionSets().values())
+        {
             StringBuilder regionBuilder = new StringBuilder();
-            
-            if (!regionSet.getCRC().isEmpty()) {
-                regionBuilder.append("\n**CRC:\n**")
-                             .append(regionSet.getCRC().replace(" ", "\n"));
+
+            if (!regionSet.getCRC().isEmpty())
+            {
+                regionBuilder.append("\n**CRC:\n**").append(regionSet.getCRC().replace(" ", "\n"));
             }
-            
-            if (!regionSet.getWindowsStatus().isEmpty()) {
-                regionBuilder.append("\n**Windows Compatibility:\n**")
-                             .append(regionSet.getWindowsStatus());
+
+            if (!regionSet.getWindowsStatus().isEmpty())
+            {
+                regionBuilder.append("\n**Windows Compatibility:\n**").append(regionSet.getWindowsStatus());
             }
-            
-            if (!regionSet.getLinuxStatus().isEmpty()) {
-                regionBuilder.append("\n**Linux Compatibility:\n**")
-                             .append(regionSet.getLinuxStatus());
+
+            if (!regionSet.getLinuxStatus().isEmpty())
+            {
+                regionBuilder.append("\n**Linux Compatibility:\n**").append(regionSet.getLinuxStatus());
             }
-            
+
             if (regionBuilder.toString().isEmpty())
                 regionBuilder.append("No information on this release.");
-            
+
             eb.addField("__" + regionSet.getRegion() + "__", regionBuilder.toString(), true);
         }
-        
+
         StringBuilder issueList = new StringBuilder();
-        
+
         for (String knownIssue : wikiPage.getKnownIssues())
             issueList.append(knownIssue).append("\n");
-        
+
         if (!issueList.toString().isEmpty())
             eb.addField("__Known Issues:__", issueList.toString(), true);
-        
+
         StringBuilder fixedList = new StringBuilder();
-        
+
         for (String fixedIssue : wikiPage.getFixedIssues())
             fixedList.append(fixedIssue).append("\n");
-        
+
         if (!fixedList.toString().isEmpty())
             eb.addField("__Fixed Issues:__", fixedList.toString(), true);
-        
+
         msg.editMessage(eb.build()).complete();
         messages.remove(userId);
     }

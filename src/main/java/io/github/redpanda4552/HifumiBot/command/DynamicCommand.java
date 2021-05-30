@@ -28,11 +28,14 @@ import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class DynamicCommand extends AbstractCommand {
+public class DynamicCommand extends AbstractCommand
+{
 
     private String helpText, title, body, imageURL;
-    
-    public DynamicCommand(String name, String category, boolean admin, boolean restrictChannel, String helpText, String title, String body, String imageURL) {
+
+    public DynamicCommand(String name, String category, boolean admin, boolean restrictChannel, String helpText,
+            String title, String body, String imageURL)
+    {
         super(name, category, admin, restrictChannel);
         this.helpText = helpText;
         this.title = title;
@@ -41,67 +44,82 @@ public class DynamicCommand extends AbstractCommand {
     }
 
     @Override
-    protected void onExecute(CommandMeta cm) {
+    protected void onExecute(CommandMeta cm)
+    {
         EmbedBuilder eb;
-        
-        if (cm.getMember() != null) {
+
+        if (cm.getMember() != null)
+        {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else {
+        } else
+        {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
-        
+
         eb.setTitle(title);
         eb.setDescription(body);
         eb.setImage(imageURL);
         Messaging.sendMessage(cm.getChannel(), eb.build());
     }
-    
+
     @Override
-    public String getHelpText() {
+    public String getHelpText()
+    {
         return helpText;
     }
-    
-    public void setHelpText(String helpText) {
+
+    public void setHelpText(String helpText)
+    {
         this.helpText = helpText;
     }
-    
-    public String getCategory() {
+
+    public String getCategory()
+    {
         return this.category;
     }
-    
-    public void setCategory(String category) {
+
+    public void setCategory(String category)
+    {
         this.category = category;
     }
-    
-    public void setAdmin(boolean admin) {
+
+    public void setAdmin(boolean admin)
+    {
         this.admin = admin;
     }
-    
-    public String getTitle() {
+
+    public String getTitle()
+    {
         return this.title;
     }
-    
-    public void setTitle(String title) {
+
+    public void setTitle(String title)
+    {
         this.title = title;
     }
-    
-    public String getBody() {
+
+    public String getBody()
+    {
         return this.body;
     }
-    
-    public void setBody(String body) {
+
+    public void setBody(String body)
+    {
         this.body = body;
     }
-    
-    public String getImageURL() {
+
+    public String getImageURL()
+    {
         return this.imageURL;
     }
-    
-    public void setImageURL(String imageURL) {
+
+    public void setImageURL(String imageURL)
+    {
         this.imageURL = imageURL;
     }
-    
-    public void setRestricted(boolean restricted) {
+
+    public void setRestricted(boolean restricted)
+    {
         this.restrictChannel = restricted;
     }
 }
