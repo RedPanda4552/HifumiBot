@@ -23,12 +23,15 @@
  */
 package io.github.redpanda4552.HifumiBot.command.commands;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class CommandPnachTest extends AbstractCommand
@@ -43,23 +46,33 @@ public class CommandPnachTest extends AbstractCommand
     protected void onExecute(CommandMeta cm)
     {
         List<Attachment> attachments = cm.getMessage().getAttachments();
-
-        if (attachments.size() != 1)
+        
+        boolean pnachFound = checkAttachmentsForPnach(cm.getMessage(), attachments);
+        
+        if (!pnachFound)
         {
-            Messaging.sendMessage(cm.getChannel(), "No file attached! Please attach your PNACH to your message.");
-            return;
+            for (String arg : cm.getArgs())
+            {
+                try
+                {
+                    new URL(arg);
+                    int lastSlash = arg.lastIndexOf("/");
+                    
+                    if (lastSlash > 0 && arg.length() > lastSlash + 1)
+                    {
+                        Message msg = cm.getChannel().retrieveMessageById(arg.substring(lastSlash + 1)).complete();
+                        pnachFound = checkAttachmentsForPnach(cm.getMessage(), msg.getAttachments());
+                        break;
+                    }
+                }
+                catch (MalformedURLException e) { }
+            }
         }
 
-        Attachment attachment = attachments.get(0);
-
-        if (!attachment.getFileExtension().equalsIgnoreCase("pnach"))
+        if (!pnachFound)
         {
-            Messaging.sendMessage(cm.getChannel(), "Attached file was not a PNACH!");
-            return;
+            Messaging.sendMessage(cm.getChannel(), "No pnach found! Please attach your pnach to your message, **OR** include a Discord message link to a message containing a pnach attachment.");
         }
-
-        PnachParser pp = new PnachParser(cm.getMessage(), attachment);
-        HifumiBot.getSelf().getScheduler().runOnce(pp);
     }
 
     @Override
@@ -68,4 +81,18 @@ public class CommandPnachTest extends AbstractCommand
         return "Test if a pnach is valid";
     }
 
+    private boolean checkAttachmentsForPnach(Message msg, List<Attachment> attachments)
+    {
+        for (Attachment attachment : attachments)
+        {
+            if (attachment.getFileExtension().equalsIgnoreCase("pnach"))
+            {
+                PnachParser pp = new PnachParser(msg, attachment);
+                HifumiBot.getSelf().getScheduler().runOnce(pp);
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }
