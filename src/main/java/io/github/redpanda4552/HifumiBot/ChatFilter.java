@@ -48,7 +48,7 @@ public class ChatFilter
 
     private static boolean filterServerInvites(Message msg)
     {
-        Matcher m1 = serverInvitePattern1.matcher(msg.getContentDisplay());
+        Matcher m1 = serverInvitePattern1.matcher(msg.getContentDisplay().toLowerCase());
 
         if (m1.matches())
         {
@@ -59,7 +59,7 @@ public class ChatFilter
             return true;
         }
 
-        Matcher m2 = serverInvitePattern2.matcher(msg.getContentDisplay());
+        Matcher m2 = serverInvitePattern2.matcher(msg.getContentDisplay().toLowerCase());
 
         if (m2.matches())
         {
