@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
         <!-- Dependency Versions -->
-        <jda.version>4.2.1_265</jda.version>
+        <jda.version>4.2.1_269</jda.version>
         <logback.version>1.2.3</logback.version>
         <jsoup.version>1.13.1</jsoup.version>
         <commonslang.version>3.12.0</commonslang.version>
