@@ -24,6 +24,7 @@
 package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.Scheduler.NoSuchRunnableException;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
@@ -53,11 +54,26 @@ public class CommandAbout extends AbstractCommand
         }
 
         eb.setTitle("About " + HifumiBot.getSelf().getJDA().getSelfUser().getName());
-        eb.setDescription("Originally created for the PCSX2 Discord server.");
+        eb.setDescription("A helper bot created for the PCSX2 Discord server.");
         eb.addField("Created By", "pandubz", true);
         String version = getClass().getPackage().getImplementationVersion();
         eb.addField("Version", version != null ? version : "[Debug Mode]", true);
         eb.addField("Config Size", (ConfigManager.file.length() / 1024) + " KB", true);
+        StringBuilder sb = new StringBuilder("| ");
+        
+        for (String runnableName : HifumiBot.getSelf().getScheduler().getRunnableNames())
+        {
+            try
+            {
+                sb.append(runnableName + ": " + (HifumiBot.getSelf().getScheduler().isRunnableAlive(runnableName) ? "alive" : "stopped") + " | ");
+            }
+            catch (NoSuchRunnableException e)
+            {
+                Messaging.logException("CommandAbout", "onExecute", e);
+            }
+        }
+        
+        eb.addField("Runnable Statuses", sb.toString().trim(), false);
         Messaging.sendMessage(cm.getChannel(), eb.build());
     }
 
