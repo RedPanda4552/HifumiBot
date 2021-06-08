@@ -103,6 +103,19 @@ public class EventListener extends ListenerAdapter
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event)
     {
+        if (event.getUser().getName().toLowerCase().contains("twitter.com/h0nde"))
+        {
+            try
+            {
+                Messaging.logInfo("EventListener", "onGuildMemberJoin", "Insta-banning this twitter bot again");
+                HifumiBot.getSelf().getJDA().getGuildById(event.getGuild().getId()).ban(event.getUser(), 0).complete();
+            }
+            catch (Exception e)
+            {
+                Messaging.logException("EventListener", "onGuildMemberJoin", e);
+            }
+        }
+        
         if (HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId()))
         {
             // First assign the warez role
