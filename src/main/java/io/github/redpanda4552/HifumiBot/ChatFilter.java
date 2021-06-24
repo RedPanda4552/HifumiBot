@@ -27,49 +27,38 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ChatFilter
 {
-
-    private static final Pattern serverInvitePattern1 = Pattern.compile(".*https*://discord\\.gg/\\w+.*");
-    private static final Pattern serverInvitePattern2 = Pattern.compile(".*https*://discord\\.com/invite/\\w+.*");
-
+    /**
+     * Applies any filters specified in the filterExpressions property of the config.
+     * <br/>
+     * <i>Note: All messages are flushed to lower case; regular expressions should
+     * be written for lower case, or be case-agnostic.</i>
+     * @param event - The MessageReceivedEvent to filter.
+     * @return True if a regular expression matched and the message was filtered out, false otherwise.
+     */
     public static boolean applyFilters(MessageReceivedEvent event)
     {
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(event.getMember(), event.getAuthor()))
         {
             return false;
         }
-
-        return filterServerInvites(event.getMessage());
-    }
-
-    private static boolean filterServerInvites(Message msg)
-    {
-        Matcher m1 = serverInvitePattern1.matcher(msg.getContentDisplay().toLowerCase());
-
-        if (m1.matches())
-        {
-            Messaging.logInfo("ChatFilter", "filterServerInvites", "User " + msg.getAuthor().getAsMention()
-                    + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```"
-                    + msg.getContentStripped() + "```");
-            msg.delete().complete();
-            return true;
-        }
-
-        Matcher m2 = serverInvitePattern2.matcher(msg.getContentDisplay().toLowerCase());
-
-        if (m2.matches())
-        {
-            Messaging.logInfo("ChatFilter", "filterServerInvites", "User " + msg.getAuthor().getAsMention()
-                    + " attempted to send a server invite, deleting it... \n\nUser's message (formatting stripped):\n```"
-                    + msg.getContentStripped() + "```");
-            msg.delete().complete();
-            return true;
-        }
         
+        for (String filterExpression : HifumiBot.getSelf().getConfig().filterExpressions)
+        {
+            Pattern p = Pattern.compile(filterExpression);
+            Matcher m = p.matcher(event.getMessage().getContentDisplay().toLowerCase());
+            
+            if (m.matches())
+            {
+                event.getMessage().delete().complete();
+                Messaging.logInfo("ChatFilter", "applyFilters", "Message from user " + event.getMessage().getAuthor().getAsMention() + " was filtered.\n\nUser's message (formatting stripped):\n```\n" + event.getMessage().getContentStripped() + "\n```\nMatched filter:\n```\n" + filterExpression + "\n```");
+                return true;
+            }
+        }
+
         return false;
     }
 }

@@ -40,6 +40,7 @@ public class Config
     public ArrayList<String> adminRoles;
     public String restrictedCommandChannelId;
     public ArrayList<String> restrictedCommandBypassRoles;
+    public ArrayList<String> filterExpressions;
     public ArrayList<DynamicCommand> dynamicCommands;
     public HashMap<String, OffsetDateTime> warezUsers;
 
@@ -53,6 +54,7 @@ public class Config
         adminRoles = new ArrayList<String>();
         restrictedCommandChannelId = new String("");
         restrictedCommandBypassRoles = new ArrayList<String>();
+        filterExpressions = new ArrayList<String>();
         dynamicCommands = new ArrayList<DynamicCommand>();
         warezUsers = new HashMap<String, OffsetDateTime>();
     }
