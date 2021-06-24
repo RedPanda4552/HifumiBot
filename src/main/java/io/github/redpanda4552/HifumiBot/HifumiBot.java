@@ -30,6 +30,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
+import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
@@ -84,6 +85,7 @@ public class HifumiBot
     private CommandIndex commandIndex;
     private PermissionManager permissionManager;
     private CommandInterpreter commandInterpreter;
+    private ChatFilter chatFilter;
     private EventListener eventListener;
 
     public HifumiBot()
@@ -122,6 +124,7 @@ public class HifumiBot
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
         commandInterpreter = new CommandInterpreter(this);
+        chatFilter = new ChatFilter();
         jda.addEventListener(eventListener = new EventListener(this));
 
         // Schedule repeating tasks
@@ -204,6 +207,11 @@ public class HifumiBot
         return commandInterpreter;
     }
 
+    public ChatFilter getChatFilter()
+    {
+        return chatFilter;
+    }
+    
     public EventListener getEventListener()
     {
         return eventListener;

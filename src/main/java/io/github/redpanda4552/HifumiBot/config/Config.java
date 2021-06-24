@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
+import io.github.redpanda4552.HifumiBot.filter.Filter;
 
 public class Config
 {
@@ -40,7 +41,7 @@ public class Config
     public ArrayList<String> adminRoles;
     public String restrictedCommandChannelId;
     public ArrayList<String> restrictedCommandBypassRoles;
-    public ArrayList<String> filterExpressions;
+    public HashMap<String, Filter> filters;
     public ArrayList<DynamicCommand> dynamicCommands;
     public HashMap<String, OffsetDateTime> warezUsers;
 
@@ -54,7 +55,7 @@ public class Config
         adminRoles = new ArrayList<String>();
         restrictedCommandChannelId = new String("");
         restrictedCommandBypassRoles = new ArrayList<String>();
-        filterExpressions = new ArrayList<String>();
+        filters = new HashMap<String, Filter>();
         dynamicCommands = new ArrayList<DynamicCommand>();
         warezUsers = new HashMap<String, OffsetDateTime>();
     }
