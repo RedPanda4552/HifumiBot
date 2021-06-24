@@ -40,6 +40,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandDX9;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandEmulogTest;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandPFP;
@@ -92,6 +93,8 @@ public class CommandIndex
         commandMap.put(dyncmd.getName(), dyncmd);
         CommandEmulogTest emulogTest = new CommandEmulogTest();
         commandMap.put(emulogTest.getName(), emulogTest);
+        CommandFilter filter = new CommandFilter();
+        commandMap.put(filter.getName(), filter);
         CommandGPU gpu = new CommandGPU();
         commandMap.put(gpu.getName(), gpu);
         CommandHelp help = new CommandHelp();

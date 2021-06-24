@@ -28,7 +28,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 
-import io.github.redpanda4552.HifumiBot.ChatFilter;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
@@ -63,7 +62,7 @@ public class EventListener extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        if (ChatFilter.applyFilters(event))
+        if (HifumiBot.getSelf().getChatFilter().applyFilters(event))
         {
             return;
         }
