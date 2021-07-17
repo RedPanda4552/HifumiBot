@@ -23,7 +23,6 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -122,7 +121,7 @@ public class BuildMonitor implements Refreshable
                 }
             }
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             Messaging.logException("BuildMonitor", "refresh", e);
         }
