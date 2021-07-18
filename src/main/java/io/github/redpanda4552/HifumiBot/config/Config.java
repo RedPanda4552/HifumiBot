@@ -39,6 +39,7 @@ public class Config
     public String warezRoleId;
     public String pastebinApiKey;
     public ArrayList<String> adminRoles;
+    public Permissions permissions;
     public String restrictedCommandChannelId;
     public ArrayList<String> restrictedCommandBypassRoles;
     public HashMap<String, Filter> filters;
@@ -53,10 +54,25 @@ public class Config
         warezRoleId = new String("");
         pastebinApiKey = new String("");
         adminRoles = new ArrayList<String>();
+        permissions = new Permissions();
         restrictedCommandChannelId = new String("");
         restrictedCommandBypassRoles = new ArrayList<String>();
         filters = new HashMap<String, Filter>();
         dynamicCommands = new ArrayList<DynamicCommand>();
         warezUsers = new HashMap<String, OffsetDateTime>();
+    }
+    
+    public class Permissions
+    {
+        public ArrayList<String> superAdminRoleIds;
+        public ArrayList<String> adminRoleIds;
+        public ArrayList<String> modRoleIds;
+        
+        public Permissions()
+        {
+            superAdminRoleIds = new ArrayList<String>();
+            adminRoleIds = new ArrayList<String>();
+            modRoleIds = new ArrayList<String>();
+        }
     }
 }

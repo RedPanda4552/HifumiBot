@@ -29,6 +29,7 @@ import java.util.HashMap;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -37,12 +38,11 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class CommandDynCmd extends AbstractCommand
 {
-
     private final MessageEmbed usage;
 
     public CommandDynCmd()
     {
-        super("dyncmd", CATEGORY_BUILTIN, true, false);
+        super("dyncmd", CATEGORY_BUILTIN, PermissionLevel.MOD, false);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("DynCmd Usage");
         eb.addField("View", "`dyncmd get <name>`", false);
@@ -50,7 +50,6 @@ public class CommandDynCmd extends AbstractCommand
         eb.addField("Delete", "`dyncmd del <name>`", false);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("`-a, --admin <true|false>\n");
         sb.append("-c, --category <category>\n");
         sb.append("-h, --helptext <help text>\n");
         sb.append("-t, --title <title>\n");
@@ -63,7 +62,7 @@ public class CommandDynCmd extends AbstractCommand
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
         if (cm.getArgs().length < 2)
         {
@@ -87,7 +86,6 @@ public class CommandDynCmd extends AbstractCommand
 
             dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
 
-            results.add("Admin Only: " + dyncmd.isAdminCommand());
             results.add("Restricted Channel: " + dyncmd.isRestricted());
 
             if (dyncmd.getCategory() != null && !dyncmd.getCategory().isBlank())
@@ -129,7 +127,7 @@ public class CommandDynCmd extends AbstractCommand
             }
             else if (dyncmd == null)
             {
-                dyncmd = new DynamicCommand(name, CATEGORY_NONE, false, false, "", null, null, null);
+                dyncmd = new DynamicCommand(name, CATEGORY_NONE, PermissionLevel.GUEST, false, "", null, null, null);
             }
             HashMap<String, String> switches = cm.getSwitches();
 
@@ -139,12 +137,6 @@ public class CommandDynCmd extends AbstractCommand
 
                 switch (switchName)
                 {
-                case "admin":
-                case "a":
-                    boolean admin = Boolean.valueOf(switchValue);
-                    dyncmd.setAdmin(admin);
-                    results.add(":white_check_mark: Requires Admin Privleges: " + admin);
-                    break;
                 case "category":
                 case "c":
                     dyncmd.setCategory(switchValue);

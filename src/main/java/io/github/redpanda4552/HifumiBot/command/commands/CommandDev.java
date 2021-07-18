@@ -24,6 +24,7 @@
 package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -31,16 +32,15 @@ import net.dv8tion.jda.api.entities.TextChannel;
 
 public class CommandDev extends AbstractCommand
 {
-
     private final String DEV_CHANNEL = "dev-builds";
 
     public CommandDev()
     {
-        super("dev", CATEGORY_BUILTIN, false, false);
+        super("dev", CATEGORY_BUILTIN, PermissionLevel.GUEST, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
         if (!(cm.getChannel() instanceof TextChannel))
         {

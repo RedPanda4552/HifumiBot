@@ -34,6 +34,7 @@ import javax.imageio.ImageIO;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Icon;
@@ -42,20 +43,14 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class CommandPFP extends AbstractCommand
 {
-
     public CommandPFP()
     {
-        super("pfp", CATEGORY_BUILTIN, true, false);
+        super("pfp", CATEGORY_BUILTIN, PermissionLevel.SUPERUSER, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
-        if (cm.getUser() == null || !HifumiBot.getSelf().getPermissionManager().isSuperuser(cm.getUser()))
-        {
-            return;
-        }
-
         List<Attachment> attachments = cm.getMessage().getAttachments();
         List<MessageEmbed> embeds = cm.getMessage().getEmbeds();
 

@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
@@ -41,11 +42,11 @@ public class CommandWiki extends AbstractCommand
 
     public CommandWiki()
     {
-        super("wiki", CATEGORY_BUILTIN, false, false);
+        super("wiki", CATEGORY_BUILTIN, PermissionLevel.GUEST, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
         if (cm.getArgs().length == 0)
         {

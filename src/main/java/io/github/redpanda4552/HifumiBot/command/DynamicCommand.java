@@ -24,6 +24,7 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -33,10 +34,10 @@ public class DynamicCommand extends AbstractCommand
 
     private String helpText, title, body, imageURL;
 
-    public DynamicCommand(String name, String category, boolean admin, boolean restrictChannel, String helpText,
+    public DynamicCommand(String name, String category, PermissionLevel permissionLevel, boolean restrictChannel, String helpText,
             String title, String body, String imageURL)
     {
-        super(name, category, admin, restrictChannel);
+        super(name, category, permissionLevel, restrictChannel);
         this.helpText = helpText;
         this.title = title;
         this.body = body;
@@ -44,7 +45,7 @@ public class DynamicCommand extends AbstractCommand
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
         EmbedBuilder eb;
 
@@ -84,9 +85,9 @@ public class DynamicCommand extends AbstractCommand
         this.category = category;
     }
 
-    public void setAdmin(boolean admin)
+    public void setPermissionLevel(PermissionLevel permissionLevel)
     {
-        this.admin = admin;
+        this.permissionLevel = permissionLevel;
     }
 
     public String getTitle()

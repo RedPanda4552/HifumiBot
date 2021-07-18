@@ -31,6 +31,7 @@ import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.Filter;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -41,17 +42,12 @@ public class CommandFilter extends AbstractCommand
     
     public CommandFilter()
     {
-        super("filter", CATEGORY_BUILTIN, true, false);
+        super("filter", CATEGORY_BUILTIN, PermissionLevel.SUPER_ADMIN, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
-        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(cm))
-        {
-            return;
-        }
-        
         if (cm.getArgs().length == 0)
         {
             showHelpDialog(cm);

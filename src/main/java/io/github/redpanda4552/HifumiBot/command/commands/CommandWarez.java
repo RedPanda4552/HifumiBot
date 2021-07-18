@@ -25,6 +25,7 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -34,14 +35,13 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public class CommandWarez extends AbstractCommand
 {
-
     public CommandWarez()
     {
-        super("warez", CATEGORY_BUILTIN, true, false);
+        super("warez", CATEGORY_BUILTIN, PermissionLevel.MOD, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
         if (!(cm.getChannel() instanceof TextChannel))
             return;
@@ -70,7 +70,7 @@ public class CommandWarez extends AbstractCommand
 
         for (Member member : cm.getMentions())
         {
-            if (!HifumiBot.getSelf().getPermissionManager().hasPermission(member, null))
+            if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, member))
             {
                 try
                 {
@@ -79,7 +79,7 @@ public class CommandWarez extends AbstractCommand
                 }
                 catch (InsufficientPermissionException e)
                 {
-                    Messaging.sendMessage(cm.getChannel(), "Failed to assign role (insufficient permissions)");
+                    Messaging.logInfo("CommandWarez", "execute", "Failed to assign role to " + member.getAsMention() + " (insufficient permissions)");
                 }
             }
         }

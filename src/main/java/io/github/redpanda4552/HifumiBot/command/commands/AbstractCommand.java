@@ -23,48 +23,38 @@
  */
 package io.github.redpanda4552.HifumiBot.command.commands;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 
 public abstract class AbstractCommand
 {
-
     protected static final String CATEGORY_BUILTIN = "builtin", CATEGORY_NONE = "none";
 
     protected String name, category;
-    protected boolean admin;
+    protected PermissionLevel permissionLevel;
     protected boolean restrictChannel;
 
-    public AbstractCommand(String name, String category, boolean admin, boolean restrictChannel)
+    public AbstractCommand(String name, String category, PermissionLevel permissionLevel, boolean restrictChannel)
     {
         this.name = name;
         this.category = category != null ? category : CATEGORY_NONE;
-        this.admin = admin;
+        this.permissionLevel = permissionLevel;
         this.restrictChannel = restrictChannel;
-    }
-
-    /**
-     * Do a prelimiary permissions check, and execute if it passes.
-     */
-    public void run(CommandMeta cm)
-    {
-        if (!isAdminCommand() || HifumiBot.getSelf().getPermissionManager().hasPermission(cm.getMember(), cm.getUser()))
-            onExecute(cm);
     }
 
     /**
      * Command payload.
      */
-    protected abstract void onExecute(CommandMeta cm);
+    public abstract void execute(CommandMeta cm);
 
     protected boolean isArgSingleWord(String arg)
     {
         return !arg.contains(" ");
     }
 
-    public boolean isAdminCommand()
+    public PermissionLevel getPermissionLevel()
     {
-        return admin;
+        return permissionLevel;
     }
 
     public String getName()

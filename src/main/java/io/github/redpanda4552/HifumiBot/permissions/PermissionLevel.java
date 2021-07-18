@@ -21,30 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.permissions;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-
-public class CommandShutdown extends AbstractCommand
+public enum PermissionLevel
 {
-    public CommandShutdown()
-    {
-        super("shutdown", CATEGORY_BUILTIN, PermissionLevel.SUPER_ADMIN, false);
-    }
-
-    @Override
-    public void execute(CommandMeta cm)
-    {
-        HifumiBot.getSelf().shutdown(false);
-    }
-
-    @Override
-    public String getHelpText()
-    {
-        return "Fully shutdown " + HifumiBot.getSelf().getJDA().getSelfUser().getName()
-                + ", with no attempt to reload a new instance.";
-    }
-
+    SUPERUSER,
+    SUPER_ADMIN,
+    ADMIN,
+    MOD,
+    GUEST
 }

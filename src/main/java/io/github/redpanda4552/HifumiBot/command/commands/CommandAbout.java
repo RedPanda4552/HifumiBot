@@ -27,20 +27,20 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.Scheduler.NoSuchRunnableException;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 public class CommandAbout extends AbstractCommand
 {
-
     public CommandAbout()
     {
-        super("about", CATEGORY_BUILTIN, false, false);
+        super("about", CATEGORY_BUILTIN, PermissionLevel.MOD, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
         EmbedBuilder eb;
 

@@ -30,20 +30,20 @@ import java.util.List;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class CommandPnachTest extends AbstractCommand
 {
-
     public CommandPnachTest()
     {
-        super("pnachtest", CATEGORY_BUILTIN, false, false);
+        super("pnachtest", CATEGORY_BUILTIN, PermissionLevel.GUEST, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
         List<Attachment> attachments = cm.getMessage().getAttachments();
         
