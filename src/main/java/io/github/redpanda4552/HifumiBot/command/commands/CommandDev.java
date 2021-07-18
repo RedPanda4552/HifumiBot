@@ -54,7 +54,7 @@ public class CommandDev extends AbstractCommand
                 "Problems? Looking for PCSX2 updates? Consider using PCSX2 development builds! I post a message in ");
         TextChannel devBuilds = cm.getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
         eb.appendDescription(devBuilds.getAsMention()).appendDescription(" whenever a new development build is ready!");
-        Messaging.sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
 
     @Override

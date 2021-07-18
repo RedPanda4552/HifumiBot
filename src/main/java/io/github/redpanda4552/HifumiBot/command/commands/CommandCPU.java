@@ -98,7 +98,7 @@ public class CommandCPU extends AbstractCommand
             eb.addField("Direct link", CpuIndex.PASSMARK_STR_URL, false);
             eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + this.getName() + " <cpu model here>`",
                     false);
-            Messaging.sendMessage(cm.getChannel(), eb.build());
+            Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
             return;
         }
 
@@ -159,7 +159,7 @@ public class CommandCPU extends AbstractCommand
             eb.setColor(0xff0000);
         }
 
-        Messaging.sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
 
     @Override

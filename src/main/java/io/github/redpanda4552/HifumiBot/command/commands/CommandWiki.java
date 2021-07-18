@@ -94,7 +94,7 @@ public class CommandWiki extends AbstractCommand
             eb.setColor(0xff0000);
         }
 
-        Message msg = Messaging.sendMessage(cm.getChannel(), eb.build());
+        Message msg = Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
 
         if (eb.getFields().size() == 1)
         {

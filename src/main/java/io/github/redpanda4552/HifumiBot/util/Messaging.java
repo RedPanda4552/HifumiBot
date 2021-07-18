@@ -40,16 +40,6 @@ public class Messaging
         return Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(channelId), msg);
     }
 
-    public static Message sendMessage(String channelId, MessageEmbed embed)
-    {
-        return Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(channelId), embed);
-    }
-
-    public static Message sendMessage(MessageChannel channel, MessageEmbed embed)
-    {
-        return channel.sendMessage(embed).complete();
-    }
-
     public static Message sendMessage(MessageChannel channel, String... strArr)
     {
         MessageBuilder mb = new MessageBuilder();
@@ -66,13 +56,28 @@ public class Messaging
     {
         return channel.sendMessage(msg).complete();
     }
+    
+    public static Message sendMessageEmbed(String channelId, MessageEmbed embed)
+    {
+        return Messaging.sendMessageEmbed(HifumiBot.getSelf().getJDA().getTextChannelById(channelId), embed);
+    }
+
+    public static Message sendMessageEmbed(MessageChannel channel, MessageEmbed embed)
+    {
+        return channel.sendMessageEmbeds(embed).complete();
+    }
+    
+    public static Message editMessageEmbed(Message msg, MessageEmbed embed)
+    {
+        return msg.editMessageEmbeds(embed).complete();
+    }
 
     public static void logInfo(String className, String methodName, String msg)
     {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Info from " + className + "." + methodName);
         eb.addField("Message", msg, false);
-        Messaging.sendMessage(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
+        Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
     }
 
     public static void logException(String className, String methodName, Exception e)
@@ -108,6 +113,6 @@ public class Messaging
             eb.addField("Caused By Stack Trace", StringUtils.abbreviate(sb.toString(), 1024), false);
         }
 
-        Messaging.sendMessage(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
+        Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
     }
 }

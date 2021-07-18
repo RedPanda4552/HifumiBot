@@ -186,7 +186,7 @@ public class CommandFilter extends AbstractCommand
                         eb.addField(regexName, "`" + filter.regexes.get(regexName) + "`", false);
                     }
                     
-                    Messaging.sendMessage(cm.getChannel(), eb.build());
+                    Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
                 }
                 else
                 {
@@ -231,7 +231,7 @@ public class CommandFilter extends AbstractCommand
                     eb.setDescription("oh yeah... THERE IS NONE.");
                 }
                 
-                Messaging.sendMessage(cm.getChannel(), eb.build());
+                Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
                 break;
             case "compile":
                 HifumiBot.getSelf().getChatFilter().compile();
@@ -262,6 +262,6 @@ public class CommandFilter extends AbstractCommand
         eb.addField("Delete Filter", CommandInterpreter.PREFIX + "filter del <filterName>", false);
         eb.addField("List All Filters", CommandInterpreter.PREFIX + "filter list", false);
         eb.addField("Compile All Filters", CommandInterpreter.PREFIX + "filter compile", false);
-        Messaging.sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
 }

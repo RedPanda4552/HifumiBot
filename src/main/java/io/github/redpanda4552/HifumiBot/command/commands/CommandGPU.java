@@ -97,7 +97,7 @@ public class CommandGPU extends AbstractCommand
             eb.addField("Low End GPUs", GpuIndex.PASSMARK_LOW_END, false);
             eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + this.getName() + " <gpu model here>`",
                     false);
-            Messaging.sendMessage(cm.getChannel(), eb.build());
+            Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
             return;
         }
 
@@ -166,7 +166,7 @@ public class CommandGPU extends AbstractCommand
             eb.setColor(0xff0000);
         }
 
-        Messaging.sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
 
     @Override

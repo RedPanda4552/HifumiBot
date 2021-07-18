@@ -61,7 +61,7 @@ public class DynamicCommand extends AbstractCommand
         eb.setTitle(title);
         eb.setDescription(body);
         eb.setImage(imageURL);
-        Messaging.sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
 
     @Override

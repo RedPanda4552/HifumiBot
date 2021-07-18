@@ -130,7 +130,7 @@ public class EventListener extends ListenerAdapter
             String dateStr = HifumiBot.getSelf().getConfig().warezUsers.get(event.getUser().getId())
                     .format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.addField("Warez Date", dateStr, true);
-            Messaging.sendMessage(
+            Messaging.sendMessageEmbed(
                     event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().systemOutputChannelId),
                     eb.build());
         }
@@ -250,8 +250,8 @@ public class EventListener extends ListenerAdapter
 
         if (!fixedList.toString().isEmpty())
             eb.addField("__Fixed Issues:__", fixedList.toString(), true);
-
-        msg.editMessage(eb.build()).complete();
+        
+        Messaging.editMessageEmbed(msg, eb.build());
         messages.remove(userId);
     }
 }

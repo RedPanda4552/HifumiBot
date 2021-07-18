@@ -76,7 +76,7 @@ public class CommandHelp extends AbstractCommand
 
         try
         {
-            Messaging.sendMessage(cm.getUser().openPrivateChannel().complete(), toSend);
+            Messaging.sendMessageEmbed(cm.getUser().openPrivateChannel().complete(), toSend);
         }
         catch (ErrorResponseException e)
         {

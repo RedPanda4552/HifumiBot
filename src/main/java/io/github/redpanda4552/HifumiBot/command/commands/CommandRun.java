@@ -59,7 +59,7 @@ public class CommandRun extends AbstractCommand
             }
 
             eb.addField("Available runnables", sb.toString(), false);
-            Messaging.sendMessage(cm.getChannel(), eb.build());
+            Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
             return;
         }
         else

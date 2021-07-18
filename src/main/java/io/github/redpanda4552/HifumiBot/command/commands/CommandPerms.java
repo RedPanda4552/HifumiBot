@@ -233,7 +233,7 @@ public class CommandPerms extends AbstractCommand
                 
                 eb.addField("SUPER_ADMIN", sb.toString(), false);
                 
-                Messaging.sendMessage(cm.getChannel(), eb.build());
+                Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
                 break;
             case "levels":
                 sendPermissionLevelList(cm.getChannel());
@@ -253,7 +253,7 @@ public class CommandPerms extends AbstractCommand
         eb.addField("Remove Role", CommandInterpreter.PREFIX + "perms del <permissionLevel> <roleId>", false);
         eb.addField("List Roles", CommandInterpreter.PREFIX + "perms list", false);
         eb.addField("Show Permission Levels", CommandInterpreter.PREFIX + "perms levels", false);
-        Messaging.sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
     
     private void sendPermissionLevelList(MessageChannel channel)
