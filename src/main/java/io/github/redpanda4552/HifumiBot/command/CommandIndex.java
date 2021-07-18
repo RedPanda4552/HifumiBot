@@ -34,7 +34,7 @@ import java.util.TreeSet;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandAbout;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandAdmin;
+import io.github.redpanda4552.HifumiBot.command.commands.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDX9;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDev;
@@ -51,6 +51,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -81,8 +82,6 @@ public class CommandIndex
         commandMap.clear();
         CommandAbout about = new CommandAbout();
         commandMap.put(about.getName(), about);
-        CommandAdmin admin = new CommandAdmin();
-        commandMap.put(admin.getName(), admin);
         CommandCPU cpu = new CommandCPU();
         commandMap.put(cpu.getName(), cpu);
         CommandDev dev = new CommandDev();
@@ -99,6 +98,8 @@ public class CommandIndex
         commandMap.put(gpu.getName(), gpu);
         CommandHelp help = new CommandHelp();
         commandMap.put(help.getName(), help);
+        CommandPerms perms = new CommandPerms();
+        commandMap.put(perms.getName(), perms);
         CommandPFP pfp = new CommandPFP();
         commandMap.put(pfp.getName(), pfp);
         CommandReload reload = new CommandReload();
@@ -116,6 +117,14 @@ public class CommandIndex
 
         for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getConfig().dynamicCommands)
         {
+            // Backwards compatibility: Add guest permission level to any
+            // dynamic commands which do not have a level (because they were
+            // made prior to permission levels being added)
+            if (dynamicCommand.getPermissionLevel() == null)
+            {
+                dynamicCommand.setPermissionLevel(PermissionLevel.GUEST);
+            }
+            
             commandMap.put(dynamicCommand.getName(), dynamicCommand);
         }
 

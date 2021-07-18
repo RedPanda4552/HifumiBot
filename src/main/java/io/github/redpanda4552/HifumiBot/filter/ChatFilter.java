@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -73,7 +74,7 @@ public class ChatFilter
             return false;
         }
             
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(event.getMember(), event.getAuthor()))
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(), event.getMember()))
         {
             return false;
         }

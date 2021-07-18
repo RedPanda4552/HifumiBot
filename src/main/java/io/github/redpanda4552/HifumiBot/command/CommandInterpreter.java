@@ -69,7 +69,7 @@ public class CommandInterpreter
 
         if ((toExecute = hifumiBot.getCommandIndex().getCommand(command)) != null)
         {
-            CommandMeta cm = new CommandMeta(command, toExecute.isAdminCommand(), toExecute.isRestricted(),
+            CommandMeta cm = new CommandMeta(command, toExecute.getPermissionLevel(), toExecute.isRestricted(),
                     toExecute.getCategory(), event.getChannel() instanceof TextChannel ? event.getGuild() : null,
                     event.getChannel(), event.getMember(), event.getAuthor(), message,
                     event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(),
@@ -84,7 +84,8 @@ public class CommandInterpreter
                 return;
             }
 
-            toExecute.run(cm);
+            if (HifumiBot.getSelf().getPermissionManager().hasPermission(cm))
+                toExecute.execute(cm);
         }
     }
 

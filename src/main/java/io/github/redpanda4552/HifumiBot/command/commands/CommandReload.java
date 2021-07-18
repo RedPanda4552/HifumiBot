@@ -25,17 +25,17 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 
 public class CommandReload extends AbstractCommand
 {
-
     public CommandReload()
     {
-        super("reload", CATEGORY_BUILTIN, true, false);
+        super("reload", CATEGORY_BUILTIN, PermissionLevel.SUPER_ADMIN, false);
     }
 
     @Override
-    protected void onExecute(CommandMeta cm)
+    public void execute(CommandMeta cm)
     {
         HifumiBot.getSelf().shutdown(true);
     }

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -35,9 +36,8 @@ import net.dv8tion.jda.api.entities.User;
 
 public class CommandMeta
 {
-
     private String command;
-    private boolean admin;
+    private PermissionLevel permissionLevel;
     private boolean restricted;
     private String category;
     private Guild guild;
@@ -49,11 +49,11 @@ public class CommandMeta
     private String[] args;
     private HashMap<String, String> switches;
 
-    public CommandMeta(String command, boolean admin, boolean restricted, String category, Guild guild,
+    public CommandMeta(String command, PermissionLevel permissionLevel, boolean restricted, String category, Guild guild,
             MessageChannel channel, Member member, User user, Message message, List<Member> mentions, String[] args)
     {
         this.command = command;
-        this.admin = admin;
+        this.permissionLevel = permissionLevel;
         this.restricted = restricted;
         this.category = category;
         this.guild = guild;
@@ -122,9 +122,9 @@ public class CommandMeta
         return command;
     }
 
-    public boolean isAdmin()
+    public PermissionLevel getPermissionLevel()
     {
-        return admin;
+        return permissionLevel;
     }
 
     public boolean isRestricted()
