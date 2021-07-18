@@ -117,7 +117,7 @@ public class BuildMonitor implements Refreshable
 
                 if (outputChannel != null)
                 {
-                    outputChannel.sendMessage(eb.build()).complete();
+                    Messaging.sendMessageEmbed(outputChannel, eb.build());
                 }
             }
         }

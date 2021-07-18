@@ -66,7 +66,7 @@ public class CommandDynCmd extends AbstractCommand
     {
         if (cm.getArgs().length < 2)
         {
-            Messaging.sendMessage(cm.getChannel(), usage);
+            Messaging.sendMessageEmbed(cm.getChannel(), usage);
             return;
         }
 
@@ -190,7 +190,7 @@ public class CommandDynCmd extends AbstractCommand
 
             break;
         default:
-            Messaging.sendMessage(cm.getChannel(), usage);
+            Messaging.sendMessageEmbed(cm.getChannel(), usage);
             break;
         }
     }

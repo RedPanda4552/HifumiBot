@@ -66,7 +66,7 @@ public class CommandWarez extends AbstractCommand
         eb.addField("\"But a friend gave it to me!\" or \"I own a copy, and just downloaded it instead!\"",
                 "Games, BIOS files and other materials must be from discs, a console or other device that you own.",
                 false);
-        Messaging.sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
 
         for (Member member : cm.getMentions())
         {

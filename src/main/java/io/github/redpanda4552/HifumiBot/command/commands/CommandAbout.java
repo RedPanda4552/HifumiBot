@@ -74,7 +74,7 @@ public class CommandAbout extends AbstractCommand
         }
         
         eb.addField("Runnable Statuses", sb.toString().trim(), false);
-        Messaging.sendMessage(cm.getChannel(), eb.build());
+        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
 
     @Override
