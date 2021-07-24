@@ -29,6 +29,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.RoleUtils;
 import net.dv8tion.jda.api.entities.Message;
@@ -101,7 +102,7 @@ public class CommandInterpreter
             return false;
         }
 
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(cm))
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, cm))
         {
             return false;
         }
