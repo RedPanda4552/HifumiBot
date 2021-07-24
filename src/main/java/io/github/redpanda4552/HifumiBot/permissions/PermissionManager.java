@@ -43,6 +43,11 @@ public class PermissionManager
         return hasPermission(cm.getPermissionLevel(), cm.getUser(), cm.getMember());
     }
     
+    public boolean hasPermission(PermissionLevel permissionLevel, CommandMeta cm)
+    {
+        return hasPermission(permissionLevel, cm.getUser(), cm.getMember());
+    }
+    
     public boolean hasPermission(PermissionLevel permissionLevel, User user)
     {
         return hasPermission(permissionLevel, user, null);
