@@ -29,6 +29,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -114,5 +115,18 @@ public class Messaging
         }
 
         Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
+    }
+    
+    public static boolean messageHasEmulog(Message msg)
+    {
+        for (Attachment attachment : msg.getAttachments())
+        {
+            if (attachment.getFileName().equalsIgnoreCase("emulog.txt"))
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

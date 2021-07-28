@@ -30,6 +30,7 @@ import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
@@ -68,6 +69,12 @@ public class EventListener extends ListenerAdapter
         }
         
         HifumiBot.getSelf().getCommandInterpreter().execute(event);
+        
+        if (Messaging.messageHasEmulog(event.getMessage()))
+        {
+            EmulogParser ep = new EmulogParser(event.getMessage());
+            HifumiBot.getSelf().getScheduler().runOnce(ep);
+        }
     }
 
     @Override
