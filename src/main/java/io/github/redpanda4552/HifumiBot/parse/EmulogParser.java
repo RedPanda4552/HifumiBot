@@ -42,7 +42,7 @@ public class EmulogParser extends AbstractParser
 {
 
     private final Message message;
-    private final Attachment attachment;
+    private Attachment attachment;
 
     private static Pattern iopFDFailPattern = Pattern.compile("open fd = ([-1-9]{1,2}).*");
     private static Pattern iopUnknownWrite = Pattern.compile("IOP Unknown .+ write.*");
@@ -50,10 +50,19 @@ public class EmulogParser extends AbstractParser
 
     private HashMap<EmulogParserError, ArrayList<Integer>> errorMap;
 
-    public EmulogParser(final Message message, final Attachment attachment)
+    public EmulogParser(final Message message)
     {
         this.message = message;
-        this.attachment = attachment;
+        
+        for (Attachment att : message.getAttachments())
+        {
+            if (att.getFileName().equalsIgnoreCase("emulog.txt"))
+            {
+                this.attachment = att;
+                break;
+            }
+        }
+        
         this.errorMap = new HashMap<EmulogParserError, ArrayList<Integer>>();
 
         for (EmulogParserError ppe : EmulogParserError.values())
@@ -65,6 +74,11 @@ public class EmulogParser extends AbstractParser
     @Override
     public void run()
     {
+        if (attachment == null)
+        {
+            return;
+        }
+        
         URL url = null;
 
         try
