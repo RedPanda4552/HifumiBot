@@ -195,7 +195,7 @@ public class EmulogParser extends AbstractParser
             {
                 ArrayList<Integer> lines = errorMap.get(epe);
 
-                if (lines.size() > 0)
+                if ((epe == EmulogParserError.BIOS_FOUND && lines.size() > 1) || lines.size() > 0)
                 {
                     bodyBuilder
                             .append("--------------------------------------------------------------------------------")
