@@ -46,6 +46,7 @@ public class EmulogParser extends AbstractParser
 
     private static Pattern iopFDFailPattern = Pattern.compile("open fd = ([-1-9]{1,2}).*");
     private static Pattern iopUnknownWrite = Pattern.compile("IOP Unknown .+ write.*");
+    private static Pattern acPower = Pattern.compile("AC: ([0-9]{1,3})% / ([0-9]{1,3})%");
 
     private HashMap<EmulogParserError, ArrayList<Integer>> errorMap;
 
@@ -152,6 +153,33 @@ public class EmulogParser extends AbstractParser
                 else if (line.startsWith("isoFile error: Block index is past the end of file!"))
                 {
                     addError(EmulogParserError.BLOCK_INDEX_EOF, lineNumber);
+                }
+                else if (line.startsWith("Available VRAM is very low"))
+                {
+                    addError(EmulogParserError.OUT_OF_VRAM, lineNumber);
+                }
+                else if (line.startsWith("(GameDB) Enabled Gamefix:"))
+                {
+                    addError(EmulogParserError.GAMEDB_GAMEFIX_LOADED, lineNumber);
+                }
+                else if (line.trim().startsWith("Bios Found:"))
+                {
+                    addError(EmulogParserError.BIOS_FOUND, lineNumber);
+                }
+                else if ((m = acPower.matcher(line)).matches())
+                {
+                    try 
+                    {
+                        int first = Integer.parseInt(m.group(1));
+                        int second = Integer.parseInt(m.group(2));
+                        
+                        if (first != 100 || second != 100)
+                        {
+                            addError(EmulogParserError.CPU_AC_POWER, lineNumber);
+                        }
+                    }
+                    catch (NumberFormatException e) { }
+                    
                 }
             }
 
