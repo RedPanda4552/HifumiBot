@@ -159,11 +159,11 @@ public class EmulogParser extends AbstractParser
                 {
                     addError(EmulogParserError.SSTATE_FAIL, lineNumber);
                 }
-                else if (line.startsWith("Auto-ejecting memcard"))
+                else if (line.contains("Auto-ejecting memcard"))
                 {
                     addError(EmulogParserError.AUTO_EJECT, lineNumber);
                 }
-                else if (line.startsWith("Re-inserting auto-ejected memcard"))
+                else if (line.contains("Re-inserting auto-ejected memcard"))
                 {
                     addError(EmulogParserError.AUTO_EJECT_INSERT, lineNumber);
                 }
