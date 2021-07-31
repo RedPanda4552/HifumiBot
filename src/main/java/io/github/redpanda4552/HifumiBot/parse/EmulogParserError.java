@@ -45,8 +45,10 @@ public enum EmulogParserError
     GAMEDB_GAMEFIX_LOADED("(*) Loaded a gamefix from gamedb."),
     GAMEDB_PATCH_LOADED("(*) Loaded a patch from gamedb."),
     WIDESCREEN_PATCH_LOADED("(*) Loaded widescreen patches from a file."),
+    WIDESCREEN_PATCH_EMPTY("(*) Found widescreen patch file, but nothing to load."),
     WIDESCREEN_ARCHIVE_LOADED("(*) Loaded widescreen patches from the archive."),
-    CHEAT_LOADED("(*) Loaded cheats from a file.");
+    CHEAT_LOADED("(*) Loaded cheats from a file."),
+    CHEAT_EMPTY("(*) Found cheat file, but nothing to load.");
 
     private String displayString;
 

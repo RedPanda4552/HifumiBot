@@ -47,6 +47,9 @@ public class EmulogParser extends AbstractParser
     private static Pattern iopFDFailPattern = Pattern.compile("open fd = ([-1-9]{1,2}).*");
     private static Pattern iopUnknownWrite = Pattern.compile("IOP Unknown .+ write.*");
     private static Pattern acPower = Pattern.compile("AC: ([0-9]{1,3})% / ([0-9]{1,3})%");
+    private static Pattern widescreenArchive = Pattern.compile("Loading patch '.{8,}.pnach' from archive.*");
+    private static Pattern widescreenPatch = Pattern.compile("Loaded (\\d+) Widescreen hacks from '.{8,}.pnach' at.*");
+    private static Pattern cheats = Pattern.compile("Loaded (\\d+) Cheats from '.{8,}.pnach' at.*");
 
     private HashMap<EmulogParserError, ArrayList<Integer>> errorMap;
 
@@ -193,7 +196,44 @@ public class EmulogParser extends AbstractParser
                         }
                     }
                     catch (NumberFormatException e) { }
-                    
+                }
+                else if ((m = widescreenArchive.matcher(line)).matches())
+                {
+                    addError(EmulogParserError.WIDESCREEN_ARCHIVE_LOADED, lineNumber);
+                }
+                else if ((m = widescreenPatch.matcher(line)).matches())
+                {
+                    try
+                    {
+                        int patches = Integer.parseInt(m.group(1));
+                        
+                        if (patches > 0)
+                        {
+                            addError(EmulogParserError.WIDESCREEN_PATCH_LOADED, lineNumber);
+                        }
+                        else
+                        {
+                            addError(EmulogParserError.WIDESCREEN_PATCH_EMPTY, lineNumber);
+                        }
+                    }
+                    catch (NumberFormatException e) { }
+                }
+                else if ((m = cheats.matcher(line)).matches())
+                {
+                    try
+                    {
+                        int patches = Integer.parseInt(m.group(1));
+                        
+                        if (patches > 0)
+                        {
+                            addError(EmulogParserError.CHEAT_LOADED, lineNumber);
+                        }
+                        else
+                        {
+                            addError(EmulogParserError.CHEAT_EMPTY, lineNumber);
+                        }
+                    }
+                    catch (NumberFormatException e) { }
                 }
             }
 
