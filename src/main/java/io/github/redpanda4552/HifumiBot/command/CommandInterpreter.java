@@ -31,7 +31,6 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
-import io.github.redpanda4552.HifumiBot.util.RoleUtils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -113,11 +112,6 @@ public class CommandInterpreter
         }
 
         if (cm.getGuild() == null)
-        {
-            return false;
-        }
-
-        if (RoleUtils.memberHasRole(cm.getMember(), HifumiBot.getSelf().getConfig().restrictedCommandBypassRoles))
         {
             return false;
         }

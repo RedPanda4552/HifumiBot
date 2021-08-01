@@ -32,34 +32,71 @@ import io.github.redpanda4552.HifumiBot.filter.Filter;
 
 public class Config
 {
-
+    public Channels channels;
     public String devBuildOutputChannelId;
     public String systemOutputChannelId;
-    public String rulesChannelId;
-    public String warezRoleId;
-    public String pastebinApiKey;
-    public ArrayList<String> adminRoles;
-    public Permissions permissions;
     public String restrictedCommandChannelId;
-    public ArrayList<String> restrictedCommandBypassRoles;
+    public String rulesChannelId;
+    public Roles roles;
+    public String warezRoleId;
+    public Integrations integrations;
+    public String pastebinApiKey;
+    public Permissions permissions;
     public HashMap<String, Filter> filters;
     public ArrayList<DynamicCommand> dynamicCommands;
     public HashMap<String, OffsetDateTime> warezUsers;
 
     public Config()
     {
+        channels = new Channels();
         devBuildOutputChannelId = new String("");
         systemOutputChannelId = new String("");
         rulesChannelId = new String("");
-        warezRoleId = new String("");
-        pastebinApiKey = new String("");
-        adminRoles = new ArrayList<String>();
-        permissions = new Permissions();
         restrictedCommandChannelId = new String("");
-        restrictedCommandBypassRoles = new ArrayList<String>();
+        roles = new Roles();
+        warezRoleId = new String("");
+        integrations = new Integrations();
+        pastebinApiKey = new String("");
+        permissions = new Permissions();
         filters = new HashMap<String, Filter>();
         dynamicCommands = new ArrayList<DynamicCommand>();
         warezUsers = new HashMap<String, OffsetDateTime>();
+    }
+    
+    public class Channels
+    {
+        public String devBuildOutputChannelId;
+        public String systemOutputChannelId;
+        public String rulesChannelId;
+        public String restrictedCommandChannelId;
+        
+        public Channels()
+        {
+            devBuildOutputChannelId = new String("");
+            systemOutputChannelId = new String("");
+            rulesChannelId = new String("");
+            restrictedCommandChannelId = new String("");
+        }
+    }
+    
+    public class Roles
+    {
+        public String warezRoleId;
+        
+        public Roles()
+        {
+            warezRoleId = new String("");
+        }
+    }
+    
+    public class Integrations
+    {
+        public String pastebinApiKey;
+        
+        public Integrations()
+        {
+            pastebinApiKey = new String("");
+        }
     }
     
     public class Permissions
