@@ -49,7 +49,7 @@ public class CommandWarez extends AbstractCommand
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
         eb.setTitle("PCSX2 Anti-Warez Rules");
         eb.setDescription("As per ");
-        TextChannel welcomeRules = cm.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().rulesChannelId);
+        TextChannel welcomeRules = cm.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.rulesChannelId);
         eb.appendDescription(welcomeRules.getAsMention())
                 .appendDescription(", our server **does not support** piracy.\n")
                 .appendDescription(
@@ -75,7 +75,7 @@ public class CommandWarez extends AbstractCommand
                 try
                 {
                     cm.getGuild().addRoleToMember(member,
-                            cm.getGuild().getRoleById(HifumiBot.getSelf().getConfig().warezRoleId)).complete();
+                            cm.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId)).complete();
                 }
                 catch (InsufficientPermissionException e)
                 {

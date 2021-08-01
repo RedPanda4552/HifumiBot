@@ -78,7 +78,7 @@ public class Messaging
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Info from " + className + "." + methodName);
         eb.addField("Message", msg, false);
-        Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
+        Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId, eb.build());
     }
 
     public static void logException(String className, String methodName, Exception e)
@@ -114,7 +114,7 @@ public class Messaging
             eb.addField("Caused By Stack Trace", StringUtils.abbreviate(sb.toString(), 1024), false);
         }
 
-        Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().systemOutputChannelId, eb.build());
+        Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId, eb.build());
     }
     
     public static boolean messageHasEmulog(Message msg)

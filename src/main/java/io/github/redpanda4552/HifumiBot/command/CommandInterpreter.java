@@ -79,7 +79,7 @@ public class CommandInterpreter
             {
                 Messaging.sendMessage(event.getChannel(),
                         "Hey there! Please use " + HifumiBot.getSelf().getJDA()
-                                .getTextChannelById(HifumiBot.getSelf().getConfig().restrictedCommandChannelId)
+                                .getTextChannelById(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)
                                 .getAsMention() + " for this bot command. Thanks!");
                 return;
             }
@@ -91,7 +91,7 @@ public class CommandInterpreter
 
     private boolean isCommandRestricted(CommandMeta cm)
     {
-        if (HifumiBot.getSelf().getConfig().restrictedCommandChannelId.isBlank())
+        if (HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId.isBlank())
         {
             return false;
         }
@@ -106,7 +106,7 @@ public class CommandInterpreter
             return false;
         }
 
-        if (cm.getChannel().getId().equals(HifumiBot.getSelf().getConfig().restrictedCommandChannelId))
+        if (cm.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId))
         {
             return false;
         }

@@ -82,7 +82,7 @@ public class EventListener extends ListenerAdapter
     {
         for (Role role : event.getRoles())
         {
-            if (role.getId().equals(HifumiBot.getSelf().getConfig().warezRoleId)
+            if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)
                     && !HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId()))
             {
                 HifumiBot.getSelf().getConfig().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
@@ -97,7 +97,7 @@ public class EventListener extends ListenerAdapter
     {
         for (Role role : event.getRoles())
         {
-            if (role.getId().equals(HifumiBot.getSelf().getConfig().warezRoleId))
+            if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId))
             {
                 HifumiBot.getSelf().getConfig().warezUsers.remove(event.getUser().getId());
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
@@ -125,7 +125,7 @@ public class EventListener extends ListenerAdapter
         if (HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId()))
         {
             // First assign the warez role
-            Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().warezRoleId);
+            Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
             event.getGuild().addRoleToMember(event.getMember(), role).complete();
 
             // Then send a notification
@@ -138,7 +138,7 @@ public class EventListener extends ListenerAdapter
                     .format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.addField("Warez Date", dateStr, true);
             Messaging.sendMessageEmbed(
-                    event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().systemOutputChannelId),
+                    event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId),
                     eb.build());
         }
     }

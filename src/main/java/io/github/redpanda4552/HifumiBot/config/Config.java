@@ -33,14 +33,8 @@ import io.github.redpanda4552.HifumiBot.filter.Filter;
 public class Config
 {
     public Channels channels;
-    public String devBuildOutputChannelId;
-    public String systemOutputChannelId;
-    public String restrictedCommandChannelId;
-    public String rulesChannelId;
     public Roles roles;
-    public String warezRoleId;
     public Integrations integrations;
-    public String pastebinApiKey;
     public Permissions permissions;
     public HashMap<String, Filter> filters;
     public ArrayList<DynamicCommand> dynamicCommands;
@@ -49,14 +43,8 @@ public class Config
     public Config()
     {
         channels = new Channels();
-        devBuildOutputChannelId = new String("");
-        systemOutputChannelId = new String("");
-        rulesChannelId = new String("");
-        restrictedCommandChannelId = new String("");
         roles = new Roles();
-        warezRoleId = new String("");
         integrations = new Integrations();
-        pastebinApiKey = new String("");
         permissions = new Permissions();
         filters = new HashMap<String, Filter>();
         dynamicCommands = new ArrayList<DynamicCommand>();
