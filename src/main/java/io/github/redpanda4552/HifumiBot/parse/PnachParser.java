@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
-import io.github.redpanda4552.HifumiBot.util.Pastebin;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
@@ -313,8 +312,7 @@ public class PnachParser extends AbstractParser
                     .append("============================ End Pnach Parse Results ===========================")
                     .append("\n");
 
-            String pastebinURL = Pastebin.sendPaste("Pnach - " + message.getAuthor().getName(), bodyBuilder.toString());
-            Messaging.sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
+            Messaging.sendMessage(message.getChannel(), "Boop. Results are in this text file!", "Pnach_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
         }
         catch (IOException e)
         {
