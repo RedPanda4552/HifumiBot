@@ -31,6 +31,7 @@ import java.util.List;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
+import io.github.redpanda4552.HifumiBot.parse.PnachParser;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
@@ -74,6 +75,12 @@ public class EventListener extends ListenerAdapter
         {
             EmulogParser ep = new EmulogParser(event.getMessage());
             HifumiBot.getSelf().getScheduler().runOnce(ep);
+        }
+        
+        if (Messaging.messageHasPnach(event.getMessage()))
+        {
+            PnachParser pp = new PnachParser(event.getMessage());
+            HifumiBot.getSelf().getScheduler().runOnce(pp);
         }
     }
 

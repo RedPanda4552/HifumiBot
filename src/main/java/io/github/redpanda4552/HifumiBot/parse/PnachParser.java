@@ -42,14 +42,23 @@ public class PnachParser extends AbstractParser
     private static final String CRC_FILE_NAME_PATTERN = "[0-9a-fA-F]{8}\\.pnach";
 
     private final Message message;
-    private final Attachment attachment;
+    private Attachment attachment;
 
     private HashMap<PnachParserError, ArrayList<Integer>> errorMap;
 
-    public PnachParser(final Message message, final Attachment attachment)
+    public PnachParser(final Message message)
     {
         this.message = message;
-        this.attachment = attachment;
+        
+        for (Attachment att : message.getAttachments())
+        {
+            if (att.getFileExtension().equalsIgnoreCase("pnach"))
+            {
+                this.attachment = att;
+                break;
+            }
+        }
+        
         this.errorMap = new HashMap<PnachParserError, ArrayList<Integer>>();
 
         for (PnachParserError ppe : PnachParserError.values())
