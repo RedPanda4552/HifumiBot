@@ -32,30 +32,35 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 public class Messaging
 {
-
-    public static Message sendMessage(String channelId, String... msg)
+    public static Message sendMessage(MessageChannel channel, String str)
     {
-        return Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(channelId), msg);
-    }
-
-    public static Message sendMessage(MessageChannel channel, String... strArr)
-    {
-        MessageBuilder mb = new MessageBuilder();
-
-        for (String str : strArr)
-        {
-            mb.append(str);
-        }
-
-        return Messaging.sendMessage(channel, mb.build());
+        MessageBuilder mb = new MessageBuilder(str);
+        return Messaging.sendMessage(channel, mb.build(), null, null);
     }
 
     public static Message sendMessage(MessageChannel channel, Message msg)
     {
-        return channel.sendMessage(msg).complete();
+        return Messaging.sendMessage(channel, msg, null, null);
+    }
+    
+    public static Message sendMessage(MessageChannel channel, String str, String fileName, String fileContents)
+    {
+        MessageBuilder mb = new MessageBuilder(str);
+        return Messaging.sendMessage(channel, mb.build(), fileName, fileContents);
+    }
+
+    public static Message sendMessage(MessageChannel channel, Message msg, String fileName, String fileContents)
+    {
+        MessageAction action = channel.sendMessage(msg);
+        
+        if (fileName != null && !fileName.isBlank() && fileContents != null && !fileContents.isBlank())
+            action.addFile(fileContents.getBytes(), fileName);
+        
+        return action.complete();
     }
     
     public static Message sendMessageEmbed(String channelId, MessageEmbed embed)
