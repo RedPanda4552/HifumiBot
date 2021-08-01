@@ -271,6 +271,7 @@ public class PnachParser extends AbstractParser
                     .append("============================== Pnach Parse Results =============================")
                     .append("\n");
             bodyBuilder.append("(*) = Information (!) = Warning (X) = Critical").append("\n\n");
+            boolean hasLines = false;
 
             for (PnachParserError epe : errorMap.keySet())
             {
@@ -278,6 +279,7 @@ public class PnachParser extends AbstractParser
 
                 if (lines.size() > 0)
                 {
+                    hasLines = true;
                     bodyBuilder
                             .append("--------------------------------------------------------------------------------")
                             .append("\n");
@@ -307,12 +309,19 @@ public class PnachParser extends AbstractParser
                     }
                 }
             }
+            
+            if (hasLines)
+            {
+                bodyBuilder.append("\n\n")
+                        .append("============================ End Pnach Parse Results ===========================")
+                        .append("\n");
 
-            bodyBuilder.append("\n\n")
-                    .append("============================ End Pnach Parse Results ===========================")
-                    .append("\n");
-
-            Messaging.sendMessage(message.getChannel(), "Boop. Results are in this text file!", "Pnach_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
+                Messaging.sendMessage(message.getChannel(), ":information_source: Found something! Results are in this text file!", "Pnach_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
+            }
+            else
+            {
+                Messaging.sendMessage(message.getChannel(), ":white_check_mark: All good, nothing to report!");
+            }
         }
         catch (IOException e)
         {
