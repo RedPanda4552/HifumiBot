@@ -1,5 +1,5 @@
 /**
- * This file is part of HifumiBot, licensed under the MIT License (MIT)
+809 * This file is part of HifumiBot, licensed under the MIT License (MIT)
  * 
  * Copyright (c) 2020 RedPanda4552 (https://github.com/RedPanda4552)
  * 
@@ -34,7 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
-import io.github.redpanda4552.HifumiBot.util.Pastebin;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 
@@ -284,10 +283,8 @@ public class EmulogParser extends AbstractParser
             bodyBuilder.append("\n\n")
                     .append("=========================== End Emulog Parse Results ===========================")
                     .append("\n");
-
-            String pastebinURL = Pastebin.sendPaste("Emulog - " + message.getAuthor().getName(),
-                    bodyBuilder.toString());
-            Messaging.sendMessage(message.getChannel(), "Boop. Results are in this pastebin: " + pastebinURL);
+            
+            Messaging.sendMessage(message.getChannel(), "Boop. Results are in this text file!", "Emulog_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
         }
         catch (IOException e)
         {
