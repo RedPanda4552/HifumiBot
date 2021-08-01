@@ -23,11 +23,9 @@
  */
 package io.github.redpanda4552.HifumiBot.config;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.filter.Filter;
 
 public class Config
@@ -37,8 +35,6 @@ public class Config
     public Integrations integrations;
     public Permissions permissions;
     public HashMap<String, Filter> filters;
-    public ArrayList<DynamicCommand> dynamicCommands;
-    public HashMap<String, OffsetDateTime> warezUsers;
 
     public Config()
     {
@@ -47,8 +43,6 @@ public class Config
         integrations = new Integrations();
         permissions = new Permissions();
         filters = new HashMap<String, Filter>();
-        dynamicCommands = new ArrayList<DynamicCommand>();
-        warezUsers = new HashMap<String, OffsetDateTime>();
     }
     
     public class Channels
