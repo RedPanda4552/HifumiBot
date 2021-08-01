@@ -27,6 +27,8 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.Scheduler.NoSuchRunnableException;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
+import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -58,14 +60,19 @@ public class CommandAbout extends AbstractCommand
         eb.addField("Created By", "pandubz", true);
         String version = getClass().getPackage().getImplementationVersion();
         eb.addField("Version", version != null ? version : "[Debug Mode]", true);
-        eb.addField("Config Size", (ConfigManager.file.length() / 1024) + " KB", true);
-        StringBuilder sb = new StringBuilder("| ");
+        
+        StringBuilder storageBuilder = new StringBuilder("| ");
+        storageBuilder.append("Config: ").append((ConfigManager.file.length() / 1024) + " KB | ");
+        storageBuilder.append("Warez: ").append((WarezTrackingManager.file.length() / 1024) + " KB | ");
+        storageBuilder.append("DynCmd: ").append((DynCmdConfigManager.file.length() / 1024) + " KB |");
+        eb.addField("Storage Size", storageBuilder.toString(), false);
+        StringBuilder runnableBuilder = new StringBuilder("| ");
         
         for (String runnableName : HifumiBot.getSelf().getScheduler().getRunnableNames())
         {
             try
             {
-                sb.append(runnableName + ": " + (HifumiBot.getSelf().getScheduler().isRunnableAlive(runnableName) ? "alive" : "stopped") + " | ");
+                runnableBuilder.append(runnableName + ": " + (HifumiBot.getSelf().getScheduler().isRunnableAlive(runnableName) ? "alive" : "stopped") + " | ");
             }
             catch (NoSuchRunnableException e)
             {
@@ -73,7 +80,7 @@ public class CommandAbout extends AbstractCommand
             }
         }
         
-        eb.addField("Runnable Statuses", sb.toString().trim(), false);
+        eb.addField("Runnable Statuses", runnableBuilder.toString().trim(), false);
         Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
 
