@@ -134,4 +134,17 @@ public class Messaging
         
         return false;
     }
+    
+    public static boolean messageHasPnach(Message msg)
+    {
+        for (Attachment attachment : msg.getAttachments())
+        {
+            if (attachment.getFileExtension().equalsIgnoreCase("pnach"))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }
