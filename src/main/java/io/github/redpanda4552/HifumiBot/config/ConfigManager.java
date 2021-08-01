@@ -78,7 +78,7 @@ public class ConfigManager
         try
         {
             OutputStream oStream = Files.newOutputStream(file.toPath());
-            Gson gson = new GsonBuilder().create();
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String json = gson.toJson(config);
             oStream.write(json.getBytes());
         }
