@@ -49,7 +49,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
-import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -112,7 +112,7 @@ public class CommandIndex
         CommandWiki wiki = new CommandWiki();
         commandMap.put(wiki.getName(), wiki);
 
-        for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getConfig().dynamicCommands)
+        for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands)
         {
             // Backwards compatibility: Add guest permission level to any
             // dynamic commands which do not have a level (because they were
@@ -170,7 +170,7 @@ public class CommandIndex
     public void addCommand(DynamicCommand dyncmd)
     {
         // Insert it into the ArrayList in Config, then reload the CommandIndex.
-        ArrayList<DynamicCommand> configDynamicCommands = HifumiBot.getSelf().getConfig().dynamicCommands;
+        ArrayList<DynamicCommand> configDynamicCommands = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands;
         Iterator<DynamicCommand> iter = configDynamicCommands.iterator();
         DynamicCommand configDynamicCommand = null;
         boolean commandExists = false;
@@ -192,13 +192,13 @@ public class CommandIndex
             configDynamicCommands.add(dyncmd);
         }
 
-        ConfigManager.write(HifumiBot.getSelf().getConfig());
+        DynCmdConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
         HifumiBot.getSelf().getCommandIndex().rebuild();
     }
 
     public void deleteCommand(String name)
     {
-        ArrayList<DynamicCommand> dynamicCommands = HifumiBot.getSelf().getConfig().dynamicCommands;
+        ArrayList<DynamicCommand> dynamicCommands = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands;
         Iterator<DynamicCommand> iter = dynamicCommands.iterator();
         DynamicCommand toDelete = null;
 
@@ -216,7 +216,7 @@ public class CommandIndex
         if (toDelete != null)
         {
             dynamicCommands.remove(toDelete);
-            ConfigManager.write(HifumiBot.getSelf().getConfig());
+            DynCmdConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
             HifumiBot.getSelf().getCommandIndex().rebuild();
         }
     }

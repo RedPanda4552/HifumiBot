@@ -29,6 +29,10 @@ import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
+import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
+import io.github.redpanda4552.HifumiBot.config.WarezTracking;
+import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
@@ -76,6 +80,8 @@ public class HifumiBot
 
     private JDA jda;
     private Config config;
+    private WarezTracking warezTracking;
+    private DynCmdConfig dynCmdConfig;
     private final OkHttpClient http;
 
     private Scheduler scheduler;
@@ -111,11 +117,21 @@ public class HifumiBot
         }
 
         updateStatus("Starting...");
+        
         ConfigManager.createConfigIfNotExists();
         config = ConfigManager.read();
         // Write back the config so that if any new fields were added after an
         // update, they are written to disk
         ConfigManager.write(config);
+        
+        WarezTrackingManager.createIfNotExists();
+        warezTracking = WarezTrackingManager.read();
+        WarezTrackingManager.write(warezTracking);
+        
+        DynCmdConfigManager.createIfNotExists();
+        dynCmdConfig = DynCmdConfigManager.read();
+        DynCmdConfigManager.write(dynCmdConfig);
+        
         scheduler = new Scheduler();
         wikiIndex = new WikiIndex();
         cpuIndex = new CpuIndex();
@@ -151,6 +167,16 @@ public class HifumiBot
     public Config getConfig()
     {
         return config;
+    }
+    
+    public WarezTracking getWarezTracking()
+    {
+        return warezTracking;
+    }
+    
+    public DynCmdConfig getDynCmdConfig()
+    {
+        return dynCmdConfig;
     }
 
     public OkHttpClient getHttpClient()

@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -83,10 +83,10 @@ public class EventListener extends ListenerAdapter
         for (Role role : event.getRoles())
         {
             if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)
-                    && !HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId()))
+                    && !HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId()))
             {
-                HifumiBot.getSelf().getConfig().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
-                ConfigManager.write(HifumiBot.getSelf().getConfig());
+                HifumiBot.getSelf().getWarezTracking().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
+                WarezTrackingManager.write(HifumiBot.getSelf().getWarezTracking());
                 return;
             }
         }
@@ -99,8 +99,8 @@ public class EventListener extends ListenerAdapter
         {
             if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId))
             {
-                HifumiBot.getSelf().getConfig().warezUsers.remove(event.getUser().getId());
-                ConfigManager.write(HifumiBot.getSelf().getConfig());
+                HifumiBot.getSelf().getWarezTracking().warezUsers.remove(event.getUser().getId());
+                WarezTrackingManager.write(HifumiBot.getSelf().getWarezTracking());
                 return;
             }
         }
@@ -122,7 +122,7 @@ public class EventListener extends ListenerAdapter
             }
         }
         
-        if (HifumiBot.getSelf().getConfig().warezUsers.containsKey(event.getUser().getId()))
+        if (HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId()))
         {
             // First assign the warez role
             Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
@@ -134,7 +134,7 @@ public class EventListener extends ListenerAdapter
             eb.setDescription("A user who was previously warez'd has rejoined the server.");
             eb.addField("User Name", event.getUser().getName(), true);
             eb.addField("Display Name", event.getMember().getEffectiveName(), true);
-            String dateStr = HifumiBot.getSelf().getConfig().warezUsers.get(event.getUser().getId())
+            String dateStr = HifumiBot.getSelf().getWarezTracking().warezUsers.get(event.getUser().getId())
                     .format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.addField("Warez Date", dateStr, true);
             Messaging.sendMessageEmbed(
