@@ -126,12 +126,10 @@ public class HifumiBot
         
         WarezTrackingManager.createIfNotExists();
         warezTracking = WarezTrackingManager.read();
-        warezTracking.warezUsers = config.warezUsers;
         WarezTrackingManager.write(warezTracking);
         
         DynCmdConfigManager.createIfNotExists();
         dynCmdConfig = DynCmdConfigManager.read();
-        dynCmdConfig.dynamicCommands = config.dynamicCommands;
         DynCmdConfigManager.write(dynCmdConfig);
         
         scheduler = new Scheduler();
