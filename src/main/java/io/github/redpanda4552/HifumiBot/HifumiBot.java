@@ -121,7 +121,7 @@ public class HifumiBot
         cpuIndex = new CpuIndex();
         gpuIndex = new GpuIndex();
         buildMonitor = new BuildMonitor(
-                jda.getTextChannelById(HifumiBot.getSelf().getConfig().devBuildOutputChannelId));
+                jda.getTextChannelById(HifumiBot.getSelf().getConfig().channels.devBuildOutputChannelId));
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
         commandInterpreter = new CommandInterpreter(this);
