@@ -105,6 +105,12 @@
 	        <artifactId>gson</artifactId>
 	        <version>${gson.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
+            <version>3.4.1</version>
+        </dependency>
     </dependencies>
   
 </project>

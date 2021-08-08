@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.filter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.github.redpanda4552.HifumiBot.util.DNSQueryResult;
 import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
@@ -44,14 +45,11 @@ public class HyperlinkCleaner implements Runnable
     @Override
     public void run()
     {
-        String content = message.getContentDisplay();
-        Matcher m = URL_PATTERN.matcher(content);
+        Matcher m = URL_PATTERN.matcher(message.getContentDisplay().toLowerCase());
         
         while (m.find())
         {
-            String group = m.group();
-            
-            if (!Internet.nslookup(group))
+            if (Internet.nslookup(m.group()) == DNSQueryResult.BLOCKED)
             {
                 message.delete().complete();
                 Messaging.logInfo("HyperlinkCleaner", "run", "Deleting message from user " + message.getAuthor().getAsMention() + ", DNS query on a URL inside failed and may be malicious.\n\nUser's message (formatting stripped):\n```\n" + message.getContentStripped() + "\n```");
