@@ -30,8 +30,10 @@ import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
+import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
@@ -81,6 +83,11 @@ public class EventListener extends ListenerAdapter
         {
             PnachParser pp = new PnachParser(event.getMessage());
             HifumiBot.getSelf().getScheduler().runOnce(pp);
+        }
+        
+        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(), event.getMember()))
+        {
+            HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage()));
         }
     }
 
