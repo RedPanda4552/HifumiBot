@@ -253,4 +253,9 @@ public class HifumiBot
         if (reload)
             self = new HifumiBot();
     }
+    
+    public String getVersion()
+    {
+        return getClass().getPackage().getImplementationVersion();
+    }
 }

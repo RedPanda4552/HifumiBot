@@ -58,7 +58,7 @@ public class CommandAbout extends AbstractCommand
         eb.setTitle("About " + HifumiBot.getSelf().getJDA().getSelfUser().getName());
         eb.setDescription("A helper bot created for the PCSX2 Discord server.");
         eb.addField("Created By", "pandubz", true);
-        String version = getClass().getPackage().getImplementationVersion();
+        String version = HifumiBot.getSelf().getVersion();
         eb.addField("Version", version != null ? version : "[Debug Mode]", true);
         
         StringBuilder storageBuilder = new StringBuilder("| ");
