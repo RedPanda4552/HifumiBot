@@ -36,6 +36,7 @@ import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
+import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
@@ -77,7 +78,7 @@ public class HifumiBot
     {
         return self;
     }
-
+    
     private JDA jda;
     private Config config;
     private WarezTracking warezTracking;
@@ -132,6 +133,7 @@ public class HifumiBot
         dynCmdConfig = DynCmdConfigManager.read();
         DynCmdConfigManager.write(dynCmdConfig);
         
+        Internet.init();
         scheduler = new Scheduler();
         wikiIndex = new WikiIndex();
         cpuIndex = new CpuIndex();
