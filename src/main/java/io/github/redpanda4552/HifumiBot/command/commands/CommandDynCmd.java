@@ -42,7 +42,7 @@ public class CommandDynCmd extends AbstractCommand
 
     public CommandDynCmd()
     {
-        super("dyncmd", CATEGORY_BUILTIN, PermissionLevel.MOD, false);
+        super("dyncmd", CATEGORY_BUILTIN, PermissionLevel.ADMIN, false);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("DynCmd Usage");
         eb.addField("View", "`dyncmd get <name>`", false);

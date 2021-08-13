@@ -38,7 +38,7 @@ public class CommandAbout extends AbstractCommand
 {
     public CommandAbout()
     {
-        super("about", CATEGORY_BUILTIN, PermissionLevel.MOD, false);
+        super("about", CATEGORY_BUILTIN, PermissionLevel.ADMIN, false);
     }
 
     @Override

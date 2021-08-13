@@ -37,7 +37,7 @@ public class CommandWarez extends AbstractCommand
 {
     public CommandWarez()
     {
-        super("warez", CATEGORY_BUILTIN, PermissionLevel.MOD, false);
+        super("warez", CATEGORY_BUILTIN, PermissionLevel.ADMIN, false);
     }
 
     @Override
