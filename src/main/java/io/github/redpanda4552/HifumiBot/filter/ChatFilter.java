@@ -84,8 +84,10 @@ public class ChatFilter
             for (Pattern p : patternMap.get(filterName))
             {
                 Matcher m = p.matcher(event.getMessage().getContentDisplay().toLowerCase());
+                boolean matches = m.matches();
+                boolean find = m.find();
                 
-                if (m.matches())
+                if (matches || find)
                 {
                     event.getMessage().delete().complete();
                     String replyMessage = HifumiBot.getSelf().getConfig().filters.get(filterName).replyMessage;
