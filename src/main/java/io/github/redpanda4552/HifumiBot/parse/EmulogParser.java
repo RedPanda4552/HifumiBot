@@ -43,7 +43,6 @@ public class EmulogParser extends AbstractParser
     private final Message message;
     private Attachment attachment;
 
-    private static Pattern iopFDFailPattern = Pattern.compile("open fd = ([-1-9]{1,2}).*");
     private static Pattern iopUnknownWrite = Pattern.compile("IOP Unknown .+ write.*");
     private static Pattern acPower = Pattern.compile("AC: ([0-9]{1,3})% / ([0-9]{1,3})%");
     private static Pattern widescreenArchive = Pattern.compile("Loading patch '.{8,}.pnach' from archive.*");
@@ -118,21 +117,6 @@ public class EmulogParser extends AbstractParser
                 else if (line.startsWith("[GameDB] Found patch with CRC"))
                 {
                     addError(EmulogParserError.GAMEDB_PATCH_LOADED, lineNumber);
-                }
-                else if ((m = iopFDFailPattern.matcher(line)).matches())
-                {
-                    String group = m.group(1);
-
-                    try
-                    {
-                        int fd = Integer.parseInt(group);
-
-                        if (fd < 0)
-                        {
-                            addError(EmulogParserError.IOP_FD_FAIL, lineNumber);
-                        }
-                    }
-                    catch (NumberFormatException e) { }
                 }
                 else if (line.startsWith("microVU0 Warning: Branch, Branch, Branch!"))
                 {

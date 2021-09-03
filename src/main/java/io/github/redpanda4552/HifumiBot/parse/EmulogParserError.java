@@ -31,7 +31,6 @@ public enum EmulogParserError
     UNKNOWN_VIF1("(X) Unknown VIF1 command. Usually a symptom caused by another severe problem, and a sign that emulation is about to fail."),
     BLOCK_INDEX_EOF("(X) The game tried to read past the end of its own disc contents. Usually indicates a disc image is damaged or incomplete."),
     OUT_OF_VRAM("(!) PCSX2 is out of or very low on VRAM."),
-    IOP_FD_FAIL("(!) Game failed to open a file on IOP."),
     IOP_UNKNOWN_WRITE("(!) Unknown write by IOP."),
     VU0_TRIPLE_BRANCH("(!) Triple branch detected in VU0."), 
     VU1_TRIPLE_BRANCH("(!) Triple branch detected in VU1."),
