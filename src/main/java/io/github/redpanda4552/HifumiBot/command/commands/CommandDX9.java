@@ -27,24 +27,20 @@ import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 
-public class CommandDX9 extends AbstractCommand
-{
+public class CommandDX9 extends AbstractCommand {
     private final String VIDEO_LINK = "https://cdn.discordapp.com/attachments/514592552389967881/525387135138660353/gone_out.mp4";
 
-    public CommandDX9()
-    {
+    public CommandDX9() {
         super("dx9", CATEGORY_BUILTIN, PermissionLevel.GUEST, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
+    public void execute(CommandMeta cm) {
         Messaging.sendMessage(cm.getChannel(), VIDEO_LINK);
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Get this trash out of here!";
     }
 

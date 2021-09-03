@@ -38,8 +38,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-public class BuildMonitor implements Refreshable
-{
+public class BuildMonitor implements Refreshable {
 
     private static final String ORPHIS_PCSX2_ROOT = "https://buildbot.orphis.net/pcsx2/";
     private static final String WINDOWS_INSTRUCTIONS = "- Download the topmost (latest) build from " + ORPHIS_PCSX2_ROOT
@@ -49,46 +48,37 @@ public class BuildMonitor implements Refreshable
     private TextChannel outputChannel;
     private String gitRevision = "";
 
-    public BuildMonitor(TextChannel outputChannel)
-    {
+    public BuildMonitor(TextChannel outputChannel) {
         this.outputChannel = outputChannel;
         this.refresh();
     }
 
     @Override
-    public synchronized void refresh()
-    {
-        try
-        {
+    public synchronized void refresh() {
+        try {
             MessageHistory channelHistory = outputChannel.getHistory();
             Message lastPostedMessage = null;
             MessageEmbed lastPostedEmbed = null;
             String lastPostedRevision = null;
 
-            do
-            {
+            do {
                 List<Message> historyMessages = channelHistory.retrievePast(1).complete();
 
-                if (historyMessages.isEmpty())
-                {
+                if (historyMessages.isEmpty()) {
                     break;
                 }
 
                 lastPostedMessage = historyMessages.get(0);
             } while (lastPostedMessage.getEmbeds().size() == 0);
 
-            if (lastPostedMessage != null)
-            {
+            if (lastPostedMessage != null) {
                 lastPostedEmbed = lastPostedMessage.getEmbeds().get(0);
             }
 
-            if (lastPostedEmbed != null)
-            {
+            if (lastPostedEmbed != null) {
                 // Look for the revision field in the latest embed
-                for (Field field : lastPostedEmbed.getFields())
-                {
-                    if (field.getName().equals("Revision:"))
-                    {
+                for (Field field : lastPostedEmbed.getFields()) {
+                    if (field.getName().equals("Revision:")) {
                         lastPostedRevision = field.getValue();
                         break;
                     }
@@ -102,8 +92,7 @@ public class BuildMonitor implements Refreshable
             gitRevision = revisionCell.getElementsByTag("a").get(0).ownText(); // Get display text
             Element commitCell = row.getElementsByTag("td").get(4); // Get last cell
 
-            if (lastPostedRevision == null || !gitRevision.equals(lastPostedRevision))
-            {
+            if (lastPostedRevision == null || !gitRevision.equals(lastPostedRevision)) {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setAuthor("New PCSX2 Development Build Available!");
                 eb.addField("Revision:", gitRevision, false);
@@ -115,14 +104,11 @@ public class BuildMonitor implements Refreshable
                         false);
                 eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
 
-                if (outputChannel != null)
-                {
+                if (outputChannel != null) {
                     Messaging.sendMessageEmbed(outputChannel, eb.build());
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             Messaging.logException("BuildMonitor", "refresh", e);
         }
     }

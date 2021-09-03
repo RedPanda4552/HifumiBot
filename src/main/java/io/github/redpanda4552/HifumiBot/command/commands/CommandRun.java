@@ -31,27 +31,21 @@ import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class CommandRun extends AbstractCommand
-{
-    public CommandRun()
-    {
+public class CommandRun extends AbstractCommand {
+    public CommandRun() {
         super("run", CATEGORY_BUILTIN, PermissionLevel.SUPER_ADMIN, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
-        if (cm.getArgs().length == 0)
-        {
+    public void execute(CommandMeta cm) {
+        if (cm.getArgs().length == 0) {
             EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
             eb.setTitle("Run a background runnable immediately");
             eb.setDescription("`" + CommandInterpreter.PREFIX + this.getName() + " <runnable>`");
             StringBuilder sb = new StringBuilder();
 
-            for (String name : HifumiBot.getSelf().getScheduler().getRunnableNames())
-            {
-                if (sb.length() != 0)
-                {
+            for (String name : HifumiBot.getSelf().getScheduler().getRunnableNames()) {
+                if (sb.length() != 0) {
                     sb.append(", ");
                 }
 
@@ -61,19 +55,14 @@ public class CommandRun extends AbstractCommand
             eb.addField("Available runnables", sb.toString(), false);
             Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
             return;
-        }
-        else
-        {
+        } else {
             String name = cm.getArgs()[0];
             boolean result = HifumiBot.getSelf().getScheduler().runScheduledNow(name);
 
-            if (result)
-            {
+            if (result) {
                 Messaging.sendMessage(cm.getChannel(), "Sent an execute request for runnable '" + name
                         + "' to the thread pool; it will run whenever a thread is available to host it.");
-            }
-            else
-            {
+            } else {
                 Messaging.sendMessage(cm.getChannel(),
                         "Could not find a runnable with name '" + name + "'; use `" + CommandInterpreter.PREFIX
                                 + this.getName() + "` with no args for a list of available runnables.");
@@ -82,8 +71,7 @@ public class CommandRun extends AbstractCommand
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Forcefully execute a runnable background task that normally executes on a schedule.";
     }
 

@@ -30,20 +30,16 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-public class CommandDev extends AbstractCommand
-{
+public class CommandDev extends AbstractCommand {
     private final String DEV_CHANNEL = "dev-builds";
 
-    public CommandDev()
-    {
+    public CommandDev() {
         super("dev", CATEGORY_BUILTIN, PermissionLevel.GUEST, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
-        if (!(cm.getChannel() instanceof TextChannel))
-        {
+    public void execute(CommandMeta cm) {
+        if (!(cm.getChannel() instanceof TextChannel)) {
             Messaging.sendMessage(cm.getChannel(), "Sorry, but this command can only be used within the PCSX2 server.");
             return;
         }
@@ -58,8 +54,7 @@ public class CommandDev extends AbstractCommand
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Print a dialog about development builds";
     }
 

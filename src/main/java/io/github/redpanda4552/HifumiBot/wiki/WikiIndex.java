@@ -35,23 +35,19 @@ import org.jsoup.select.Elements;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Refreshable;
 
-public class WikiIndex implements Refreshable
-{
+public class WikiIndex implements Refreshable {
 
     private static final String FULL_GAMES_URL = "https://wiki.pcsx2.net/Complete_List_of_Games";
 
     private ConcurrentHashMap<String, String> fullGamesMap = new ConcurrentHashMap<String, String>();
 
-    public WikiIndex()
-    {
+    public WikiIndex() {
         this.refresh();
     }
 
     @Override
-    public synchronized void refresh()
-    {
-        try
-        {
+    public synchronized void refresh() {
+        try {
             // Attempt to retrieve the games list, if successful, wipe the
             // current map and repopulate it.
             Document doc = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get();
@@ -59,34 +55,27 @@ public class WikiIndex implements Refreshable
 
             this.clear();
 
-            for (Element anchor : anchors)
-            {
+            for (Element anchor : anchors) {
                 this.addGame(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Messaging.logException("WikiIndex", "refresh", e);
         }
     }
 
-    public synchronized void clear()
-    {
+    public synchronized void clear() {
         fullGamesMap.clear();
     }
 
-    public synchronized void addGame(String title, String wikiPageUrl)
-    {
+    public synchronized void addGame(String title, String wikiPageUrl) {
         fullGamesMap.put(title, wikiPageUrl);
     }
 
-    public synchronized Set<String> getAllTitles()
-    {
+    public synchronized Set<String> getAllTitles() {
         return fullGamesMap.keySet();
     }
 
-    public synchronized String getWikiPageUrl(String title)
-    {
+    public synchronized String getWikiPageUrl(String title) {
         return fullGamesMap.get(title);
     }
 }

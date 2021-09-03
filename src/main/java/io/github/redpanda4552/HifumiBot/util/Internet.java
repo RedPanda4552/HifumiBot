@@ -32,36 +32,26 @@ import org.xbill.DNS.Address;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 
-public class Internet
-{
-    public static void init()
-    {
-        if (HifumiBot.getSelf().getVersion() != null && HifumiBot.getSelf().getConfig().useLocalDNSFiltering)
-        {
+public class Internet {
+    public static void init() {
+        if (HifumiBot.getSelf().getVersion() != null && HifumiBot.getSelf().getConfig().useLocalDNSFiltering) {
             System.setProperty("dns.server", "127.0.0.1");
         }
     }
-    
-    public static DNSQueryResult nslookup(String urlStr)
-    {
-        try
-        {
+
+    public static DNSQueryResult nslookup(String urlStr) {
+        try {
             URL url = new URL(urlStr);
             String host = url.getHost();
             InetAddress addr = Address.getByName(host);
             String ret = addr.getHostAddress();
-            
-            if (ret.equals("0.0.0.0"))
-            {
+
+            if (ret.equals("0.0.0.0")) {
                 return DNSQueryResult.BLOCKED;
-            }
-            else
-            {
+            } else {
                 return DNSQueryResult.SUCCESS;
             }
-        }
-        catch (UnknownHostException | MalformedURLException e)
-        {
+        } catch (UnknownHostException | MalformedURLException e) {
             return DNSQueryResult.FAIL;
         }
     }

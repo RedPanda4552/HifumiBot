@@ -41,52 +41,38 @@ import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-public class CommandPFP extends AbstractCommand
-{
-    public CommandPFP()
-    {
+public class CommandPFP extends AbstractCommand {
+    public CommandPFP() {
         super("pfp", CATEGORY_BUILTIN, PermissionLevel.SUPERUSER, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
+    public void execute(CommandMeta cm) {
         List<Attachment> attachments = cm.getMessage().getAttachments();
         List<MessageEmbed> embeds = cm.getMessage().getEmbeds();
 
-        if (attachments.size() > 0)
-        {
+        if (attachments.size() > 0) {
             Attachment attachment = attachments.get(0);
 
-            if (attachment.isImage())
-            {
-                try
-                {
+            if (attachment.isImage()) {
+                try {
                     setAvatar(attachment.getUrl());
                     Messaging.sendMessage(cm.getChannel(), "Avatar set!");
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     Messaging.sendMessage(cm.getChannel(),
                             "An error occurred while setting the avatar: " + e.getMessage());
                 }
 
                 return;
             }
-        }
-        else if (embeds.size() > 0)
-        {
+        } else if (embeds.size() > 0) {
             MessageEmbed embed = embeds.get(0);
 
-            if (embed.getType() == EmbedType.IMAGE)
-            {
-                try
-                {
+            if (embed.getType() == EmbedType.IMAGE) {
+                try {
                     setAvatar(embed.getImage().getUrl());
                     Messaging.sendMessage(cm.getChannel(), "Avatar set!");
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     Messaging.sendMessage(cm.getChannel(),
                             "An error occurred while setting the avatar: " + e.getMessage());
                 }
@@ -100,13 +86,11 @@ public class CommandPFP extends AbstractCommand
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Set Hifumi's avatar";
     }
 
-    private void setAvatar(String imageUrl) throws IOException, MalformedURLException
-    {
+    private void setAvatar(String imageUrl) throws IOException, MalformedURLException {
         URL url = new URL(imageUrl);
         BufferedImage bImage = ImageIO.read(url);
         ByteArrayOutputStream oStream = new ByteArrayOutputStream();

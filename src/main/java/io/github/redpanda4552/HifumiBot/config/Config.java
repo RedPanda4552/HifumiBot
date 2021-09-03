@@ -28,8 +28,7 @@ import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.filter.Filter;
 
-public class Config
-{
+public class Config {
     public boolean useLocalDNSFiltering;
     public Channels channels;
     public Roles roles;
@@ -37,8 +36,7 @@ public class Config
     public Permissions permissions;
     public HashMap<String, Filter> filters;
 
-    public Config()
-    {
+    public Config() {
         useLocalDNSFiltering = false;
         channels = new Channels();
         roles = new Roles();
@@ -46,51 +44,43 @@ public class Config
         permissions = new Permissions();
         filters = new HashMap<String, Filter>();
     }
-    
-    public class Channels
-    {
+
+    public class Channels {
         public String devBuildOutputChannelId;
         public String systemOutputChannelId;
         public String rulesChannelId;
         public String restrictedCommandChannelId;
-        
-        public Channels()
-        {
+
+        public Channels() {
             devBuildOutputChannelId = new String("");
             systemOutputChannelId = new String("");
             rulesChannelId = new String("");
             restrictedCommandChannelId = new String("");
         }
     }
-    
-    public class Roles
-    {
+
+    public class Roles {
         public String warezRoleId;
-        
-        public Roles()
-        {
+
+        public Roles() {
             warezRoleId = new String("");
         }
     }
-    
-    public class Integrations
-    {
+
+    public class Integrations {
         public String pastebinApiKey;
-        
-        public Integrations()
-        {
+
+        public Integrations() {
             pastebinApiKey = new String("");
         }
     }
-    
-    public class Permissions
-    {
+
+    public class Permissions {
         public ArrayList<String> superAdminRoleIds;
         public ArrayList<String> adminRoleIds;
         public ArrayList<String> modRoleIds;
-        
-        public Permissions()
-        {
+
+        public Permissions() {
             superAdminRoleIds = new ArrayList<String>();
             adminRoleIds = new ArrayList<String>();
             modRoleIds = new ArrayList<String>();

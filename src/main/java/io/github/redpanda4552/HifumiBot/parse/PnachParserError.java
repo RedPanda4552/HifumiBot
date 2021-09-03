@@ -23,8 +23,7 @@
  */
 package io.github.redpanda4552.HifumiBot.parse;
 
-public enum PnachParserError
-{
+public enum PnachParserError {
 
     FILE_NAME("(X) File name is not a valid CRC"), START_LOWERCASE("(X) Starting keyword is not lower case."),
     PARAM_COUNT("(X) Incorrect number of parameters; there should be 5 parameters, separated by commas."),
@@ -49,13 +48,11 @@ public enum PnachParserError
 
     private String displayString;
 
-    private PnachParserError(String displayString)
-    {
+    private PnachParserError(String displayString) {
         this.displayString = displayString;
     }
 
-    public String getDisplayString()
-    {
+    public String getDisplayString() {
         return displayString;
     }
 }

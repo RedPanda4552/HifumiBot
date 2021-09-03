@@ -46,17 +46,14 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import okhttp3.OkHttpClient;
 
-public class HifumiBot
-{
+public class HifumiBot {
 
     private static HifumiBot self;
     private static String discordBotToken;
     private static String superuserId;
 
-    public static void main(String[] args)
-    {
-        if (args.length < 2)
-        {
+    public static void main(String[] args) {
+        if (args.length < 2) {
             System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id>");
             return;
         }
@@ -74,11 +71,10 @@ public class HifumiBot
         self = new HifumiBot();
     }
 
-    public static HifumiBot getSelf()
-    {
+    public static HifumiBot getSelf() {
         return self;
     }
-    
+
     private JDA jda;
     private Config config;
     private WarezTracking warezTracking;
@@ -96,43 +92,38 @@ public class HifumiBot
     private ChatFilter chatFilter;
     private EventListener eventListener;
 
-    public HifumiBot()
-    {
+    public HifumiBot() {
         self = this;
         this.http = new OkHttpClient();
 
-        if (discordBotToken == null || discordBotToken.isEmpty())
-        {
+        if (discordBotToken == null || discordBotToken.isEmpty()) {
             System.out.println("Attempted to start with a null or empty Discord bot token!");
             return;
         }
 
-        try
-        {
+        try {
             jda = JDABuilder.createDefault(discordBotToken).enableIntents(GatewayIntent.GUILD_MEMBERS)
                     .setMemberCachePolicy(MemberCachePolicy.ALL).setAutoReconnect(true).build().awaitReady();
-        }
-        catch (LoginException | IllegalArgumentException | InterruptedException e)
-        {
+        } catch (LoginException | IllegalArgumentException | InterruptedException e) {
             Messaging.logException("HifumiBot", "(constructor)", e);
         }
 
         updateStatus("Starting...");
-        
+
         ConfigManager.createConfigIfNotExists();
         config = ConfigManager.read();
         // Write back the config so that if any new fields were added after an
         // update, they are written to disk
         ConfigManager.write(config);
-        
+
         WarezTrackingManager.createIfNotExists();
         warezTracking = WarezTrackingManager.read();
         WarezTrackingManager.write(warezTracking);
-        
+
         DynCmdConfigManager.createIfNotExists();
         dynCmdConfig = DynCmdConfigManager.read();
         DynCmdConfigManager.write(dynCmdConfig);
-        
+
         Internet.init();
         scheduler = new Scheduler();
         wikiIndex = new WikiIndex();
@@ -166,88 +157,71 @@ public class HifumiBot
         updateStatus(">help");
     }
 
-    public Config getConfig()
-    {
+    public Config getConfig() {
         return config;
     }
-    
-    public WarezTracking getWarezTracking()
-    {
+
+    public WarezTracking getWarezTracking() {
         return warezTracking;
     }
-    
-    public DynCmdConfig getDynCmdConfig()
-    {
+
+    public DynCmdConfig getDynCmdConfig() {
         return dynCmdConfig;
     }
 
-    public OkHttpClient getHttpClient()
-    {
+    public OkHttpClient getHttpClient() {
         return http;
     }
 
-    public Scheduler getScheduler()
-    {
+    public Scheduler getScheduler() {
         return scheduler;
     }
 
-    public WikiIndex getWikiIndex()
-    {
+    public WikiIndex getWikiIndex() {
         return wikiIndex;
     }
 
-    public CpuIndex getCpuIndex()
-    {
+    public CpuIndex getCpuIndex() {
         return cpuIndex;
     }
 
-    public GpuIndex getGpuIndex()
-    {
+    public GpuIndex getGpuIndex() {
         return gpuIndex;
     }
 
-    public BuildMonitor getBuildMonitor()
-    {
+    public BuildMonitor getBuildMonitor() {
         return buildMonitor;
     }
 
-    public CommandIndex getCommandIndex()
-    {
+    public CommandIndex getCommandIndex() {
         return commandIndex;
     }
 
-    private void updateStatus(String str)
-    {
+    private void updateStatus(String str) {
         jda.getPresence().setActivity(Activity.watching(str));
     }
 
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return jda;
     }
 
-    public PermissionManager getPermissionManager()
-    {
+    public PermissionManager getPermissionManager() {
         return permissionManager;
     }
 
-    public CommandInterpreter getCommandInterpreter()
-    {
+    public CommandInterpreter getCommandInterpreter() {
         return commandInterpreter;
     }
 
-    public ChatFilter getChatFilter()
-    {
+    public ChatFilter getChatFilter() {
         return chatFilter;
     }
-    
-    public EventListener getEventListener()
-    {
+
+    public EventListener getEventListener() {
         return eventListener;
     }
 
-    public void shutdown(boolean reload)
-    {
+    public void shutdown(boolean reload) {
         this.getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
         this.getScheduler().shutdown();
         jda.shutdown();
@@ -255,9 +229,8 @@ public class HifumiBot
         if (reload)
             self = new HifumiBot();
     }
-    
-    public String getVersion()
-    {
+
+    public String getVersion() {
         return getClass().getPackage().getImplementationVersion();
     }
 }

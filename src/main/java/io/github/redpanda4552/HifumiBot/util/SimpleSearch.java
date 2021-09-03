@@ -28,36 +28,31 @@ import java.util.HashMap;
 
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
-public class SimpleSearch
-{
+public class SimpleSearch {
 
     private static JaccardSimilarity jaccard = new JaccardSimilarity();
 
-    public static synchronized HashMap<String, Float> search(Collection<String> searchAgainst, String query)
-    {
+    public static synchronized HashMap<String, Float> search(Collection<String> searchAgainst, String query) {
         HashMap<String, Float> ret = new HashMap<String, Float>();
         query = query.toLowerCase().trim().replaceAll("[-_]", " ").replaceAll("[^\\w\\s]", "");
 
-        for (String str : searchAgainst)
-        {
+        for (String str : searchAgainst) {
             String normalized = str.toLowerCase().trim().replaceAll("[-_]", " ").replaceAll("[^\\w\\s]", "");
 
             float toPush = 0;
 
             String[] tokenizedQuery = query.split("\\s");
 
-            for (String token : tokenizedQuery)
-            {
+            for (String token : tokenizedQuery) {
                 if (token.isBlank())
                     continue;
-                
+
                 // Contains
                 if (normalized.contains(token))
                     toPush += 0.5;
 
                 // Whole word match
-                for (String part : normalized.replaceAll("[^\\d\\w]", " ").split(" "))
-                {
+                for (String part : normalized.replaceAll("[^\\d\\w]", " ").split(" ")) {
                     if (part.equals(token))
                         toPush += 1;
                 }

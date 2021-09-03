@@ -36,12 +36,10 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-public class CommandDynCmd extends AbstractCommand
-{
+public class CommandDynCmd extends AbstractCommand {
     private final MessageEmbed usage;
 
-    public CommandDynCmd()
-    {
+    public CommandDynCmd() {
         super("dyncmd", CATEGORY_BUILTIN, PermissionLevel.ADMIN, false);
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("DynCmd Usage");
@@ -62,10 +60,8 @@ public class CommandDynCmd extends AbstractCommand
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
-        if (cm.getArgs().length < 2)
-        {
+    public void execute(CommandMeta cm) {
+        if (cm.getArgs().length < 2) {
             Messaging.sendMessageEmbed(cm.getChannel(), usage);
             return;
         }
@@ -75,11 +71,9 @@ public class CommandDynCmd extends AbstractCommand
         ArrayList<String> results = new ArrayList<String>();
         DynamicCommand dyncmd = null;
 
-        switch (subCommand.toLowerCase())
-        {
+        switch (subCommand.toLowerCase()) {
         case "get":
-            if (!HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name))
-            {
+            if (!HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name)) {
                 Messaging.sendMessage(cm.getChannel(), "Specified command is not a dynamic command");
                 return;
             }
@@ -88,28 +82,23 @@ public class CommandDynCmd extends AbstractCommand
 
             results.add("Restricted Channel: " + dyncmd.isRestricted());
 
-            if (dyncmd.getCategory() != null && !dyncmd.getCategory().isBlank())
-            {
+            if (dyncmd.getCategory() != null && !dyncmd.getCategory().isBlank()) {
                 results.add("Category: " + dyncmd.getCategory());
             }
 
-            if (dyncmd.getHelpText() != null && !dyncmd.getHelpText().isBlank())
-            {
+            if (dyncmd.getHelpText() != null && !dyncmd.getHelpText().isBlank()) {
                 results.add("Help Text: " + dyncmd.getHelpText());
             }
 
-            if (dyncmd.getTitle() != null && !dyncmd.getTitle().isBlank())
-            {
+            if (dyncmd.getTitle() != null && !dyncmd.getTitle().isBlank()) {
                 results.add("Title: " + dyncmd.getTitle());
             }
 
-            if (dyncmd.getBody() != null && !dyncmd.getBody().isBlank())
-            {
+            if (dyncmd.getBody() != null && !dyncmd.getBody().isBlank()) {
                 results.add("Body:\n```" + dyncmd.getBody() + "```");
             }
 
-            if (dyncmd.getImageURL() != null && !dyncmd.getImageURL().isBlank())
-            {
+            if (dyncmd.getImageURL() != null && !dyncmd.getImageURL().isBlank()) {
                 results.add("Image URL: `" + dyncmd.getImageURL() + "`");
             }
 
@@ -119,24 +108,19 @@ public class CommandDynCmd extends AbstractCommand
             dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
 
             if (HifumiBot.getSelf().getCommandIndex().isCommand(name)
-                    && !HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name))
-            {
+                    && !HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name)) {
                 Messaging.sendMessage(cm.getChannel(),
                         "You cannot create a dynamic command with the same name as a builtin command");
                 return;
-            }
-            else if (dyncmd == null)
-            {
+            } else if (dyncmd == null) {
                 dyncmd = new DynamicCommand(name, CATEGORY_NONE, PermissionLevel.GUEST, false, "", null, null, null);
             }
             HashMap<String, String> switches = cm.getSwitches();
 
-            for (String switchName : switches.keySet())
-            {
+            for (String switchName : switches.keySet()) {
                 String switchValue = switches.get(switchName);
 
-                switch (switchName)
-                {
+                switch (switchName) {
                 case "category":
                 case "c":
                     dyncmd.setCategory(switchValue);
@@ -178,13 +162,10 @@ public class CommandDynCmd extends AbstractCommand
             sendResults(cm.getChannel(), dyncmd.getName(), results);
             break;
         case "del":
-            if (HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name))
-            {
+            if (HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name)) {
                 HifumiBot.getSelf().getCommandIndex().deleteCommand(name);
                 results.add(":white_check_mark: Deleted command '" + name + "'");
-            }
-            else
-            {
+            } else {
                 results.add(":warning: No command found with name '" + name + "'");
             }
 
@@ -196,17 +177,14 @@ public class CommandDynCmd extends AbstractCommand
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Add a dynamic command to " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
     }
 
-    private void sendResults(MessageChannel channel, String name, ArrayList<String> results)
-    {
+    private void sendResults(MessageChannel channel, String name, ArrayList<String> results) {
         MessageBuilder mb = new MessageBuilder();
 
-        for (String str : results)
-        {
+        for (String str : results) {
             mb.append(str).append("\n");
         }
 

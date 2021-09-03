@@ -34,24 +34,18 @@ import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class CommandAbout extends AbstractCommand
-{
-    public CommandAbout()
-    {
+public class CommandAbout extends AbstractCommand {
+    public CommandAbout() {
         super("about", CATEGORY_BUILTIN, PermissionLevel.ADMIN, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
+    public void execute(CommandMeta cm) {
         EmbedBuilder eb;
 
-        if (cm.getMember() != null)
-        {
+        if (cm.getMember() != null) {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        }
-        else
-        {
+        } else {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
 
@@ -60,33 +54,30 @@ public class CommandAbout extends AbstractCommand
         eb.addField("Created By", "pandubz", true);
         String version = HifumiBot.getSelf().getVersion();
         eb.addField("Version", version != null ? version : "[Debug Mode]", true);
-        
+
         StringBuilder storageBuilder = new StringBuilder("| ");
         storageBuilder.append("Config: ").append((ConfigManager.file.length() / 1024) + " KB | ");
         storageBuilder.append("Warez: ").append((WarezTrackingManager.file.length() / 1024) + " KB | ");
         storageBuilder.append("DynCmd: ").append((DynCmdConfigManager.file.length() / 1024) + " KB |");
         eb.addField("Storage Size", storageBuilder.toString(), false);
         StringBuilder runnableBuilder = new StringBuilder("| ");
-        
-        for (String runnableName : HifumiBot.getSelf().getScheduler().getRunnableNames())
-        {
-            try
-            {
-                runnableBuilder.append(runnableName + ": " + (HifumiBot.getSelf().getScheduler().isRunnableAlive(runnableName) ? "alive" : "stopped") + " | ");
-            }
-            catch (NoSuchRunnableException e)
-            {
+
+        for (String runnableName : HifumiBot.getSelf().getScheduler().getRunnableNames()) {
+            try {
+                runnableBuilder.append(runnableName + ": "
+                        + (HifumiBot.getSelf().getScheduler().isRunnableAlive(runnableName) ? "alive" : "stopped")
+                        + " | ");
+            } catch (NoSuchRunnableException e) {
                 Messaging.logException("CommandAbout", "onExecute", e);
             }
         }
-        
+
         eb.addField("Runnable Statuses", runnableBuilder.toString().trim(), false);
         Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Info about " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
     }
 }

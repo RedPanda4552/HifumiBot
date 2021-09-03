@@ -34,55 +34,41 @@ import com.google.gson.GsonBuilder;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 
-public class DynCmdConfigManager
-{
+public class DynCmdConfigManager {
     private static final String DYNCMD_PATH = "./dyncmd-config.json";
     public static final File file = new File(DYNCMD_PATH);
 
-    public static void createIfNotExists()
-    {
-        try
-        {
-            if (file.exists() == false)
-            {
+    public static void createIfNotExists() {
+        try {
+            if (file.exists() == false) {
                 file.createNewFile();
                 write(new DynCmdConfig());
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Messaging.logException("DynCmdConfigManager", "createIfNotExists", e);
         }
     }
 
-    public static DynCmdConfig read()
-    {
-        try
-        {
+    public static DynCmdConfig read() {
+        try {
             InputStream iStream = Files.newInputStream(file.toPath());
             String json = new String(iStream.readAllBytes());
             Gson gson = new Gson();
             return gson.fromJson(json, DynCmdConfig.class);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Messaging.logException("DynCmdConfigManager", "read", e);
         }
 
         return null;
     }
 
-    public static void write(DynCmdConfig dynCmdConfig)
-    {
-        try
-        {
+    public static void write(DynCmdConfig dynCmdConfig) {
+        try {
             OutputStream oStream = Files.newOutputStream(file.toPath());
             Gson gson = new GsonBuilder().create();
             String json = gson.toJson(dynCmdConfig);
             oStream.write(json.getBytes());
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Messaging.logException("DynCmdConfigManager", "write", e);
         }
     }

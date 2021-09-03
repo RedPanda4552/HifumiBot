@@ -29,79 +29,60 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 
-public class PermissionManager
-{
+public class PermissionManager {
     private String superuserId;
-    
-    public PermissionManager(String superuserId)
-    {
+
+    public PermissionManager(String superuserId) {
         this.superuserId = superuserId;
     }
 
-    public boolean hasPermission(CommandMeta cm)
-    {
+    public boolean hasPermission(CommandMeta cm) {
         return hasPermission(cm.getPermissionLevel(), cm.getUser(), cm.getMember());
     }
-    
-    public boolean hasPermission(PermissionLevel permissionLevel, CommandMeta cm)
-    {
+
+    public boolean hasPermission(PermissionLevel permissionLevel, CommandMeta cm) {
         return hasPermission(permissionLevel, cm.getUser(), cm.getMember());
     }
-    
-    public boolean hasPermission(PermissionLevel permissionLevel, User user)
-    {
+
+    public boolean hasPermission(PermissionLevel permissionLevel, User user) {
         return hasPermission(permissionLevel, user, null);
     }
-    
-    public boolean hasPermission(PermissionLevel permissionLevel, Member member)
-    {
+
+    public boolean hasPermission(PermissionLevel permissionLevel, Member member) {
         return hasPermission(permissionLevel, null, member);
     }
 
-    public boolean hasPermission(PermissionLevel permissionLevel, User user, Member member)
-    {
-        switch (permissionLevel)
-        {
+    public boolean hasPermission(PermissionLevel permissionLevel, User user, Member member) {
+        switch (permissionLevel) {
         case GUEST:
             return true;
         case MOD:
-            if (member != null)
-            {
-                for (Role role : member.getRoles())
-                {
-                    if (HifumiBot.getSelf().getConfig().permissions.modRoleIds.contains(role.getId()))
-                    {
+            if (member != null) {
+                for (Role role : member.getRoles()) {
+                    if (HifumiBot.getSelf().getConfig().permissions.modRoleIds.contains(role.getId())) {
                         return true;
                     }
                 }
             }
         case ADMIN:
-            if (member != null)
-            {
-                for (Role role : member.getRoles())
-                {
-                    if (HifumiBot.getSelf().getConfig().permissions.adminRoleIds.contains(role.getId()))
-                    {
+            if (member != null) {
+                for (Role role : member.getRoles()) {
+                    if (HifumiBot.getSelf().getConfig().permissions.adminRoleIds.contains(role.getId())) {
                         return true;
                     }
                 }
             }
         case SUPER_ADMIN:
-            if (member != null)
-            {
-                for (Role role : member.getRoles())
-                {
-                    if (HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds.contains(role.getId()))
-                    {
+            if (member != null) {
+                for (Role role : member.getRoles()) {
+                    if (HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds.contains(role.getId())) {
                         return true;
                     }
                 }
             }
         case SUPERUSER:
-            if (user != null)
-            {
-                if (superuserId != null && superuserId.equals(user.getId()))
-                {
+            if (user != null) {
+                if (superuserId != null && superuserId.equals(user.getId())) {
                     return true;
                 }
             }
