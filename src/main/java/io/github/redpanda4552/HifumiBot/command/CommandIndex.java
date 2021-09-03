@@ -53,8 +53,7 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-public class CommandIndex
-{
+public class CommandIndex {
 
     private static final int COMMANDS_PER_PAGE = 10;
 
@@ -66,8 +65,7 @@ public class CommandIndex
      * Create a new CommandIndex and invoke the {@link CommandIndex#rebuild
      * rebuild()} method.
      */
-    public CommandIndex()
-    {
+    public CommandIndex() {
         commandMap = new HashMap<String, AbstractCommand>();
         rebuild();
     }
@@ -75,8 +73,7 @@ public class CommandIndex
     /**
      * Rebuild this CommandIndex from the Config object in HifumiBot.
      */
-    public void rebuild()
-    {
+    public void rebuild() {
         commandMap.clear();
         CommandAbout about = new CommandAbout();
         commandMap.put(about.getName(), about);
@@ -109,83 +106,67 @@ public class CommandIndex
         CommandWiki wiki = new CommandWiki();
         commandMap.put(wiki.getName(), wiki);
 
-        for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands)
-        {
+        for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands) {
             // Backwards compatibility: Add guest permission level to any
             // dynamic commands which do not have a level (because they were
             // made prior to permission levels being added)
-            if (dynamicCommand.getPermissionLevel() == null)
-            {
+            if (dynamicCommand.getPermissionLevel() == null) {
                 dynamicCommand.setPermissionLevel(PermissionLevel.GUEST);
             }
-            
+
             commandMap.put(dynamicCommand.getName(), dynamicCommand);
         }
 
         rebuildHelpPages();
     }
 
-    public Set<String> getAll()
-    {
+    public Set<String> getAll() {
         return commandMap.keySet();
     }
 
-    public boolean isCommand(String name)
-    {
+    public boolean isCommand(String name) {
         return commandMap.get(name) != null;
     }
 
-    public boolean isDynamicCommand(String name)
-    {
+    public boolean isDynamicCommand(String name) {
         AbstractCommand cmd = commandMap.get(name);
         return cmd != null && cmd instanceof DynamicCommand;
     }
 
-    public AbstractCommand getCommand(String name)
-    {
+    public AbstractCommand getCommand(String name) {
         return commandMap.get(name);
     }
 
-    public DynamicCommand getDynamicCommand(String name)
-    {
+    public DynamicCommand getDynamicCommand(String name) {
         AbstractCommand cmd = getCommand(name);
 
-        if (cmd == null)
-        {
+        if (cmd == null) {
             return null;
-        }
-        else if (cmd instanceof DynamicCommand)
-        {
+        } else if (cmd instanceof DynamicCommand) {
             return (DynamicCommand) cmd;
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
 
-    public void addCommand(DynamicCommand dyncmd)
-    {
+    public void addCommand(DynamicCommand dyncmd) {
         // Insert it into the ArrayList in Config, then reload the CommandIndex.
         ArrayList<DynamicCommand> configDynamicCommands = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands;
         Iterator<DynamicCommand> iter = configDynamicCommands.iterator();
         DynamicCommand configDynamicCommand = null;
         boolean commandExists = false;
 
-        while (iter.hasNext())
-        {
+        while (iter.hasNext()) {
             configDynamicCommand = iter.next();
 
-            if (configDynamicCommand.getName().equals(dyncmd.getName()))
-            {
+            if (configDynamicCommand.getName().equals(dyncmd.getName())) {
                 configDynamicCommand = dyncmd;
                 commandExists = true;
             }
         }
 
         // If no command exists in the iterator, just add it
-        if (!commandExists)
-        {
+        if (!commandExists) {
             configDynamicCommands.add(dyncmd);
         }
 
@@ -193,25 +174,21 @@ public class CommandIndex
         HifumiBot.getSelf().getCommandIndex().rebuild();
     }
 
-    public void deleteCommand(String name)
-    {
+    public void deleteCommand(String name) {
         ArrayList<DynamicCommand> dynamicCommands = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands;
         Iterator<DynamicCommand> iter = dynamicCommands.iterator();
         DynamicCommand toDelete = null;
 
-        while (iter.hasNext())
-        {
+        while (iter.hasNext()) {
             DynamicCommand dyncmd = iter.next();
 
-            if (dyncmd.getName().equals(name))
-            {
+            if (dyncmd.getName().equals(name)) {
                 toDelete = dyncmd;
                 break;
             }
         }
 
-        if (toDelete != null)
-        {
+        if (toDelete != null) {
             dynamicCommands.remove(toDelete);
             DynCmdConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
             HifumiBot.getSelf().getCommandIndex().rebuild();
@@ -222,23 +199,18 @@ public class CommandIndex
      * Get a HashMap<String, TreeSet<String>> organizing commands by their
      * categories. Currently only used to simplify help page generation.
      */
-    public HashMap<String, TreeSet<String>> getCategorizedCommandNames()
-    {
+    public HashMap<String, TreeSet<String>> getCategorizedCommandNames() {
         Set<String> commandNames = new HashSet<String>();
         commandNames.addAll(getAll());
         HashMap<String, TreeSet<String>> ret = new HashMap<String, TreeSet<String>>();
 
-        for (String commandName : commandNames)
-        {
+        for (String commandName : commandNames) {
             AbstractCommand command = commandMap.get(commandName);
             TreeSet<String> categoryCommands = null;
 
-            if (ret.containsKey(command.getCategory()))
-            {
+            if (ret.containsKey(command.getCategory())) {
                 categoryCommands = ret.get(command.getCategory());
-            }
-            else
-            {
+            } else {
                 categoryCommands = new TreeSet<String>(Collator.getInstance());
             }
 
@@ -252,23 +224,19 @@ public class CommandIndex
     /**
      * Fully rebuilds the help page lists.
      */
-    private void rebuildHelpPages()
-    {
+    private void rebuildHelpPages() {
         helpPages = new HashMap<String, ArrayList<MessageEmbed>>();
         HashMap<String, TreeSet<String>> commandMap = this.getCategorizedCommandNames();
 
-        for (String category : commandMap.keySet())
-        {
+        for (String category : commandMap.keySet()) {
             int pageCount = (int) Math.ceil((double) commandMap.get(category).size() / COMMANDS_PER_PAGE);
             helpPages.put(category, new ArrayList<MessageEmbed>());
             EmbedBuilder eb = new EmbedBuilder();
 
-            for (String command : commandMap.get(category))
-            {
+            for (String command : commandMap.get(category)) {
                 eb.addField(">" + command, this.getCommand(command).getHelpText(), false);
 
-                if (eb.getFields().size() >= COMMANDS_PER_PAGE)
-                {
+                if (eb.getFields().size() >= COMMANDS_PER_PAGE) {
                     addToPages(category, eb, pageCount);
                     eb = new EmbedBuilder();
                 }
@@ -291,21 +259,18 @@ public class CommandIndex
         helpRoot = helpRootBuilder.build();
     }
 
-    private void addToPages(String category, EmbedBuilder eb, int pageCount)
-    {
+    private void addToPages(String category, EmbedBuilder eb, int pageCount) {
         eb.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName() + " Help - " + category + " - Page "
                 + (helpPages.get(category).size() + 1) + " / " + pageCount);
         eb.setDescription("Use `" + CommandInterpreter.PREFIX + "help " + category + " [page]` to browse other pages.");
         helpPages.get(category).add(eb.build());
     }
 
-    public HashMap<String, ArrayList<MessageEmbed>> getHelpPages()
-    {
+    public HashMap<String, ArrayList<MessageEmbed>> getHelpPages() {
         return helpPages;
     }
 
-    public MessageEmbed getHelpRootPage()
-    {
+    public MessageEmbed getHelpRootPage() {
         return helpRoot;
     }
 }

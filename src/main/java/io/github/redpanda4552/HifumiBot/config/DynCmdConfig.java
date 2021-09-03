@@ -27,12 +27,10 @@ import java.util.ArrayList;
 
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 
-public class DynCmdConfig
-{
+public class DynCmdConfig {
     public ArrayList<DynamicCommand> dynamicCommands;
-    
-    public DynCmdConfig()
-    {
+
+    public DynCmdConfig() {
         dynamicCommands = new ArrayList<DynamicCommand>();
     }
 }

@@ -33,23 +33,21 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
-public class CommandWarez extends AbstractCommand
-{
-    public CommandWarez()
-    {
+public class CommandWarez extends AbstractCommand {
+    public CommandWarez() {
         super("warez", CATEGORY_BUILTIN, PermissionLevel.ADMIN, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
+    public void execute(CommandMeta cm) {
         if (!(cm.getChannel() instanceof TextChannel))
             return;
 
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
         eb.setTitle("PCSX2 Anti-Warez Rules");
         eb.setDescription("As per ");
-        TextChannel welcomeRules = cm.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.rulesChannelId);
+        TextChannel welcomeRules = cm.getGuild()
+                .getTextChannelById(HifumiBot.getSelf().getConfig().channels.rulesChannelId);
         eb.appendDescription(welcomeRules.getAsMention())
                 .appendDescription(", our server **does not support** piracy.\n")
                 .appendDescription(
@@ -68,26 +66,23 @@ public class CommandWarez extends AbstractCommand
                 false);
         Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
 
-        for (Member member : cm.getMentions())
-        {
-            if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, member))
-            {
-                try
-                {
-                    cm.getGuild().addRoleToMember(member,
-                            cm.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId)).complete();
-                }
-                catch (InsufficientPermissionException e)
-                {
-                    Messaging.logInfo("CommandWarez", "execute", "Failed to assign role to " + member.getAsMention() + " (insufficient permissions)");
+        for (Member member : cm.getMentions()) {
+            if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, member)) {
+                try {
+                    cm.getGuild()
+                            .addRoleToMember(member,
+                                    cm.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId))
+                            .complete();
+                } catch (InsufficientPermissionException e) {
+                    Messaging.logInfo("CommandWarez", "execute",
+                            "Failed to assign role to " + member.getAsMention() + " (insufficient permissions)");
                 }
             }
         }
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Print a dialog about warez/piracy rules";
     }
 }

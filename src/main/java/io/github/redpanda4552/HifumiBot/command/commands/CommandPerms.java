@@ -38,64 +38,49 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 
-public class CommandPerms extends AbstractCommand
-{
-    public CommandPerms()
-    {
+public class CommandPerms extends AbstractCommand {
+    public CommandPerms() {
         super("perms", CATEGORY_BUILTIN, PermissionLevel.SUPER_ADMIN, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
-        if (cm.getArgs().length == 0)
-        {
+    public void execute(CommandMeta cm) {
+        if (cm.getArgs().length == 0) {
             showHelpDialog(cm);
-        }
-        else
-        {
+        } else {
             String permissionLevelName = null;
             PermissionLevel permissionLevel = null;
             ArrayList<String> roleIds = null;
             String roleId = null;
             Guild guild = null;
             Role role = null;
-            
-            switch (cm.getArgs()[0].toLowerCase())
-            {
+
+            switch (cm.getArgs()[0].toLowerCase()) {
             case "add":
-                if (cm.getArgs().length == 3)
-                {
+                if (cm.getArgs().length == 3) {
                     permissionLevelName = cm.getArgs()[1].toUpperCase();
-                    
-                    try
-                    {
+
+                    try {
                         permissionLevel = PermissionLevel.valueOf(permissionLevelName);
-                    }
-                    catch (IllegalArgumentException e)
-                    {
+                    } catch (IllegalArgumentException e) {
                         Messaging.sendMessage(cm.getChannel(), "Invalid permission level specified.");
                         sendPermissionLevelList(cm.getChannel());
                         return;
                     }
-                    
+
                     roleId = cm.getArgs()[2];
                     guild = HifumiBot.getSelf().getJDA().getGuildById(cm.getGuild().getId());
-                    
-                    try
-                    {
+
+                    try {
                         role = guild.getRoleById(roleId);
-                    }
-                    catch (NumberFormatException e)
-                    {
-                        Messaging.sendMessage(cm.getChannel(), "Failed to parse role id; is it valid? Hint: Enable Developer Mode, then right click a role to copy id.");
+                    } catch (NumberFormatException e) {
+                        Messaging.sendMessage(cm.getChannel(),
+                                "Failed to parse role id; is it valid? Hint: Enable Developer Mode, then right click a role to copy id.");
                         return;
                     }
 
-                    if (role != null)
-                    {
-                        switch (permissionLevel)
-                        {
+                    if (role != null) {
+                        switch (permissionLevel) {
                         case MOD:
                             roleIds = HifumiBot.getSelf().getConfig().permissions.modRoleIds;
                             break;
@@ -109,63 +94,51 @@ public class CommandPerms extends AbstractCommand
                             Messaging.sendMessage(cm.getChannel(), "Unrecognized permission level");
                             return;
                         }
-                        
-                        if (!roleIds.contains(roleId))
-                        {
+
+                        if (!roleIds.contains(roleId)) {
                             roleIds.add(roleId);
-                            Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Role `" + role.getName() + "` added to permission level " + permissionLevelName + ".");
+                            Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Role `" + role.getName()
+                                    + "` added to permission level " + permissionLevelName + ".");
                             ConfigManager.write(HifumiBot.getSelf().getConfig());
+                        } else {
+                            Messaging.sendMessage(cm.getChannel(),
+                                    ":x: Role `" + role.getName() + "` is already in this permission level.");
                         }
-                        else
-                        {
-                            Messaging.sendMessage(cm.getChannel(), ":x: Role `" + role.getName() + "` is already in this permission level.");
-                        }
-                    }
-                    else
-                    {
-                        Messaging.sendMessage(cm.getChannel(), ":x: Role id `" + roleId + "` does not match any roles in the server.");
+                    } else {
+                        Messaging.sendMessage(cm.getChannel(),
+                                ":x: Role id `" + roleId + "` does not match any roles in the server.");
                     }
 
                     break;
-                }
-                else
-                {
+                } else {
                     showHelpDialog(cm);
                     return;
                 }
             case "del":
-                if (cm.getArgs().length == 3)
-                {
+                if (cm.getArgs().length == 3) {
                     permissionLevelName = cm.getArgs()[1].toUpperCase();
-                    
-                    try
-                    {
+
+                    try {
                         permissionLevel = PermissionLevel.valueOf(permissionLevelName);
-                    }
-                    catch (IllegalArgumentException e)
-                    {
+                    } catch (IllegalArgumentException e) {
                         Messaging.sendMessage(cm.getChannel(), "Invalid permission level specified.");
                         sendPermissionLevelList(cm.getChannel());
                         return;
                     }
-                    
+
                     roleId = cm.getArgs()[2];
                     guild = HifumiBot.getSelf().getJDA().getGuildById(cm.getGuild().getId());
-                    
-                    try
-                    {
+
+                    try {
                         role = guild.getRoleById(roleId);
-                    }
-                    catch (NumberFormatException e)
-                    {
-                        Messaging.sendMessage(cm.getChannel(), "Failed to parse role id; is it valid? Hint: Enable Developer Mode, then right click a role to copy id.");
+                    } catch (NumberFormatException e) {
+                        Messaging.sendMessage(cm.getChannel(),
+                                "Failed to parse role id; is it valid? Hint: Enable Developer Mode, then right click a role to copy id.");
                         return;
                     }
 
-                    if (role != null)
-                    {
-                        switch (permissionLevel)
-                        {
+                    if (role != null) {
+                        switch (permissionLevel) {
                         case MOD:
                             roleIds = HifumiBot.getSelf().getConfig().permissions.modRoleIds;
                             break;
@@ -180,59 +153,53 @@ public class CommandPerms extends AbstractCommand
                             return;
                         }
 
-                        if (roleIds.contains(roleId))
-                        {
+                        if (roleIds.contains(roleId)) {
                             roleIds.remove(roleId);
-                            Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Role `" + role.getName() + "` removed from permission level " + permissionLevelName + ".");
+                            Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Role `" + role.getName()
+                                    + "` removed from permission level " + permissionLevelName + ".");
                             ConfigManager.write(HifumiBot.getSelf().getConfig());
+                        } else {
+                            Messaging.sendMessage(cm.getChannel(),
+                                    ":x: Role `" + role.getName() + "` is not in this permission level.");
                         }
-                        else
-                        {
-                            Messaging.sendMessage(cm.getChannel(), ":x: Role `" + role.getName() + "` is not in this permission level.");
-                        }
-                    }
-                    else
-                    {
-                        Messaging.sendMessage(cm.getChannel(), ":x: Role id `" + roleId + "` does not match any roles in the server.");
+                    } else {
+                        Messaging.sendMessage(cm.getChannel(),
+                                ":x: Role id `" + roleId + "` does not match any roles in the server.");
                     }
 
                     break;
-                }
-                else
-                {
+                } else {
                     showHelpDialog(cm);
                     return;
                 }
             case "list":
                 EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm);
-                eb.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName() + " - Roles Assigned to Permission Levels");
+                eb.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName()
+                        + " - Roles Assigned to Permission Levels");
                 StringBuilder sb = new StringBuilder();
 
-                for (String modRoleId : HifumiBot.getSelf().getConfig().permissions.modRoleIds)
-                {
+                for (String modRoleId : HifumiBot.getSelf().getConfig().permissions.modRoleIds) {
                     sb.append("`" + cm.getGuild().getRoleById(modRoleId).getName() + "`\t");
                 }
-                
+
                 eb.addField("MOD", sb.toString(), false);
-                
+
                 sb = new StringBuilder();
 
-                for (String adminRoleId : HifumiBot.getSelf().getConfig().permissions.adminRoleIds)
-                {
+                for (String adminRoleId : HifumiBot.getSelf().getConfig().permissions.adminRoleIds) {
                     sb.append("`" + cm.getGuild().getRoleById(adminRoleId).getName() + "`\t");
                 }
-                
+
                 eb.addField("ADMIN", sb.toString(), false);
-                
+
                 sb = new StringBuilder();
 
-                for (String superAdminRoleId : HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds)
-                {
+                for (String superAdminRoleId : HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds) {
                     sb.append("`" + cm.getGuild().getRoleById(superAdminRoleId).getName() + "`\t");
                 }
-                
+
                 eb.addField("SUPER_ADMIN", sb.toString(), false);
-                
+
                 Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
                 break;
             case "levels":
@@ -245,8 +212,7 @@ public class CommandPerms extends AbstractCommand
         }
     }
 
-    private void showHelpDialog(CommandMeta cm)
-    {
+    private void showHelpDialog(CommandMeta cm) {
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm);
         eb.setTitle("Add or remove admin roles");
         eb.addField("Add Role", CommandInterpreter.PREFIX + "perms add <permissionLevel> <roleId>", false);
@@ -255,17 +221,15 @@ public class CommandPerms extends AbstractCommand
         eb.addField("Show Permission Levels", CommandInterpreter.PREFIX + "perms levels", false);
         Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
-    
-    private void sendPermissionLevelList(MessageChannel channel)
-    {
+
+    private void sendPermissionLevelList(MessageChannel channel) {
         MessageBuilder mb = new MessageBuilder("Permission Levels: ");
         mb.append("`MOD`, `ADMIN`, `SUPER_ADMIN`");
         Messaging.sendMessage(channel, mb.build());
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Assign or revoke permissions for a role";
     }
 

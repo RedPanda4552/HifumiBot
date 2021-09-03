@@ -33,71 +33,66 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class ChatFilter
-{
+public class ChatFilter {
     HashMap<String, ArrayList<Pattern>> patternMap = new HashMap<String, ArrayList<Pattern>>();
-    
-    public ChatFilter()
-    {
+
+    public ChatFilter() {
         this.compile();
     }
-    
-    public synchronized void compile()
-    {
+
+    public synchronized void compile() {
         patternMap.clear();
-        
-        for (Filter filter : HifumiBot.getSelf().getConfig().filters.values())
-        {
+
+        for (Filter filter : HifumiBot.getSelf().getConfig().filters.values()) {
             ArrayList<Pattern> patterns = new ArrayList<Pattern>();
 
-            for (String regex : filter.regexes.values())
-            {
+            for (String regex : filter.regexes.values()) {
                 patterns.add(Pattern.compile(regex));
             }
-            
+
             patternMap.put(filter.name, patterns);
         }
     }
-    
+
     /**
-     * Applies any filters specified in the filters property of the config.
-     * <br/>
+     * Applies any filters specified in the filters property of the config. <br/>
      * <i>Note: All messages are flushed to lower case; regular expressions should
      * be written for lower case, or be case-agnostic.</i>
+     * 
      * @param event - The MessageReceivedEvent to filter.
-     * @return True if a regular expression matched and the message was filtered out, false otherwise.
+     * @return True if a regular expression matched and the message was filtered
+     *         out, false otherwise.
      */
-    public synchronized boolean applyFilters(MessageReceivedEvent event)
-    {
-        if (event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId()))
-        {
+    public synchronized boolean applyFilters(MessageReceivedEvent event) {
+        if (event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
             return false;
         }
-            
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(), event.getMember()))
-        {
+
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(),
+                event.getMember())) {
             return false;
         }
-        
-        for (String filterName : patternMap.keySet())
-        {
-            for (Pattern p : patternMap.get(filterName))
-            {
+
+        for (String filterName : patternMap.keySet()) {
+            for (Pattern p : patternMap.get(filterName)) {
                 Matcher m = p.matcher(event.getMessage().getContentDisplay().toLowerCase());
                 boolean matches = m.matches();
                 boolean find = m.find();
-                
-                if (matches || find)
-                {
+
+                if (matches || find) {
                     event.getMessage().delete().complete();
                     String replyMessage = HifumiBot.getSelf().getConfig().filters.get(filterName).replyMessage;
-                    
-                    if (!replyMessage.isBlank())
-                    {
+
+                    if (!replyMessage.isBlank()) {
                         Messaging.sendMessage(event.getChannel(), replyMessage);
                     }
-                    
-                    Messaging.logInfo("ChatFilter", "applyFilters", "Message from user " + event.getMessage().getAuthor().getAsMention() + " was filtered.\n\nUser's message (formatting stripped):\n```\n" + event.getMessage().getContentStripped() + "\n```\nMatched this regular expression in filter `" + filterName + "` :\n```\n" + p.pattern() + "\n```");
+
+                    Messaging.logInfo("ChatFilter", "applyFilters",
+                            "Message from user " + event.getMessage().getAuthor().getAsMention()
+                                    + " was filtered.\n\nUser's message (formatting stripped):\n```\n"
+                                    + event.getMessage().getContentStripped()
+                                    + "\n```\nMatched this regular expression in filter `" + filterName + "` :\n```\n"
+                                    + p.pattern() + "\n```");
                     return true;
                 }
             }

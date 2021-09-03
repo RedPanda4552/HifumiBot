@@ -23,7 +23,6 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
-public class CompatIndex
-{
+public class CompatIndex {
 
 }

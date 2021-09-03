@@ -34,55 +34,41 @@ import com.google.gson.GsonBuilder;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 
-public class WarezTrackingManager
-{
+public class WarezTrackingManager {
     private static final String WAREZ_PATH = "./warez-tracking.json";
     public static final File file = new File(WAREZ_PATH);
 
-    public static void createIfNotExists()
-    {
-        try
-        {
-            if (file.exists() == false)
-            {
+    public static void createIfNotExists() {
+        try {
+            if (file.exists() == false) {
                 file.createNewFile();
                 write(new WarezTracking());
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Messaging.logException("WarezTrackingManager", "createIfNotExists", e);
         }
     }
 
-    public static WarezTracking read()
-    {
-        try
-        {
+    public static WarezTracking read() {
+        try {
             InputStream iStream = Files.newInputStream(file.toPath());
             String json = new String(iStream.readAllBytes());
             Gson gson = new Gson();
             return gson.fromJson(json, WarezTracking.class);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Messaging.logException("WarezTrackingManager", "read", e);
         }
 
         return null;
     }
 
-    public static void write(WarezTracking warezTracking)
-    {
-        try
-        {
+    public static void write(WarezTracking warezTracking) {
+        try {
             OutputStream oStream = Files.newOutputStream(file.toPath());
             Gson gson = new GsonBuilder().create();
             String json = gson.toJson(warezTracking);
             oStream.write(json.getBytes());
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Messaging.logException("WarezTrackingManager", "write", e);
         }
     }

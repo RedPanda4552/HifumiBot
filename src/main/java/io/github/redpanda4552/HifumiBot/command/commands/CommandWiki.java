@@ -37,19 +37,15 @@ import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 
-public class CommandWiki extends AbstractCommand
-{
+public class CommandWiki extends AbstractCommand {
 
-    public CommandWiki()
-    {
+    public CommandWiki() {
         super("wiki", CATEGORY_BUILTIN, PermissionLevel.GUEST, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
-        if (cm.getArgs().length == 0)
-        {
+    public void execute(CommandMeta cm) {
+        if (cm.getArgs().length == 0) {
             Messaging.sendMessage(cm.getChannel(),
                     "I can't search for nothing! Try `" + CommandInterpreter.PREFIX + "wiki <title of game here>`");
             return;
@@ -61,18 +57,14 @@ public class CommandWiki extends AbstractCommand
         HashMap<String, Float> results = SimpleSearch.search(HifumiBot.getSelf().getWikiIndex().getAllTitles(),
                 StringUtils.join(cm.getArgs(), " "));
 
-        if (results.size() > 0)
-        {
+        if (results.size() > 0) {
             eb.setTitle("Query Results");
             String highestName = null;
             float highestWeight = 0;
 
-            while (!results.isEmpty() && i < 6)
-            {
-                for (String name : results.keySet())
-                {
-                    if (results.get(name) > highestWeight)
-                    {
+            while (!results.isEmpty() && i < 6) {
+                for (String name : results.keySet()) {
+                    if (results.get(name) > highestWeight) {
                         highestName = name;
                         highestWeight = results.get(name);
                     }
@@ -87,22 +79,17 @@ public class CommandWiki extends AbstractCommand
             eb.setFooter(
                     "Click the reaction number matching the game you are looking for.\nThis message will self-modify with it's wiki information.",
                     HifumiBot.getSelf().getJDA().getSelfUser().getAvatarUrl());
-        }
-        else
-        {
+        } else {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
         }
 
         Message msg = Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
 
-        if (eb.getFields().size() == 1)
-        {
+        if (eb.getFields().size() == 1) {
             HifumiBot.getSelf().getEventListener().finalizeMessage(msg, eb.getFields().get(0).getValue(),
                     cm.getUser().getId());
-        }
-        else
-        {
+        } else {
             // String concatenation with unicodes is apparently punishable by build error,
             // so we instead have this.
             if (i > 0)
@@ -123,8 +110,7 @@ public class CommandWiki extends AbstractCommand
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Search the PCSX2 wiki by game title";
     }
 }

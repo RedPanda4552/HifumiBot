@@ -36,201 +36,169 @@ import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class CommandFilter extends AbstractCommand
-{
+public class CommandFilter extends AbstractCommand {
     private static final String NO_SUCH_FILTER = ":x: No such filter '%s' exists.";
-    
-    public CommandFilter()
-    {
+
+    public CommandFilter() {
         super("filter", CATEGORY_BUILTIN, PermissionLevel.SUPER_ADMIN, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
-        if (cm.getArgs().length == 0)
-        {
+    public void execute(CommandMeta cm) {
+        if (cm.getArgs().length == 0) {
             showHelpDialog(cm);
-        }
-        else
-        {
-            switch (cm.getArgs()[0].toLowerCase())
-            {
+        } else {
+            switch (cm.getArgs()[0].toLowerCase()) {
             case "new":
-                if (cm.getArgs().length >= 2)
-                {
-                    if (HifumiBot.getSelf().getConfig().filters.containsKey(cm.getArgs()[1]))
-                    {
+                if (cm.getArgs().length >= 2) {
+                    if (HifumiBot.getSelf().getConfig().filters.containsKey(cm.getArgs()[1])) {
                         Messaging.sendMessage(cm.getChannel(), ":x: A filter already exists with this name.");
                         break;
                     }
-                    
+
                     Filter filter = new Filter();
                     filter.name = cm.getArgs()[1];
                     HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
                     ConfigManager.write(HifumiBot.getSelf().getConfig());
-                    Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Created empty filter '" + filter.name + "'.");
-                }
-                else
-                {
+                    Messaging.sendMessage(cm.getChannel(),
+                            ":white_check_mark: Created empty filter '" + filter.name + "'.");
+                } else {
                     showHelpDialog(cm);
                 }
-                
+
                 break;
             case "add":
-                if (cm.getArgs().length >= 4)
-                {
+                if (cm.getArgs().length >= 4) {
                     Filter filter = HifumiBot.getSelf().getConfig().filters.get(cm.getArgs()[1]);
-                    
-                    if (filter == null)
-                    {
+
+                    if (filter == null) {
                         Messaging.sendMessage(cm.getChannel(), String.format(NO_SUCH_FILTER, cm.getArgs()[1]));
                         break;
                     }
-                    
-                    try
-                    {
+
+                    try {
                         Pattern.compile(cm.getArgs()[3]);
-                    }
-                    catch (PatternSyntaxException e)
-                    {
-                        Messaging.sendMessage(cm.getChannel(), ":x: Regular expression did not compile! \n\nException message: " + e.getMessage());
+                    } catch (PatternSyntaxException e) {
+                        Messaging.sendMessage(cm.getChannel(),
+                                ":x: Regular expression did not compile! \n\nException message: " + e.getMessage());
                         break;
                     }
-                    
+
                     filter.regexes.put(cm.getArgs()[2], cm.getArgs()[3]);
                     HifumiBot.getSelf().getConfig().filters.put(cm.getArgs()[1], filter);
                     ConfigManager.write(HifumiBot.getSelf().getConfig());
                     HifumiBot.getSelf().getChatFilter().compile();
-                    Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Created regex '" + cm.getArgs()[2] + "' on filter '" + filter.name + "'.");
-                }
-                else
-                {
+                    Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Created regex '" + cm.getArgs()[2]
+                            + "' on filter '" + filter.name + "'.");
+                } else {
                     showHelpDialog(cm);
                 }
-                
+
                 break;
             case "rm":
-                if (cm.getArgs().length >= 3)
-                {
+                if (cm.getArgs().length >= 3) {
                     Filter filter = HifumiBot.getSelf().getConfig().filters.get(cm.getArgs()[1]);
-                    
-                    if (filter == null)
-                    {
+
+                    if (filter == null) {
                         Messaging.sendMessage(cm.getChannel(), String.format(NO_SUCH_FILTER, cm.getArgs()[1]));
                         break;
                     }
-                    
+
                     String regexName = cm.getArgs()[2];
-                    
-                    if (filter.regexes.containsKey(regexName))
-                    {
+
+                    if (filter.regexes.containsKey(regexName)) {
                         filter.regexes.remove(regexName);
-                    }
-                    else
-                    {
-                        Messaging.sendMessage(cm.getChannel(), ":x: No regex with name '" + regexName + "' found on filter '" + filter.name + "'.");
+                    } else {
+                        Messaging.sendMessage(cm.getChannel(),
+                                ":x: No regex with name '" + regexName + "' found on filter '" + filter.name + "'.");
                         break;
                     }
-                    
+
                     HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
                     ConfigManager.write(HifumiBot.getSelf().getConfig());
                     HifumiBot.getSelf().getChatFilter().compile();
-                    Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Removed regex '" + cm.getArgs()[2] + "' from filter '" + filter.name + "'.");
-                }
-                else
-                {
+                    Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Removed regex '" + cm.getArgs()[2]
+                            + "' from filter '" + filter.name + "'.");
+                } else {
                     showHelpDialog(cm);
                 }
-                
+
                 break;
             case "reply":
-                if (cm.getArgs().length >= 3)
-                {
+                if (cm.getArgs().length >= 3) {
                     Filter filter = HifumiBot.getSelf().getConfig().filters.get(cm.getArgs()[1]);
-                    
-                    if (filter == null)
-                    {
+
+                    if (filter == null) {
                         Messaging.sendMessage(cm.getChannel(), String.format(NO_SUCH_FILTER, cm.getArgs()[1]));
                         break;
                     }
-                    
+
                     filter.replyMessage = cm.getArgs()[2];
                     HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
                     ConfigManager.write(HifumiBot.getSelf().getConfig());
-                    Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Set reply message on filter '" + filter.name + "'.");
-                }
-                else
-                {
+                    Messaging.sendMessage(cm.getChannel(),
+                            ":white_check_mark: Set reply message on filter '" + filter.name + "'.");
+                } else {
                     showHelpDialog(cm);
                 }
-                
+
                 break;
             case "get":
-                if (cm.getArgs().length >= 2)
-                {
+                if (cm.getArgs().length >= 2) {
                     Filter filter = HifumiBot.getSelf().getConfig().filters.get(cm.getArgs()[1]);
-                    
-                    if (filter == null)
-                    {
+
+                    if (filter == null) {
                         Messaging.sendMessage(cm.getChannel(), String.format(NO_SUCH_FILTER, cm.getArgs()[1]));
                         break;
                     }
-                    
+
                     EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm);
                     eb.setTitle(filter.name);
-                    eb.setDescription(filter.replyMessage.isBlank() ? "This filter has no reply message." : "Replies with:\n```\n" + filter.replyMessage + "\n```");
-                    
-                    for (String regexName : filter.regexes.keySet())
-                    {
+                    eb.setDescription(filter.replyMessage.isBlank() ? "This filter has no reply message."
+                            : "Replies with:\n```\n" + filter.replyMessage + "\n```");
+
+                    for (String regexName : filter.regexes.keySet()) {
                         eb.addField(regexName, "`" + filter.regexes.get(regexName) + "`", false);
                     }
-                    
+
                     Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
-                }
-                else
-                {
+                } else {
                     showHelpDialog(cm);
                 }
-                
+
                 break;
             case "del":
-                if (cm.getArgs().length >= 2)
-                {
+                if (cm.getArgs().length >= 2) {
                     Filter filter = HifumiBot.getSelf().getConfig().filters.get(cm.getArgs()[1]);
-                    
-                    if (filter == null)
-                    {
+
+                    if (filter == null) {
                         Messaging.sendMessage(cm.getChannel(), String.format(NO_SUCH_FILTER, cm.getArgs()[1]));
                         break;
                     }
-                    
+
                     HifumiBot.getSelf().getConfig().filters.remove(filter.name);
                     ConfigManager.write(HifumiBot.getSelf().getConfig());
                     HifumiBot.getSelf().getChatFilter().compile();
                     Messaging.sendMessage(cm.getChannel(), ":white_check_mark: Deleted filter '" + filter.name + "'.");
-                }
-                else
-                {
+                } else {
                     showHelpDialog(cm);
-                    
+
                 }
-                
+
                 break;
             case "list":
                 EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm);
                 eb.setTitle("Filter List");
-                
-                for (Filter filter : HifumiBot.getSelf().getConfig().filters.values())
-                {
-                    eb.addField(filter.name, filter.regexes.size() + " regular expressions // Reply Message = " + !filter.replyMessage.isBlank(), false);
+
+                for (Filter filter : HifumiBot.getSelf().getConfig().filters.values()) {
+                    eb.addField(filter.name, filter.regexes.size() + " regular expressions // Reply Message = "
+                            + !filter.replyMessage.isBlank(), false);
                 }
-                
-                if (eb.getFields().size() == 0)
-                {
+
+                if (eb.getFields().size() == 0) {
                     eb.setDescription("oh yeah... THERE IS NONE.");
                 }
-                
+
                 Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
                 break;
             case "compile":
@@ -245,13 +213,11 @@ public class CommandFilter extends AbstractCommand
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Manage chat filters";
     }
-    
-    private void showHelpDialog(CommandMeta cm)
-    {
+
+    private void showHelpDialog(CommandMeta cm) {
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm);
         eb.setTitle("Manage Chat Filters");
         eb.addField("Create Empty Filter", CommandInterpreter.PREFIX + "filter new <filterName>", false);

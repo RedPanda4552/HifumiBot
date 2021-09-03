@@ -31,28 +31,27 @@ import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 
-public class HyperlinkCleaner implements Runnable
-{
-    private static final Pattern URL_PATTERN = Pattern.compile("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
-    
+public class HyperlinkCleaner implements Runnable {
+    private static final Pattern URL_PATTERN = Pattern
+            .compile("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+
     private final Message message;
-    
-    public HyperlinkCleaner(Message message)
-    {
+
+    public HyperlinkCleaner(Message message) {
         this.message = message;
     }
-    
+
     @Override
-    public void run()
-    {
+    public void run() {
         Matcher m = URL_PATTERN.matcher(message.getContentDisplay().toLowerCase());
-        
-        while (m.find())
-        {
-            if (Internet.nslookup(m.group()) == DNSQueryResult.BLOCKED)
-            {
+
+        while (m.find()) {
+            if (Internet.nslookup(m.group()) == DNSQueryResult.BLOCKED) {
                 message.delete().complete();
-                Messaging.logInfo("HyperlinkCleaner", "run", "Deleting message from user " + message.getAuthor().getAsMention() + ", DNS query on a URL inside failed and may be malicious.\n\nUser's message (formatting stripped):\n```\n" + message.getContentStripped() + "\n```");
+                Messaging.logInfo("HyperlinkCleaner", "run", "Deleting message from user "
+                        + message.getAuthor().getAsMention()
+                        + ", DNS query on a URL inside failed and may be malicious.\n\nUser's message (formatting stripped):\n```\n"
+                        + message.getContentStripped() + "\n```");
             }
         }
     }

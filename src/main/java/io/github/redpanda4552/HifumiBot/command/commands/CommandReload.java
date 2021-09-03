@@ -27,22 +27,18 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 
-public class CommandReload extends AbstractCommand
-{
-    public CommandReload()
-    {
+public class CommandReload extends AbstractCommand {
+    public CommandReload() {
         super("reload", CATEGORY_BUILTIN, PermissionLevel.SUPER_ADMIN, false);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
+    public void execute(CommandMeta cm) {
         HifumiBot.getSelf().shutdown(true);
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Reload a fresh instance of " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
     }
 }

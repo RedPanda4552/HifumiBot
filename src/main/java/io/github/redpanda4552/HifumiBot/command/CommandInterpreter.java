@@ -35,8 +35,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class CommandInterpreter
-{
+public class CommandInterpreter {
 
     public static final String PREFIX = ">";
 
@@ -46,13 +45,11 @@ public class CommandInterpreter
      * @param hifumiBot - Required because we are instancing commands before
      *                  HifumiBot.self has been assigned.
      */
-    public CommandInterpreter(HifumiBot hifumiBot)
-    {
+    public CommandInterpreter(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
     }
 
-    public void execute(MessageReceivedEvent event)
-    {
+    public void execute(MessageReceivedEvent event) {
         if (event.getAuthor().getId().equals(hifumiBot.getJDA().getSelfUser().getId()))
             return;
 
@@ -67,16 +64,14 @@ public class CommandInterpreter
 
         command = command.replaceFirst(PREFIX, "");
 
-        if ((toExecute = hifumiBot.getCommandIndex().getCommand(command)) != null)
-        {
+        if ((toExecute = hifumiBot.getCommandIndex().getCommand(command)) != null) {
             CommandMeta cm = new CommandMeta(command, toExecute.getPermissionLevel(), toExecute.isRestricted(),
                     toExecute.getCategory(), event.getChannel() instanceof TextChannel ? event.getGuild() : null,
                     event.getChannel(), event.getMember(), event.getAuthor(), message,
                     event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(),
                     args);
 
-            if (isCommandRestricted(cm))
-            {
+            if (isCommandRestricted(cm)) {
                 Messaging.sendMessage(event.getChannel(),
                         "Hey there! Please use " + HifumiBot.getSelf().getJDA()
                                 .getTextChannelById(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)
@@ -89,30 +84,24 @@ public class CommandInterpreter
         }
     }
 
-    private boolean isCommandRestricted(CommandMeta cm)
-    {
-        if (HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId.isBlank())
-        {
+    private boolean isCommandRestricted(CommandMeta cm) {
+        if (HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId.isBlank()) {
             return false;
         }
 
-        if (!cm.isRestricted())
-        {
+        if (!cm.isRestricted()) {
             return false;
         }
 
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, cm))
-        {
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, cm)) {
             return false;
         }
 
-        if (cm.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId))
-        {
+        if (cm.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)) {
             return false;
         }
 
-        if (cm.getGuild() == null)
-        {
+        if (cm.getGuild() == null) {
             return false;
         }
 

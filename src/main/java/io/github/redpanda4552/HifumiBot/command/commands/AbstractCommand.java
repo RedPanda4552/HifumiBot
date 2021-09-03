@@ -26,16 +26,14 @@ package io.github.redpanda4552.HifumiBot.command.commands;
 import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 
-public abstract class AbstractCommand
-{
+public abstract class AbstractCommand {
     protected static final String CATEGORY_BUILTIN = "builtin", CATEGORY_NONE = "none";
 
     protected String name, category;
     protected PermissionLevel permissionLevel;
     protected boolean restrictChannel;
 
-    public AbstractCommand(String name, String category, PermissionLevel permissionLevel, boolean restrictChannel)
-    {
+    public AbstractCommand(String name, String category, PermissionLevel permissionLevel, boolean restrictChannel) {
         this.name = name;
         this.category = category != null ? category : CATEGORY_NONE;
         this.permissionLevel = permissionLevel;
@@ -47,28 +45,23 @@ public abstract class AbstractCommand
      */
     public abstract void execute(CommandMeta cm);
 
-    protected boolean isArgSingleWord(String arg)
-    {
+    protected boolean isArgSingleWord(String arg) {
         return !arg.contains(" ");
     }
 
-    public PermissionLevel getPermissionLevel()
-    {
+    public PermissionLevel getPermissionLevel() {
         return permissionLevel;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public String getCategory()
-    {
+    public String getCategory() {
         return category;
     }
 
-    public boolean isRestricted()
-    {
+    public boolean isRestricted() {
         return restrictChannel;
     }
 

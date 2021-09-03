@@ -29,14 +29,12 @@ import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class DynamicCommand extends AbstractCommand
-{
+public class DynamicCommand extends AbstractCommand {
 
     private String helpText, title, body, imageURL;
 
-    public DynamicCommand(String name, String category, PermissionLevel permissionLevel, boolean restrictChannel, String helpText,
-            String title, String body, String imageURL)
-    {
+    public DynamicCommand(String name, String category, PermissionLevel permissionLevel, boolean restrictChannel,
+            String helpText, String title, String body, String imageURL) {
         super(name, category, permissionLevel, restrictChannel);
         this.helpText = helpText;
         this.title = title;
@@ -45,16 +43,12 @@ public class DynamicCommand extends AbstractCommand
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
+    public void execute(CommandMeta cm) {
         EmbedBuilder eb;
 
-        if (cm.getMember() != null)
-        {
+        if (cm.getMember() != null) {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        }
-        else
-        {
+        } else {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
 
@@ -65,63 +59,51 @@ public class DynamicCommand extends AbstractCommand
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return helpText;
     }
 
-    public void setHelpText(String helpText)
-    {
+    public void setHelpText(String helpText) {
         this.helpText = helpText;
     }
 
-    public String getCategory()
-    {
+    public String getCategory() {
         return this.category;
     }
 
-    public void setCategory(String category)
-    {
+    public void setCategory(String category) {
         this.category = category;
     }
 
-    public void setPermissionLevel(PermissionLevel permissionLevel)
-    {
+    public void setPermissionLevel(PermissionLevel permissionLevel) {
         this.permissionLevel = permissionLevel;
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return this.title;
     }
 
-    public void setTitle(String title)
-    {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public String getBody()
-    {
+    public String getBody() {
         return this.body;
     }
 
-    public void setBody(String body)
-    {
+    public void setBody(String body) {
         this.body = body;
     }
 
-    public String getImageURL()
-    {
+    public String getImageURL() {
         return this.imageURL;
     }
 
-    public void setImageURL(String imageURL)
-    {
+    public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
     }
 
-    public void setRestricted(boolean restricted)
-    {
+    public void setRestricted(boolean restricted) {
         this.restrictChannel = restricted;
     }
 }

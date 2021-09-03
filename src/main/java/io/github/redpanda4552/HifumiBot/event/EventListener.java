@@ -52,53 +52,44 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEve
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class EventListener extends ListenerAdapter
-{
+public class EventListener extends ListenerAdapter {
 
     private HifumiBot hifumiBot;
     private HashMap<String, Message> messages = new HashMap<String, Message>();
 
-    public EventListener(HifumiBot hifumiBot)
-    {
+    public EventListener(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event)
-    {
-        if (HifumiBot.getSelf().getChatFilter().applyFilters(event))
-        {
+    public void onMessageReceived(MessageReceivedEvent event) {
+        if (HifumiBot.getSelf().getChatFilter().applyFilters(event)) {
             return;
         }
-        
+
         HifumiBot.getSelf().getCommandInterpreter().execute(event);
-        
-        if (Messaging.messageHasEmulog(event.getMessage()))
-        {
+
+        if (Messaging.messageHasEmulog(event.getMessage())) {
             EmulogParser ep = new EmulogParser(event.getMessage());
             HifumiBot.getSelf().getScheduler().runOnce(ep);
         }
-        
-        if (Messaging.messageHasPnach(event.getMessage()))
-        {
+
+        if (Messaging.messageHasPnach(event.getMessage())) {
             PnachParser pp = new PnachParser(event.getMessage());
             HifumiBot.getSelf().getScheduler().runOnce(pp);
         }
-        
-        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(), event.getMember()))
-        {
+
+        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(),
+                event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage()));
         }
     }
 
     @Override
-    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event)
-    {
-        for (Role role : event.getRoles())
-        {
+    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
+        for (Role role : event.getRoles()) {
             if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)
-                    && !HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId()))
-            {
+                    && !HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
                 HifumiBot.getSelf().getWarezTracking().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
                 WarezTrackingManager.write(HifumiBot.getSelf().getWarezTracking());
                 return;
@@ -107,12 +98,9 @@ public class EventListener extends ListenerAdapter
     }
 
     @Override
-    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event)
-    {
-        for (Role role : event.getRoles())
-        {
-            if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId))
-            {
+    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
+        for (Role role : event.getRoles()) {
+            if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)) {
                 HifumiBot.getSelf().getWarezTracking().warezUsers.remove(event.getUser().getId());
                 WarezTrackingManager.write(HifumiBot.getSelf().getWarezTracking());
                 return;
@@ -121,23 +109,17 @@ public class EventListener extends ListenerAdapter
     }
 
     @Override
-    public void onGuildMemberJoin(GuildMemberJoinEvent event)
-    {
-        if (event.getUser().getName().toLowerCase().contains("twitter.com/h0nde"))
-        {
-            try
-            {
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        if (event.getUser().getName().toLowerCase().contains("twitter.com/h0nde")) {
+            try {
                 Messaging.logInfo("EventListener", "onGuildMemberJoin", "Insta-banning this twitter bot again");
                 HifumiBot.getSelf().getJDA().getGuildById(event.getGuild().getId()).ban(event.getUser(), 0).complete();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 Messaging.logException("EventListener", "onGuildMemberJoin", e);
             }
         }
-        
-        if (HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId()))
-        {
+
+        if (HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
             // First assign the warez role
             Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
             event.getGuild().addRoleToMember(event.getMember(), role).complete();
@@ -158,34 +140,29 @@ public class EventListener extends ListenerAdapter
     }
 
     @Override
-    public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent event)
-    {
+    public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent event) {
         onMessageReactionAdd(event.getUser().getId(), event.getMessageId(),
                 event.getReactionEmote().getName().toLowerCase());
     }
 
     @Override
-    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event)
-    {
+    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
         onMessageReactionAdd(event.getUser().getId(), event.getMessageId(),
                 event.getReactionEmote().getName().toLowerCase());
     }
 
-    private void onMessageReactionAdd(String userId, String messageId, String reactionEmoteName)
-    {
+    private void onMessageReactionAdd(String userId, String messageId, String reactionEmoteName) {
         Message msg = messages.get(userId);
 
         if (msg == null)
             return;
 
-        if (msg.getId().equals(messageId))
-        {
+        if (msg.getId().equals(messageId)) {
             String gameName = null;
 
             List<Field> fields = msg.getEmbeds().get(0).getFields();
 
-            switch (reactionEmoteName)
-            {
+            switch (reactionEmoteName) {
             case Emotes.ONE:
                 gameName = fields.get(0).getValue();
                 break;
@@ -210,20 +187,17 @@ public class EventListener extends ListenerAdapter
         }
     }
 
-    public void waitForMessage(String userId, Message msg)
-    {
+    public void waitForMessage(String userId, Message msg) {
         if (messages.containsKey(userId))
             messages.get(userId).delete().complete();
 
         messages.put(userId, msg);
     }
 
-    public void finalizeMessage(Message msg, String gameName, String userId)
-    {
+    public void finalizeMessage(Message msg, String gameName, String userId) {
         WikiPage wikiPage = new WikiPage(hifumiBot.getWikiIndex().getWikiPageUrl(gameName));
 
-        if (msg.getChannel() instanceof TextChannel)
-        {
+        if (msg.getChannel() instanceof TextChannel) {
             msg.clearReactions().complete();
         }
 
@@ -231,22 +205,18 @@ public class EventListener extends ListenerAdapter
         eb.setTitle(wikiPage.getTitle(), wikiPage.getWikiPageUrl());
         eb.setThumbnail(wikiPage.getCoverArtUrl());
 
-        for (RegionSet regionSet : wikiPage.getRegionSets().values())
-        {
+        for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
             StringBuilder regionBuilder = new StringBuilder();
 
-            if (!regionSet.getCRC().isEmpty())
-            {
+            if (!regionSet.getCRC().isEmpty()) {
                 regionBuilder.append("\n**CRC:\n**").append(regionSet.getCRC().replace(" ", "\n"));
             }
 
-            if (!regionSet.getWindowsStatus().isEmpty())
-            {
+            if (!regionSet.getWindowsStatus().isEmpty()) {
                 regionBuilder.append("\n**Windows Compatibility:\n**").append(regionSet.getWindowsStatus());
             }
 
-            if (!regionSet.getLinuxStatus().isEmpty())
-            {
+            if (!regionSet.getLinuxStatus().isEmpty()) {
                 regionBuilder.append("\n**Linux Compatibility:\n**").append(regionSet.getLinuxStatus());
             }
 
@@ -271,7 +241,7 @@ public class EventListener extends ListenerAdapter
 
         if (!fixedList.toString().isEmpty())
             eb.addField("__Fixed Issues:__", fixedList.toString(), true);
-        
+
         Messaging.editMessageEmbed(msg, eb.build());
         messages.remove(userId);
     }

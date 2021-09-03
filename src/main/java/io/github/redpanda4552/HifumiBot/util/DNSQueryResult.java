@@ -23,9 +23,6 @@
  */
 package io.github.redpanda4552.HifumiBot.util;
 
-public enum DNSQueryResult
-{
-    SUCCESS,
-    FAIL,
-    BLOCKED
+public enum DNSQueryResult {
+    SUCCESS, FAIL, BLOCKED
 }

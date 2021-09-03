@@ -37,10 +37,8 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class CommandGPU extends AbstractCommand
-{
-    private enum GPURating
-    {
+public class CommandGPU extends AbstractCommand {
+    private enum GPURating {
         x8NATIVE("8x Native (~5K)", 13030), x6NATIVE("6x Native (~4K)", 8660), x5NATIVE("5x Native (~3K)", 6700),
         x4NATIVE("4x Native (~2K)", 4890), x3NATIVE("3x Native (~1080p)", 3230), x2NATIVE("2x Native (~720p)", 1720),
         NATIVE("Native", 360), SLOW("Slow", 0);
@@ -48,34 +46,28 @@ public class CommandGPU extends AbstractCommand
         private String displayName;
         private int minimum;
 
-        private GPURating(String displayName, int minimum)
-        {
+        private GPURating(String displayName, int minimum) {
             this.displayName = displayName;
             this.minimum = minimum;
         }
 
-        public String getDisplayName()
-        {
+        public String getDisplayName() {
             return displayName;
         }
 
-        public int getMinimum()
-        {
+        public int getMinimum() {
             return minimum;
         }
     }
 
-    public CommandGPU()
-    {
+    public CommandGPU() {
         super("gpu", CATEGORY_BUILTIN, PermissionLevel.GUEST, true);
     }
 
     @Override
-    public void execute(CommandMeta cm)
-    {
+    public void execute(CommandMeta cm) {
         // Search
-        if (cm.getArgs().length == 0)
-        {
+        if (cm.getArgs().length == 0) {
             EmbedBuilder eb;
 
             if (cm.getMember() != null)
@@ -104,31 +96,24 @@ public class CommandGPU extends AbstractCommand
         GpuIndex gpuIndex = HifumiBot.getSelf().getGpuIndex();
         EmbedBuilder eb;
 
-        if (cm.getMember() != null)
-        {
+        if (cm.getMember() != null) {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        }
-        else
-        {
+        } else {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
 
         HashMap<String, Float> results = SimpleSearch.search(gpuIndex.getAllGpus(),
                 StringUtils.join(cm.getArgs(), " "));
 
-        if (results.size() > 0)
-        {
+        if (results.size() > 0) {
             eb.setTitle("Query Results for \"" + StringUtils.join(cm.getArgs(), " ") + "\"");
             eb.setDescription(":warning: This feature is in BETA! Please do not take these results as absolute!");
             String highestName = null;
             float highestWeight = 0;
 
-            while (!results.isEmpty() && eb.getFields().size() < 5)
-            {
-                for (String gpuName : results.keySet())
-                {
-                    if (results.get(gpuName) > highestWeight)
-                    {
+            while (!results.isEmpty() && eb.getFields().size() < 5) {
+                for (String gpuName : results.keySet()) {
+                    if (results.get(gpuName) > highestWeight) {
                         highestName = gpuName;
                         highestWeight = results.get(gpuName);
                     }
@@ -138,18 +123,15 @@ public class CommandGPU extends AbstractCommand
                 highestWeight = 0;
                 int highestScore = -1;
 
-                try
-                {
+                try {
                     highestScore = Integer.parseInt(gpuIndex.getGpuRating(highestName).replaceAll("[,. ]", ""));
+                } catch (NumberFormatException e) {
                 }
-                catch (NumberFormatException e) { }
 
                 String highestScoreDescription = "";
 
-                for (int i = 0; i < GPURating.values().length; i++)
-                {
-                    if (highestScore >= GPURating.values()[i].getMinimum())
-                    {
+                for (int i = 0; i < GPURating.values().length; i++) {
+                    if (highestScore >= GPURating.values()[i].getMinimum()) {
                         highestScoreDescription = GPURating.values()[i].getDisplayName();
                         break;
                     }
@@ -159,9 +141,7 @@ public class CommandGPU extends AbstractCommand
             }
 
             eb.setColor(0x00ff00);
-        }
-        else
-        {
+        } else {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
         }
@@ -170,8 +150,7 @@ public class CommandGPU extends AbstractCommand
     }
 
     @Override
-    public String getHelpText()
-    {
+    public String getHelpText() {
         return "Look up the Single Thread Rating for a CPU";
     }
 }

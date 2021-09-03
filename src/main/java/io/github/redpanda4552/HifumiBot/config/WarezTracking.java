@@ -26,12 +26,10 @@ package io.github.redpanda4552.HifumiBot.config;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 
-public class WarezTracking
-{
+public class WarezTracking {
     public HashMap<String, OffsetDateTime> warezUsers;
-    
-    public WarezTracking()
-    {
+
+    public WarezTracking() {
         warezUsers = new HashMap<String, OffsetDateTime>();
     }
 }
