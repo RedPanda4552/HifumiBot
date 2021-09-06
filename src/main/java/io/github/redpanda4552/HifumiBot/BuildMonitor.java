@@ -96,7 +96,7 @@ public class BuildMonitor implements Refreshable {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setAuthor("New PCSX2 Development Build Available!");
                 eb.addField("Revision:", gitRevision, false);
-                eb.addField("Commit:", commitCell.ownText(), false);
+                eb.addField("Commit:", commitCell.ownText().substring(0, 512), false);
                 eb.addField("Windows:", WINDOWS_INSTRUCTIONS, false);
                 eb.addField("Ubuntu:", LINUX_INSTRUCTIONS, false);
                 eb.addField("Linux (Any)",
