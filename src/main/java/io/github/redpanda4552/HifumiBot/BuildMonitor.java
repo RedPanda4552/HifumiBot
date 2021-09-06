@@ -25,6 +25,7 @@ package io.github.redpanda4552.HifumiBot;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -96,7 +97,7 @@ public class BuildMonitor implements Refreshable {
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setAuthor("New PCSX2 Development Build Available!");
                 eb.addField("Revision:", gitRevision, false);
-                eb.addField("Commit:", commitCell.ownText().substring(0, 512), false);
+                eb.addField("Commit:", StringUtils.abbreviate(commitCell.ownText(), 256), false);
                 eb.addField("Windows:", WINDOWS_INSTRUCTIONS, false);
                 eb.addField("Ubuntu:", LINUX_INSTRUCTIONS, false);
                 eb.addField("Linux (Any)",
