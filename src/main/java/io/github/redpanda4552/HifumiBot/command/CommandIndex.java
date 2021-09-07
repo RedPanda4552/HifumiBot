@@ -49,6 +49,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -80,6 +81,7 @@ public class CommandIndex {
         slashCommands.clear();
         registerSlashCommand(new CommandSay());
         registerSlashCommand(new CommandAbout());
+        registerSlashCommand(new CommandUpsert());
         
         commandMap.clear();
         CommandCPU cpu = new CommandCPU();
