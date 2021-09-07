@@ -45,11 +45,11 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -82,6 +82,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandSay());
         registerSlashCommand(new CommandAbout());
         registerSlashCommand(new CommandUpsert());
+        registerSlashCommand(new CommandWarez());
         
         commandMap.clear();
         CommandCPU cpu = new CommandCPU();
@@ -108,8 +109,6 @@ public class CommandIndex {
         commandMap.put(run.getName(), run);
         CommandShutdown shutdown = new CommandShutdown();
         commandMap.put(shutdown.getName(), shutdown);
-        CommandWarez warez = new CommandWarez();
-        commandMap.put(warez.getName(), warez);
         CommandWiki wiki = new CommandWiki();
         commandMap.put(wiki.getName(), wiki);
 
