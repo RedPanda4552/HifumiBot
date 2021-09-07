@@ -30,6 +30,7 @@ import io.github.redpanda4552.HifumiBot.filter.Filter;
 
 public class Config {
     public boolean useLocalDNSFiltering;
+    public Server server;
     public Channels channels;
     public Roles roles;
     public Integrations integrations;
@@ -38,11 +39,20 @@ public class Config {
 
     public Config() {
         useLocalDNSFiltering = false;
+        server = new Server();
         channels = new Channels();
         roles = new Roles();
         integrations = new Integrations();
         permissions = new Permissions();
         filters = new HashMap<String, Filter>();
+    }
+    
+    public class Server {
+        public String id;
+        
+        public Server() {
+            id = new String("");
+        }
     }
 
     public class Channels {
