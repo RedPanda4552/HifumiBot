@@ -25,7 +25,6 @@ package io.github.redpanda4552.HifumiBot;
 
 import javax.security.auth.login.LoginException;
 
-import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.config.Config;
