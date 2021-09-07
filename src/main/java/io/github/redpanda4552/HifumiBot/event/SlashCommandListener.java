@@ -36,6 +36,11 @@ public class SlashCommandListener extends ListenerAdapter {
     
     @Override
     public void onSlashCommand(SlashCommandEvent event) {
+        if (!event.isFromGuild()) {
+            event.reply("Slash commands are disabled in DMs.").setEphemeral(true).queue();
+            return;
+        }
+        
         if (slashCommands.containsKey(event.getName())) {
             slashCommands.get(event.getName()).executeIfPermission(event);
         }
