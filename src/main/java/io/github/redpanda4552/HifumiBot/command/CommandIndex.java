@@ -125,6 +125,12 @@ public class CommandIndex {
         rebuildHelpPages();
     }
     
+    public void upsertSlashCommands() {
+        for (AbstractSlashCommand slashCommand : getSlashCommands().values()) {
+            slashCommand.upsertSlashCommand();
+        }
+    }
+    
     private void registerSlashCommand(AbstractSlashCommand slashCommand) {
         String name = slashCommand.defineSlashCommand().getName();
         slashCommands.put(name, slashCommand);
