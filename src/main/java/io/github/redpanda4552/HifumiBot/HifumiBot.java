@@ -166,9 +166,7 @@ public class HifumiBot {
         }, 1000 * 60 * 10);
         
         if (doSlashCommandUpsert) {
-            for (AbstractSlashCommand slashCommand : commandIndex.getSlashCommands().values()) {
-                slashCommand.upsertSlashCommand();
-            }
+            commandIndex.upsertSlashCommands();
         }
 
         updateStatus(">help");
