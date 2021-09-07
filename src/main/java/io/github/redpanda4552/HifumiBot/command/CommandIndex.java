@@ -48,6 +48,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -57,6 +58,7 @@ public class CommandIndex {
 
     private static final int COMMANDS_PER_PAGE = 10;
 
+    private HashMap<String, AbstractSlashCommand> slashCommands;
     private HashMap<String, AbstractCommand> commandMap;
     private HashMap<String, ArrayList<MessageEmbed>> helpPages;
     private MessageEmbed helpRoot;
@@ -66,6 +68,7 @@ public class CommandIndex {
      * rebuild()} method.
      */
     public CommandIndex() {
+        slashCommands = new HashMap<String, AbstractSlashCommand>();
         commandMap = new HashMap<String, AbstractCommand>();
         rebuild();
     }
@@ -74,6 +77,9 @@ public class CommandIndex {
      * Rebuild this CommandIndex from the Config object in HifumiBot.
      */
     public void rebuild() {
+        slashCommands.clear();
+        registerSlashCommand(new CommandSay());
+        
         commandMap.clear();
         CommandAbout about = new CommandAbout();
         commandMap.put(about.getName(), about);
@@ -118,6 +124,15 @@ public class CommandIndex {
         }
 
         rebuildHelpPages();
+    }
+    
+    private void registerSlashCommand(AbstractSlashCommand slashCommand) {
+        String name = slashCommand.defineSlashCommand().getName();
+        slashCommands.put(name, slashCommand);
+    }
+    
+    public HashMap<String, AbstractSlashCommand> getSlashCommands() {
+        return slashCommands;
     }
 
     public Set<String> getAll() {

@@ -25,6 +25,7 @@ package io.github.redpanda4552.HifumiBot;
 
 import javax.security.auth.login.LoginException;
 
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.config.Config;
@@ -34,6 +35,7 @@ import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
 import io.github.redpanda4552.HifumiBot.config.WarezTracking;
 import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
+import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.Internet;
@@ -51,15 +53,22 @@ public class HifumiBot {
     private static HifumiBot self;
     private static String discordBotToken;
     private static String superuserId;
+    private static boolean doSlashCommandUpsert = false;
 
     public static void main(String[] args) {
         if (args.length < 2) {
-            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id>");
+            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [-u]");
             return;
         }
 
         discordBotToken = args[0];
         superuserId = args[1];
+        
+        if (args.length >= 3) {
+            if (args[2].equals("-u")) {
+                doSlashCommandUpsert = true;
+            }
+        }
 
         System.out.println("Arguments parsed");
 
@@ -91,6 +100,7 @@ public class HifumiBot {
     private CommandInterpreter commandInterpreter;
     private ChatFilter chatFilter;
     private EventListener eventListener;
+    private SlashCommandListener slashCommandListener;
 
     public HifumiBot() {
         self = this;
@@ -136,6 +146,7 @@ public class HifumiBot {
         commandInterpreter = new CommandInterpreter(this);
         chatFilter = new ChatFilter();
         jda.addEventListener(eventListener = new EventListener(this));
+        jda.addEventListener(slashCommandListener = new SlashCommandListener());
 
         // Schedule repeating tasks
         scheduler.scheduleRepeating("wiki", () -> {
@@ -153,6 +164,12 @@ public class HifumiBot {
         scheduler.scheduleRepeating("dev", () -> {
             HifumiBot.getSelf().getBuildMonitor().refresh();
         }, 1000 * 60 * 10);
+        
+        if (doSlashCommandUpsert) {
+            for (AbstractSlashCommand slashCommand : commandIndex.getSlashCommands().values()) {
+                slashCommand.upsertSlashCommand();
+            }
+        }
 
         updateStatus(">help");
     }
@@ -219,6 +236,10 @@ public class HifumiBot {
 
     public EventListener getEventListener() {
         return eventListener;
+    }
+    
+    public SlashCommandListener getSlashCommandListener() {
+        return slashCommandListener;
     }
 
     public void shutdown(boolean reload) {
