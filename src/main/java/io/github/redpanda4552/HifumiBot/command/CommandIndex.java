@@ -33,7 +33,6 @@ import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDX9;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDev;
@@ -48,6 +47,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
@@ -79,10 +79,9 @@ public class CommandIndex {
     public void rebuild() {
         slashCommands.clear();
         registerSlashCommand(new CommandSay());
+        registerSlashCommand(new CommandAbout());
         
         commandMap.clear();
-        CommandAbout about = new CommandAbout();
-        commandMap.put(about.getName(), about);
         CommandCPU cpu = new CommandCPU();
         commandMap.put(cpu.getName(), cpu);
         CommandDev dev = new CommandDev();
