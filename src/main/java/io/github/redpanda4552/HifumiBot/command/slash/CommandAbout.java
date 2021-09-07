@@ -21,34 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.Scheduler.NoSuchRunnableException;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
 import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
-public class CommandAbout extends AbstractCommand {
+public class CommandAbout extends AbstractSlashCommand {
+    
     public CommandAbout() {
-        super("about", CATEGORY_BUILTIN, PermissionLevel.ADMIN, false);
+        super(PermissionLevel.ADMIN);
     }
 
     @Override
-    public void execute(CommandMeta cm) {
-        EmbedBuilder eb;
-
-        if (cm.getMember() != null) {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
-        }
-
+    protected ReplyAction onExecute(SlashCommandEvent event) {
+        EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("About " + HifumiBot.getSelf().getJDA().getSelfUser().getName());
         eb.setDescription("A helper bot created for the PCSX2 Discord server.");
         eb.addField("Created By", "pandubz", true);
@@ -73,11 +69,11 @@ public class CommandAbout extends AbstractCommand {
         }
 
         eb.addField("Runnable Statuses", runnableBuilder.toString().trim(), false);
-        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
+        return event.replyEmbeds(eb.build());
     }
 
     @Override
-    public String getHelpText() {
-        return "Info about " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
+    protected CommandData defineSlashCommand() {
+        return new CommandData("about", "View general information about the bot and its health");
     }
 }
