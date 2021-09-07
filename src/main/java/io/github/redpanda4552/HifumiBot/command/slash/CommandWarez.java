@@ -21,31 +21,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
-public class CommandWarez extends AbstractCommand {
+public class CommandWarez extends AbstractSlashCommand {
+    
     public CommandWarez() {
-        super("warez", CATEGORY_BUILTIN, PermissionLevel.ADMIN, false);
+        super(PermissionLevel.ADMIN);
     }
 
     @Override
-    public void execute(CommandMeta cm) {
+    protected ReplyAction onExecute(SlashCommandEvent event) {
         try {
-            if (!(cm.getChannel() instanceof TextChannel))
-                return;
-
-            TextChannel welcomeRules = cm.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.rulesChannelId);
-            EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
+            MessageBuilder mb = new MessageBuilder();
+            EmbedBuilder eb = new EmbedBuilder();
+            OptionMapping user = event.getOption("user");
+            
+            if (user != null) {
+                Member member = event.getOption("user").getAsMember();
+                
+                if (member != null && !HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, member)) {
+                    try {
+                        Role warezRole = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
+                        event.getGuild().addRoleToMember(member, warezRole).queue();
+                        mb.setContent(member.getAsMention());
+                    } catch (InsufficientPermissionException e) {
+                        Messaging.logInfo("CommandWarez", "execute", "Failed to assign role to " + member.getAsMention() + " (insufficient permissions)");                        
+                    }
+                }
+            }
+            
+            TextChannel welcomeRules = event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.rulesChannelId);
             eb.setTitle("PCSX2 Anti-Warez Rules");
             eb.setDescription("As per ")
                     .appendDescription(welcomeRules.getAsMention())
@@ -66,24 +87,19 @@ public class CommandWarez extends AbstractCommand {
                     "\"But a friend gave it to me!\" or \"I own a copy, and just downloaded it instead!\"",
                     "Games, BIOS files and other materials must be from discs, a console or other device that you own.",
                     false);
-            Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
 
-            for (Member member : cm.getMentions()) {
-                if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, member)) {
-                    try {
-                        cm.getGuild().addRoleToMember(member, cm.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId)).complete();
-                    } catch (InsufficientPermissionException e) {
-                        Messaging.logInfo("CommandWarez", "execute", "Failed to assign role to " + member.getAsMention() + " (insufficient permissions)");                        
-                    }
-                }
-            }
+            mb.setEmbeds(eb.build());
+            return event.reply(mb.build());
         } catch (Exception e) {
             Messaging.logException("CommandWarez", "execute", e);
         }
+        
+        return event.reply("An error occurred while processing this command.").setEphemeral(true);
     }
 
     @Override
-    public String getHelpText() {
-        return "Print a dialog about warez/piracy rules";
+    protected CommandData defineSlashCommand() {
+        return new CommandData("warez", "Show a prompt about anti-piracy rules, with optional warez role assignment")
+                .addOption(OptionType.USER, "user", "Optional user to assign warez role to");
     }
 }
