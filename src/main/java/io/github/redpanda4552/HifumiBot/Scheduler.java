@@ -73,7 +73,7 @@ public class Scheduler {
         threadPool.shutdown();
 
         try {
-            threadPool.awaitTermination(30, TimeUnit.SECONDS);
+            threadPool.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
         }
     }
