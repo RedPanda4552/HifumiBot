@@ -21,26 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
-public class CommandShutdown extends AbstractCommand {
+public class CommandShutdown extends AbstractSlashCommand {
+    
     public CommandShutdown() {
-        super("shutdown", CATEGORY_BUILTIN, PermissionLevel.SUPER_ADMIN, false);
+        super(PermissionLevel.SUPER_ADMIN);
     }
 
     @Override
-    public void execute(CommandMeta cm) {
-        HifumiBot.getSelf().shutdown(false);
+    protected ReplyAction onExecute(SlashCommandEvent event) {
+        HifumiBot.getSelf().getScheduler().runOnce(() -> {
+            if (HifumiBot.getSelf() != null)
+                HifumiBot.getSelf().shutdown(false);
+        });
+        return event.reply("Shutting down, bye bye!");
     }
 
     @Override
-    public String getHelpText() {
-        return "Fully shutdown " + HifumiBot.getSelf().getJDA().getSelfUser().getName()
-                + ", with no attempt to reload a new instance.";
+    protected CommandData defineSlashCommand() {
+        return new CommandData("shutdown", "Shuts down the bot with no attempt to reload");
     }
 
 }

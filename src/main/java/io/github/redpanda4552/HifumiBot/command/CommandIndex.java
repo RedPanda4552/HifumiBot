@@ -44,10 +44,10 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandRun;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
@@ -83,6 +83,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandAbout());
         registerSlashCommand(new CommandUpsert());
         registerSlashCommand(new CommandWarez());
+        registerSlashCommand(new CommandShutdown());
         
         commandMap.clear();
         CommandCPU cpu = new CommandCPU();
@@ -107,8 +108,6 @@ public class CommandIndex {
         commandMap.put(reload.getName(), reload);
         CommandRun run = new CommandRun();
         commandMap.put(run.getName(), run);
-        CommandShutdown shutdown = new CommandShutdown();
-        commandMap.put(shutdown.getName(), shutdown);
         CommandWiki wiki = new CommandWiki();
         commandMap.put(wiki.getName(), wiki);
 
