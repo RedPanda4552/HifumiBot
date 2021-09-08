@@ -27,6 +27,8 @@ import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -43,6 +45,34 @@ public class SlashCommandListener extends ListenerAdapter {
         
         if (slashCommands.containsKey(event.getName())) {
             slashCommands.get(event.getName()).executeIfPermission(event);
+        }
+    }
+    
+    @Override
+    public void onButtonClick(ButtonClickEvent event) {
+       String[] id = event.getComponentId().split(":");
+        
+        if (id.length != 3) {
+            event.reply("Detected a damaged event identifier, aborting.").setEphemeral(true).queue();
+            return;
+        }
+        
+        String authorId = id[0];
+        String commandSource = id[1];
+        String payload = id[2];
+        
+        if (!authorId.equals(event.getUser().getId())) {
+            event.reply("You did not send this original command; you are not allowed to interact with these buttons.").setEphemeral(true).queue();
+            return;
+        }
+        
+        event.deferEdit().queue();
+        
+        switch (commandSource) {
+        case "wiki":
+            CommandWiki commandWiki = (CommandWiki) slashCommands.get(commandSource);
+            commandWiki.onButtonEvent(event, payload);
+            break;
         }
     }
 }
