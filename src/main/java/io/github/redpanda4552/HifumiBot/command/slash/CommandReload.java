@@ -21,24 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
-public class CommandReload extends AbstractCommand {
+public class CommandReload extends AbstractSlashCommand {
+    
     public CommandReload() {
-        super("reload", CATEGORY_BUILTIN, PermissionLevel.SUPER_ADMIN, false);
+        super(PermissionLevel.SUPER_ADMIN);
     }
 
     @Override
-    public void execute(CommandMeta cm) {
-        HifumiBot.getSelf().shutdown(true);
+    protected ReplyAction onExecute(SlashCommandEvent event) {
+        HifumiBot.getSelf().getScheduler().runOnce(() -> {
+            if (HifumiBot.getSelf() != null)
+                HifumiBot.getSelf().shutdown(true);
+        });
+        return event.reply("Reloading, be right back!");
     }
 
     @Override
-    public String getHelpText() {
-        return "Reload a fresh instance of " + HifumiBot.getSelf().getJDA().getSelfUser().getName();
+    protected CommandData defineSlashCommand() {
+        return new CommandData("reload", "Shuts down the bot and immediately loads a new instance");
     }
 }

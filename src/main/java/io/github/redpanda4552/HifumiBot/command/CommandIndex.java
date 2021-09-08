@@ -42,10 +42,10 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandPerms;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandWiki;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
@@ -84,6 +84,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandUpsert());
         registerSlashCommand(new CommandWarez());
         registerSlashCommand(new CommandShutdown());
+        registerSlashCommand(new CommandReload());
         
         commandMap.clear();
         CommandCPU cpu = new CommandCPU();
@@ -104,8 +105,6 @@ public class CommandIndex {
         commandMap.put(perms.getName(), perms);
         CommandPFP pfp = new CommandPFP();
         commandMap.put(pfp.getName(), pfp);
-        CommandReload reload = new CommandReload();
-        commandMap.put(reload.getName(), reload);
         CommandRun run = new CommandRun();
         commandMap.put(run.getName(), run);
         CommandWiki wiki = new CommandWiki();
