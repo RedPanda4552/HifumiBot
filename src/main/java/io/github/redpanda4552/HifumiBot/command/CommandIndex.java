@@ -44,6 +44,7 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandBan;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
@@ -86,6 +87,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandShutdown());
         registerSlashCommand(new CommandReload());
         registerSlashCommand(new CommandWiki());
+        registerSlashCommand(new CommandBan());
         
         commandMap.clear();
         CommandCPU cpu = new CommandCPU();
