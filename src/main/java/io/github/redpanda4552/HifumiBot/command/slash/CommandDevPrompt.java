@@ -61,15 +61,15 @@ public class CommandDevPrompt extends AbstractSlashCommand {
             case "windows":
                 HifumiBot.getSelf().getConfig().dev.windows = instructions.getAsString().replace("\\n", "\n");
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
-                return event.reply("Updated to (markdown enabled):\n```\n" + HifumiBot.getSelf().getConfig().dev.windows + "\n```");
+                return event.reply("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.windows);
             case "ubuntu":
                 HifumiBot.getSelf().getConfig().dev.ubuntu = instructions.getAsString().replace("\\n", "\n");
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
-                return event.reply("Updated to (markdown enabled):\n```\n" + HifumiBot.getSelf().getConfig().dev.ubuntu + "\n```");
+                return event.reply("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.ubuntu);
             case "linux":
                 HifumiBot.getSelf().getConfig().dev.linux = instructions.getAsString().replace("\\n", "\n");
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
-                return event.reply("Updated to (markdown enabled):\n```\n" + HifumiBot.getSelf().getConfig().dev.linux + "\n```");
+                return event.reply("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.linux);
             }
         }
         
