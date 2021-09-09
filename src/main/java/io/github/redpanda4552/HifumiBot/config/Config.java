@@ -32,6 +32,7 @@ public class Config {
     public boolean useLocalDNSFiltering;
     public Server server;
     public Channels channels;
+    public Dev dev;
     public Roles roles;
     public Integrations integrations;
     public Permissions permissions;
@@ -41,6 +42,7 @@ public class Config {
         useLocalDNSFiltering = false;
         server = new Server();
         channels = new Channels();
+        dev = new Dev();
         roles = new Roles();
         integrations = new Integrations();
         permissions = new Permissions();
@@ -66,6 +68,18 @@ public class Config {
             systemOutputChannelId = new String("");
             rulesChannelId = new String("");
             restrictedCommandChannelId = new String("");
+        }
+    }
+    
+    public class Dev {
+        public String windows;
+        public String ubuntu;
+        public String linux;
+        
+        public Dev() {
+            windows = new String("");
+            ubuntu = new String("");
+            linux = new String("");
         }
     }
 
