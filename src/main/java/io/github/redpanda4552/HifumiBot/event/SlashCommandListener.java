@@ -71,7 +71,7 @@ public class SlashCommandListener extends ListenerAdapter {
         switch (commandSource) {
         case "wiki":
             CommandWiki commandWiki = (CommandWiki) slashCommands.get(commandSource);
-            commandWiki.onButtonEvent(event, payload);
+            commandWiki.onButtonEvent(event, event.getButton().getLabel());
             break;
         }
     }
