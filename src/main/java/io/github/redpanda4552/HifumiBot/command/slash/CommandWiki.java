@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.zip.CRC32;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
@@ -70,10 +71,11 @@ public class CommandWiki extends AbstractSlashCommand {
                 }
 
                 results.remove(highestName);
-                String nameEncoded = Base64.getEncoder().encodeToString(highestName.getBytes());
+                CRC32 crc = new CRC32();
+                crc.update(highestName.getBytes());
                 buttons.add(i++ % 2 == 0 ? 
-                        Button.primary(event.getUser().getId() + ":" + defineSlashCommand().getName() + ":" + nameEncoded, highestName) : 
-                        Button.secondary(event.getUser().getId() + ":" + defineSlashCommand().getName() + ":" + nameEncoded, highestName));
+                        Button.primary(event.getUser().getId() + ":" + defineSlashCommand().getName() + ":" + crc.getValue(), highestName) : 
+                        Button.secondary(event.getUser().getId() + ":" + defineSlashCommand().getName() + ":" + crc.getValue(), highestName));
                 highestWeight = 0;
             }
             
@@ -88,7 +90,7 @@ public class CommandWiki extends AbstractSlashCommand {
     @Override
     public void onButtonEvent(ButtonClickEvent event, String payload) {
         try {
-            String gameName = new String(Base64.getDecoder().decode(payload));
+            String gameName = payload;
             WikiPage wikiPage = new WikiPage(HifumiBot.getSelf().getWikiIndex().getWikiPageUrl(gameName));
             MessageBuilder mb = new MessageBuilder();
             EmbedBuilder eb = new EmbedBuilder();
@@ -119,7 +121,7 @@ public class CommandWiki extends AbstractSlashCommand {
             mb.setEmbeds(eb.build());
             event.getHook().editOriginal(mb.build()).setActionRow(Button.link(wikiPage.getWikiPageUrl(), "Go to PCSX2 Wiki")).queue();
         } catch (IllegalArgumentException e) {
-            event.getHook().sendMessage("Detected a damaged event payload, aborting.").setEphemeral(true);
+            event.getHook().sendMessage("Detected a damaged event payload, aborting.").setEphemeral(true).queue();
         }
     }
 
