@@ -37,7 +37,6 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandWarez extends AbstractSlashCommand {
     
@@ -46,7 +45,9 @@ public class CommandWarez extends AbstractSlashCommand {
     }
 
     @Override
-    protected ReplyAction onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandEvent event) {
+        event.deferReply(true).queue();
+        
         try {
             MessageBuilder mb = new MessageBuilder();
             EmbedBuilder eb = new EmbedBuilder();
@@ -89,12 +90,11 @@ public class CommandWarez extends AbstractSlashCommand {
                     false);
 
             mb.setEmbeds(eb.build());
-            return event.reply(mb.build());
+            event.getHook().sendMessage(mb.build()).queue();
         } catch (Exception e) {
             Messaging.logException("CommandWarez", "execute", e);
+            event.getHook().sendMessage("Command failed; error logged to " + event.getGuild().getGuildChannelById(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId).getAsMention()).setEphemeral(true).queue();
         }
-        
-        return event.reply("An error occurred while processing this command.").setEphemeral(true);
     }
 
     @Override

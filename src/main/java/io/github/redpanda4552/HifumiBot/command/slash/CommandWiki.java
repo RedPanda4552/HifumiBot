@@ -24,7 +24,6 @@
 package io.github.redpanda4552.HifumiBot.command.slash;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.zip.CRC32;
 
@@ -41,7 +40,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandWiki extends AbstractSlashCommand {
 
@@ -50,14 +48,12 @@ public class CommandWiki extends AbstractSlashCommand {
     }
 
     @Override
-    protected ReplyAction onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandEvent event) {
         int i = 0;
 
         HashMap<String, Float> results = SimpleSearch.search(HifumiBot.getSelf().getWikiIndex().getAllTitles(), event.getOption("game").getAsString());
-        ReplyAction ret = null;
 
         if (results.size() > 0) {
-            ret = event.reply("Choose your game below");
             ArrayList<Button> buttons = new ArrayList<Button>();
             String highestName = null;
             float highestWeight = 0;
@@ -79,12 +75,10 @@ public class CommandWiki extends AbstractSlashCommand {
                 highestWeight = 0;
             }
             
-            ret.addActionRow(buttons);
+            event.reply("Choose your game below").addActionRow(buttons).queue();
         } else {
-            ret = event.reply("No results matched your query!");
+            event.reply("No results matched your query!").queue();
         }
-        
-        return ret;
     }
     
     @Override

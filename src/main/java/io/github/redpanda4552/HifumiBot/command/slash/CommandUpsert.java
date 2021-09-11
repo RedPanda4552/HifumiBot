@@ -28,7 +28,6 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandUpsert extends AbstractSlashCommand {
 
@@ -37,9 +36,10 @@ public class CommandUpsert extends AbstractSlashCommand {
     }
 
     @Override
-    protected ReplyAction onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandEvent event) {
+        event.deferReply(true).queue();
         HifumiBot.getSelf().getCommandIndex().upsertSlashCommands();
-        return event.reply("Slash commands upserted.");
+        event.getHook().sendMessage("Slash commands updated!").setEphemeral(true).queue();
     }
 
     @Override
