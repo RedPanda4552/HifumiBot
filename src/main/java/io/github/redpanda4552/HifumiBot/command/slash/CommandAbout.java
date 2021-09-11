@@ -34,7 +34,6 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandAbout extends AbstractSlashCommand {
     
@@ -43,7 +42,7 @@ public class CommandAbout extends AbstractSlashCommand {
     }
 
     @Override
-    protected ReplyAction onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandEvent event) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("About " + HifumiBot.getSelf().getJDA().getSelfUser().getName());
         eb.setDescription("A helper bot created for the PCSX2 Discord server.");
@@ -69,7 +68,7 @@ public class CommandAbout extends AbstractSlashCommand {
         }
 
         eb.addField("Runnable Statuses", runnableBuilder.toString().trim(), false);
-        return event.replyEmbeds(eb.build());
+        event.replyEmbeds(eb.build()).queue();
     }
 
     @Override

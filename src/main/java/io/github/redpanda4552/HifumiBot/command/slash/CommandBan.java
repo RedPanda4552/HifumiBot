@@ -32,7 +32,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandBan extends AbstractSlashCommand {
 
@@ -41,17 +40,21 @@ public class CommandBan extends AbstractSlashCommand {
     }
 
     @Override
-    protected ReplyAction onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandEvent event) {
+        event.deferReply(true).queue();
+        
         if (!event.getMember().hasPermission(Permission.BAN_MEMBERS))
         {
-            return event.reply("You do not have the required permissions to ban users from this server.").setEphemeral(true);
+            event.reply("You do not have the required permissions to ban users from this server.").setEphemeral(true).queue();
+            return;
         }
 
         Member selfMember = event.getGuild().getSelfMember();
         
         if (!selfMember.hasPermission(Permission.BAN_MEMBERS))
         {
-            return event.reply("I don't have the required permissions to ban users from this server.").setEphemeral(true);
+            event.reply("I don't have the required permissions to ban users from this server.").setEphemeral(true).queue();
+            return;
         }
         
         OptionMapping user = event.getOption("user");
@@ -60,7 +63,8 @@ public class CommandBan extends AbstractSlashCommand {
         
         if (member != null && !selfMember.canInteract(member))
         {
-            return event.reply("This user is too powerful for me to ban.").setEphemeral(true);
+            event.reply("This user is too powerful for me to ban.").setEphemeral(true).queue();
+            return;
         }
         
         int days = 0;
@@ -69,11 +73,11 @@ public class CommandBan extends AbstractSlashCommand {
         if (option != null) {
             days = (int) Math.max(0, Math.min(7, option.getAsLong()));
         }
-            
 
         // Ban the user and send a success response
-        event.getGuild().ban(userObj, days).queue();
-        return event.reply("Banned user " + userObj.getAsTag());
+        event.getGuild().ban(userObj, days)
+                .flatMap(v -> event.getHook().sendMessage("Banned user " + userObj.getAsTag()))
+                .queue();
     }
 
     @Override

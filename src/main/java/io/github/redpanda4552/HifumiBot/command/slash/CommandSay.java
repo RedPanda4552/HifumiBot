@@ -28,7 +28,6 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandSay extends AbstractSlashCommand {
 
@@ -37,8 +36,8 @@ public class CommandSay extends AbstractSlashCommand {
     }
     
     @Override
-    protected ReplyAction onExecute(SlashCommandEvent event) {
-        return event.reply(event.getOption("string").getAsString());
+    protected void onExecute(SlashCommandEvent event) {
+        event.reply(event.getOption("string").getAsString()).queue();
     }
 
     @Override

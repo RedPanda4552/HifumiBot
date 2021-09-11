@@ -28,7 +28,6 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandShutdown extends AbstractSlashCommand {
     
@@ -37,12 +36,12 @@ public class CommandShutdown extends AbstractSlashCommand {
     }
 
     @Override
-    protected ReplyAction onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandEvent event) {
         HifumiBot.getSelf().getScheduler().runOnce(() -> {
             if (HifumiBot.getSelf() != null)
                 HifumiBot.getSelf().shutdown(false);
         });
-        return event.reply("Shutting down, bye bye!");
+        event.reply("Shutting down, bye bye!").queue();
     }
 
     @Override

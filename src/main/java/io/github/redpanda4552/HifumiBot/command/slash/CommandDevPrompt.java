@@ -33,7 +33,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandDevPrompt extends AbstractSlashCommand {
 
@@ -42,7 +41,8 @@ public class CommandDevPrompt extends AbstractSlashCommand {
     }
 
     @Override
-    protected ReplyAction onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandEvent event) {
+        event.deferReply(true).queue();
         OptionMapping os = event.getOption("os");
         OptionMapping instructions = event.getOption("instructions");
         
@@ -50,30 +50,34 @@ public class CommandDevPrompt extends AbstractSlashCommand {
         case "get":
             switch (os.getAsString()) {
             case "windows":
-                return event.reply("Currently displaying (markdown suppressed):\n```\n" + HifumiBot.getSelf().getConfig().dev.windows + "\n```");
+                event.getHook().sendMessage("Currently displaying (markdown suppressed):\n```\n" + HifumiBot.getSelf().getConfig().dev.windows + "\n```").queue();
+                return;
             case "ubuntu":
-                return event.reply("Currently displaying (markdown suppressed):\n```\n" + HifumiBot.getSelf().getConfig().dev.ubuntu + "\n```");
+                event.getHook().sendMessage("Currently displaying (markdown suppressed):\n```\n" + HifumiBot.getSelf().getConfig().dev.ubuntu + "\n```").queue();
+                return;
             case "linux":
-                return event.reply("Currently displaying (markdown suppressed):\n```\n" + HifumiBot.getSelf().getConfig().dev.linux + "\n```");
+                event.getHook().sendMessage("Currently displaying (markdown suppressed):\n```\n" + HifumiBot.getSelf().getConfig().dev.linux + "\n```").queue();
+                return;
             }
         case "set":
             switch (os.getAsString()) {
             case "windows":
                 HifumiBot.getSelf().getConfig().dev.windows = instructions.getAsString().replace("\\n", "\n");
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
-                return event.reply("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.windows);
+                event.getHook().sendMessage("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.windows).queue();
+                return;
             case "ubuntu":
                 HifumiBot.getSelf().getConfig().dev.ubuntu = instructions.getAsString().replace("\\n", "\n");
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
-                return event.reply("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.ubuntu);
+                event.getHook().sendMessage("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.ubuntu).queue();
+                return;
             case "linux":
                 HifumiBot.getSelf().getConfig().dev.linux = instructions.getAsString().replace("\\n", "\n");
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
-                return event.reply("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.linux);
+                event.getHook().sendMessage("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.linux).queue();
+                return;
             }
         }
-        
-        return null;
     }
 
     @Override

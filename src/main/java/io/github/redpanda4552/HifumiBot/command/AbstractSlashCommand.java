@@ -28,7 +28,6 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public abstract class AbstractSlashCommand {
     
@@ -40,13 +39,13 @@ public abstract class AbstractSlashCommand {
     
     public void executeIfPermission(SlashCommandEvent event) {
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(permissionLevel, event.getUser(), event.getMember())) {
-            onExecute(event).queue();
+            onExecute(event);
         } else {
             event.reply("You do not have permission to use this command.").setEphemeral(true).queue();
         }
     }
     
-    protected abstract ReplyAction onExecute(SlashCommandEvent event);
+    protected abstract void onExecute(SlashCommandEvent event);
     public void onButtonEvent(ButtonClickEvent event, String payload) { }
     protected abstract CommandData defineSlashCommand();
     
