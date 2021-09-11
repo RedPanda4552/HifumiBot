@@ -46,7 +46,7 @@ public class CommandWarez extends AbstractSlashCommand {
 
     @Override
     protected void onExecute(SlashCommandEvent event) {
-        event.deferReply(true).queue();
+        event.deferReply().queue();
         
         try {
             MessageBuilder mb = new MessageBuilder();
@@ -92,8 +92,8 @@ public class CommandWarez extends AbstractSlashCommand {
             mb.setEmbeds(eb.build());
             event.getHook().sendMessage(mb.build()).queue();
         } catch (Exception e) {
+            event.getHook().sendMessage("Command failed; check bot output channel for error log.").queue();
             Messaging.logException("CommandWarez", "execute", e);
-            event.getHook().sendMessage("Command failed; error logged to " + event.getGuild().getGuildChannelById(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId).getAsMention()).setEphemeral(true).queue();
         }
     }
 
