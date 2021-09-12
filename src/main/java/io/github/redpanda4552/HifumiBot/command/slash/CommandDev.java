@@ -21,41 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.command.slash;
 
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-public class CommandDev extends AbstractCommand {
-    private final String DEV_CHANNEL = "dev-builds";
+public class CommandDev extends AbstractSlashCommand {
+    
+    private MessageEmbed embed;
 
     public CommandDev() {
-        super("dev", CATEGORY_BUILTIN, PermissionLevel.GUEST, false);
-    }
-
-    @Override
-    public void execute(CommandMeta cm) {
-        if (!(cm.getChannel() instanceof TextChannel)) {
-            Messaging.sendMessage(cm.getChannel(), "Sorry, but this command can only be used within the PCSX2 server.");
-            return;
-        }
-
-        EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
+        super(PermissionLevel.GUEST);
+        EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("PCSX2 Development Builds");
-        eb.setDescription(
-                "Problems? Looking for PCSX2 updates? Consider using PCSX2 development builds! I post a message in ");
-        TextChannel devBuilds = cm.getGuild().getTextChannelsByName(DEV_CHANNEL, false).get(0);
+        eb.setDescription("Problems? Looking for PCSX2 updates? Consider using PCSX2 development builds! I post a message in ");
+        TextChannel devBuilds = HifumiBot.getSelf().getJDA().getTextChannelById(HifumiBot.getSelf().getConfig().channels.devBuildOutputChannelId);
         eb.appendDescription(devBuilds.getAsMention()).appendDescription(" whenever a new development build is ready!");
-        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
+        embed = eb.build();
     }
 
     @Override
-    public String getHelpText() {
-        return "Print a dialog about development builds";
+    protected void onExecute(SlashCommandEvent event) {
+        event.replyEmbeds(embed).queue();
+    }
+
+    @Override
+    protected CommandData defineSlashCommand() {
+        return new CommandData("dev", "Show a prompt linking to the dev builds channel");
     }
 
 }
