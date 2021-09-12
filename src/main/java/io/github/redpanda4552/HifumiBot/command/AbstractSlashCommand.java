@@ -36,9 +36,11 @@ import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 public abstract class AbstractSlashCommand {
     
     private PermissionLevel permissionLevel;
+    private ArrayList<CommandPrivilege> discordPrivileges = new ArrayList<CommandPrivilege>();
     
     public AbstractSlashCommand(PermissionLevel permissionLevel) {
         this.permissionLevel = permissionLevel;
+        this.recalculatePrivileges();
     }
     
     public void executeIfPermission(SlashCommandEvent event) {
@@ -68,27 +70,31 @@ public abstract class AbstractSlashCommand {
         }
         
         String commandId = HifumiBot.getSelf().getJDA().getGuildById(serverId).upsertCommand(commandData).complete().getId();
-        ArrayList<CommandPrivilege> privileges = new ArrayList<CommandPrivilege>();
+        HifumiBot.getSelf().getJDA().getGuildById(serverId).updateCommandPrivilegesById(commandId, recalculatePrivileges()).complete();
+    }
+    
+    public ArrayList<CommandPrivilege> recalculatePrivileges() {
+        discordPrivileges.clear();
         
         switch (permissionLevel) {
         case MOD:
             for (String roleId : HifumiBot.getSelf().getConfig().permissions.modRoleIds) {
-                privileges.add(CommandPrivilege.enableRole(roleId));
+                discordPrivileges.add(CommandPrivilege.enableRole(roleId));
             }
         case ADMIN:
             for (String roleId : HifumiBot.getSelf().getConfig().permissions.adminRoleIds) {
-                privileges.add(CommandPrivilege.enableRole(roleId));
+                discordPrivileges.add(CommandPrivilege.enableRole(roleId));
             }
         case SUPER_ADMIN:
             for (String roleId : HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds) {
-                privileges.add(CommandPrivilege.enableRole(roleId));
+                discordPrivileges.add(CommandPrivilege.enableRole(roleId));
             }
         case SUPERUSER:
-            privileges.add(CommandPrivilege.enableUser(HifumiBot.getSuperuserId()));
+            discordPrivileges.add(CommandPrivilege.enableUser(HifumiBot.getSuperuserId()));
         default:
             break;
         }
         
-        HifumiBot.getSelf().getJDA().getGuildById(serverId).updateCommandPrivilegesById(commandId, privileges).complete();
+        return discordPrivileges;
     }
 }
