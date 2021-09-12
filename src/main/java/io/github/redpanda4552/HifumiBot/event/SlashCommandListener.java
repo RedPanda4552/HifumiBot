@@ -23,18 +23,25 @@
  */
 package io.github.redpanda4552.HifumiBot.event;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.UUID;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class SlashCommandListener extends ListenerAdapter {
 
     private HashMap<String, AbstractSlashCommand> slashCommands = HifumiBot.getSelf().getCommandIndex().getSlashCommands();
+    private HashMap<UUID, ButtonInteractionElement> buttonCache = new HashMap<UUID, ButtonInteractionElement>();
+    private HashMap<UUID, SelectionInteractionElement> selectionCache = new HashMap<UUID, SelectionInteractionElement>();
     
     @Override
     public void onSlashCommand(SlashCommandEvent event) {
@@ -48,30 +55,62 @@ public class SlashCommandListener extends ListenerAdapter {
         }
     }
     
-    @Override
-    public void onButtonClick(ButtonClickEvent event) {
-       String[] id = event.getComponentId().split(":");
+    @Override 
+    public void onSelectionMenu(SelectionMenuEvent event) {
+        UUID uuid = null;
         
-        if (id.length != 3) {
-            event.reply("Detected a damaged event identifier, aborting.").setEphemeral(true).queue();
+        try {
+            uuid = UUID.fromString(event.getComponentId());
+        } catch (IllegalArgumentException e) {
+            Messaging.logException("SlashCommandListener", "onSelectionMenu", e);
+            event.reply("Selection tampering detected, admins have been notified.").setEphemeral(true).queue();
             return;
         }
         
-        String authorId = id[0];
-        String commandSource = id[1];
-        String payload = id[2];
-        
-        if (!authorId.equals(event.getUser().getId())) {
-            event.reply("You did not send this original command; you are not allowed to interact with these buttons.").setEphemeral(true).queue();
+        if (!selectionCache.containsKey(uuid)) {
+            event.reply("Whoops! This selection has expired. You'll need to run the command again to get an active selection.").setEphemeral(true).queue();
             return;
         }
         
-        switch (commandSource) {
+        SelectionInteractionElement selection = selectionCache.get(uuid);
+        
+        if (!selection.getUserId().equals(event.getUser().getId())) {
+            event.reply("You did not send this original command; you are not allowed to interact with this selection.").setEphemeral(true).queue();
+            return;
+        }
+        
+        switch (selection.getCommandName()) {
         case "wiki":
             event.deferEdit().queue();
-            CommandWiki commandWiki = (CommandWiki) slashCommands.get(commandSource);
-            commandWiki.onButtonEvent(event, event.getButton().getLabel());
+            CommandWiki commandWiki = (CommandWiki) slashCommands.get(selection.getCommandName());
+            commandWiki.onSelectionEvent(event);
             break;
         }
+    }
+    
+    public synchronized ButtonInteractionElement newButton(String userId, String commandName, String label, ButtonType buttonType) {
+        ButtonInteractionElement button = new ButtonInteractionElement(userId, commandName, label, buttonType);
+        this.buttonCache.put(button.getUUID(), button);
+        return button;
+    }
+    
+    public synchronized void cleanInteractionElements() {
+        for (UUID key : this.buttonCache.keySet()) {
+            if (Duration.between(this.buttonCache.get(key).getCreatedInstant(), Instant.now()).toMillis() > HifumiBot.getSelf().getConfig().slashCommands.timeoutSeconds * 1000) {
+                this.buttonCache.remove(key);
+            }
+        }
+        
+        for (UUID key : this.selectionCache.keySet()) {
+            if (Duration.between(this.selectionCache.get(key).getCreatedInstant(), Instant.now()).toMillis() > HifumiBot.getSelf().getConfig().slashCommands.timeoutSeconds * 1000) {
+                this.selectionCache.remove(key);
+            }
+        }
+    }
+    
+    public synchronized SelectionInteractionElement newSelection(String userId, String commandName) {
+        SelectionInteractionElement selection = new SelectionInteractionElement(userId, commandName);
+        this.selectionCache.put(selection.getUUID(), selection);
+        return selection;
     }
 }

@@ -164,6 +164,10 @@ public class HifumiBot {
             HifumiBot.getSelf().getBuildMonitor().refresh();
         }, 1000 * 60 * 10);
         
+        scheduler.scheduleRepeating("ints", () -> {
+            HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
+        }, 1000 * getConfig().slashCommands.timeoutSeconds);
+
         if (doSlashCommandUpsert) {
             commandIndex.upsertSlashCommands();
         }

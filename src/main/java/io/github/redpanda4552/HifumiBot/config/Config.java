@@ -32,6 +32,7 @@ public class Config {
     public boolean useLocalDNSFiltering;
     public Server server;
     public Channels channels;
+    public SlashCommands slashCommands;
     public Dev dev;
     public Roles roles;
     public Integrations integrations;
@@ -42,6 +43,7 @@ public class Config {
         useLocalDNSFiltering = false;
         server = new Server();
         channels = new Channels();
+        slashCommands = new SlashCommands();
         dev = new Dev();
         roles = new Roles();
         integrations = new Integrations();
@@ -68,6 +70,14 @@ public class Config {
             systemOutputChannelId = new String("");
             rulesChannelId = new String("");
             restrictedCommandChannelId = new String("");
+        }
+    }
+    
+    public class SlashCommands {
+        public int timeoutSeconds;
+        
+        public SlashCommands() {
+            timeoutSeconds = 60 * 15;
         }
     }
     

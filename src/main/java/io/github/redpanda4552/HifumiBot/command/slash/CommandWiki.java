@@ -23,23 +23,25 @@
  */
 package io.github.redpanda4552.HifumiBot.command.slash;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.zip.CRC32;
+import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
+import io.github.redpanda4552.HifumiBot.event.SelectionInteractionElement;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 public class CommandWiki extends AbstractSlashCommand {
 
@@ -49,16 +51,20 @@ public class CommandWiki extends AbstractSlashCommand {
 
     @Override
     protected void onExecute(SlashCommandEvent event) {
-        int i = 0;
-
-        HashMap<String, Float> results = SimpleSearch.search(HifumiBot.getSelf().getWikiIndex().getAllTitles(), event.getOption("game").getAsString());
+        event.deferReply().queue();
+        String query = event.getOption("game").getAsString();
+        HashMap<String, Float> results = SimpleSearch.search(HifumiBot.getSelf().getWikiIndex().getAllTitles(), query);
 
         if (results.size() > 0) {
-            ArrayList<Button> buttons = new ArrayList<Button>();
+            SelectionInteractionElement selection = HifumiBot.getSelf().getSlashCommandListener().newSelection(event.getUser().getId(), defineSlashCommand().getName());
             String highestName = null;
             float highestWeight = 0;
 
-            while (!results.isEmpty() && i < 5) {
+            for (int i = 0; i < 5; i++) {
+                if (results.isEmpty()) {
+                    break;
+                }
+                
                 for (String name : results.keySet()) {
                     if (results.get(name) > highestWeight) {
                         highestName = name;
@@ -67,24 +73,27 @@ public class CommandWiki extends AbstractSlashCommand {
                 }
 
                 results.remove(highestName);
-                CRC32 crc = new CRC32();
-                crc.update(highestName.getBytes());
-                buttons.add(i++ % 2 == 0 ? 
-                        Button.primary(event.getUser().getId() + ":" + defineSlashCommand().getName() + ":" + crc.getValue(), highestName) : 
-                        Button.secondary(event.getUser().getId() + ":" + defineSlashCommand().getName() + ":" + crc.getValue(), highestName));
+                selection.addOption(highestName, highestName);
                 highestWeight = 0;
             }
             
-            event.reply("Choose your game below").addActionRow(buttons).queue();
+            event.getHook().editOriginal("Select your game from the list below.").setActionRow(selection.getSelectionMenu()).queue();
         } else {
-            event.reply("No results matched your query!").queue();
+            event.getHook().editOriginal("No results matched your search for `" + query + "`").queue();
         }
     }
     
     @Override
-    public void onButtonEvent(ButtonClickEvent event, String payload) {
+    public void onSelectionEvent(SelectionMenuEvent event) {
         try {
-            String gameName = payload;
+            List<SelectOption> options = event.getSelectedOptions();
+            
+            if (options.size() == 0) {
+                event.getHook().editOriginal("An error occurred; did not recieve your selection. Try again in a few moments.").queue();
+                return;
+            }
+            
+            String gameName = options.get(0).getValue();
             WikiPage wikiPage = new WikiPage(HifumiBot.getSelf().getWikiIndex().getWikiPageUrl(gameName));
             MessageBuilder mb = new MessageBuilder();
             EmbedBuilder eb = new EmbedBuilder();
@@ -114,8 +123,9 @@ public class CommandWiki extends AbstractSlashCommand {
             
             mb.setEmbeds(eb.build());
             event.getHook().editOriginal(mb.build()).setActionRow(Button.link(wikiPage.getWikiPageUrl(), "Go to PCSX2 Wiki")).queue();
-        } catch (IllegalArgumentException e) {
-            event.getHook().sendMessage("Detected a damaged event payload, aborting.").setEphemeral(true).queue();
+        } catch (Exception e) {
+            event.getHook().editOriginal("An internal error occurred, aborting.").queue();
+            Messaging.logException("CommandWiki", "onSelectionEvent", e);
         }
     }
 
