@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
@@ -69,15 +70,13 @@ public class PnachParser extends AbstractParser {
         try {
             url = new URL(attachment.getUrl());
         } catch (MalformedURLException e) {
-            Messaging.sendMessage(message.getChannel(),
-                    ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
+            Messaging.sendMessage(message.getChannel(), ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
             return;
         }
 
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention()
-                    + " Testing your PNACH ( " + attachment.getFileName() + " )");
+            Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Testing your PNACH ( " + attachment.getFileName() + " )");
 
             if (!Pattern.matches(CRC_FILE_NAME_PATTERN, attachment.getFileName())) {
                 addError(PnachParserError.FILE_NAME, -1);
@@ -98,8 +97,7 @@ public class PnachParser extends AbstractParser {
 
                     if (lineStart.equals("author") || lineStart.equals("comment") || lineStart.equals("gametitle")) {
                         continue;
-                    } else if (lineStart.equalsIgnoreCase("author") || lineStart.equalsIgnoreCase("comment")
-                            || lineStart.equalsIgnoreCase("gametitle")) {
+                    } else if (lineStart.equalsIgnoreCase("author") || lineStart.equalsIgnoreCase("comment") || lineStart.equalsIgnoreCase("gametitle")) {
                         addError(PnachParserError.START_LOWERCASE, lineNumber);
                     } else if (lineStart.equals("patch")) {
                         int lastEquals = line.lastIndexOf('=');
@@ -169,18 +167,15 @@ public class PnachParser extends AbstractParser {
                                         String param4 = params[4].split("/")[0].trim();
                                         Integer value = Integer.parseUnsignedInt(param4.toUpperCase(), 16);
 
-                                        if (params[3].equals("byte")
-                                                || (params[3].equals("extended") && leading == 0)) {
+                                        if (params[3].equals("byte") || (params[3].equals("extended") && leading == 0)) {
                                             if (Integer.compareUnsigned(value, 0xff) > 0) {
                                                 addError(PnachParserError.FIFTH_SCOPE, lineNumber);
                                             }
-                                        } else if (params[3].equals("short")
-                                                || (params[3].equals("extended") && leading == 1)) {
+                                        } else if (params[3].equals("short") || (params[3].equals("extended") && leading == 1)) {
                                             if (Integer.compareUnsigned(value, 0xffff) > 0) {
                                                 addError(PnachParserError.FIFTH_SCOPE, lineNumber);
                                             }
-                                        } else if (params[3].equals("word")
-                                                || (params[3].equals("extended") && leading == 2)) {
+                                        } else if (params[3].equals("word") || (params[3].equals("extended") && leading == 2)) {
                                             // Nothing to report on
                                         } else if (params[3].equals("double")) {
                                             // Nothing to report on
@@ -210,8 +205,8 @@ public class PnachParser extends AbstractParser {
             StringBuilder bodyBuilder = new StringBuilder();
             bodyBuilder.append("\n")
                     .append("============================== Pnach Parse Results =============================")
-                    .append("\n");
-            bodyBuilder.append("(*) = Information (!) = Warning (X) = Critical").append("\n\n");
+                    .append("\n")
+                    .append("(*) = Information (!) = Warning (X) = Critical").append("\n\n");
             boolean hasLines = false;
 
             for (PnachParserError epe : errorMap.keySet()) {
@@ -219,16 +214,14 @@ public class PnachParser extends AbstractParser {
 
                 if (lines.size() > 0) {
                     hasLines = true;
-                    bodyBuilder
-                            .append("--------------------------------------------------------------------------------")
-                            .append("\n");
-                    bodyBuilder.append(epe.getDisplayString()).append("\n\n");
-                    bodyBuilder.append("Affected Lines:").append("\n");
+                    bodyBuilder.append("--------------------------------------------------------------------------------")
+                            .append("\n")
+                            .append(epe.getDisplayString()).append("\n\n")
+                            .append("Affected Lines:").append("\n");
                     StringBuilder lineBuilder = new StringBuilder();
 
                     for (Integer i : lines) {
-                        if (lineBuilder.length() + String.valueOf(i).length()
-                                + String.valueOf(LINE_NUM_SEPARATOR).length() > MAX_LINE_LENGTH) {
+                        if (lineBuilder.length() + String.valueOf(i).length() + String.valueOf(LINE_NUM_SEPARATOR).length() > MAX_LINE_LENGTH) {
                             bodyBuilder.append(lineBuilder.toString()).append("\n");
                             lineBuilder = new StringBuilder();
                         } else if (lineBuilder.length() != 0) {
@@ -249,9 +242,11 @@ public class PnachParser extends AbstractParser {
                         .append("============================ End Pnach Parse Results ===========================")
                         .append("\n");
 
-                Messaging.sendMessage(message.getChannel(),
-                        ":information_source: Found something! Results are in this text file!",
-                        "Pnach_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
+                if (bodyBuilder.toString().getBytes().length <= HifumiBot.getSelf().getJDA().getSelfUser().getAllowedFileSize()) {
+                    Messaging.sendMessage(message.getChannel(), ":information_source: Found something! Results are in this text file!", "Pnach_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
+                } else {
+                    Messaging.sendMessage(message.getChannel(), ":warning: Your pnach generated such a large results file that I can't upload it. A human is gonna have to read through your pnach manually.");
+                }
             } else {
                 Messaging.sendMessage(message.getChannel(), ":white_check_mark: All good, nothing to report!");
             }
