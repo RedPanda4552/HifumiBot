@@ -34,16 +34,16 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
-public class CommandDevPrompt extends AbstractSlashCommand {
+public class CommandPrompt extends AbstractSlashCommand {
 
-    public CommandDevPrompt() {
+    public CommandPrompt() {
         super(PermissionLevel.SUPER_ADMIN);
-        deprecated = true;
     }
 
     @Override
     protected void onExecute(SlashCommandEvent event) {
         event.deferReply(true).queue();
+        
         OptionMapping os = event.getOption("os");
         OptionMapping instructions = event.getOption("instructions");
         
@@ -95,7 +95,7 @@ public class CommandDevPrompt extends AbstractSlashCommand {
                 .addOptions(os)
                 .addOption(OptionType.STRING, "instructions", "New instructions to set", true);
         
-        return new CommandData("devprompt", "Get or set the Windows or Linux dev build instructions")
+        return new CommandData("prompt", "Get or set various information prompts")
                 .addSubcommands(get, set);
     }
 
