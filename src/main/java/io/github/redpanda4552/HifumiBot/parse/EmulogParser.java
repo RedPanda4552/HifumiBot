@@ -212,7 +212,7 @@ public class EmulogParser extends AbstractParser {
                 Messaging.sendMessage(message.getChannel(),
                         ":white_check_mark: Nothing to report! Either this emulog is empty, or things just went really well!");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Messaging.sendMessage(message.getChannel(), ":x: Something went wrong... Try again?");
             Messaging.logException("EmulogParser", "run", e);
             return;
