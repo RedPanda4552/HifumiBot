@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -56,6 +57,7 @@ import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
 public class CommandIndex {
 
@@ -129,6 +131,15 @@ public class CommandIndex {
     public void upsertSlashCommands() {
         for (AbstractSlashCommand slashCommand : getSlashCommands().values()) {
             slashCommand.upsertSlashCommand();
+        }
+        
+        String serverId = HifumiBot.getSelf().getConfig().server.id;
+        List<Command> commands = HifumiBot.getSelf().getJDA().getGuildById(serverId).retrieveCommands().complete();
+
+        for (Command command : commands) {
+            if (!slashCommands.containsKey(command.getName())) {
+                HifumiBot.getSelf().getJDA().getGuildById(serverId).deleteCommandById(command.getId()).complete();
+            }
         }
     }
     
