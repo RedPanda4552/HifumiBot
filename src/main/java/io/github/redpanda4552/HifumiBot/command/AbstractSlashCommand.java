@@ -24,21 +24,18 @@
 package io.github.redpanda4552.HifumiBot.command;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 public abstract class AbstractSlashCommand {
     
     private PermissionLevel permissionLevel;
-    protected boolean deprecated = false;
     
     public AbstractSlashCommand(PermissionLevel permissionLevel) {
         this.permissionLevel = permissionLevel;
@@ -68,19 +65,6 @@ public abstract class AbstractSlashCommand {
         
         if (permissionLevel != PermissionLevel.GUEST) {
             commandData.setDefaultEnabled(false);
-        }
-        
-        if (deprecated) {
-            List<Command> commands = HifumiBot.getSelf().getJDA().getGuildById(serverId).retrieveCommands().complete();
-            
-            for (Command command : commands) {
-                if (command.getName().equals(commandData.getName())) {
-                    HifumiBot.getSelf().getJDA().getGuildById(serverId).deleteCommandById(command.getId()).complete();
-                    break;
-                }
-            }
-            
-            return;
         }
         
         String commandId = HifumiBot.getSelf().getJDA().getGuildById(serverId).upsertCommand(commandData).complete().getId();
