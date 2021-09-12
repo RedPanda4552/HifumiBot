@@ -23,12 +23,15 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
+import java.util.ArrayList;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 public abstract class AbstractSlashCommand {
     
@@ -59,6 +62,33 @@ public abstract class AbstractSlashCommand {
         }
         
         CommandData commandData = defineSlashCommand();
-        HifumiBot.getSelf().getJDA().getGuildById(serverId).upsertCommand(commandData).queue();
+        
+        if (permissionLevel != PermissionLevel.GUEST) {
+            commandData.setDefaultEnabled(false);
+        }
+        
+        String commandId = HifumiBot.getSelf().getJDA().getGuildById(serverId).upsertCommand(commandData).complete().getId();
+        ArrayList<CommandPrivilege> privileges = new ArrayList<CommandPrivilege>();
+        
+        switch (permissionLevel) {
+        case MOD:
+            for (String roleId : HifumiBot.getSelf().getConfig().permissions.modRoleIds) {
+                privileges.add(CommandPrivilege.enableRole(roleId));
+            }
+        case ADMIN:
+            for (String roleId : HifumiBot.getSelf().getConfig().permissions.adminRoleIds) {
+                privileges.add(CommandPrivilege.enableRole(roleId));
+            }
+        case SUPER_ADMIN:
+            for (String roleId : HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds) {
+                privileges.add(CommandPrivilege.enableRole(roleId));
+            }
+        case SUPERUSER:
+            privileges.add(CommandPrivilege.enableUser(HifumiBot.getSuperuserId()));
+        default:
+            break;
+        }
+        
+        HifumiBot.getSelf().getJDA().getGuildById(serverId).updateCommandPrivilegesById(commandId, privileges).complete();
     }
 }
