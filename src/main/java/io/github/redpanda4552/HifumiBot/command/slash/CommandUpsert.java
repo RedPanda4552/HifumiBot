@@ -27,10 +27,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class CommandUpsert extends AbstractSlashCommand {
 
@@ -41,29 +38,13 @@ public class CommandUpsert extends AbstractSlashCommand {
     @Override
     protected void onExecute(SlashCommandEvent event) {
         event.deferReply(true).queue();
-        
-        OptionMapping opt = event.getOption("commandName");
-        
-        if (opt != null) {
-            String commandName = opt.getAsString();
-            HifumiBot.getSelf().getCommandIndex().getSlashCommands().get(commandName).upsertSlashCommand();
-        } else {
-            HifumiBot.getSelf().getCommandIndex().upsertSlashCommands();
-        }
-        
+        HifumiBot.getSelf().getCommandIndex().upsertSlashCommands();
         event.getHook().sendMessage("Slash commands updated!").setEphemeral(true).queue();
     }
 
     @Override
     protected CommandData defineSlashCommand() {
-        OptionData commandName = new OptionData(OptionType.STRING, "commandName", "(Optional) Name of the command to force");
-        
-        for (String name : HifumiBot.getSelf().getCommandIndex().getSlashCommands().keySet()) {
-            commandName.addChoice(name, name);
-        }
-        
-        return new CommandData("upsert", "Force upsert one, or passively upsert all slash commands.")
-                .addOptions(commandName);
+        return new CommandData("upsert", "Upsert all slash commands to the configured server.");
     }
 
 }

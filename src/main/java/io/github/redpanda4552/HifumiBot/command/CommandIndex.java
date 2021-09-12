@@ -129,25 +129,16 @@ public class CommandIndex {
     }
     
     public void upsertSlashCommands() {
+        for (AbstractSlashCommand slashCommand : getSlashCommands().values()) {
+            slashCommand.upsertSlashCommand();
+        }
+        
         String serverId = HifumiBot.getSelf().getConfig().server.id;
         List<Command> commands = HifumiBot.getSelf().getJDA().getGuildById(serverId).retrieveCommands().complete();
-        HashMap<String, Command> uploadedCommands = new HashMap<String, Command>();
-        
-        for (Command command : commands) {
-            uploadedCommands.put(command.getName(), command);
-        }
-        
-        // Upsert any commands that we registered locally but Discord does not have yet.
-        for (String commandName : getSlashCommands().keySet()) {
-            if (!uploadedCommands.containsKey(commandName)) {
-                getSlashCommands().get(commandName).upsertSlashCommand();
-            }
-        }
-        
-        // Delete any commands that Discord has but we did not register locally
+
         for (Command command : commands) {
             if (!slashCommands.containsKey(command.getName())) {
-                command.delete().queue();
+                HifumiBot.getSelf().getJDA().getGuildById(serverId).deleteCommandById(command.getId()).complete();
             }
         }
     }
