@@ -56,7 +56,7 @@ public class CommandUpsert extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        OptionData commandName = new OptionData(OptionType.STRING, "cmd-name", "(Optional) Name of the command to force");
+        OptionData commandName = new OptionData(OptionType.STRING, "commandName", "(Optional) Name of the command to force");
         
         for (String name : HifumiBot.getSelf().getCommandIndex().getSlashCommands().keySet()) {
             commandName.addChoice(name, name);
