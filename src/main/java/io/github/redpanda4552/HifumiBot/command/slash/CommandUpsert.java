@@ -27,7 +27,9 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class CommandUpsert extends AbstractSlashCommand {
 
@@ -38,13 +40,20 @@ public class CommandUpsert extends AbstractSlashCommand {
     @Override
     protected void onExecute(SlashCommandEvent event) {
         event.deferReply(true).queue();
-        HifumiBot.getSelf().getCommandIndex().upsertSlashCommands();
+        HifumiBot.getSelf().getCommandIndex().upsertSlashCommands(event.getOption("mode").getAsString());
         event.getHook().sendMessage("Slash commands updated!").setEphemeral(true).queue();
     }
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("upsert", "Upsert all slash commands to the configured server.");
+        
+        OptionData mode = new OptionData(OptionType.STRING, "mode", "Mode to upsert")
+                .setRequired(true)
+                .addChoice("all", "all")
+                .addChoice("new", "new");
+        
+        return new CommandData("upsert", "Upsert all slash commands to the configured server.")
+                .addOptions(mode);
     }
 
 }
