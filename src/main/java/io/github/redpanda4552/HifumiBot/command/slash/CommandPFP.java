@@ -21,73 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.command.slash;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
-import net.dv8tion.jda.api.entities.EmbedType;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-public class CommandPFP extends AbstractCommand {
+public class CommandPFP extends AbstractSlashCommand {
+    
     public CommandPFP() {
-        super("pfp", CATEGORY_BUILTIN, PermissionLevel.SUPERUSER, false);
-    }
-
-    @Override
-    public void execute(CommandMeta cm) {
-        List<Attachment> attachments = cm.getMessage().getAttachments();
-        List<MessageEmbed> embeds = cm.getMessage().getEmbeds();
-
-        if (attachments.size() > 0) {
-            Attachment attachment = attachments.get(0);
-
-            if (attachment.isImage()) {
-                try {
-                    setAvatar(attachment.getUrl());
-                    Messaging.sendMessage(cm.getChannel(), "Avatar set!");
-                } catch (IOException e) {
-                    Messaging.sendMessage(cm.getChannel(),
-                            "An error occurred while setting the avatar: " + e.getMessage());
-                }
-
-                return;
-            }
-        } else if (embeds.size() > 0) {
-            MessageEmbed embed = embeds.get(0);
-
-            if (embed.getType() == EmbedType.IMAGE) {
-                try {
-                    setAvatar(embed.getImage().getUrl());
-                    Messaging.sendMessage(cm.getChannel(), "Avatar set!");
-                } catch (IOException e) {
-                    Messaging.sendMessage(cm.getChannel(),
-                            "An error occurred while setting the avatar: " + e.getMessage());
-                }
-
-                return;
-            }
-        }
-
-        Messaging.sendMessage(cm.getChannel(),
-                "No images found in this message! Either attach one or include a link in the command arguments.");
-    }
-
-    @Override
-    public String getHelpText() {
-        return "Set Hifumi's avatar";
+        super(PermissionLevel.SUPERUSER);
     }
 
     private void setAvatar(String imageUrl) throws IOException, MalformedURLException {
@@ -96,5 +53,29 @@ public class CommandPFP extends AbstractCommand {
         ByteArrayOutputStream oStream = new ByteArrayOutputStream();
         ImageIO.write(bImage, "png", oStream);
         HifumiBot.getSelf().getJDA().getSelfUser().getManager().setAvatar(Icon.from(oStream.toByteArray())).complete();
+    }
+
+    @Override
+    protected void onExecute(SlashCommandEvent event) {
+        event.deferReply().queue();
+        
+        try {
+            String imageUrl = event.getOption("image-url").getAsString();
+            setAvatar(imageUrl);
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Avatar set!");
+            eb.setDescription(imageUrl);
+            eb.setImage(imageUrl);
+            event.getHook().sendMessageEmbeds(eb.build()).queue();
+        } catch (Exception e) {
+            event.getHook().sendMessage("An error occurred while setting the avatar.").queue();
+            Messaging.logException("CommandPFP", "onExecute", e);
+        }
+    }
+
+    @Override
+    protected CommandData defineSlashCommand() {
+        return new CommandData("pfp", "Set the bot's avatar")
+                .addOption(OptionType.STRING, "image-url", "URL pointing to the new avatar image", true);
     }
 }
