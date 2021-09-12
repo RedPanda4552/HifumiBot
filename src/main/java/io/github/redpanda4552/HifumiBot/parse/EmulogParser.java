@@ -24,7 +24,6 @@
 package io.github.redpanda4552.HifumiBot.parse;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,6 +32,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
@@ -78,15 +78,13 @@ public class EmulogParser extends AbstractParser {
         try {
             url = new URL(attachment.getUrl());
         } catch (MalformedURLException e) {
-            Messaging.sendMessage(message.getChannel(),
-                    ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
+            Messaging.sendMessage(message.getChannel(), ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
             return;
         }
 
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention()
-                    + " Checking your emulog.txt for information/errors...");
+            Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Checking your emulog.txt for information/errors...");
             int lineNumber = 0;
             String line;
 
@@ -132,8 +130,7 @@ public class EmulogParser extends AbstractParser {
                         if (first != 100 || second != 100) {
                             addError(EmulogParserError.CPU_AC_POWER, lineNumber);
                         }
-                    } catch (NumberFormatException e) {
-                    }
+                    } catch (NumberFormatException e) { }
                 } else if ((m = widescreenArchive.matcher(line)).matches()) {
                     addError(EmulogParserError.WIDESCREEN_ARCHIVE_LOADED, lineNumber);
                 } else if ((m = widescreenPatch.matcher(line)).matches()) {
@@ -145,8 +142,7 @@ public class EmulogParser extends AbstractParser {
                         } else {
                             addError(EmulogParserError.WIDESCREEN_PATCH_EMPTY, lineNumber);
                         }
-                    } catch (NumberFormatException e) {
-                    }
+                    } catch (NumberFormatException e) { }
                 } else if ((m = cheats.matcher(line)).matches()) {
                     try {
                         int patches = Integer.parseInt(m.group(1));
@@ -156,8 +152,7 @@ public class EmulogParser extends AbstractParser {
                         } else {
                             addError(EmulogParserError.CHEAT_EMPTY, lineNumber);
                         }
-                    } catch (NumberFormatException e) {
-                    }
+                    } catch (NumberFormatException e) { }
                 }
             }
 
@@ -183,8 +178,7 @@ public class EmulogParser extends AbstractParser {
                     StringBuilder lineBuilder = new StringBuilder();
 
                     for (Integer i : lines) {
-                        if (lineBuilder.length() + String.valueOf(i).length()
-                                + String.valueOf(LINE_NUM_SEPARATOR).length() > MAX_LINE_LENGTH) {
+                        if (lineBuilder.length() + String.valueOf(i).length() + String.valueOf(LINE_NUM_SEPARATOR).length() > MAX_LINE_LENGTH) {
                             bodyBuilder.append(lineBuilder.toString()).append("\n");
                             lineBuilder = new StringBuilder();
                         } else if (lineBuilder.length() != 0) {
@@ -205,12 +199,13 @@ public class EmulogParser extends AbstractParser {
                         .append("=========================== End Emulog Parse Results ===========================")
                         .append("\n");
 
-                Messaging.sendMessage(message.getChannel(),
-                        ":information_source: Found something! Results are in this text file!",
-                        "Emulog_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
+                if (bodyBuilder.toString().getBytes().length <= HifumiBot.getSelf().getJDA().getSelfUser().getAllowedFileSize()) {
+                    Messaging.sendMessage(message.getChannel(), ":information_source: Found something! Results are in this text file!", "Emulog_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
+                } else {
+                    Messaging.sendMessage(message.getChannel(), ":warning: Your emulog generated such a large results file that I can't upload it. A human is gonna have to read through your log manually.");
+                }
             } else {
-                Messaging.sendMessage(message.getChannel(),
-                        ":white_check_mark: Nothing to report! Either this emulog is empty, or things just went really well!");
+                Messaging.sendMessage(message.getChannel(), ":white_check_mark: Nothing to report! Either this emulog is empty, or things just went really well!");
             }
         } catch (Exception e) {
             Messaging.sendMessage(message.getChannel(), ":x: Something went wrong... Try again?");
