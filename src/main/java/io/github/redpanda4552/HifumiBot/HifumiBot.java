@@ -82,6 +82,10 @@ public class HifumiBot {
     public static HifumiBot getSelf() {
         return self;
     }
+    
+    public static String getSuperuserId() {
+        return superuserId;
+    }
 
     private JDA jda;
     private Config config;
