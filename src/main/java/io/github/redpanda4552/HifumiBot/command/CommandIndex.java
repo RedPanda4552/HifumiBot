@@ -127,18 +127,33 @@ public class CommandIndex {
         rebuildHelpPages();
     }
     
-    public void upsertSlashCommands() {
-        for (AbstractSlashCommand slashCommand : getSlashCommands().values()) {
-            slashCommand.upsertSlashCommand();
-        }
-        
+    public void upsertSlashCommands(String mode) {
         String serverId = HifumiBot.getSelf().getConfig().server.id;
         List<Command> commands = HifumiBot.getSelf().getJDA().getGuildById(serverId).retrieveCommands().complete();
-
+        HashMap<String, Command> uploadedCommands = new HashMap<String, Command>();
+        
         for (Command command : commands) {
             if (!slashCommands.containsKey(command.getName())) {
                 HifumiBot.getSelf().getJDA().getGuildById(serverId).deleteCommandById(command.getId()).complete();
+            } else {
+                uploadedCommands.put(command.getName(), command);
             }
+        }
+        
+        for (String commandName : slashCommands.keySet()) {
+            AbstractSlashCommand slashCommand = slashCommands.get(commandName);
+            
+            switch (mode) {
+            case "all":
+                slashCommand.upsertSlashCommand();
+                break;
+            case "new":
+                if (!uploadedCommands.containsKey(commandName)) {
+                    slashCommand.upsertSlashCommand();
+                }
+                break;
+            }
+            
         }
     }
     

@@ -173,7 +173,7 @@ public class HifumiBot {
         }, 1000 * getConfig().slashCommands.timeoutSeconds);
 
         if (doSlashCommandUpsert) {
-            commandIndex.upsertSlashCommands();
+            commandIndex.upsertSlashCommands("all");
         }
 
         updateStatus(">help");
