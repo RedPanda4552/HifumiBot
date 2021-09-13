@@ -40,11 +40,11 @@ import io.github.redpanda4552.HifumiBot.command.commands.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBan;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPrompt;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandRun;
@@ -95,6 +95,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandPrompt());
         registerSlashCommand(new CommandRun());
         registerSlashCommand(new CommandPFP());
+        registerSlashCommand(new CommandPerms());
         
         commandMap.clear();
         CommandCPU cpu = new CommandCPU();
@@ -109,8 +110,6 @@ public class CommandIndex {
         commandMap.put(gpu.getName(), gpu);
         CommandHelp help = new CommandHelp();
         commandMap.put(help.getName(), help);
-        CommandPerms perms = new CommandPerms();
-        commandMap.put(perms.getName(), perms);
 
         for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands) {
             // Backwards compatibility: Add guest permission level to any
