@@ -35,7 +35,6 @@ import java.util.TreeSet;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandCPU;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandDX9;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandGPU;
@@ -100,8 +99,6 @@ public class CommandIndex {
         commandMap.clear();
         CommandCPU cpu = new CommandCPU();
         commandMap.put(cpu.getName(), cpu);
-        CommandDX9 dx9 = new CommandDX9();
-        commandMap.put(dx9.getName(), dx9);
         CommandDynCmd dyncmd = new CommandDynCmd();
         commandMap.put(dyncmd.getName(), dyncmd);
         CommandFilter filter = new CommandFilter();
