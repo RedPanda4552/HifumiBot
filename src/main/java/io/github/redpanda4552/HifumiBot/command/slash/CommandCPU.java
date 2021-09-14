@@ -102,6 +102,7 @@ public class CommandCPU extends AbstractSlashCommand {
 
         if (results.size() > 0) {
             eb.setTitle("Query Results for \"" + StringUtils.join(name, " ") + "\"");
+            eb.setDescription(":warning: Some games may have unusually high CPU requirements! If in doubt, ask!");
             String highestName = null;
             float highestWeight = 0;
 
