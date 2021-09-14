@@ -34,12 +34,12 @@ import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBan;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
@@ -96,10 +96,9 @@ public class CommandIndex {
         registerSlashCommand(new CommandPFP());
         registerSlashCommand(new CommandPerms());
         registerSlashCommand(new CommandFilter());
+        registerSlashCommand(new CommandCPU());
         
         commandMap.clear();
-        CommandCPU cpu = new CommandCPU();
-        commandMap.put(cpu.getName(), cpu);
         CommandDynCmd dyncmd = new CommandDynCmd();
         commandMap.put(dyncmd.getName(), dyncmd);
         CommandGPU gpu = new CommandGPU();

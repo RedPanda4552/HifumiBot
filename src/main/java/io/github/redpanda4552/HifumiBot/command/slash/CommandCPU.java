@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.command.slash;
 
 import java.util.HashMap;
 
@@ -29,20 +29,27 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.CpuIndex;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
-public class CommandCPU extends AbstractCommand {
+public class CommandCPU extends AbstractSlashCommand {
+    
     private static final int MAX_RESULTS = 5;
 
     private enum CPURating {
-        OVERKILL("Overkill", 2800), GREAT("Great for most", 2400), GOOD("Good for most", 2000),
-        MINIMUM_3D("Okay for some 3D", 1600), MINIMUM_2D("Okay for some 2D", 1200), VERY_SLOW("Very Slow", 800),
+        OVERKILL("Overkill", 2800), 
+        GREAT("Great for most", 2400), 
+        GOOD("Good for most", 2000),
+        MINIMUM_3D("Okay for some 3D", 1600), 
+        MINIMUM_2D("Okay for some 2D", 1200), 
+        VERY_SLOW("Very Slow", 800),
         AWFUL("Awful", 0);
 
         private String displayName;
@@ -63,48 +70,38 @@ public class CommandCPU extends AbstractCommand {
     }
 
     public CommandCPU() {
-        super("cpu", CATEGORY_BUILTIN, PermissionLevel.GUEST, true);
+        super(PermissionLevel.GUEST);
     }
 
     @Override
-    public void execute(CommandMeta cm) {
-        // Search
-        if (cm.getArgs().length == 0) {
-            EmbedBuilder eb;
-
-            if (cm.getMember() != null) {
-                eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-            } else {
-                eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
-            }
-
+    protected void onExecute(SlashCommandEvent event) {
+        ReplyAction action = event.deferReply();
+        
+        if (event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId) || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getUser())) {
+            action.queue();
+        } else {
+            action.setEphemeral(true).queue();
+        }
+        
+        EmbedBuilder eb = new EmbedBuilder();
+        OptionMapping opt = event.getOption("name");
+        
+        if (opt == null) {
             eb.setTitle("About Single Thread Ratings (STR)");
-            eb.appendDescription(
-                    "**Single Thread Rating** (STR) is a benchmarking statistic used by Passmark's CPU benchmarking software. ")
+            eb.appendDescription("**Single Thread Rating** (STR) is a benchmarking statistic used by Passmark's CPU benchmarking software. ")
                     .appendDescription("The statistic indicates how powerful a single thread on a CPU is. ")
-                    .appendDescription(
-                            "Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
+                    .appendDescription("Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
             eb.addField("Direct link", CpuIndex.PASSMARK_STR_URL, false);
-            eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + this.getName() + " <cpu model here>`",
-                    false);
-            Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
+            event.getHook().sendMessageEmbeds(eb.build()).queue();
             return;
         }
 
+        String name = opt.getAsString();
         CpuIndex cpuIndex = HifumiBot.getSelf().getCpuIndex();
-        EmbedBuilder eb;
-
-        if (cm.getMember() != null) {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
-        }
-
-        HashMap<String, Float> results = SimpleSearch.search(cpuIndex.getAllCpus(),
-                StringUtils.join(cm.getArgs(), " "));
+        HashMap<String, Float> results = SimpleSearch.search(cpuIndex.getAllCpus(), StringUtils.join(name, " "));
 
         if (results.size() > 0) {
-            eb.setTitle("Query Results for \"" + StringUtils.join(cm.getArgs(), " ") + "\"");
+            eb.setTitle("Query Results for \"" + StringUtils.join(name, " ") + "\"");
             String highestName = null;
             float highestWeight = 0;
 
@@ -137,11 +134,12 @@ public class CommandCPU extends AbstractCommand {
             eb.setColor(0xff0000);
         }
 
-        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
+        event.getHook().sendMessageEmbeds(eb.build()).queue();
     }
 
     @Override
-    public String getHelpText() {
-        return "Look up the Single Thread Rating for a CPU";
+    protected CommandData defineSlashCommand() {
+        return new CommandData("cpu", "Look up the single thread rating of a CPU")
+                .addOption(OptionType.STRING, "name", "Name of the CPU to look up");
     }
 }
