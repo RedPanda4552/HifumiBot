@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.command.slash;
 
 import java.util.HashMap;
 
@@ -29,19 +29,27 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.GpuIndex;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
-public class CommandGPU extends AbstractCommand {
+public class CommandGPU extends AbstractSlashCommand {
+    
     private enum GPURating {
-        x8NATIVE("8x Native (~5K)", 13030), x6NATIVE("6x Native (~4K)", 8660), x5NATIVE("5x Native (~3K)", 6700),
-        x4NATIVE("4x Native (~2K)", 4890), x3NATIVE("3x Native (~1080p)", 3230), x2NATIVE("2x Native (~720p)", 1720),
-        NATIVE("Native", 360), SLOW("Slow", 0);
+        x8NATIVE("8x Native (~5K)", 13030), 
+        x6NATIVE("6x Native (~4K)", 8660), 
+        x5NATIVE("5x Native (~3K)", 6700),
+        x4NATIVE("4x Native (~2K)", 4890), 
+        x3NATIVE("3x Native (~1080p)", 3230), 
+        x2NATIVE("2x Native (~720p)", 1720),
+        NATIVE("Native", 360), 
+        SLOW("Slow", 0);
 
         private String displayName;
         private int minimum;
@@ -61,53 +69,44 @@ public class CommandGPU extends AbstractCommand {
     }
 
     public CommandGPU() {
-        super("gpu", CATEGORY_BUILTIN, PermissionLevel.GUEST, true);
+        super(PermissionLevel.GUEST);
     }
 
     @Override
-    public void execute(CommandMeta cm) {
-        // Search
-        if (cm.getArgs().length == 0) {
-            EmbedBuilder eb;
-
-            if (cm.getMember() != null)
-                eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-            else
-                eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
-
+    protected void onExecute(SlashCommandEvent event) {
+        ReplyAction action = event.deferReply();
+        
+        if (event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId) || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getUser())) {
+            action.queue();
+        } else {
+            action.setEphemeral(true).queue();
+        }
+        
+        EmbedBuilder eb = new EmbedBuilder();
+        OptionMapping opt = event.getOption("name");
+        
+        if (opt == null) {
             eb.setTitle("About GPU Ratings");
             eb.appendDescription("Passmark's GPU benchmarking software measures overall performance of GPUs. ")
                     .appendDescription("Higher upscaling quality in PCSX2 will require increasingly powerful GPUs, ")
-                    .appendDescription(
-                            "so this tool will help you determine what Internal Resolution a GPU is capable of. ")
-                    .appendDescription(
-                            "*These ratings should only be used as a rough guide; **some games are unusually demanding ")
+                    .appendDescription("so this tool will help you determine what Internal Resolution a GPU is capable of. ")
+                    .appendDescription("*These ratings should only be used as a rough guide; **some games are unusually demanding ")
                     .appendDescription("on the GPU and will still have performance problems.***");
             eb.addField("High End GPUs", GpuIndex.PASSMARK_HIGH_END, false);
             eb.addField("Mid-High GPUs", GpuIndex.PASSMARK_MID_HIGH, false);
             eb.addField("Mid-Low GPUs", GpuIndex.PASSMARK_MID_LOW, false);
             eb.addField("Low End GPUs", GpuIndex.PASSMARK_LOW_END, false);
-            eb.addField("Command Usage", "`" + CommandInterpreter.PREFIX + this.getName() + " <gpu model here>`",
-                    false);
-            Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
+            event.getHook().sendMessageEmbeds(eb.build()).queue();
             return;
         }
-
+        
+        String name = opt.getAsString();
         GpuIndex gpuIndex = HifumiBot.getSelf().getGpuIndex();
-        EmbedBuilder eb;
-
-        if (cm.getMember() != null) {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
-        }
-
-        HashMap<String, Float> results = SimpleSearch.search(gpuIndex.getAllGpus(),
-                StringUtils.join(cm.getArgs(), " "));
-
+        HashMap<String, Float> results = SimpleSearch.search(gpuIndex.getAllGpus(), StringUtils.join(name, " "));
+        
         if (results.size() > 0) {
-            eb.setTitle("Query Results for \"" + StringUtils.join(cm.getArgs(), " ") + "\"");
-            eb.setDescription(":warning: This feature is in BETA! Please do not take these results as absolute!");
+            eb.setTitle("Query Results for \"" + StringUtils.join(name, " ") + "\"");
+            eb.setDescription(":warning: Some games may have unusually high GPU requirements! If in doubt, ask!");
             String highestName = null;
             float highestWeight = 0;
 
@@ -145,12 +144,13 @@ public class CommandGPU extends AbstractCommand {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
         }
-
-        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
+        
+        event.getHook().sendMessageEmbeds(eb.build()).queue();
     }
 
     @Override
-    public String getHelpText() {
-        return "Look up the Single Thread Rating for a CPU";
+    protected CommandData defineSlashCommand() {
+        return new CommandData("gpu", "Look up the rating of a GPU")
+                .addOption(OptionType.STRING, "name", "Name of the GPU to look up");
     }
 }

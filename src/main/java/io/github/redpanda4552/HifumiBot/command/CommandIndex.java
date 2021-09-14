@@ -35,13 +35,13 @@ import java.util.TreeSet;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandDynCmd;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBan;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPrompt;
@@ -97,12 +97,11 @@ public class CommandIndex {
         registerSlashCommand(new CommandPerms());
         registerSlashCommand(new CommandFilter());
         registerSlashCommand(new CommandCPU());
+        registerSlashCommand(new CommandGPU());
         
         commandMap.clear();
         CommandDynCmd dyncmd = new CommandDynCmd();
         commandMap.put(dyncmd.getName(), dyncmd);
-        CommandGPU gpu = new CommandGPU();
-        commandMap.put(gpu.getName(), gpu);
         CommandHelp help = new CommandHelp();
         commandMap.put(help.getName(), help);
 
