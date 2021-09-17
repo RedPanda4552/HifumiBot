@@ -92,7 +92,12 @@ public class PixivSourceFetcher {
             ArrayList<Button> buttons = new ArrayList<Button>();
             
             for (String imageUrl : imageUrls) {
-                buttons.add(Button.link(imageUrl, "Go to Pixiv"));
+                if (buttons.size() < 5) {
+                    buttons.add(Button.link(imageUrl, "Go to Pixiv"));
+                } else {
+                    mb.append(" (max button count reached, other images will not be linked)");
+                    break;
+                }
             }
             
             mb.setActionRows(ActionRow.of(buttons));
