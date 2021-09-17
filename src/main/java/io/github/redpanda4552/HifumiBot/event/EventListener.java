@@ -36,6 +36,7 @@ import io.github.redpanda4552.HifumiBot.parse.PnachParser;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.PixivSourceFetcher;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
@@ -83,6 +84,8 @@ public class EventListener extends ListenerAdapter {
                 event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage()));
         }
+        
+        PixivSourceFetcher.getPixivLink(event.getMessage());
     }
 
     @Override
