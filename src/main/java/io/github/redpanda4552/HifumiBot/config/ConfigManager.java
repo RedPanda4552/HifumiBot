@@ -66,7 +66,7 @@ public class ConfigManager {
     public static void write(Config config) {
         try {
             OutputStream oStream = Files.newOutputStream(file.toPath());
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
             String json = gson.toJson(config);
             oStream.write(json.getBytes());
         } catch (IOException e) {

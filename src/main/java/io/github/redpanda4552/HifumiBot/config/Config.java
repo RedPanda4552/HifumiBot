@@ -64,12 +64,14 @@ public class Config {
         public String systemOutputChannelId;
         public String rulesChannelId;
         public String restrictedCommandChannelId;
+        public String pixivChannelId;
 
         public Channels() {
             devBuildOutputChannelId = new String("");
             systemOutputChannelId = new String("");
             rulesChannelId = new String("");
             restrictedCommandChannelId = new String("");
+            pixivChannelId = new String("");
         }
     }
     
