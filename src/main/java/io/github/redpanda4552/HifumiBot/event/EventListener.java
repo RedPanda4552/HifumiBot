@@ -41,6 +41,7 @@ import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.Role;
@@ -68,7 +69,9 @@ public class EventListener extends ListenerAdapter {
             return;
         }
 
-        HifumiBot.getSelf().getCommandInterpreter().execute(event);
+        if (event.getChannelType() != ChannelType.PRIVATE) {
+            HifumiBot.getSelf().getCommandInterpreter().execute(event);
+        }
 
         if (Messaging.messageHasEmulog(event.getMessage())) {
             EmulogParser ep = new EmulogParser(event.getMessage());
