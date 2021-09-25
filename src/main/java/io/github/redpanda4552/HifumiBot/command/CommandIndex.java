@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBan;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
@@ -53,7 +52,6 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -63,7 +61,7 @@ public class CommandIndex {
     private static final int COMMANDS_PER_PAGE = 10;
 
     private HashMap<String, AbstractSlashCommand> slashCommands;
-    private HashMap<String, AbstractCommand> commandMap;
+    private HashMap<String, DynamicCommand> commandMap;
     private HashMap<String, ArrayList<MessageEmbed>> helpPages;
 
     /**
@@ -72,7 +70,7 @@ public class CommandIndex {
      */
     public CommandIndex() {
         slashCommands = new HashMap<String, AbstractSlashCommand>();
-        commandMap = new HashMap<String, AbstractCommand>();
+        commandMap = new HashMap<String, DynamicCommand>();
         rebuild();
     }
 
@@ -102,13 +100,6 @@ public class CommandIndex {
         commandMap.clear();
 
         for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands) {
-            // Backwards compatibility: Add guest permission level to any
-            // dynamic commands which do not have a level (because they were
-            // made prior to permission levels being added)
-            if (dynamicCommand.getPermissionLevel() == null) {
-                dynamicCommand.setPermissionLevel(PermissionLevel.GUEST);
-            }
-
             commandMap.put(dynamicCommand.getName(), dynamicCommand);
         }
 
@@ -163,24 +154,12 @@ public class CommandIndex {
     }
 
     public boolean isDynamicCommand(String name) {
-        AbstractCommand cmd = commandMap.get(name);
-        return cmd != null && cmd instanceof DynamicCommand;
-    }
-
-    public AbstractCommand getCommand(String name) {
-        return commandMap.get(name);
+        DynamicCommand dyncmd = commandMap.get(name);
+        return dyncmd != null && dyncmd instanceof DynamicCommand;
     }
 
     public DynamicCommand getDynamicCommand(String name) {
-        AbstractCommand cmd = getCommand(name);
-
-        if (cmd == null) {
-            return null;
-        } else if (cmd instanceof DynamicCommand) {
-            return (DynamicCommand) cmd;
-        } else {
-            return null;
-        }
+        return commandMap.get(name);
     }
 
     public void addCommand(DynamicCommand dyncmd) {
@@ -239,7 +218,7 @@ public class CommandIndex {
         HashMap<String, TreeSet<String>> ret = new HashMap<String, TreeSet<String>>();
 
         for (String commandName : commandNames) {
-            AbstractCommand command = commandMap.get(commandName);
+            DynamicCommand command = commandMap.get(commandName);
             TreeSet<String> categoryCommands = null;
 
             if (ret.containsKey(command.getCategory())) {
@@ -268,7 +247,7 @@ public class CommandIndex {
             EmbedBuilder eb = new EmbedBuilder();
 
             for (String command : commandMap.get(category)) {
-                eb.addField(">" + command, this.getCommand(command).getHelpText(), false);
+                eb.addField(">" + command, this.getDynamicCommand(command).getHelpText(), false);
 
                 if (eb.getFields().size() >= COMMANDS_PER_PAGE) {
                     addToPages(category, eb, pageCount);
