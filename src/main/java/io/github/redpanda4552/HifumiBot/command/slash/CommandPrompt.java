@@ -27,6 +27,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
+import io.github.redpanda4552.HifumiBot.util.Strings;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -63,17 +64,17 @@ public class CommandPrompt extends AbstractSlashCommand {
         case "set":
             switch (os.getAsString()) {
             case "windows":
-                HifumiBot.getSelf().getConfig().dev.windows = instructions.getAsString().replace("\\n", "\n");
+                HifumiBot.getSelf().getConfig().dev.windows = Strings.unescapeNewlines(instructions.getAsString());
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
                 event.getHook().sendMessage("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.windows).queue();
                 return;
             case "ubuntu":
-                HifumiBot.getSelf().getConfig().dev.ubuntu = instructions.getAsString().replace("\\n", "\n");
+                HifumiBot.getSelf().getConfig().dev.ubuntu = Strings.unescapeNewlines(instructions.getAsString());
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
                 event.getHook().sendMessage("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.ubuntu).queue();
                 return;
             case "linux":
-                HifumiBot.getSelf().getConfig().dev.linux = instructions.getAsString().replace("\\n", "\n");
+                HifumiBot.getSelf().getConfig().dev.linux = Strings.unescapeNewlines(instructions.getAsString());
                 ConfigManager.write(HifumiBot.getSelf().getConfig());
                 event.getHook().sendMessage("Updated to (markdown enabled):\n" + HifumiBot.getSelf().getConfig().dev.linux).queue();
                 return;

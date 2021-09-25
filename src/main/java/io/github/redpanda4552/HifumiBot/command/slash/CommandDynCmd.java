@@ -27,6 +27,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
+import io.github.redpanda4552.HifumiBot.util.Strings;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -79,7 +80,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
                     category, 
                     helpText, 
                     titleOpt != null ? titleOpt.getAsString() : null, 
-                    bodyOpt != null ? bodyOpt.getAsString() : null, 
+                    bodyOpt != null ? Strings.unescapeNewlines(bodyOpt.getAsString()) : null, 
                     imageOpt != null ? imageOpt.getAsString() : null);
             HifumiBot.getSelf().getCommandIndex().addCommand(dyncmd);
             event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
@@ -105,7 +106,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
             }
             
             if (bodyOpt != null) {
-                dyncmd.setBody(bodyOpt.getAsString());
+                dyncmd.setBody(Strings.unescapeNewlines(bodyOpt.getAsString()));
             }
             
             if (imageOpt != null) {
