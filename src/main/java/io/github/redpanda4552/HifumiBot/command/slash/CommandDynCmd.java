@@ -110,7 +110,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
             }
             
             if (imageOpt != null) {
-                dyncmd.setBody(imageOpt.getAsString());
+                dyncmd.setImageURL(imageOpt.getAsString());
             }
             
             HifumiBot.getSelf().getCommandIndex().addCommand(dyncmd);
