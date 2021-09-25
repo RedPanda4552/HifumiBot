@@ -23,102 +23,20 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 
 public class CommandMeta {
-    private String command;
-    private PermissionLevel permissionLevel;
-    private boolean restricted;
-    private String category;
-    private Guild guild;
+    
     private MessageChannel channel;
     private Member member;
     private User user;
-    private Message message;
-    private List<Member> mentions;
-    private String[] args;
-    private HashMap<String, String> switches;
 
-    public CommandMeta(String command, PermissionLevel permissionLevel, boolean restricted, String category,
-            Guild guild, MessageChannel channel, Member member, User user, Message message, List<Member> mentions,
-            String[] args) {
-        this.command = command;
-        this.permissionLevel = permissionLevel;
-        this.restricted = restricted;
-        this.category = category;
-        this.guild = guild;
+    public CommandMeta(MessageChannel channel, Member member, User user) {
         this.channel = channel;
         this.member = member;
         this.user = user;
-        this.message = message;
-        this.mentions = mentions;
-        formatArgs(args);
-    }
-
-    private void formatArgs(String[] args) {
-        ArrayList<String> newArgs = new ArrayList<String>();
-        switches = new HashMap<String, String>();
-        String toInsert = null, switchStart = null;
-        boolean openQuote = false, openSwitch = false;
-
-        for (String arg : args) {
-            if (openQuote) {
-                toInsert += " " + arg;
-
-                if (arg.endsWith("\"")) {
-                    openQuote = false;
-
-                    if (openSwitch) {
-                        openSwitch = false;
-                        switches.put(switchStart, toInsert.replaceAll("\"", ""));
-                    } else {
-                        newArgs.add(toInsert.replaceAll("\"", ""));
-                    }
-                }
-            } else if (!openSwitch && arg.startsWith("-")) {
-                openSwitch = true;
-                switchStart = arg.replaceFirst("-+", "");
-            } else if (!openQuote && arg.startsWith("\"") && !arg.endsWith("\"")) {
-                openQuote = true;
-                toInsert = arg;
-            } else if (openSwitch) {
-                openSwitch = false;
-                switches.put(switchStart, arg);
-            } else {
-                newArgs.add(arg);
-            }
-        }
-
-        this.args = newArgs.toArray(new String[newArgs.size()]);
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public PermissionLevel getPermissionLevel() {
-        return permissionLevel;
-    }
-
-    public boolean isRestricted() {
-        return restricted;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public Guild getGuild() {
-        return guild;
     }
 
     public MessageChannel getChannel() {
@@ -131,21 +49,5 @@ public class CommandMeta {
 
     public User getUser() {
         return user;
-    }
-
-    public Message getMessage() {
-        return message;
-    }
-
-    public List<Member> getMentions() {
-        return mentions;
-    }
-
-    public String[] getArgs() {
-        return args;
-    }
-
-    public HashMap<String, String> getSwitches() {
-        return switches;
     }
 }

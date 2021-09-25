@@ -36,10 +36,6 @@ public class PermissionManager {
         this.superuserId = superuserId;
     }
 
-    public boolean hasPermission(CommandMeta cm) {
-        return hasPermission(cm.getPermissionLevel(), cm.getUser(), cm.getMember());
-    }
-
     public boolean hasPermission(PermissionLevel permissionLevel, CommandMeta cm) {
         return hasPermission(permissionLevel, cm.getUser(), cm.getMember());
     }

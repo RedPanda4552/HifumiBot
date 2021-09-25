@@ -23,15 +23,10 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
-import java.util.Collections;
-
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CommandInterpreter {
@@ -64,46 +59,8 @@ public class CommandInterpreter {
         command = command.replaceFirst(PREFIX, "");
 
         if ((toExecute = hifumiBot.getCommandIndex().getDynamicCommand(command)) != null) {
-            CommandMeta cm = new CommandMeta(command, PermissionLevel.GUEST, false,
-                    toExecute.getCategory(), event.getChannel() instanceof TextChannel ? event.getGuild() : null,
-                    event.getChannel(), event.getMember(), event.getAuthor(), message,
-                    event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(),
-                    args);
-
-            if (isCommandRestricted(cm)) {
-                Messaging.sendMessage(event.getChannel(),
-                        "Hey there! Please use " + HifumiBot.getSelf().getJDA()
-                                .getTextChannelById(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)
-                                .getAsMention() + " for this bot command. Thanks!");
-                return;
-            }
-
-            if (HifumiBot.getSelf().getPermissionManager().hasPermission(cm))
-                toExecute.execute(cm);
+            CommandMeta cm = new CommandMeta(event.getChannel(), event.getMember(), event.getAuthor());
+            toExecute.execute(cm);
         }
-    }
-
-    private boolean isCommandRestricted(CommandMeta cm) {
-        if (HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId.isBlank()) {
-            return false;
-        }
-
-        if (!cm.isRestricted()) {
-            return false;
-        }
-
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, cm)) {
-            return false;
-        }
-
-        if (cm.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)) {
-            return false;
-        }
-
-        if (cm.getGuild() == null) {
-            return false;
-        }
-
-        return true;
     }
 }
