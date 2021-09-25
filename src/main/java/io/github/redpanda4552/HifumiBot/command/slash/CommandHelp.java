@@ -21,62 +21,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command.commands;
+package io.github.redpanda4552.HifumiBot.command.slash;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
+import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class CommandHelp extends AbstractCommand {
+public class CommandHelp extends AbstractSlashCommand {
+    
     public CommandHelp() {
-        super("help", CATEGORY_BUILTIN, PermissionLevel.GUEST, false);
+        super(PermissionLevel.GUEST);
     }
 
     @Override
-    public void execute(CommandMeta cm) {
-        String category = "builtin";
-        int pageNumber = 1;
-        MessageEmbed toSend = null;
+    protected void onExecute(SlashCommandEvent event) {
+        event.deferReply().setEphemeral(true).queue();
+        String category = event.getOption("category").getAsString();
+        OptionMapping pageOpt = event.getOption("page");
+        long pageNumber = pageOpt != null ? pageOpt.getAsLong() : 1;
         HashMap<String, ArrayList<MessageEmbed>> helpPages = HifumiBot.getSelf().getCommandIndex().getHelpPages();
 
-        if (cm.getArgs().length >= 1 && helpPages.get(cm.getArgs()[0]) != null) {
-            category = cm.getArgs()[0];
-
-            if (cm.getArgs().length >= 2) {
-                try {
-                    pageNumber = Integer.parseInt(cm.getArgs()[1]);
-                } catch (NumberFormatException e) {
-                }
-            }
-
-            if (pageNumber > helpPages.get(category).size())
-                pageNumber = helpPages.get(category).size() - 1;
-
-            if (pageNumber < 1)
-                pageNumber = 1;
-
-            toSend = helpPages.get(category).get(pageNumber - 1);
-        } else {
-            toSend = HifumiBot.getSelf().getCommandIndex().getHelpRootPage();
+        if (pageNumber > helpPages.get(category).size()) {
+            pageNumber = helpPages.get(category).size() - 1;
         }
 
-        try {
-            Messaging.sendMessageEmbed(cm.getUser().openPrivateChannel().complete(), toSend);
-        } catch (ErrorResponseException e) {
-            Messaging.sendMessage(cm.getChannel(),
-                    "Sorry, `help` works through DMs to avoid clutter, but your DMs are not open to members of this server!");
+        if (pageNumber < 1) {
+            pageNumber = 1;
         }
 
+        event.getHook().sendMessageEmbeds(helpPages.get(category).get((int) pageNumber - 1)).queue();
     }
 
     @Override
-    public String getHelpText() {
-        return "Display this help dialog";
+    protected CommandData defineSlashCommand() {
+        OptionData categoryOpt = new OptionData(OptionType.STRING, "category", "Dynamic command category")
+                .addChoice("support", "support")
+                .addChoice("memes", "memes")
+                .setRequired(true);
+        return new CommandData("help", "Help prompt for all dynamic commands")
+                .addOptions(categoryOpt)
+                .addOption(OptionType.INTEGER, "page", "Page number");
     }
 }

@@ -34,7 +34,6 @@ import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBan;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
@@ -42,6 +41,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPrompt;
@@ -65,7 +65,6 @@ public class CommandIndex {
     private HashMap<String, AbstractSlashCommand> slashCommands;
     private HashMap<String, AbstractCommand> commandMap;
     private HashMap<String, ArrayList<MessageEmbed>> helpPages;
-    private MessageEmbed helpRoot;
 
     /**
      * Create a new CommandIndex and invoke the {@link CommandIndex#rebuild
@@ -99,10 +98,8 @@ public class CommandIndex {
         registerSlashCommand(new CommandCPU());
         registerSlashCommand(new CommandGPU());
         registerSlashCommand(new CommandDynCmd());
-        
+        registerSlashCommand(new CommandHelp());
         commandMap.clear();
-        CommandHelp help = new CommandHelp();
-        commandMap.put(help.getName(), help);
 
         for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands) {
             // Backwards compatibility: Add guest permission level to any
@@ -282,32 +279,14 @@ public class CommandIndex {
             if (eb.getFields().size() > 0)
                 addToPages(category, eb, pageCount);
         }
-
-        EmbedBuilder helpRootBuilder = new EmbedBuilder();
-        helpRootBuilder.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName() + " Help");
-        helpRootBuilder.setDescription("The prefix for all commands is \"" + CommandInterpreter.PREFIX
-                + "\".\nTo view available commands use `" + CommandInterpreter.PREFIX + "help <category> [page]`");
-        StringBuilder sb = new StringBuilder();
-
-        for (String category : commandMap.keySet())
-            sb.append(category).append("\n");
-
-        helpRootBuilder.addField("Available Categories", sb.toString(), false);
-        helpRoot = helpRootBuilder.build();
     }
 
     private void addToPages(String category, EmbedBuilder eb, int pageCount) {
-        eb.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName() + " Help - " + category + " - Page "
-                + (helpPages.get(category).size() + 1) + " / " + pageCount);
-        eb.setDescription("Use `" + CommandInterpreter.PREFIX + "help " + category + " [page]` to browse other pages.");
+        eb.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName() + " - Help - " + category + " - Page " + (helpPages.get(category).size() + 1) + " / " + pageCount);
         helpPages.get(category).add(eb.build());
     }
 
     public HashMap<String, ArrayList<MessageEmbed>> getHelpPages() {
         return helpPages;
-    }
-
-    public MessageEmbed getHelpRootPage() {
-        return helpRoot;
     }
 }
