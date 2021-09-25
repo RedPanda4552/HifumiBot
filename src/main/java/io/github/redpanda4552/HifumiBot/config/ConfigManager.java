@@ -31,16 +31,16 @@ import java.nio.file.Files;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 
 public class ConfigManager {
 
-    private static final String CONFIG_PATH = "./hifumi-conf.json";
-    public static final File file = new File(CONFIG_PATH);
-
-    public static void createConfigIfNotExists() {
+    public static void createConfigIfNotExists(ConfigType configType) {
         try {
+            File file = new File(configType.getPath());
+            
             if (file.exists() == false) {
                 file.createNewFile();
                 write(new Config());
@@ -50,12 +50,13 @@ public class ConfigManager {
         }
     }
 
-    public static Config read() {
+    public static IConfig read(ConfigType configType) {
         try {
+            File file = new File(configType.getPath());
             InputStream iStream = Files.newInputStream(file.toPath());
             String json = new String(iStream.readAllBytes());
             Gson gson = new Gson();
-            return gson.fromJson(json, Config.class);
+            return gson.fromJson(json, TypeToken.get(configType.getConfigClass()).getType());
         } catch (IOException e) {
             Messaging.logException("ConfigManager", "read", e);
         }
@@ -63,14 +64,26 @@ public class ConfigManager {
         return null;
     }
 
-    public static void write(Config config) {
+    public static void write(IConfig config) {
         try {
+            File file = new File(config.getConfigType().getPath());
             OutputStream oStream = Files.newOutputStream(file.toPath());
             Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
-            String json = gson.toJson(config);
+            String json = gson.toJson(config, TypeToken.get(config.getConfigType().getConfigClass()).getType());
             oStream.write(json.getBytes());
         } catch (IOException e) {
             Messaging.logException("ConfigManager", "write", e);
         }
+    }
+    
+    public static long getSizeBytes(ConfigType configType) {
+        try {
+            File file = new File(configType.getPath());
+            return file.length();
+        } catch (Exception e) {
+            Messaging.logException("ConfigManager", "getSizeBytes", e);
+        }
+        
+        return -1;
     }
 }

@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
+import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
@@ -97,7 +97,7 @@ public class EventListener extends ListenerAdapter {
             if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)
                     && !HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
                 HifumiBot.getSelf().getWarezTracking().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
-                WarezTrackingManager.write(HifumiBot.getSelf().getWarezTracking());
+                ConfigManager.write(HifumiBot.getSelf().getWarezTracking());
                 return;
             }
         }
@@ -108,7 +108,7 @@ public class EventListener extends ListenerAdapter {
         for (Role role : event.getRoles()) {
             if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)) {
                 HifumiBot.getSelf().getWarezTracking().warezUsers.remove(event.getUser().getId());
-                WarezTrackingManager.write(HifumiBot.getSelf().getWarezTracking());
+                ConfigManager.write(HifumiBot.getSelf().getWarezTracking());
                 return;
             }
         }

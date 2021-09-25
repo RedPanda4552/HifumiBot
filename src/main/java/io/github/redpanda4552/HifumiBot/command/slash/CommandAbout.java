@@ -27,8 +27,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.Scheduler.NoSuchRunnableException;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
-import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
+import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -51,9 +50,9 @@ public class CommandAbout extends AbstractSlashCommand {
         eb.addField("Version", version != null ? version : "[Debug Mode]", true);
 
         StringBuilder storageBuilder = new StringBuilder("| ");
-        storageBuilder.append("Config: ").append((ConfigManager.file.length() / 1024) + " KB | ");
-        storageBuilder.append("Warez: ").append((WarezTrackingManager.file.length() / 1024) + " KB | ");
-        storageBuilder.append("DynCmd: ").append((DynCmdConfigManager.file.length() / 1024) + " KB |");
+        storageBuilder.append("Config: ").append((ConfigManager.getSizeBytes(ConfigType.CORE) / 1024) + " KB | ");
+        storageBuilder.append("Warez: ").append((ConfigManager.getSizeBytes(ConfigType.WAREZ) / 1024) + " KB | ");
+        storageBuilder.append("DynCmd: ").append((ConfigManager.getSizeBytes(ConfigType.DYNCMD) / 1024) + " KB |");
         eb.addField("Storage Size", storageBuilder.toString(), false);
         StringBuilder runnableBuilder = new StringBuilder("| ");
 

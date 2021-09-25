@@ -34,12 +34,12 @@ import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
-import io.github.redpanda4552.HifumiBot.command.commands.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.commands.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBan;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDev;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
@@ -52,7 +52,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
-import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
+import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -98,10 +98,9 @@ public class CommandIndex {
         registerSlashCommand(new CommandFilter());
         registerSlashCommand(new CommandCPU());
         registerSlashCommand(new CommandGPU());
+        registerSlashCommand(new CommandDynCmd());
         
         commandMap.clear();
-        CommandDynCmd dyncmd = new CommandDynCmd();
-        commandMap.put(dyncmd.getName(), dyncmd);
         CommandHelp help = new CommandHelp();
         commandMap.put(help.getName(), help);
 
@@ -208,7 +207,7 @@ public class CommandIndex {
             configDynamicCommands.add(dyncmd);
         }
 
-        DynCmdConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
+        ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
         HifumiBot.getSelf().getCommandIndex().rebuild();
     }
 
@@ -228,7 +227,7 @@ public class CommandIndex {
 
         if (toDelete != null) {
             dynamicCommands.remove(toDelete);
-            DynCmdConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
+            ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
             HifumiBot.getSelf().getCommandIndex().rebuild();
         }
     }

@@ -23,20 +23,7 @@
  */
 package io.github.redpanda4552.HifumiBot.config;
 
-import java.util.ArrayList;
-
-import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
-
-public class DynCmdConfig implements IConfig {
+public interface IConfig {
     
-    @Override
-    public ConfigType getConfigType() {
-        return ConfigType.DYNCMD;
-    }
-    
-    public ArrayList<DynamicCommand> dynamicCommands;
-
-    public DynCmdConfig() {
-        dynamicCommands = new ArrayList<DynamicCommand>();
-    }
+    public ConfigType getConfigType();
 }

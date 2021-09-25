@@ -28,7 +28,13 @@ import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.filter.Filter;
 
-public class Config {
+public class Config implements IConfig {
+    
+    @Override
+    public ConfigType getConfigType() {
+        return ConfigType.CORE;
+    }
+    
     public boolean useLocalDNSFiltering;
     public Server server;
     public Channels channels;
