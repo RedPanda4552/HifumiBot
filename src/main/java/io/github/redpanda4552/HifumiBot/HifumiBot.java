@@ -175,7 +175,7 @@ public class HifumiBot {
             commandIndex.upsertSlashCommands("all");
         }
 
-        updateStatus(">help");
+        updateStatus("/help");
     }
 
     public Config getConfig() {
