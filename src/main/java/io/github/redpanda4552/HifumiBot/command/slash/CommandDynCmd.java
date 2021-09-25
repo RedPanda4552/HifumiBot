@@ -77,8 +77,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
             dyncmd = new DynamicCommand(
                     name, 
                     category, 
-                    PermissionLevel.GUEST, 
-                    false, 
                     helpText, 
                     titleOpt != null ? titleOpt.getAsString() : null, 
                     bodyOpt != null ? bodyOpt.getAsString() : null, 

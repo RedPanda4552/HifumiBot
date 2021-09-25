@@ -28,7 +28,6 @@ import java.util.Collections;
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
@@ -57,15 +56,15 @@ public class CommandInterpreter {
         String[] args = message.getContentDisplay().split(" ");
         String command = args[0].toLowerCase();
         args = ArrayUtils.remove(args, 0);
-        AbstractCommand toExecute;
+        DynamicCommand toExecute;
 
         if (!command.startsWith(PREFIX))
             return;
 
         command = command.replaceFirst(PREFIX, "");
 
-        if ((toExecute = hifumiBot.getCommandIndex().getCommand(command)) != null) {
-            CommandMeta cm = new CommandMeta(command, toExecute.getPermissionLevel(), toExecute.isRestricted(),
+        if ((toExecute = hifumiBot.getCommandIndex().getDynamicCommand(command)) != null) {
+            CommandMeta cm = new CommandMeta(command, PermissionLevel.GUEST, false,
                     toExecute.getCategory(), event.getChannel() instanceof TextChannel ? event.getGuild() : null,
                     event.getChannel(), event.getMember(), event.getAuthor(), message,
                     event.getChannel() instanceof TextChannel ? message.getMentionedMembers() : Collections.emptyList(),

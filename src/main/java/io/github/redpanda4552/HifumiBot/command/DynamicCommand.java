@@ -23,26 +23,23 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
-import io.github.redpanda4552.HifumiBot.command.commands.AbstractCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 
-public class DynamicCommand extends AbstractCommand {
+public class DynamicCommand {
 
-    private String helpText, title, body, imageURL;
+    protected String name, category, helpText, title, body, imageURL;
 
-    public DynamicCommand(String name, String category, PermissionLevel permissionLevel, boolean restrictChannel,
-            String helpText, String title, String body, String imageURL) {
-        super(name, category, permissionLevel, restrictChannel);
+    public DynamicCommand(String name, String category, String helpText, String title, String body, String imageURL) {
+        this.name = name;
+        this.category = category;
         this.helpText = helpText;
         this.title = title;
         this.body = body;
         this.imageURL = imageURL;
     }
 
-    @Override
     public void execute(CommandMeta cm) {
         EmbedBuilder eb;
 
@@ -57,26 +54,25 @@ public class DynamicCommand extends AbstractCommand {
         eb.setImage(imageURL);
         Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
+    
+    public String getName() {
+        return name;
+    }
 
-    @Override
+    public String getCategory() {
+        return category;
+    }
+    
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public String getHelpText() {
         return helpText;
     }
 
     public void setHelpText(String helpText) {
         this.helpText = helpText;
-    }
-
-    public String getCategory() {
-        return this.category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public void setPermissionLevel(PermissionLevel permissionLevel) {
-        this.permissionLevel = permissionLevel;
     }
 
     public String getTitle() {
@@ -101,9 +97,5 @@ public class DynamicCommand extends AbstractCommand {
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
-    }
-
-    public void setRestricted(boolean restricted) {
-        this.restrictChannel = restricted;
     }
 }
