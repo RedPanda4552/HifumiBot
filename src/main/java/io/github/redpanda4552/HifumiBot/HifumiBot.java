@@ -29,10 +29,9 @@ import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
-import io.github.redpanda4552.HifumiBot.config.DynCmdConfigManager;
 import io.github.redpanda4552.HifumiBot.config.WarezTracking;
-import io.github.redpanda4552.HifumiBot.config.WarezTrackingManager;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
@@ -123,19 +122,19 @@ public class HifumiBot {
 
         updateStatus("Starting...");
 
-        ConfigManager.createConfigIfNotExists();
-        config = ConfigManager.read();
+        ConfigManager.createConfigIfNotExists(ConfigType.CORE);
+        config = (Config) ConfigManager.read(ConfigType.CORE);
         // Write back the config so that if any new fields were added after an
         // update, they are written to disk
         ConfigManager.write(config);
 
-        WarezTrackingManager.createIfNotExists();
-        warezTracking = WarezTrackingManager.read();
-        WarezTrackingManager.write(warezTracking);
+        ConfigManager.createConfigIfNotExists(ConfigType.WAREZ);
+        warezTracking = (WarezTracking) ConfigManager.read(ConfigType.WAREZ);
+        ConfigManager.write(warezTracking);
 
-        DynCmdConfigManager.createIfNotExists();
-        dynCmdConfig = DynCmdConfigManager.read();
-        DynCmdConfigManager.write(dynCmdConfig);
+        ConfigManager.createConfigIfNotExists(ConfigType.DYNCMD);
+        dynCmdConfig = (DynCmdConfig) ConfigManager.read(ConfigType.DYNCMD);
+        ConfigManager.write(dynCmdConfig);
 
         Internet.init();
         scheduler = new Scheduler();
@@ -190,7 +189,7 @@ public class HifumiBot {
     public DynCmdConfig getDynCmdConfig() {
         return dynCmdConfig;
     }
-
+    
     public OkHttpClient getHttpClient() {
         return http;
     }

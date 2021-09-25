@@ -23,20 +23,25 @@
  */
 package io.github.redpanda4552.HifumiBot.config;
 
-import java.util.ArrayList;
+public enum ConfigType {
 
-import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
-
-public class DynCmdConfig implements IConfig {
+    CORE("./hifumi-conf.json", Config.class),
+    WAREZ("./warez-tracking.json", WarezTracking.class),
+    DYNCMD("./dyncmd-config.json", DynCmdConfig.class);
     
-    @Override
-    public ConfigType getConfigType() {
-        return ConfigType.DYNCMD;
+    private String path;
+    private Class<?> clazz;
+    
+    private ConfigType(String path, Class<?> clazz) {
+        this.path = path;
+        this.clazz = clazz;
     }
     
-    public ArrayList<DynamicCommand> dynamicCommands;
-
-    public DynCmdConfig() {
-        dynamicCommands = new ArrayList<DynamicCommand>();
+    public String getPath() {
+        return path;
+    }
+    
+    public Class<?> getConfigClass() {
+        return clazz;
     }
 }
