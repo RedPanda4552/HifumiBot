@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.command;
 import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -60,7 +61,12 @@ public class CommandInterpreter {
 
         if ((toExecute = hifumiBot.getCommandIndex().getDynamicCommand(command)) != null) {
             CommandMeta cm = new CommandMeta(event.getChannel(), event.getMember(), event.getAuthor());
-            toExecute.execute(cm);
+            
+            if (HifumiBot.getSelf().getCommandIndex().isNinja(command, event.getChannel().getId())) {
+                event.getMessage().addReaction(Emotes.NINJA).queue();
+            } else {
+                toExecute.execute(cm);
+            }
         }
     }
 }

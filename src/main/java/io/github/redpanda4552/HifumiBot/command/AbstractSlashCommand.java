@@ -43,7 +43,11 @@ public abstract class AbstractSlashCommand {
     
     public void executeIfPermission(SlashCommandEvent event) {
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(permissionLevel, event.getUser(), event.getMember())) {
-            onExecute(event);
+            if (HifumiBot.getSelf().getCommandIndex().isNinja(event.getName(), event.getChannel().getId())) {
+                event.reply("ninja").setEphemeral(true).queue();
+            } else {
+                onExecute(event);
+            }
         } else {
             event.reply("You do not have permission to use this command.").setEphemeral(true).queue();
         }
