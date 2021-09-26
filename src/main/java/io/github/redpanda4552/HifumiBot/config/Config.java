@@ -44,6 +44,7 @@ public class Config implements IConfig {
     public Integrations integrations;
     public Permissions permissions;
     public HashMap<String, Filter> filters;
+    public long ninjaInterval;
 
     public Config() {
         useLocalDNSFiltering = false;
@@ -55,6 +56,7 @@ public class Config implements IConfig {
         integrations = new Integrations();
         permissions = new Permissions();
         filters = new HashMap<String, Filter>();
+        ninjaInterval = 500;
     }
     
     public class Server {
