@@ -32,9 +32,22 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 public class Messaging {
+    
+    public static Message sendPrivateMessage(User user, String str) {
+        MessageBuilder mb = new MessageBuilder(str);
+        return sendPrivateMessage(user, mb.build());
+    }
+    
+    public static Message sendPrivateMessage(User user, Message msg) {
+        PrivateChannel channel = user.openPrivateChannel().complete();
+        return channel.sendMessage(msg).complete();
+    }
+    
     public static Message sendMessage(MessageChannel channel, String str) {
         MessageBuilder mb = new MessageBuilder(str);
         return Messaging.sendMessage(channel, mb.build(), null, null);

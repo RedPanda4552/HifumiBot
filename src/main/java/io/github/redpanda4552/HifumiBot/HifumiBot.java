@@ -35,6 +35,7 @@ import io.github.redpanda4552.HifumiBot.config.WarezTracking;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
+import io.github.redpanda4552.HifumiBot.filter.KickHandler;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -103,6 +104,7 @@ public class HifumiBot {
     private ChatFilter chatFilter;
     private EventListener eventListener;
     private SlashCommandListener slashCommandListener;
+    private KickHandler kickHandler;
 
     public HifumiBot() {
         self = this;
@@ -149,6 +151,7 @@ public class HifumiBot {
         chatFilter = new ChatFilter();
         jda.addEventListener(eventListener = new EventListener(this));
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
+        kickHandler = new KickHandler();
 
         // Schedule repeating tasks
         scheduler.scheduleRepeating("wiki", () -> {
@@ -170,6 +173,10 @@ public class HifumiBot {
         scheduler.scheduleRepeating("ints", () -> {
             HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
         }, 1000 * getConfig().slashCommands.timeoutSeconds);
+        
+        scheduler.scheduleRepeating("fltr", () -> {
+            kickHandler.flush();
+        }, 1000 * 60 * 60);
 
         if (doSlashCommandUpsert) {
             commandIndex.upsertSlashCommands("all");
@@ -244,6 +251,10 @@ public class HifumiBot {
     
     public SlashCommandListener getSlashCommandListener() {
         return slashCommandListener;
+    }
+    
+    public KickHandler getKickHandler() {
+        return kickHandler;
     }
 
     public void shutdown(boolean reload) {
