@@ -45,6 +45,7 @@ public class Config implements IConfig {
     public Permissions permissions;
     public HashMap<String, Filter> filters;
     public long ninjaInterval;
+    public FilterOptions filterOptions;
 
     public Config() {
         useLocalDNSFiltering = false;
@@ -56,6 +57,7 @@ public class Config implements IConfig {
         integrations = new Integrations();
         permissions = new Permissions();
         filters = new HashMap<String, Filter>();
+        filterOptions = new FilterOptions();
         ninjaInterval = 500;
     }
     
@@ -128,6 +130,18 @@ public class Config implements IConfig {
             superAdminRoleIds = new ArrayList<String>();
             adminRoleIds = new ArrayList<String>();
             modRoleIds = new ArrayList<String>();
+        }
+    }
+    
+    public class FilterOptions {
+        public long incidentCooldownMS;
+        public int maxIncidents;
+        public String kickMessage;
+        
+        public FilterOptions() {
+            incidentCooldownMS = 1000 * 10;
+            maxIncidents = 5;
+            kickMessage = new String("");
         }
     }
 }

@@ -68,8 +68,7 @@ public class ChatFilter {
             return false;
         }
 
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(),
-                event.getMember())) {
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(), event.getMember())) {
             return false;
         }
 

@@ -23,6 +23,7 @@
  */
 package io.github.redpanda4552.HifumiBot.event;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -65,13 +66,18 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (event.getChannelType() == ChannelType.PRIVATE) {
+            return;
+        }
+        
+        Instant now = Instant.now();
+        
         if (HifumiBot.getSelf().getChatFilter().applyFilters(event)) {
+            HifumiBot.getSelf().getKickHandler().storeIncident(event.getMember(), now);
             return;
         }
 
-        if (event.getChannelType() != ChannelType.PRIVATE) {
-            HifumiBot.getSelf().getCommandInterpreter().execute(event);
-        }
+        HifumiBot.getSelf().getCommandInterpreter().execute(event);
 
         if (Messaging.messageHasEmulog(event.getMessage())) {
             EmulogParser ep = new EmulogParser(event.getMessage());
@@ -83,8 +89,7 @@ public class EventListener extends ListenerAdapter {
             HifumiBot.getSelf().getScheduler().runOnce(pp);
         }
 
-        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(),
-                event.getMember())) {
+        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getAuthor(), event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage()));
         }
         
