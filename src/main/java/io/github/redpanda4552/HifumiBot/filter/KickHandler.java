@@ -66,6 +66,7 @@ public class KickHandler {
                     Messaging.sendPrivateMessage(user, HifumiBot.getSelf().getConfig().filterOptions.kickMessage);
                     member.kick().complete();
                     indexes.remove(userId);
+                    Messaging.logInfo("KickHandler", "storeIncident", "Successfully messaged and kicked " + user.getAsMention() + " for exceeding the maximum number of filter incidents.");
                 } else {
                     indexes.put(userId, Pair.of(newInstant, toStore));
                 }
