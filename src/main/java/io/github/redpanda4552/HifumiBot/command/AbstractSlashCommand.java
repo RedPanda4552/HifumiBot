@@ -42,7 +42,7 @@ public abstract class AbstractSlashCommand {
     }
     
     public void executeIfPermission(SlashCommandEvent event) {
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(permissionLevel, event.getUser(), event.getMember())) {
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(permissionLevel, event.getMember())) {
             if (HifumiBot.getSelf().getCommandIndex().isNinja(event.getName(), event.getChannel().getId())) {
                 event.reply("ninja").setEphemeral(true).queue();
             } else {
