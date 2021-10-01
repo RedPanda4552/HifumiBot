@@ -76,7 +76,7 @@ public class CommandGPU extends AbstractSlashCommand {
     protected void onExecute(SlashCommandEvent event) {
         ReplyAction action = event.deferReply();
         
-        if (event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId) || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getUser())) {
+        if (event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId) || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
             action.queue();
         } else {
             action.setEphemeral(true).queue();
