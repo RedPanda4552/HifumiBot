@@ -77,16 +77,18 @@ public class EventListener extends ListenerAdapter {
             return;
         }
 
-        HifumiBot.getSelf().getCommandInterpreter().execute(event);
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
+            HifumiBot.getSelf().getCommandInterpreter().execute(event);
 
-        if (Messaging.messageHasEmulog(event.getMessage())) {
-            EmulogParser ep = new EmulogParser(event.getMessage());
-            HifumiBot.getSelf().getScheduler().runOnce(ep);
-        }
+            if (Messaging.messageHasEmulog(event.getMessage())) {
+                EmulogParser ep = new EmulogParser(event.getMessage());
+                HifumiBot.getSelf().getScheduler().runOnce(ep);
+            }
 
-        if (Messaging.messageHasPnach(event.getMessage())) {
-            PnachParser pp = new PnachParser(event.getMessage());
-            HifumiBot.getSelf().getScheduler().runOnce(pp);
+            if (Messaging.messageHasPnach(event.getMessage())) {
+                PnachParser pp = new PnachParser(event.getMessage());
+                HifumiBot.getSelf().getScheduler().runOnce(pp);
+            }
         }
 
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
