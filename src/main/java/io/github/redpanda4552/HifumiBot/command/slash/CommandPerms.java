@@ -113,13 +113,13 @@ public class CommandPerms extends AbstractSlashCommand {
             }
 
             eb.addField("BLOCKED", sb.toString(), false);
+            sb = new StringBuilder();
 
             for (String modRoleId : HifumiBot.getSelf().getConfig().permissions.modRoleIds) {
                 sb.append("`" + event.getGuild().getRoleById(modRoleId).getName() + "`\t");
             }
 
             eb.addField("MOD", sb.toString(), false);
-
             sb = new StringBuilder();
 
             for (String adminRoleId : HifumiBot.getSelf().getConfig().permissions.adminRoleIds) {
@@ -127,7 +127,6 @@ public class CommandPerms extends AbstractSlashCommand {
             }
 
             eb.addField("ADMIN", sb.toString(), false);
-
             sb = new StringBuilder();
 
             for (String superAdminRoleId : HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds) {
