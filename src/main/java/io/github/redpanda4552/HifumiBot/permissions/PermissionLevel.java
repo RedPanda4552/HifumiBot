@@ -24,5 +24,5 @@
 package io.github.redpanda4552.HifumiBot.permissions;
 
 public enum PermissionLevel {
-    SUPERUSER, SUPER_ADMIN, ADMIN, MOD, GUEST
+    SUPERUSER, SUPER_ADMIN, ADMIN, MOD, GUEST, BLOCKED
 }

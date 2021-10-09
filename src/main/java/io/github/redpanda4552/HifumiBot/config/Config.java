@@ -125,11 +125,13 @@ public class Config implements IConfig {
         public ArrayList<String> superAdminRoleIds;
         public ArrayList<String> adminRoleIds;
         public ArrayList<String> modRoleIds;
+        public ArrayList<String> blockedRoleIds;
 
         public Permissions() {
             superAdminRoleIds = new ArrayList<String>();
             adminRoleIds = new ArrayList<String>();
             modRoleIds = new ArrayList<String>();
+            blockedRoleIds = new ArrayList<String>();
         }
     }
     

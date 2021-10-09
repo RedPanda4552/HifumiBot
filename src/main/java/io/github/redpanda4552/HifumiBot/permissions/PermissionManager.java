@@ -23,6 +23,8 @@
  */
 package io.github.redpanda4552.HifumiBot.permissions;
 
+import java.util.ArrayList;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -32,6 +34,22 @@ public class PermissionManager {
 
     public PermissionManager(String superuserId) {
         this.superuserId = superuserId;
+        
+        if (HifumiBot.getSelf().getConfig().permissions.blockedRoleIds == null) {
+            HifumiBot.getSelf().getConfig().permissions.blockedRoleIds = new ArrayList<String>();
+        }
+        
+        if (HifumiBot.getSelf().getConfig().permissions.modRoleIds == null) {
+            HifumiBot.getSelf().getConfig().permissions.modRoleIds = new ArrayList<String>();
+        }
+        
+        if (HifumiBot.getSelf().getConfig().permissions.adminRoleIds == null) {
+            HifumiBot.getSelf().getConfig().permissions.adminRoleIds = new ArrayList<String>();
+        }
+        
+        if (HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds == null) {
+            HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds = new ArrayList<String>();
+        }
     }
 
     public boolean hasPermission(PermissionLevel permissionLevel, Member member) {
@@ -41,6 +59,12 @@ public class PermissionManager {
         
         switch (permissionLevel) {
         case GUEST:
+            for (Role role : member.getRoles()) {
+                if (HifumiBot.getSelf().getConfig().permissions.blockedRoleIds.contains(role.getId())) {
+                    return false;
+                }
+            }
+            
             return true;
         case MOD:
             for (Role role : member.getRoles()) {
