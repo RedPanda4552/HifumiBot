@@ -27,11 +27,7 @@ import javax.security.auth.login.LoginException;
 
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
-import io.github.redpanda4552.HifumiBot.config.Config;
-import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.config.ConfigType;
-import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
-import io.github.redpanda4552.HifumiBot.config.WarezTracking;
+import io.github.redpanda4552.HifumiBot.config.*;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
@@ -55,21 +51,25 @@ public class HifumiBot {
     private static boolean doSlashCommandUpsert = false;
 
     public static void main(String[] args) {
-        if (args.length < 2) {
+        // Run via environment variables first, if not, fall-back to args
+        if (System.getenv().containsKey("DISCORD_BOT_TOKEN") && System.getenv().containsKey("SUPERUSER_ID") && System.getenv().containsKey("UPSERT_SLASH_COMMANDS")) {
+            System.out.println("Found environment variables, using those instead of cli-args!");
+            discordBotToken = System.getenv("DISCORD_BOT_TOKEN");
+            superuserId = System.getenv("SUPERUSER_ID");
+            doSlashCommandUpsert = Boolean.parseBoolean(System.getenv("UPSERT_SLASH_COMMANDS"));
+        } else if (args.length < 2) {
             System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [-u]");
             return;
-        }
-
-        discordBotToken = args[0];
-        superuserId = args[1];
-        
-        if (args.length >= 3) {
-            if (args[2].equals("-u")) {
-                doSlashCommandUpsert = true;
+        } else {
+            discordBotToken = args[0];
+            superuserId = args[1];
+            if (args.length >= 3) {
+                if (args[2].equals("-u")) {
+                    doSlashCommandUpsert = true;
+                }
             }
+            System.out.println("Parsed arguments from command line");
         }
-
-        System.out.println("Arguments parsed");
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (self != null)
@@ -91,6 +91,7 @@ public class HifumiBot {
     private Config config;
     private WarezTracking warezTracking;
     private DynCmdConfig dynCmdConfig;
+    private BuildCommitMap buildCommitMap;
     private final OkHttpClient http;
 
     private Scheduler scheduler;
@@ -129,6 +130,7 @@ public class HifumiBot {
         // Write back the config so that if any new fields were added after an
         // update, they are written to disk
         ConfigManager.write(config);
+        // TODO - check vital fields and fail if they aren't set (all the channel and serverIds)
 
         ConfigManager.createConfigIfNotExists(ConfigType.WAREZ);
         warezTracking = (WarezTracking) ConfigManager.read(ConfigType.WAREZ);
@@ -136,6 +138,13 @@ public class HifumiBot {
 
         ConfigManager.createConfigIfNotExists(ConfigType.DYNCMD);
         dynCmdConfig = (DynCmdConfig) ConfigManager.read(ConfigType.DYNCMD);
+        ConfigManager.write(dynCmdConfig);
+
+        ConfigManager.createConfigIfNotExists(ConfigType.BUILDMAP);
+        buildCommitMap = (BuildCommitMap) ConfigManager.read(ConfigType.BUILDMAP);
+        if (buildCommitMap != null) {
+            buildCommitMap.seedMap();
+        }
         ConfigManager.write(dynCmdConfig);
 
         Internet.init();
@@ -196,6 +205,8 @@ public class HifumiBot {
     public DynCmdConfig getDynCmdConfig() {
         return dynCmdConfig;
     }
+
+    public BuildCommitMap getBuildCommitMap() { return buildCommitMap; }
     
     public OkHttpClient getHttpClient() {
         return http;
