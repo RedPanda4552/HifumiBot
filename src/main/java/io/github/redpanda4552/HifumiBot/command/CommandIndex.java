@@ -36,6 +36,7 @@ import java.util.TreeSet;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBan;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandBuildNumber;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDev;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
@@ -100,6 +101,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandGPU());
         registerSlashCommand(new CommandDynCmd());
         registerSlashCommand(new CommandHelp());
+        registerSlashCommand(new CommandBuildNumber());
         commandMap.clear();
 
         for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands) {
