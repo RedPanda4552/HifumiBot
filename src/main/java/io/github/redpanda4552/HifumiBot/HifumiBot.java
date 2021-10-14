@@ -27,7 +27,12 @@ import javax.security.auth.login.LoginException;
 
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
-import io.github.redpanda4552.HifumiBot.config.*;
+import io.github.redpanda4552.HifumiBot.config.BuildCommitMap;
+import io.github.redpanda4552.HifumiBot.config.Config;
+import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.config.ConfigType;
+import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
+import io.github.redpanda4552.HifumiBot.config.WarezTracking;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
