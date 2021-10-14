@@ -25,6 +25,7 @@ package io.github.redpanda4552.HifumiBot;
 
 import java.util.List;
 
+import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -90,7 +91,13 @@ public class BuildMonitor implements Refreshable {
             gitRevision = revisionCell.getElementsByTag("a").get(0).ownText(); // Get display text
             Element commitCell = row.getElementsByTag("td").get(4); // Get last cell
 
-            if (lastPostedRevision == null || !gitRevision.equals(lastPostedRevision)) {
+            if (!gitRevision.equals(lastPostedRevision)) {
+                var buildProps = gitRevision.split("-");
+                Long id = Long.valueOf(buildProps[2]);
+                String shortSha = buildProps[3].substring(1);
+                HifumiBot.getSelf().getBuildCommitMap().putCommit(id, shortSha);
+                ConfigManager.write(HifumiBot.getSelf().getBuildCommitMap());
+
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setAuthor("New PCSX2 Development Build Available!");
                 eb.addField("Revision:", gitRevision, false);
