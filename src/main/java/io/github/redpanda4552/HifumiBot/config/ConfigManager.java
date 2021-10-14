@@ -23,10 +23,7 @@
  */
 package io.github.redpanda4552.HifumiBot.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 
 import com.google.gson.Gson;
@@ -40,10 +37,12 @@ public class ConfigManager {
     public static void createConfigIfNotExists(ConfigType configType) {
         try {
             File file = new File(configType.getPath());
-            
-            if (file.exists() == false) {
-                file.createNewFile();
-                write(new Config());
+            if (!file.exists() && file.createNewFile()) {
+                FileOutputStream oStream = new FileOutputStream(file);
+                // Fragile, but if the config system reads an empty file it initializes the config to null!
+                oStream.write("{}".getBytes());
+                oStream.flush();
+                oStream.close();
             }
         } catch (IOException e) {
             Messaging.logException("ConfigManager", "createConfigIfNotExists", e);
@@ -55,6 +54,7 @@ public class ConfigManager {
             File file = new File(configType.getPath());
             InputStream iStream = Files.newInputStream(file.toPath());
             String json = new String(iStream.readAllBytes());
+            iStream.close();
             Gson gson = new Gson();
             return gson.fromJson(json, TypeToken.get(configType.getConfigClass()).getType());
         } catch (IOException e) {
@@ -65,12 +65,18 @@ public class ConfigManager {
     }
 
     public static void write(IConfig config) {
+        if (config == null) {
+            System.out.print("Cannot write config, was given null!");
+            return;
+        }
         try {
             File file = new File(config.getConfigType().getPath());
             OutputStream oStream = Files.newOutputStream(file.toPath());
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String json = gson.toJson(config, TypeToken.get(config.getConfigType().getConfigClass()).getType());
             oStream.write(json.getBytes());
+            oStream.flush();
+            oStream.close();
         } catch (IOException e) {
             Messaging.logException("ConfigManager", "write", e);
         }
