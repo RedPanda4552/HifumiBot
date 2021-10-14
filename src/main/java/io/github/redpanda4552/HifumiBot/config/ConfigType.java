@@ -27,7 +27,8 @@ public enum ConfigType {
 
     CORE("./hifumi-conf.json", Config.class),
     WAREZ("./warez-tracking.json", WarezTracking.class),
-    DYNCMD("./dyncmd-config.json", DynCmdConfig.class);
+    DYNCMD("./dyncmd-config.json", DynCmdConfig.class),
+    BUILDMAP("./build-map.json", BuildCommitMap.class);
     
     private String path;
     private Class<?> clazz;
