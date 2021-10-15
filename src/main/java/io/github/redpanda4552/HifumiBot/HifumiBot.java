@@ -150,7 +150,7 @@ public class HifumiBot {
         if (buildCommitMap != null) {
             buildCommitMap.seedMap();
         }
-        ConfigManager.write(dynCmdConfig);
+        ConfigManager.write(buildCommitMap);
 
         Internet.init();
         scheduler = new Scheduler();
