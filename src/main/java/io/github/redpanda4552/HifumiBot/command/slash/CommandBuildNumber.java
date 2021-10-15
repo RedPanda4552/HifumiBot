@@ -57,7 +57,7 @@ public class CommandBuildNumber extends AbstractSlashCommand {
     protected void onExecute(SlashCommandEvent event) {
         OptionMapping option = event.getOption("buildid");
         if (option == null) {
-            event.reply("Build ID not provided or invalid!").queue();
+            event.reply("Build ID not provided or invalid!").setEphemeral(true).queue();
             return;
         }
         long buildId = option.getAsLong();
@@ -68,9 +68,9 @@ public class CommandBuildNumber extends AbstractSlashCommand {
             eb.addField("Build Id", String.valueOf(buildId), true);
             eb.addField("Commit", String.format("[%s](https://github.com/PCSX2/pcsx2/commit/%s)",
                     StringUtils.abbreviate(sha, 10), sha), true);
-            event.replyEmbeds(eb.build()).queue();
+            event.replyEmbeds(eb.build()).setEphemeral(true).queue();
         }, () -> {
-            event.reply("Could not find that build id in the current development cycle (v1.7)!").queue();
+            event.reply("Could not find that build id in the current development cycle (v1.7)!").setEphemeral(true).queue();
         });
     }
 
