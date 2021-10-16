@@ -41,7 +41,7 @@ public class CommandUpsert extends AbstractSlashCommand {
     protected void onExecute(SlashCommandEvent event) {
         event.deferReply(true).queue();
         
-        if (event.getSubcommandName().equals("name")) {
+        if (event.getSubcommandName().equals("one")) {
             HifumiBot.getSelf().getCommandIndex().upsertSlashCommand(event.getOption("name").getAsString());
         } else {
             HifumiBot.getSelf().getCommandIndex().upsertAllSlashCommands(event.getSubcommandName());
@@ -54,11 +54,11 @@ public class CommandUpsert extends AbstractSlashCommand {
     protected CommandData defineSlashCommand() {
         SubcommandData subAll = new SubcommandData("all", "Upsert all slash commands at once, will likely exceed rate limiting");
         SubcommandData subNew = new SubcommandData("new", "Upsert only slash commands which do not exist on Discord servers yet");
-        SubcommandData name = new SubcommandData("name", "Upsert one slash command, specified by name")
+        SubcommandData one = new SubcommandData("one", "Upsert one slash command, specified by name")
                 .addOption(OptionType.STRING, "name", "Name of the slash command to upsert", true);
         
         return new CommandData("upsert", "Upsert all slash commands to the configured server.")
-                .addSubcommands(subAll, subNew, name);
+                .addSubcommands(subAll, subNew, one);
     }
 
 }
