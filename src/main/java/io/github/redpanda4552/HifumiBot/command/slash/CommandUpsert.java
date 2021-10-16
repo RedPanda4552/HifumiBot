@@ -29,7 +29,7 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 public class CommandUpsert extends AbstractSlashCommand {
 
@@ -40,20 +40,25 @@ public class CommandUpsert extends AbstractSlashCommand {
     @Override
     protected void onExecute(SlashCommandEvent event) {
         event.deferReply(true).queue();
-        HifumiBot.getSelf().getCommandIndex().upsertSlashCommands(event.getOption("mode").getAsString());
+        
+        if (event.getSubcommandName().equals("name")) {
+            HifumiBot.getSelf().getCommandIndex().upsertSlashCommand(event.getOption("name").getAsString());
+        } else {
+            HifumiBot.getSelf().getCommandIndex().upsertAllSlashCommands(event.getSubcommandName());
+        }
+        
         event.getHook().sendMessage("Slash commands updated!").setEphemeral(true).queue();
     }
 
     @Override
     protected CommandData defineSlashCommand() {
-        
-        OptionData mode = new OptionData(OptionType.STRING, "mode", "Mode to upsert")
-                .setRequired(true)
-                .addChoice("all", "all")
-                .addChoice("new", "new");
+        SubcommandData subAll = new SubcommandData("all", "Upsert all slash commands at once, will likely exceed rate limiting");
+        SubcommandData subNew = new SubcommandData("new", "Upsert only slash commands which do not exist on Discord servers yet");
+        SubcommandData name = new SubcommandData("name", "Upsert one slash command, specified by name")
+                .addOption(OptionType.STRING, "name", "Name of the slash command to upsert", true);
         
         return new CommandData("upsert", "Upsert all slash commands to the configured server.")
-                .addOptions(mode);
+                .addSubcommands(subAll, subNew, name);
     }
 
 }

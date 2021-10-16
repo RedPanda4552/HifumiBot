@@ -193,7 +193,7 @@ public class HifumiBot {
         }, 1000 * 60 * 60);
 
         if (doSlashCommandUpsert) {
-            commandIndex.upsertSlashCommands("all");
+            commandIndex.upsertAllSlashCommands("all");
         }
 
         updateStatus("/help");

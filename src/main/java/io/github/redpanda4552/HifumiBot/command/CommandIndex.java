@@ -111,7 +111,7 @@ public class CommandIndex {
         rebuildHelpPages();
     }
     
-    public void upsertSlashCommands(String mode) {
+    public void upsertAllSlashCommands(String mode) {
         String serverId = HifumiBot.getSelf().getConfig().server.id;
         List<Command> commands = HifumiBot.getSelf().getJDA().getGuildById(serverId).retrieveCommands().complete();
         HashMap<String, Command> uploadedCommands = new HashMap<String, Command>();
@@ -125,20 +125,22 @@ public class CommandIndex {
         }
         
         for (String commandName : slashCommands.keySet()) {
-            AbstractSlashCommand slashCommand = slashCommands.get(commandName);
-            
-            switch (mode) {
-            case "all":
-                slashCommand.upsertSlashCommand();
-                break;
-            case "new":
+            if (mode != null && mode.equals("all")) {
+                upsertSlashCommand(commandName);
+            } else if (mode != null && mode.equals("new")) {
                 if (!uploadedCommands.containsKey(commandName)) {
-                    slashCommand.upsertSlashCommand();
+                    upsertSlashCommand(commandName);
                 }
-                break;
             }
-            
         }
+    }
+    
+    public void upsertSlashCommand(String commandName) {
+        upsertSlashCommand(slashCommands.get(commandName));
+    }
+    
+    public void upsertSlashCommand(AbstractSlashCommand slashCommand) {
+        slashCommand.upsertSlashCommand();
     }
     
     private void registerSlashCommand(AbstractSlashCommand slashCommand) {
