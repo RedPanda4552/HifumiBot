@@ -23,15 +23,15 @@
  */
 package io.github.redpanda4552.HifumiBot.config;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
-
-import java.io.File;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 
 public class BuildCommitMap implements IConfig {
 
@@ -49,9 +49,8 @@ public class BuildCommitMap implements IConfig {
     public void seedMap() {
         // Seed the map from a resources file
         try {
-            ClassLoader classLoader = getClass().getClassLoader();
-            File file = new File(classLoader.getResource("fixture-build-map.json").getFile());
-            String content = new String(Files.readAllBytes(file.toPath()));
+            InputStream stream = getClass().getResourceAsStream("/fixture-build-map.json");
+            String content = new String(stream.readAllBytes());
 
             Gson gson = new Gson();
             var mapType = new TypeToken<Map<Long, String>>() {}.getType();
