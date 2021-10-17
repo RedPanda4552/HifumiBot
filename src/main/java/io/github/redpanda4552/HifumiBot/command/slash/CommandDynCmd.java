@@ -109,6 +109,12 @@ public class CommandDynCmd extends AbstractSlashCommand {
                 dyncmd.setHelpText(helpOpt.getAsString());
             }
             
+            // Though help text is now required, old commands may not have it.
+            // Force it to the command name if blank.
+            if (dyncmd.getHelpText() == null || dyncmd.getHelpText().isBlank()) {
+                dyncmd.setHelpText(dyncmd.getName());
+            }
+            
             if (titleOpt != null) {
                 dyncmd.setTitle(titleOpt.getAsString());
             }
