@@ -99,7 +99,13 @@ public class CommandMemes extends AbstractSlashCommand {
                     continue;
                 }
                 
-                SubcommandData subCommand = new SubcommandData(dyncmd.getName().toLowerCase(), dyncmd.getHelpText());
+                String description = dyncmd.getHelpText();
+                
+                if (description == null || description.isBlank()) {
+                    description = dyncmd.getName().toLowerCase();
+                }
+                
+                SubcommandData subCommand = new SubcommandData(dyncmd.getName().toLowerCase(), description);
                 sgd.addSubcommands(subCommand);
                 subcommandGroups.put(dyncmd.getSubGroup(), sgd);
             }
