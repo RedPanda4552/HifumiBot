@@ -51,7 +51,12 @@ public class SlashCommandListener extends ListenerAdapter {
         }
         
         if (slashCommands.containsKey(event.getName())) {
-            slashCommands.get(event.getName()).executeIfPermission(event);
+            try {
+                slashCommands.get(event.getName()).executeIfPermission(event);
+            } catch (Exception e) {
+                Messaging.logException("SlashCommandListener", "onSlashCommand", e);
+                event.reply("An internal exception occurred and has been reported to admins.").setEphemeral(true).queue();
+            }
         }
     }
     
