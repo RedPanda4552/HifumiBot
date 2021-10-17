@@ -42,12 +42,15 @@ public class CommandUpsert extends AbstractSlashCommand {
         event.deferReply(true).queue();
         
         if (event.getSubcommandName().equals("one")) {
-            HifumiBot.getSelf().getCommandIndex().upsertSlashCommand(event.getOption("name").getAsString());
+            if (HifumiBot.getSelf().getCommandIndex().upsertSlashCommand(event.getOption("name").getAsString())) {
+                event.getHook().sendMessage("Slash command updated!").setEphemeral(true).queue();
+            } else {
+                event.getHook().sendMessage("No slash command found with name `" + event.getOption("name").getAsString() + "`").setEphemeral(true).queue();
+            }
         } else {
             HifumiBot.getSelf().getCommandIndex().upsertAllSlashCommands(event.getSubcommandName());
+            event.getHook().sendMessage("Slash commands updated!").setEphemeral(true).queue();
         }
-        
-        event.getHook().sendMessage("Slash commands updated!").setEphemeral(true).queue();
     }
 
     @Override

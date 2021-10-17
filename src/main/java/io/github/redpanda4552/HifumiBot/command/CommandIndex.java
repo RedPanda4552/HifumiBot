@@ -56,6 +56,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -139,14 +140,21 @@ public class CommandIndex {
         }
     }
     
-    public void upsertSlashCommand(String commandName) {
-        upsertSlashCommand(slashCommands.get(commandName));
+    public boolean upsertSlashCommand(String commandName) {
+        return upsertSlashCommand(slashCommands.get(commandName));
     }
     
-    public void upsertSlashCommand(AbstractSlashCommand slashCommand) {
-        if (slashCommand != null) {
-            slashCommand.upsertSlashCommand();
+    public boolean upsertSlashCommand(AbstractSlashCommand slashCommand) {
+        try {
+            if (slashCommand != null) {
+                slashCommand.upsertSlashCommand();
+                return true;
+            }
+        } catch (Exception e) {
+            Messaging.logException("CommandIndex", "upsertSlashCommand", e);
         }
+        
+        return false;
     }
     
     private void registerSlashCommand(AbstractSlashCommand slashCommand) {
