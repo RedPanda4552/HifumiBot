@@ -85,7 +85,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
                     titleOpt != null ? titleOpt.getAsString() : null, 
                     bodyOpt != null ? Strings.unescapeNewlines(bodyOpt.getAsString()) : null, 
                     imageOpt != null ? imageOpt.getAsString() : null);
-            HifumiBot.getSelf().getCommandIndex().addCommand(dyncmd);
+            HifumiBot.getSelf().getCommandIndex().addDynamicCommand(dyncmd);
             HifumiBot.getSelf().getCommandIndex().upsertSlashCommand(category);
             event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
             return;
@@ -127,7 +127,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
                 dyncmd.setImageURL(imageOpt.getAsString());
             }
             
-            HifumiBot.getSelf().getCommandIndex().addCommand(dyncmd);
+            HifumiBot.getSelf().getCommandIndex().addDynamicCommand(dyncmd);
             event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
             return;
         case "delete":

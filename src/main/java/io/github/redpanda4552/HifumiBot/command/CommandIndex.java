@@ -77,14 +77,19 @@ public class CommandIndex {
     public CommandIndex() {
         slashCommands = new HashMap<String, AbstractSlashCommand>();
         commandMap = new HashMap<String, DynamicCommand>();
-        rebuild();
+        rebuildAll();
         history = new HashMap<String, HashMap<String, Instant>>();
     }
 
     /**
      * Rebuild this CommandIndex from the Config object in HifumiBot.
      */
-    public void rebuild() {
+    public void rebuildAll() {
+        rebuildSlash();
+        rebuildDynamic();
+    }
+    
+    public void rebuildSlash() {
         slashCommands.clear();
         registerSlashCommand(new CommandSay());
         registerSlashCommand(new CommandAbout());
@@ -107,6 +112,9 @@ public class CommandIndex {
         registerSlashCommand(new CommandBuildNumber());
         registerSlashCommand(new CommandMemes());
         registerSlashCommand(new CommandSupport());
+    }
+    
+    public void rebuildDynamic() {
         commandMap.clear();
 
         for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands) {
@@ -183,7 +191,7 @@ public class CommandIndex {
         return commandMap.get(name);
     }
 
-    public void addCommand(DynamicCommand dyncmd) {
+    public void addDynamicCommand(DynamicCommand dyncmd) {
         // Insert it into the ArrayList in Config, then reload the CommandIndex.
         ArrayList<DynamicCommand> configDynamicCommands = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands;
         Iterator<DynamicCommand> iter = configDynamicCommands.iterator();
@@ -205,7 +213,7 @@ public class CommandIndex {
         }
 
         ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
-        HifumiBot.getSelf().getCommandIndex().rebuild();
+        HifumiBot.getSelf().getCommandIndex().rebuildDynamic();
     }
 
     public void deleteCommand(String name) {
@@ -225,7 +233,7 @@ public class CommandIndex {
         if (toDelete != null) {
             dynamicCommands.remove(toDelete);
             ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
-            HifumiBot.getSelf().getCommandIndex().rebuild();
+            HifumiBot.getSelf().getCommandIndex().rebuildAll();
         }
     }
 
