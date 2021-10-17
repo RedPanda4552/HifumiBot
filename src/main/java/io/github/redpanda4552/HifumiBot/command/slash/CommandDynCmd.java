@@ -86,6 +86,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
                     bodyOpt != null ? Strings.unescapeNewlines(bodyOpt.getAsString()) : null, 
                     imageOpt != null ? imageOpt.getAsString() : null);
             HifumiBot.getSelf().getCommandIndex().addCommand(dyncmd);
+            HifumiBot.getSelf().getCommandIndex().upsertSlashCommand(category);
             event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
             return;
         case "update":
