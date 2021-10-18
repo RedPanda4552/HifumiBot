@@ -43,7 +43,6 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandMemes;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPrompt;
@@ -51,7 +50,6 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandSupport;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
@@ -110,8 +108,6 @@ public class CommandIndex {
         registerSlashCommand(new CommandDynCmd());
         registerSlashCommand(new CommandHelp());
         registerSlashCommand(new CommandBuildNumber());
-        registerSlashCommand(new CommandMemes());
-        registerSlashCommand(new CommandSupport());
     }
     
     public void rebuildDynamic() {
@@ -174,7 +170,7 @@ public class CommandIndex {
         return slashCommands;
     }
 
-    public Set<String> getAllDynCmdNames() {
+    public Set<String> getAll() {
         return commandMap.keySet();
     }
 
@@ -243,7 +239,7 @@ public class CommandIndex {
      */
     public HashMap<String, TreeSet<String>> getCategorizedCommandNames() {
         Set<String> commandNames = new HashSet<String>();
-        commandNames.addAll(getAllDynCmdNames());
+        commandNames.addAll(getAll());
         HashMap<String, TreeSet<String>> ret = new HashMap<String, TreeSet<String>>();
 
         for (String commandName : commandNames) {
