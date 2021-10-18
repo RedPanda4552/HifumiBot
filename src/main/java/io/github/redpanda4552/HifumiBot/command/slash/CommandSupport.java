@@ -30,7 +30,6 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -86,17 +85,7 @@ public class CommandSupport extends AbstractSlashCommand {
                 SubcommandGroupData sgd = subcommandGroups.get(dyncmd.getSubGroup());
                 
                 if (sgd == null) {
-                    if (subcommandGroups.size() >= 25) {
-                        Messaging.logInfo("CommandSupport", "defineSlashCommand", "Hit limit of 25 subcommand groups, ignoring any others");
-                        continue;
-                    }
-                    
                     sgd = new SubcommandGroupData(dyncmd.getSubGroup(), dyncmd.getSubGroup());
-                }
-                
-                if (sgd.getSubcommands().size() >= 25) {
-                    Messaging.logInfo("CommandSupport", "defineSlashCommand", "Hit limit of 25 subcommands in group " + dyncmd.getSubGroup() + ", ignoring any others");
-                    continue;
                 }
                 
                 SubcommandData subCommand = new SubcommandData(dyncmd.getName().toLowerCase(), dyncmd.getHelpText());
