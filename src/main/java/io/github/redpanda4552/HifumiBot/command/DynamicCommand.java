@@ -29,12 +29,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 
 public class DynamicCommand {
 
-    protected String name, category, subGroup, helpText, title, body, imageURL;
+    protected String name, category, helpText, title, body, imageURL;
 
-    public DynamicCommand(String name, String category, String subGroup, String helpText, String title, String body, String imageURL) {
+    public DynamicCommand(String name, String category, String helpText, String title, String body, String imageURL) {
         this.name = name;
         this.category = category;
-        this.subGroup = subGroup;
         this.helpText = helpText;
         this.title = title;
         this.body = body;
@@ -68,14 +67,6 @@ public class DynamicCommand {
         this.category = category;
     }
     
-    public String getSubGroup() {
-        return subGroup;
-    }
-    
-    public void setSubGroup(String subGroup) {
-        this.subGroup = subGroup;
-    }
-
     public String getHelpText() {
         return helpText;
     }

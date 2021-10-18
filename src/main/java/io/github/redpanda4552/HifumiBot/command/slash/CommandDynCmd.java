@@ -47,7 +47,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
         event.deferReply().setEphemeral(true).queue();
         String name = event.getOption("name").getAsString();
         OptionMapping categoryOpt = event.getOption("category");
-        OptionMapping subGroupOpt = event.getOption("sub-group");
         OptionMapping helpOpt = event.getOption("help-text");
         OptionMapping titleOpt = event.getOption("title");
         OptionMapping bodyOpt = event.getOption("body");
@@ -67,7 +66,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
             return;
         case "new":
             String category = event.getOption("category").getAsString();
-            String subGroup = subGroupOpt.getAsString();
             String helpText = event.getOption("help-text").getAsString();
             
             dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
@@ -80,7 +78,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
             dyncmd = new DynamicCommand(
                     name, 
                     category, 
-                    subGroup,
                     helpText, 
                     titleOpt != null ? titleOpt.getAsString() : null, 
                     bodyOpt != null ? Strings.unescapeNewlines(bodyOpt.getAsString()) : null, 
@@ -98,10 +95,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
             
             if (categoryOpt != null) {
                 dyncmd.setCategory(categoryOpt.getAsString());
-            }
-            
-            if (subGroupOpt != null) {
-                dyncmd.setSubGroup(subGroupOpt.getAsString());
             }
             
             if (helpOpt != null) {
@@ -141,7 +134,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
         OptionData category = new OptionData(OptionType.STRING, "category", "Category of the command")
                 .addChoice("support", "support")
                 .addChoice("memes", "memes");
-        OptionData subGroup = new OptionData(OptionType.STRING, "sub-group", "Subcommand group that this command will be a member of");
         OptionData helpText = new OptionData(OptionType.STRING, "help-text", "Help text for the command");
         OptionData title = new OptionData(OptionType.STRING, "title", "Title portion of the command output");
         OptionData body = new OptionData(OptionType.STRING, "body", "Body portion of the command output");
@@ -154,7 +146,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
                         name.setRequired(true), 
                         category.setRequired(true), 
                         helpText.setRequired(true),
-                        subGroup,
                         title, 
                         body, 
                         imageUrl);
@@ -163,7 +154,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
                         name.setRequired(true), 
                         category.setRequired(false),
                         helpText.setRequired(false),
-                        subGroup,
                         title, 
                         body, 
                         imageUrl);
@@ -182,10 +172,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
             eb.addField("Category", dyncmd.getCategory(), true);
         }
         
-        if (dyncmd.getSubGroup() != null && !dyncmd.getSubGroup().isBlank()) {
-            eb.addField("Sub Group", dyncmd.getSubGroup(), true);
-        }
-
         if (dyncmd.getTitle() != null && !dyncmd.getTitle().isBlank()) {
             eb.addField("Title", dyncmd.getTitle(), true);
         }
