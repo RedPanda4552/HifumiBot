@@ -128,7 +128,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
             }
             
             HifumiBot.getSelf().getCommandIndex().addDynamicCommand(dyncmd);
-            HifumiBot.getSelf().getCommandIndex().upsertSlashCommand(dyncmd.getCategory());
+            HifumiBot.getSelf().getCommandIndex().upsertSlashCommand(category);
             event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
             return;
         case "delete":
