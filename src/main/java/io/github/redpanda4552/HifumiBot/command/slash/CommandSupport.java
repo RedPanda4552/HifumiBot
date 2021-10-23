@@ -44,6 +44,7 @@ public class CommandSupport extends AbstractSlashCommand {
         
         if (opt == null) {
             event.reply("Missing required option `name`").setEphemeral(true).queue();
+            return;
         }
         
         DynamicCommand toExecute = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(opt.getAsString());
