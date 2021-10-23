@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.command;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 public class DynamicCommand {
 
@@ -53,6 +54,14 @@ public class DynamicCommand {
         eb.setDescription(body);
         eb.setImage(imageURL);
         Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
+    }
+    
+    public void execute(SlashCommandEvent event) {
+        EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(event.getMember());
+        eb.setTitle(title);
+        eb.setDescription(body);
+        eb.setImage(imageURL);
+        event.replyEmbeds(eb.build()).queue();
     }
     
     public String getName() {

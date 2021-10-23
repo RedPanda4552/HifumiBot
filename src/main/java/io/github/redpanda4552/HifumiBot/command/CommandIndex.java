@@ -43,6 +43,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandMemes;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPerms;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPrompt;
@@ -50,6 +51,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandSupport;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
@@ -108,6 +110,8 @@ public class CommandIndex {
         registerSlashCommand(new CommandDynCmd());
         registerSlashCommand(new CommandHelp());
         registerSlashCommand(new CommandBuildNumber());
+        registerSlashCommand(new CommandMemes());
+        registerSlashCommand(new CommandSupport());
     }
     
     public void rebuildDynamic() {
