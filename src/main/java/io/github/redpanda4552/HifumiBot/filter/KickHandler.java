@@ -63,15 +63,24 @@ public class KickHandler {
                 Integer toStore = p.getRight() + 1;
                 
                 if (toStore >= HifumiBot.getSelf().getConfig().filterOptions.maxIncidents) {
-                    Messaging.sendPrivateMessage(user, HifumiBot.getSelf().getConfig().filterOptions.kickMessage);
-                    member.kick().complete();
                     indexes.remove(userId);
-                    Messaging.logInfo("KickHandler", "storeIncident", "Successfully messaged and kicked " + user.getAsMention() + " for exceeding the maximum number of filter incidents.");
+                    
+                    try {
+                        doKick(member);
+                        Messaging.logInfo("KickHandler", "storeIncident", "Successfully messaged and kicked " + member.getUser().getAsMention() + " for exceeding the maximum number of filter incidents.");
+                    } catch (Exception e) {
+                        Messaging.logException("KickHandler", "storeIncident", e);
+                    }
                 } else {
                     indexes.put(userId, Pair.of(newInstant, toStore));
                 }
             }
         }
+    }
+    
+    public synchronized void doKick(Member member) {
+        Messaging.sendPrivateMessage(member.getUser(), HifumiBot.getSelf().getConfig().filterOptions.kickMessage);
+        member.kick().complete();
     }
     
     public synchronized void flush() {

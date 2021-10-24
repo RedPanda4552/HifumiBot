@@ -34,27 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandBan;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandBuildNumber;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandDev;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandMemes;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandPerms;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandPrompt;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandReload;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandRun;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandSupport;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandUpsert;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
+import io.github.redpanda4552.HifumiBot.command.slash.*;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -112,6 +92,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandBuildNumber());
         registerSlashCommand(new CommandMemes());
         registerSlashCommand(new CommandSupport());
+        registerSlashCommand(new CommandSpamKick());
     }
     
     public void rebuildDynamic() {
