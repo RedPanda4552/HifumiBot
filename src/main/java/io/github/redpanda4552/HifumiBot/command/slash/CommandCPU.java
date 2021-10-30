@@ -37,7 +37,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandCPU extends AbstractSlashCommand {
     
@@ -75,24 +74,17 @@ public class CommandCPU extends AbstractSlashCommand {
 
     @Override
     protected void onExecute(SlashCommandEvent event) {
-        ReplyAction action = event.deferReply();
+        boolean isEphemeral = true;
         
         if (event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId) || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
-            action.queue();
-        } else {
-            action.setEphemeral(true).queue();
+            isEphemeral = false;
         }
         
         EmbedBuilder eb = new EmbedBuilder();
         OptionMapping opt = event.getOption("name");
         
         if (opt == null) {
-            eb.setTitle("About Single Thread Ratings (STR)");
-            eb.appendDescription("**Single Thread Rating** (STR) is a benchmarking statistic used by Passmark's CPU benchmarking software. ")
-                    .appendDescription("The statistic indicates how powerful a single thread on a CPU is. ")
-                    .appendDescription("Though PCSX2 does have multiple threads, each thread still needs to be powerful in order to run emulation at full speed. ");
-            eb.addField("Direct link", CpuIndex.PASSMARK_STR_URL, false);
-            event.getHook().sendMessageEmbeds(eb.build()).queue();
+            event.reply("Missing required argument `name`").setEphemeral(isEphemeral).queue();
             return;
         }
 
@@ -135,12 +127,12 @@ public class CommandCPU extends AbstractSlashCommand {
             eb.setColor(0xff0000);
         }
 
-        event.getHook().sendMessageEmbeds(eb.build()).queue();
+        event.replyEmbeds(eb.build()).queue();
     }
 
     @Override
     protected CommandData defineSlashCommand() {
         return new CommandData("cpu", "Look up the single thread rating of a CPU")
-                .addOption(OptionType.STRING, "name", "Name of the CPU to look up");
+                .addOption(OptionType.STRING, "name", "Name of the CPU to look up", true);
     }
 }

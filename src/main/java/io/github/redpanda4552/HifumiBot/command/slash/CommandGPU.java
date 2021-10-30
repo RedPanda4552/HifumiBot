@@ -37,7 +37,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 public class CommandGPU extends AbstractSlashCommand {
     
@@ -74,29 +73,17 @@ public class CommandGPU extends AbstractSlashCommand {
 
     @Override
     protected void onExecute(SlashCommandEvent event) {
-        ReplyAction action = event.deferReply();
+        boolean isEphemeral = true;
         
         if (event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId) || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
-            action.queue();
-        } else {
-            action.setEphemeral(true).queue();
+            isEphemeral = false;
         }
         
         EmbedBuilder eb = new EmbedBuilder();
         OptionMapping opt = event.getOption("name");
         
         if (opt == null) {
-            eb.setTitle("About GPU Ratings");
-            eb.appendDescription("Passmark's GPU benchmarking software measures overall performance of GPUs. ")
-                    .appendDescription("Higher upscaling quality in PCSX2 will require increasingly powerful GPUs, ")
-                    .appendDescription("so this tool will help you determine what Internal Resolution a GPU is capable of. ")
-                    .appendDescription("*These ratings should only be used as a rough guide; **some games are unusually demanding ")
-                    .appendDescription("on the GPU and will still have performance problems.***");
-            eb.addField("High End GPUs", GpuIndex.PASSMARK_HIGH_END, false);
-            eb.addField("Mid-High GPUs", GpuIndex.PASSMARK_MID_HIGH, false);
-            eb.addField("Mid-Low GPUs", GpuIndex.PASSMARK_MID_LOW, false);
-            eb.addField("Low End GPUs", GpuIndex.PASSMARK_LOW_END, false);
-            event.getHook().sendMessageEmbeds(eb.build()).queue();
+            event.reply("Missing required argument `name`").setEphemeral(isEphemeral).queue();
             return;
         }
         
@@ -124,8 +111,7 @@ public class CommandGPU extends AbstractSlashCommand {
 
                 try {
                     highestScore = Integer.parseInt(gpuIndex.getGpuRating(highestName).replaceAll("[,. ]", ""));
-                } catch (NumberFormatException e) {
-                }
+                } catch (NumberFormatException e) { }
 
                 String highestScoreDescription = "";
 
@@ -145,12 +131,12 @@ public class CommandGPU extends AbstractSlashCommand {
             eb.setColor(0xff0000);
         }
         
-        event.getHook().sendMessageEmbeds(eb.build()).queue();
+        event.replyEmbeds(eb.build()).queue();
     }
 
     @Override
     protected CommandData defineSlashCommand() {
         return new CommandData("gpu", "Look up the rating of a GPU")
-                .addOption(OptionType.STRING, "name", "Name of the GPU to look up");
+                .addOption(OptionType.STRING, "name", "Name of the GPU to look up", true);
     }
 }
