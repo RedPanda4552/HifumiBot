@@ -94,11 +94,13 @@ public class Config implements IConfig {
     }
     
     public class Dev {
+        public boolean sendEmbeds;
         public String windows;
         public String ubuntu;
         public String linux;
         
         public Dev() {
+            sendEmbeds = false;
             windows = new String("");
             ubuntu = new String("");
             linux = new String("");

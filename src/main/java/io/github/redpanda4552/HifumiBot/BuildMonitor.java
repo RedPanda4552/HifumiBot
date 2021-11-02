@@ -107,7 +107,7 @@ public class BuildMonitor implements Refreshable {
                 eb.addField("Linux (Any)", HifumiBot.getSelf().getConfig().dev.linux, false);
                 eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
 
-                if (outputChannel != null) {
+                if (outputChannel != null && HifumiBot.getSelf().getConfig().dev.sendEmbeds) {
                     Messaging.sendMessageEmbed(outputChannel, eb.build());
                 }
             }
