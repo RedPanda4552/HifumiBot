@@ -114,7 +114,7 @@ public class BuildMonitor implements Refreshable {
                 }
             }
         } catch (Exception e) {
-            //Messaging.logException("BuildMonitor", "refresh", e);
+            Messaging.logException("BuildMonitor", "refresh", e);
         }
     }
 }
