@@ -93,21 +93,23 @@ public class BuildMonitor implements Refreshable {
 
             if (!gitRevision.equals(lastPostedRevision)) {
                 var buildProps = gitRevision.split("-");
+                if (buildProps.length < 4) { // if its a tagged build, it doesn't need resolving
+                    return;
+                }
                 Long id = Long.valueOf(buildProps[2]);
                 String shortSha = buildProps[3].substring(1);
                 HifumiBot.getSelf().getBuildCommitMap().putCommit(id, shortSha);
                 ConfigManager.write(HifumiBot.getSelf().getBuildCommitMap());
 
-                EmbedBuilder eb = new EmbedBuilder();
-                eb.setAuthor("New PCSX2 Development Build Available!");
-                eb.addField("Revision:", gitRevision, false);
-                eb.addField("Commit:", StringUtils.abbreviate(commitCell.ownText(), 256), false);
-                eb.addField("Windows:", HifumiBot.getSelf().getConfig().dev.windows, false);
-                eb.addField("Ubuntu:", HifumiBot.getSelf().getConfig().dev.ubuntu, false);
-                eb.addField("Linux (Any)", HifumiBot.getSelf().getConfig().dev.linux, false);
-                eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
-
                 if (outputChannel != null && HifumiBot.getSelf().getConfig().dev.sendEmbeds) {
+                    EmbedBuilder eb = new EmbedBuilder();
+                    eb.setAuthor("New PCSX2 Development Build Available!");
+                    eb.addField("Revision:", gitRevision, false);
+                    eb.addField("Commit:", StringUtils.abbreviate(commitCell.ownText(), 256), false);
+                    eb.addField("Windows:", HifumiBot.getSelf().getConfig().dev.windows, false);
+                    eb.addField("Ubuntu:", HifumiBot.getSelf().getConfig().dev.ubuntu, false);
+                    eb.addField("Linux (Any)", HifumiBot.getSelf().getConfig().dev.linux, false);
+                    eb.setColor(outputChannel.getGuild().getMember(HifumiBot.getSelf().getJDA().getSelfUser()).getColor());
                     Messaging.sendMessageEmbed(outputChannel, eb.build());
                 }
             }
