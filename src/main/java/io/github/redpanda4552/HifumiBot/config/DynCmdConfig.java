@@ -34,6 +34,11 @@ public class DynCmdConfig implements IConfig {
         return ConfigType.DYNCMD;
     }
     
+    @Override
+    public boolean usePrettyPrint() {
+        return false;
+    }
+    
     public ArrayList<DynamicCommand> dynamicCommands;
 
     public DynCmdConfig() {

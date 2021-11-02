@@ -33,6 +33,11 @@ public class WarezTracking implements IConfig {
         return ConfigType.WAREZ;
     }
     
+    @Override
+    public boolean usePrettyPrint() {
+        return false;
+    }
+    
     public HashMap<String, OffsetDateTime> warezUsers;
 
     public WarezTracking() {

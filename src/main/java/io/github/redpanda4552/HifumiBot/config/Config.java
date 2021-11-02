@@ -35,6 +35,11 @@ public class Config implements IConfig {
         return ConfigType.CORE;
     }
     
+    @Override
+    public boolean usePrettyPrint() {
+        return true;
+    }
+    
     public boolean useLocalDNSFiltering;
     public Server server;
     public Channels channels;

@@ -39,6 +39,11 @@ public class BuildCommitMap implements IConfig {
     public ConfigType getConfigType() {
         return ConfigType.BUILDMAP;
     }
+    
+    @Override
+    public boolean usePrettyPrint() {
+        return false;
+    }
 
     private HashMap<Long, String> buildIdToCommit;
 
