@@ -43,6 +43,8 @@ public class CommandCPU extends AbstractSlashCommand {
     private static final int MAX_RESULTS = 5;
 
     private enum CPURating {
+        OVER_9000("IT'S OVER 9000", 9000),
+        WTF("What the fuck, why?", 4000),
         OVERKILL("Overkill", 2800), 
         GREAT("Great for most", 2400), 
         GOOD("Good for most", 2000),
