@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ChatFilter {
@@ -85,10 +86,11 @@ public class ChatFilter {
                     if (!replyMessage.isBlank()) {
                         Messaging.sendMessage(event.getChannel(), replyMessage);
                     }
-
+                    
+                    User usr = event.getMessage().getAuthor();
                     Messaging.logInfo("ChatFilter", "applyFilters",
-                            "Message from user " + event.getMessage().getAuthor().getAsMention()
-                                    + " was filtered.\n\nUser's message (formatting stripped):\n```\n"
+                            "Message from user " + usr.getAsMention() + " (" + usr.getName() + usr.getDiscriminator() + ")"
+                                    + " was filtered from channel `" + event.getChannel().getName() + "`.\n\nUser's message (formatting stripped):\n```\n"
                                     + event.getMessage().getContentStripped()
                                     + "\n```\nMatched this regular expression in filter `" + filterName + "` :\n```\n"
                                     + p.pattern() + "\n```");
