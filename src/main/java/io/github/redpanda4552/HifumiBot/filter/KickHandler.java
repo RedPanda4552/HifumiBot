@@ -67,7 +67,7 @@ public class KickHandler {
                     
                     try {
                         doKick(member);
-                        Messaging.logInfo("KickHandler", "storeIncident", "Successfully messaged and kicked " + member.getUser().getAsMention() + " (" + member.getUser().getName() + member.getUser().getDiscriminator() + ") for exceeding the maximum number of filter incidents.");
+                        Messaging.logInfo("KickHandler", "storeIncident", "Successfully messaged and kicked " + member.getUser().getAsMention() + " (" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + ") for exceeding the maximum number of filter incidents.");
                     } catch (Exception e) {
                         Messaging.logException("KickHandler", "storeIncident", e);
                     }
