@@ -32,6 +32,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Refreshable;
 
@@ -50,7 +51,7 @@ public class WikiIndex implements Refreshable {
         try {
             // Attempt to retrieve the games list, if successful, wipe the
             // current map and repopulate it.
-            Document doc = Jsoup.connect(FULL_GAMES_URL).maxBodySize(0).get();
+            Document doc = Jsoup.connect(FULL_GAMES_URL).header("user-agent", "hifumibot/" + HifumiBot.getSelf().getVersion()).maxBodySize(0).get();
             Elements anchors = doc.getElementsByClass("wikitable").first().getElementsByTag("a");
 
             this.clear();
