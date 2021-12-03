@@ -32,6 +32,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 
 public class WikiPage {
@@ -48,7 +49,7 @@ public class WikiPage {
     public WikiPage(String url) {
         try {
             wikiPageUrl = url;
-            page = Jsoup.connect(url).get();
+            page = Jsoup.connect(url).header("user-agent", "hifumibot/" + HifumiBot.getSelf().getVersion()).maxBodySize(0).get();
             title = page.getElementById("firstHeading").ownText();
             Element infoBox = page.getElementsByClass("infobox").first();
             Elements tables = infoBox.getElementsByTag("table");
