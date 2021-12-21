@@ -202,6 +202,7 @@ public class HeuristicsPackage {
             sb.append("Points awarded: " + points + " / " + HifumiBot.getSelf().getConfig().activities.heuristics.failingScore);
             
             Messaging.logInfo("HeuristicsPackage", "decideIfNeedsAction", sb.toString());
+            activities.clear();
         }
     }
 }
