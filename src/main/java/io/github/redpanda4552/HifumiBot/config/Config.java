@@ -173,8 +173,6 @@ public class Config implements IConfig {
         public int minMessageInterval_Points;
         public long minimumConsistentIntervalMS;
         public int minimumConsistentInterval_Points;
-        public int channelSwitches;
-        public int channelSwitches_Points;
         public int excessivePings;
         public int excessivePings_Points;
         public boolean considerMentionEveryone;
@@ -190,16 +188,14 @@ public class Config implements IConfig {
             minMessageInterval_Points = 6;
             minimumConsistentIntervalMS = 50;
             minimumConsistentInterval_Points = 4;
-            channelSwitches = 4;
-            channelSwitches_Points = 1;
-            excessivePings = 3;
-            excessivePings_Points = 3;
+            excessivePings = 5;
+            excessivePings_Points = 4;
             considerMentionEveryone = true;
             considerMentionEveryone_Points = 4;
             duplicatesCount = 2;
             duplicatesCount_Points = 4;
             channelSwitchFrequency = 0.85f;
-            channelSwitchFrequency_Points = 1;
+            channelSwitchFrequency_Points = 3;
         }
     }
 }
