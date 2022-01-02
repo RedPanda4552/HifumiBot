@@ -54,7 +54,9 @@ public class HyperlinkCleaner implements Runnable {
                 message.delete().complete();
                 Messaging.logInfo("HyperlinkCleaner", "run", "Deleting message from user "
                         + message.getAuthor().getAsMention()
-                        + ", DNS query on a URL inside failed and may be malicious.\n\nUser's message (formatting stripped):\n```\n"
+                        + " in channel <#"
+                        + message.getChannel().getId()
+                        + ">; DNS query on a URL inside failed and may be malicious.\n\nUser's message (formatting stripped):\n```\n"
                         + message.getContentStripped() + "\n```");
                 
                 if (instant != null) {
