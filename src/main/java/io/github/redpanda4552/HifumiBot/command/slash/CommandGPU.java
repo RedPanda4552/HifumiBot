@@ -92,7 +92,8 @@ public class CommandGPU extends AbstractSlashCommand {
         HashMap<String, Float> results = SimpleSearch.search(gpuIndex.getAllGpus(), StringUtils.join(name, " "));
         
         if (results.size() > 0) {
-            eb.setTitle("Query Results for \"" + StringUtils.join(name, " ") + "\"");
+            eb.setAuthor("Passmark GPU Performance", "https://www.videocardbenchmark.net/");
+            eb.setTitle("Search results for '" + StringUtils.join(name, " ").trim() + "'");
             eb.setDescription(":warning: Some games may have unusually high GPU requirements! If in doubt, ask!");
             String highestName = null;
             float highestWeight = 0;

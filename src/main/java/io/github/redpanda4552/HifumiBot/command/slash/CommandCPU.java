@@ -95,7 +95,8 @@ public class CommandCPU extends AbstractSlashCommand {
         HashMap<String, Float> results = SimpleSearch.search(cpuIndex.getAllCpus(), StringUtils.join(name, " "));
 
         if (results.size() > 0) {
-            eb.setTitle("Query Results for \"" + StringUtils.join(name, " ") + "\"");
+            eb.setAuthor("Passmark CPU Single Thread Performance", "https://www.cpubenchmark.net/singleThread.html");
+            eb.setTitle("Search results for '" + StringUtils.join(name, " ").trim() + "'");
             eb.setDescription(":warning: Some games may have unusually high CPU requirements! If in doubt, ask!");
             String highestName = null;
             float highestWeight = 0;
