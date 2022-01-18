@@ -185,7 +185,7 @@ public class Config implements IConfig {
         public Heuristics() {
             failingScore = 10;
             minMessageIntervalMS = 100;
-            minMessageInterval_Points = 5;
+            minMessageInterval_Points = 6;
             minimumConsistentIntervalMS = 50;
             minimumConsistentInterval_Points = 4;
             excessivePings = 5;
