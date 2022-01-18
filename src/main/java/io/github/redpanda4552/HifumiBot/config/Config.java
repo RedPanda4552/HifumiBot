@@ -51,7 +51,6 @@ public class Config implements IConfig {
     public HashMap<String, Filter> filters;
     public long ninjaInterval;
     public FilterOptions filterOptions;
-    public Activities activities;
 
     public Config() {
         useLocalDNSFiltering = false;
@@ -65,7 +64,6 @@ public class Config implements IConfig {
         filters = new HashMap<String, Filter>();
         filterOptions = new FilterOptions();
         ninjaInterval = 500;
-        activities = new Activities();
     }
     
     public class Server {
@@ -153,53 +151,6 @@ public class Config implements IConfig {
             incidentCooldownMS = 1000 * 10;
             maxIncidents = 5;
             kickMessage = new String("");
-        }
-    }
-    
-    public class Activities {
-        public Heuristics heuristics;
-        public int activityExpirationMS;
-        
-        
-        public Activities() {
-            heuristics = new Heuristics();
-            activityExpirationMS = 1000 * 30;
-        }
-    }
-    
-    public class Heuristics {
-        public int failingScore;
-        public long minMessageIntervalMS;
-        public int minMessageInterval_Points;
-        public long minimumConsistentIntervalMS;
-        public int minimumConsistentInterval_Points;
-        public int channelSwitches;
-        public int channelSwitches_Points;
-        public int excessivePings;
-        public int excessivePings_Points;
-        public boolean considerMentionEveryone;
-        public int considerMentionEveryone_Points;
-        public int duplicatesCount;
-        public int duplicatesCount_Points;
-        public float channelSwitchFrequency;
-        public int channelSwitchFrequency_Points;
-        
-        public Heuristics() {
-            failingScore = 10;
-            minMessageIntervalMS = 100;
-            minMessageInterval_Points = 6;
-            minimumConsistentIntervalMS = 50;
-            minimumConsistentInterval_Points = 4;
-            channelSwitches = 4;
-            channelSwitches_Points = 1;
-            excessivePings = 3;
-            excessivePings_Points = 3;
-            considerMentionEveryone = true;
-            considerMentionEveryone_Points = 4;
-            duplicatesCount = 2;
-            duplicatesCount_Points = 4;
-            channelSwitchFrequency = 0.85f;
-            channelSwitchFrequency_Points = 1;
         }
     }
 }

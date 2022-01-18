@@ -70,10 +70,6 @@ public class EventListener extends ListenerAdapter {
             return;
         }
         
-        if (event.getAuthor().getId() != HifumiBot.getSelf().getJDA().getSelfUser().getId()) {
-            HifumiBot.getSelf().getActivityTracking().addToHeuristics(event.getMessage());
-        }
-        
         Instant now = Instant.now();
         
         if (HifumiBot.getSelf().getChatFilter().applyFilters(event)) {
