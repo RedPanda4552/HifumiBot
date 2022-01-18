@@ -160,7 +160,7 @@ public class HeuristicsPackage {
     }
     
     private void decideIfNeedsAction() {
-        int points = 0;
+        float points = 0;
         
         if (minIntervalMS < HifumiBot.getSelf().getConfig().activities.heuristics.minMessageIntervalMS) {
             points += HifumiBot.getSelf().getConfig().activities.heuristics.minMessageInterval_Points; 
@@ -170,15 +170,19 @@ public class HeuristicsPackage {
             points += HifumiBot.getSelf().getConfig().activities.heuristics.minimumConsistentInterval_Points;
         }
         
-        if (maxMentions >= HifumiBot.getSelf().getConfig().activities.heuristics.excessivePings) {
-            points += HifumiBot.getSelf().getConfig().activities.heuristics.excessivePings_Points * (maxMentions / HifumiBot.getSelf().getConfig().activities.heuristics.excessivePings);
+        if (channelSwitches > HifumiBot.getSelf().getConfig().activities.heuristics.channelSwitches) {
+            points += HifumiBot.getSelf().getConfig().activities.heuristics.channelSwitches_Points;
+        }
+        
+        if (maxMentions > HifumiBot.getSelf().getConfig().activities.heuristics.excessivePings) {
+            points += HifumiBot.getSelf().getConfig().activities.heuristics.excessivePings_Points;
         }
         
         if (mentionsEveryone && HifumiBot.getSelf().getConfig().activities.heuristics.considerMentionEveryone) {
             points += HifumiBot.getSelf().getConfig().activities.heuristics.considerMentionEveryone_Points;
         }
         
-        if (identicalMessages >= HifumiBot.getSelf().getConfig().activities.heuristics.duplicatesCount) {
+        if (identicalMessages > HifumiBot.getSelf().getConfig().activities.heuristics.duplicatesCount) {
             points += HifumiBot.getSelf().getConfig().activities.heuristics.duplicatesCount_Points;
         }
         
@@ -194,6 +198,7 @@ public class HeuristicsPackage {
             sb.append("=====================================\n");
             sb.append("minMessageIntervalMS | " + minIntervalMS + " | " + HifumiBot.getSelf().getConfig().activities.heuristics.minMessageIntervalMS + "\n");
             sb.append("minimumConsistentIntervalMS | " + meanIntervalDiffsMS + " | " + HifumiBot.getSelf().getConfig().activities.heuristics.minimumConsistentIntervalMS + "\n");
+            sb.append("channelSwitches | " + channelSwitches + " | " + HifumiBot.getSelf().getConfig().activities.heuristics.channelSwitches + "\n");
             sb.append("excessivePings | " + maxMentions + " | " + HifumiBot.getSelf().getConfig().activities.heuristics.excessivePings + "\n");
             sb.append("considerMentionEveryone | " + mentionsEveryone + " | " + HifumiBot.getSelf().getConfig().activities.heuristics.considerMentionEveryone + "\n");
             sb.append("duplicatesCount | " + identicalMessages + " | " + HifumiBot.getSelf().getConfig().activities.heuristics.duplicatesCount + "\n");
