@@ -23,6 +23,7 @@
  */
 package io.github.redpanda4552.HifumiBot.event;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +44,7 @@ import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.Role;
@@ -59,6 +61,7 @@ public class EventListener extends ListenerAdapter {
 
     private HifumiBot hifumiBot;
     private HashMap<String, Message> messages = new HashMap<String, Message>();
+    private HashMap<String, OffsetDateTime> joinEvents = new HashMap<String, OffsetDateTime>();
 
     public EventListener(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
@@ -120,15 +123,64 @@ public class EventListener extends ListenerAdapter {
             }
         }
     }
+    
+    private boolean kickNewUsers = false;
+    private OffsetDateTime cooldown;
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        if (event.getUser().getName().toLowerCase().contains("twitter.com/h0nde")) {
-            try {
-                Messaging.logInfo("EventListener", "onGuildMemberJoin", "Insta-banning this twitter bot again");
-                HifumiBot.getSelf().getJDA().getGuildById(event.getGuild().getId()).ban(event.getUser(), 0).complete();
-            } catch (Exception e) {
-                Messaging.logException("EventListener", "onGuildMemberJoin", e);
+        if (HifumiBot.getSelf().getConfig().enableBotKicker) {
+            if (cooldown != null && OffsetDateTime.now().isAfter(cooldown)) {
+                kickNewUsers = false;
+                cooldown = null;
+                Messaging.logInfo("EventListener", "onGuildMemberJoin", "Cooldown has been released, new users are now able to join the server again.");
+            }
+            
+            if (kickNewUsers) {
+                Member member = event.getGuild().getMemberById(event.getUser().getId());
+                HifumiBot.getSelf().getKickHandler().doKickForBotJoin(member);
+            }
+            
+            joinEvents.put(event.getUser().getId(), OffsetDateTime.now());
+            
+            if (joinEvents.size() > 3) {
+                String toRemove = null;
+                
+                for (String userId : joinEvents.keySet()) {
+                    if (toRemove == null || joinEvents.get(userId).isBefore(joinEvents.get(toRemove))) {
+                        toRemove = userId;
+                    }
+                }
+                
+                if (toRemove != null) {
+                    joinEvents.remove(toRemove);
+                }
+            }
+            
+            if (joinEvents.size() == 3) {
+                OffsetDateTime minTime = null;
+                OffsetDateTime maxTime = null;
+                
+                for (String userId : joinEvents.keySet()) {
+                    if (minTime == null || joinEvents.get(userId).isBefore(minTime)) {
+                        minTime = joinEvents.get(userId);
+                    }
+                    
+                    if (maxTime == null || joinEvents.get(userId).isAfter(maxTime)) {
+                        maxTime = joinEvents.get(userId);
+                    }
+                }
+                
+                if (Math.abs(Duration.between(minTime, maxTime).toSeconds()) > 1) {
+                    cooldown = OffsetDateTime.now().plusSeconds(60 * 5);
+                    kickNewUsers = true;
+                    Messaging.logInfo("EventListener", "onGuildMemberJoin", "Cooldown has been tripped by three users joining in under one second; new users will be automatically messaged and kicked for the next five minutes.");
+                    
+                    for (String userId : joinEvents.keySet()) {
+                        Member member = event.getGuild().getMemberById(userId);
+                        HifumiBot.getSelf().getKickHandler().doKickForBotJoin(member);
+                    }
+                }
             }
         }
 

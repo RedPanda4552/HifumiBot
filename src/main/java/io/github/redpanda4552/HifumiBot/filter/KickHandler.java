@@ -83,6 +83,16 @@ public class KickHandler {
         member.kick().complete();
     }
     
+    public synchronized void doKickForBotJoin(Member member) {
+        StringBuilder sb = new StringBuilder("**You have been automatically kicked from the PCSX2 server.**\n\n");
+        sb.append("Our bot has detected a raid by bot accounts, and you have attempted to join our server at the same time as those bots.\n\n");
+        sb.append("**If you have no idea why you are receiving this message:** Your account is compromised and being used as a spam bot on Discord. Change your password as soon as you can.\n\n");
+        sb.append("**If you legitimately attempted to join our server:** Sorry, but we will continue to automatically kick until the bot raid ends. Please wait for a bit and try to join at a later time.\n\n");
+        sb.append("Thank you for understanding, stay safe.");
+        Messaging.sendPrivateMessage(member.getUser(), sb.toString());
+        member.kick().complete();
+    }
+    
     public synchronized void flush() {
         Instant now = Instant.now();
         
