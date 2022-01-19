@@ -29,6 +29,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
@@ -61,7 +62,7 @@ public class EventListener extends ListenerAdapter {
 
     private HifumiBot hifumiBot;
     private HashMap<String, Message> messages = new HashMap<String, Message>();
-    private HashMap<String, OffsetDateTime> joinEvents = new HashMap<String, OffsetDateTime>();
+    private ConcurrentHashMap<String, OffsetDateTime> joinEvents = new ConcurrentHashMap<String, OffsetDateTime>();
 
     public EventListener(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
@@ -174,6 +175,7 @@ public class EventListener extends ListenerAdapter {
                 if (Math.abs(Duration.between(minTime, maxTime).toSeconds()) > 1) {
                     cooldown = OffsetDateTime.now().plusSeconds(60 * 5);
                     kickNewUsers = true;
+                    Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId), "@here");
                     Messaging.logInfo("EventListener", "onGuildMemberJoin", "Cooldown has been tripped by three users joining in under one second; new users will be automatically messaged and kicked for the next five minutes.");
                     
                     for (String userId : joinEvents.keySet()) {
