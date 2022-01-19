@@ -175,7 +175,7 @@ public class EventListener extends ListenerAdapter {
                     }
                 }
                 
-                if (Math.abs(Duration.between(minTime, maxTime).toSeconds()) > 1) {
+                if (Math.abs(Duration.between(minTime, maxTime).toSeconds()) < 1) {
                     cooldown = OffsetDateTime.now().plusSeconds(60 * 5);
                     kickNewUsers = true;
                     Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId), "@here");
