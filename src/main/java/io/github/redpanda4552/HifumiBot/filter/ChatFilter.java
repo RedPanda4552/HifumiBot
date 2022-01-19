@@ -75,7 +75,8 @@ public class ChatFilter {
 
         for (String filterName : patternMap.keySet()) {
             for (Pattern p : patternMap.get(filterName)) {
-                Matcher m = p.matcher(event.getMessage().getContentDisplay().toLowerCase());
+                String filteredMessage = event.getMessage().getContentDisplay().toLowerCase().replaceAll("[\n\r\t]", " ");
+                Matcher m = p.matcher(filteredMessage);
                 boolean matches = m.matches();
                 boolean find = m.find();
 
