@@ -143,7 +143,7 @@ public class EventListener extends ListenerAdapter {
             
             joinEvents.put(event.getUser().getId(), OffsetDateTime.now());
             
-            if (joinEvents.size() > 3) {
+            while (joinEvents.size() > 3) {
                 String toRemove = null;
                 
                 for (String userId : joinEvents.keySet()) {
