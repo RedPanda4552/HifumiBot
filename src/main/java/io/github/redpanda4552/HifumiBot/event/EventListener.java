@@ -56,8 +56,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class EventListener extends ListenerAdapter {
@@ -86,7 +85,7 @@ public class EventListener extends ListenerAdapter {
             HifumiBot.getSelf().getKickHandler().storeIncident(event.getMember(), now);
             return;
         }
-
+        
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
             HifumiBot.getSelf().getCommandInterpreter().execute(event);
 
@@ -213,18 +212,10 @@ public class EventListener extends ListenerAdapter {
     }
 
     @Override
-    public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent event) {
-        onMessageReactionAdd(event.getUser().getId(), event.getMessageId(),
-                event.getReactionEmote().getName().toLowerCase());
-    }
-
-    @Override
-    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
-        onMessageReactionAdd(event.getUser().getId(), event.getMessageId(),
-                event.getReactionEmote().getName().toLowerCase());
-    }
-
-    private void onMessageReactionAdd(String userId, String messageId, String reactionEmoteName) {
+    public void onMessageReactionAdd(MessageReactionAddEvent event) {
+        String userId = event.getUser().getId();
+        String messageId = event.getMessageId();
+        String reactionEmoteName = event.getReactionEmote().getName().toLowerCase();
         Message msg = messages.get(userId);
 
         if (msg == null)
