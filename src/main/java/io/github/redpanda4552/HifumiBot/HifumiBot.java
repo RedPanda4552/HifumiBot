@@ -180,9 +180,11 @@ public class HifumiBot {
             HifumiBot.getSelf().getGpuIndex().refresh();
         }, 1000 * 60 * 60 * 24);
 
-        scheduler.scheduleRepeating("dev", () -> {
-            HifumiBot.getSelf().getBuildMonitor().refresh();
-        }, 1000 * 60 * 10);
+        if (getConfig().dev.enableBuildMonitor) {
+            scheduler.scheduleRepeating("dev", () -> {
+                HifumiBot.getSelf().getBuildMonitor().refresh();
+            }, 1000 * 60 * 10);
+        }
         
         scheduler.scheduleRepeating("ints", () -> {
             HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();

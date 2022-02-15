@@ -101,12 +101,14 @@ public class Config implements IConfig {
     }
     
     public class Dev {
+        public boolean enableBuildMonitor;
         public boolean sendEmbeds;
         public String windows;
         public String ubuntu;
         public String linux;
         
         public Dev() {
+            enableBuildMonitor = false;
             sendEmbeds = false;
             windows = new String("");
             ubuntu = new String("");
