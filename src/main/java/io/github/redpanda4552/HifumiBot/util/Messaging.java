@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.PrivateChannel;
@@ -63,11 +64,39 @@ public class Messaging {
     }
 
     public static Message sendMessage(MessageChannel channel, Message msg, String fileName, String fileContents) {
+        return Messaging.sendMessage(channel, msg, fileName, fileContents, null, null);
+    }
+    
+    public static Message sendMessage(MessageChannel channel, String str, String fileName, String fileContents, String linkLabel, String linkDestination) {
+        MessageBuilder mb = new MessageBuilder(str);
+        return Messaging.sendMessage(channel, mb.build(), fileName, fileContents, linkLabel, linkDestination); 
+    }
+    
+    public static Message sendMessage(MessageChannel channel, Message msg, String fileName, String fileContents, String linkLabel, String linkDestination) {
+        return Messaging.sendMessage(channel, msg, fileName, fileContents, linkLabel, linkDestination, null, false);
+    }
+    
+    public static Message sendMessage(MessageChannel channel, String str, String fileName, String fileContents, String linkLabel, String linkDestination, Message toReference, boolean pingReference) {
+        MessageBuilder mb = new MessageBuilder(str);
+        return Messaging.sendMessage(channel, mb.build(), fileName, fileContents, linkLabel, linkDestination, toReference, pingReference); 
+    }
+    
+    public static Message sendMessage(MessageChannel channel, Message msg, String fileName, String fileContents, String linkLabel, String linkDestination, Message toReference, boolean pingReference) {
         MessageAction action = channel.sendMessage(msg);
-
-        if (fileName != null && !fileName.isBlank() && fileContents != null && !fileContents.isBlank())
+        
+        if (fileName != null && !fileName.isBlank() && fileContents != null && !fileContents.isBlank()) {
             action.addFile(fileContents.getBytes(), fileName);
-
+        }
+        
+        if (linkLabel != null && !linkLabel.isBlank() && linkDestination != null && !linkDestination.isBlank()) {
+            action.setActionRow(Button.link(linkDestination, linkLabel));
+        }
+        
+        if (toReference != null) {
+            action.reference(toReference);
+            action.mentionRepliedUser(pingReference);
+        }
+        
         return action.complete();
     }
 
