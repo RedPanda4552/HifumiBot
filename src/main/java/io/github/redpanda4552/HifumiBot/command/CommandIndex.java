@@ -271,7 +271,9 @@ public class CommandIndex {
     }
 
     private void addToPages(String category, EmbedBuilder eb, int pageCount) {
-        eb.setTitle(HifumiBot.getSelf().getJDA().getSelfUser().getName() + " - Help - " + category + " - Page " + (helpPages.get(category).size() + 1) + " / " + pageCount);
+        eb.setTitle("Help - " + category);
+        eb.setDescription("============================ ============================");
+        eb.setFooter((helpPages.get(category).size() + 1) + " / " + pageCount);
         helpPages.get(category).add(eb.build());
     }
 

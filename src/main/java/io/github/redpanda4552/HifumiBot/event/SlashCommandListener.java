@@ -30,9 +30,11 @@ import java.util.UUID;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -57,6 +59,44 @@ public class SlashCommandListener extends ListenerAdapter {
                 Messaging.logException("SlashCommandListener", "onSlashCommand", e);
                 event.reply("An internal exception occurred and has been reported to admins.").setEphemeral(true).queue();
             }
+        }
+    }
+    
+    @Override
+    public void onButtonClick(ButtonClickEvent event) {
+        UUID uuid = null;
+        
+        try {
+            uuid = UUID.fromString(event.getComponentId());
+        } catch (IllegalArgumentException e) {
+            Messaging.logException("SlashCommandListener", "onButtonClick", e);
+            event.reply("Button tampering detected, admins have been notified.").setEphemeral(true).queue();
+            return;
+        }
+        
+        if (!buttonCache.containsKey(uuid)) {
+            event.reply("Whoops! This button has expired. You'll need to run the command again to get an active button.");
+            return;
+        }
+        
+        ButtonInteractionElement button = buttonCache.get(uuid);
+        
+        if (!button.getUserId().equals(event.getUser().getId())) {
+            event.reply("You did not send this original command; you are not allowed to interact with this button.").setEphemeral(true).queue();
+            return;
+        }
+        
+        CommandHelp commandHelp = (CommandHelp) slashCommands.get("help");
+        
+        switch (button.getCommandName()) {
+        case "help_prev":
+            event.deferEdit().queue();
+            commandHelp.onButtonEvent(event);
+            break;
+        case "help_next":
+            event.deferEdit().queue();
+            commandHelp.onButtonEvent(event);
+            break;
         }
     }
     
@@ -117,5 +157,9 @@ public class SlashCommandListener extends ListenerAdapter {
         SelectionInteractionElement selection = new SelectionInteractionElement(userId, commandName);
         this.selectionCache.put(selection.getUUID(), selection);
         return selection;
+    }
+    
+    public synchronized ButtonInteractionElement getButton(String uuidString) {
+        return buttonCache.get(UUID.fromString(uuidString));
     }
 }
