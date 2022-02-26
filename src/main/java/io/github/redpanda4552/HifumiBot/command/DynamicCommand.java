@@ -50,9 +50,8 @@ public class DynamicCommand {
             eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
 
-        eb.setTitle(title);
-        eb.setDescription(body);
-        eb.setImage(imageURL);
+        eb.setTitle("Commands have moved");
+        eb.setDescription("All commands are now accessed via Discord's slash commands.\n\nFor commands previously accessed through `>`, you will now use `/memes` or `/support`.\n\nYou can browse an interactive list of all commands with `/help`.");
         Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
     
