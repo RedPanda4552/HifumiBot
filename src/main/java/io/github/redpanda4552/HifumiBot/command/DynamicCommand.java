@@ -51,7 +51,7 @@ public class DynamicCommand {
         }
 
         eb.setTitle("Commands have moved");
-        eb.setDescription("All commands are now accessed via Discord's slash commands.\n\nFor commands previously accessed through `>`, you will now use `/memes` or `/support`.\n\nYou can browse an interactive list of all commands with `/help`.");
+        eb.setDescription("All commands are now accessed via Discord's slash commands.\n\nInstead of `>" + name + "`, use `/" + category + " " + name + "`\n\nYou can browse an interactive list of all " + category + " commands with `/help " + category + "`");
         Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
     
