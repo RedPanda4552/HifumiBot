@@ -257,7 +257,7 @@ public class CommandIndex {
             EmbedBuilder eb = new EmbedBuilder();
 
             for (String command : commandMap.get(category)) {
-                eb.addField(">" + command, this.getDynamicCommand(command).getHelpText(), false);
+                eb.addField(command, this.getDynamicCommand(command).getHelpText(), false);
 
                 if (eb.getFields().size() >= COMMANDS_PER_PAGE) {
                     addToPages(category, eb, pageCount);
