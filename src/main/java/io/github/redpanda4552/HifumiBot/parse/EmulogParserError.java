@@ -43,7 +43,8 @@ public enum EmulogParserError {
     WIDESCREEN_PATCH_LOADED("(*) Loaded widescreen patches from a file."),
     WIDESCREEN_PATCH_EMPTY("(*) Found widescreen patch file, but nothing to load."),
     WIDESCREEN_ARCHIVE_LOADED("(*) Loaded widescreen patches from the archive."),
-    CHEAT_LOADED("(*) Loaded cheats from a file."), CHEAT_EMPTY("(*) Found cheat file, but nothing to load.");
+    CHEAT_LOADED("(*) Loaded cheats from a file."), CHEAT_EMPTY("(*) Found cheat file, but nothing to load."),
+    PATCH_ERROR("(!) Error while parsing a line out of a cheat file");
 
     private String displayString;
 

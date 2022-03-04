@@ -153,6 +153,8 @@ public class EmulogParser extends AbstractParser {
                             addError(EmulogParserError.CHEAT_EMPTY, lineNumber);
                         }
                     } catch (NumberFormatException e) { }
+                } else if (line.startsWith("(Patch) Error Parsing:")) {
+                    addError(EmulogParserError.PATCH_ERROR, lineNumber);
                 }
             }
 
