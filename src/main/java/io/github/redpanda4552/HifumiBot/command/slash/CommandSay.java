@@ -51,6 +51,8 @@ public class CommandSay extends AbstractSlashCommand {
         String[] parts = null;
         String messageId = null;
         String channelId = null;
+        TextChannel channel = null;
+        Message msg = null;
         
         switch (event.getSubcommandName()) {
         case "something":
@@ -84,6 +86,16 @@ public class CommandSay extends AbstractSlashCommand {
             
             event.deferReply(true).queue();
             messageId = parts[parts.length - 1];
+            channelId = parts[parts.length - 2];
+            
+            channel = HifumiBot.getSelf().getJDA().getTextChannelById(channelId);
+            msg = channel.retrieveMessageById(messageId).complete();
+            
+            if (!msg.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+                event.getHook().sendMessage("You cannot edit a user's message, only the bot's messages.").queue();
+                return;
+            }
+            
             event.getHook().editMessageById(messageId, newContent).queue();
             event.getHook().sendMessage("Edit complete!").queue();
             break;
@@ -110,8 +122,8 @@ public class CommandSay extends AbstractSlashCommand {
             messageId = parts[parts.length - 1];
             channelId = parts[parts.length - 2];
             
-            TextChannel channel = HifumiBot.getSelf().getJDA().getTextChannelById(channelId);
-            Message msg = channel.retrieveMessageById(messageId).complete();
+            channel = HifumiBot.getSelf().getJDA().getTextChannelById(channelId);
+            msg = channel.retrieveMessageById(messageId).complete();
             event.reply("```\n" + msg.getContentRaw() + "\n```").setEphemeral(true).queue();
             break;
         }
