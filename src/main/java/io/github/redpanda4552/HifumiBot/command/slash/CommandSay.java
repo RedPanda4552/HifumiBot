@@ -23,11 +23,17 @@
  */
 package io.github.redpanda4552.HifumiBot.command.slash;
 
+import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 public class CommandSay extends AbstractSlashCommand {
 
@@ -37,12 +43,98 @@ public class CommandSay extends AbstractSlashCommand {
     
     @Override
     protected void onExecute(SlashCommandEvent event) {
-        event.reply(event.getOption("string").getAsString()).queue();
+        OptionMapping stringOpt = event.getOption("string");
+        OptionMapping messageLinkOpt = event.getOption("message-link");
+        
+        String newContent = null;
+        String messageLink = null;
+        String[] parts = null;
+        String messageId = null;
+        String channelId = null;
+        
+        switch (event.getSubcommandName()) {
+        case "something":
+            if (stringOpt == null) {
+                requiredArgStop(event);
+                return;
+            }
+            
+            event.reply(stringOpt.getAsString()).queue();
+            break;
+        case "edit":
+            if (messageLinkOpt == null || stringOpt == null) {
+                requiredArgStop(event);
+                return;
+            }
+            
+            messageLink = messageLinkOpt.getAsString();
+            newContent = stringOpt.getAsString();
+            
+            if (!messageLink.startsWith("http")) {
+                event.reply("Error while parsing message-link, this doesn't look like a valid link.").setEphemeral(true).queue();
+                return;
+            }
+            
+            parts = messageLink.split("/");
+            
+            if (parts.length < 3) {
+                event.reply("Error while parsing message-link, this doesn't look like a valid link.").setEphemeral(true).queue();
+                return;
+            }
+            
+            event.deferReply(true).queue();
+            messageId = parts[parts.length - 1];
+            event.getHook().editMessageById(messageId, newContent).queue();
+            event.getHook().sendMessage("Edit complete!").queue();
+            break;
+        case "get":
+            if (messageLinkOpt == null) {
+                requiredArgStop(event);
+                return;
+            }
+            
+            messageLink = messageLinkOpt.getAsString();
+            
+            if (!messageLink.startsWith("http")) {
+                event.reply("Error while parsing message-link, this doesn't look like a valid link.").setEphemeral(true).queue();
+                return;
+            }
+            
+            parts = messageLink.split("/");
+            
+            if (parts.length < 3) {
+                event.reply("Error while parsing message-link, this doesn't look like a valid link.").setEphemeral(true).queue();
+                return;
+            }
+            
+            messageId = parts[parts.length - 1];
+            channelId = parts[parts.length - 2];
+            
+            TextChannel channel = HifumiBot.getSelf().getJDA().getTextChannelById(channelId);
+            Message msg = channel.retrieveMessageById(messageId).complete();
+            event.reply("```\n" + msg.getContentRaw() + "\n```").setEphemeral(true).queue();
+            break;
+        }
     }
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("say", "Make the bot say something")
+        SubcommandData something = new SubcommandData("something", "Make the bot say something")
                 .addOption(OptionType.STRING, "string", "String content to say", true);
+        SubcommandData edit = new SubcommandData("edit", "Edit something the bot has said")
+                .addOption(OptionType.STRING, "message-link", "Link to the message to edit", true)
+                .addOption(OptionType.STRING, "string", "String content to replace with", true);
+        SubcommandData get = new SubcommandData("get", "Get the raw message content from something the bot has said")
+                .addOption(OptionType.STRING, "message-link", "Link to the message to get", true);
+        
+        return new CommandData("say", "Control basic bot message sending")
+                .addSubcommands(something, edit, get);
+                
+    }
+    
+    private void requiredArgStop(SlashCommandEvent event) {
+        Messaging.logInfo("CommandSay", "onExecute", "Missing required argument, command may have been tampered with.\nUser = " + event.getUser().getAsMention() + "\nChannel = " + event.getChannel().getAsMention());
+        event.reply("Required argument missing - command aborted").setEphemeral(true).queue();
+        return;
     }
 }
