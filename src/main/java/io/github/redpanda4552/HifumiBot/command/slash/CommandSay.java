@@ -43,6 +43,6 @@ public class CommandSay extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return new CommandData("say", "Make the bot say something")
-                .addOption(OptionType.STRING, "string", "String content to say");
+                .addOption(OptionType.STRING, "string", "String content to say", true);
     }
 }
