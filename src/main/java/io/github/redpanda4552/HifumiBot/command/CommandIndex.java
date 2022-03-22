@@ -79,7 +79,6 @@ public class CommandIndex {
         registerSlashCommand(new CommandReload());
         registerSlashCommand(new CommandWiki());
         registerSlashCommand(new CommandBan());
-        registerSlashCommand(new CommandDev());
         registerSlashCommand(new CommandPrompt());
         registerSlashCommand(new CommandRun());
         registerSlashCommand(new CommandPFP());
