@@ -314,7 +314,7 @@ public class EventListener extends ListenerAdapter {
     }
     
     private void qtNag(Message message) {
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, message.getMember()) || message.getAuthor().getId().equals("348457635558719489")) {
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, message.getMember())) {
             return;
         }
         
