@@ -64,7 +64,6 @@ public class EventListener extends ListenerAdapter {
     private HifumiBot hifumiBot;
     private HashMap<String, Message> messages = new HashMap<String, Message>();
     private ConcurrentHashMap<String, OffsetDateTime> joinEvents = new ConcurrentHashMap<String, OffsetDateTime>();
-    private HashMap<String, Instant> qtNagTimes = new HashMap<String, Instant>();
 
     public EventListener(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
@@ -106,8 +105,6 @@ public class EventListener extends ListenerAdapter {
         }
         
         PixivSourceFetcher.getPixivLink(event.getMessage());
-        
-        qtNag(event.getMessage());
     }
 
     @Override
@@ -311,31 +308,5 @@ public class EventListener extends ListenerAdapter {
 
         Messaging.editMessageEmbed(msg, eb.build());
         messages.remove(userId);
-    }
-    
-    private void qtNag(Message message) {
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, message.getMember())) {
-            return;
-        }
-        
-        String displayStr = message.getContentDisplay().toLowerCase();
-        String[] parts = displayStr.split("\\s");
-        
-        for (String part : parts) {
-            if (part.equals("qt")) {
-                boolean sendNag = false;
-                
-                if (!qtNagTimes.containsKey(message.getChannel().getId())) {
-                    sendNag = true;
-                } else if (Duration.between(qtNagTimes.get(message.getChannel().getId()), Instant.now()).toMinutes() > 60) {
-                    sendNag = true;
-                }
-                
-                if (sendNag) {
-                    Messaging.sendMessage(message.getChannel(), "Hey! It looks like you're talking about Qt! The current Qt builds are EXPERIMENTAL, work-in-progress builds intended for internal testing. You're free to use them, but they are provided AS-IS. We aren't taking bug reports yet and are not providing support for Qt builds.");
-                    qtNagTimes.put(message.getChannel().getId(), Instant.now());
-                }
-            }
-        }
     }
 }
