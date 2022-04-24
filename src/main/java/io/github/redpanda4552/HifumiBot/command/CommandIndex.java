@@ -92,6 +92,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandMemes());
         registerSlashCommand(new CommandSupport());
         registerSlashCommand(new CommandSpamKick());
+        registerSlashCommand(new CommandPanic());
     }
     
     public void rebuildDynamic() {

@@ -90,7 +90,7 @@ public class KickHandler {
         sb.append("**If you legitimately attempted to join our server:** Sorry, but we will continue to automatically kick until the bot raid ends. Please wait for a bit and try to join at a later time.\n\n");
         sb.append("Thank you for understanding, stay safe.");
         Messaging.sendPrivateMessage(member.getUser(), sb.toString());
-        member.kick().complete();
+        member.kick().queue();
     }
     
     public synchronized void flush() {
