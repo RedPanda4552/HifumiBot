@@ -53,6 +53,11 @@ public class Messaging {
         MessageBuilder mb = new MessageBuilder(str);
         return Messaging.sendMessage(channel, mb.build(), null, null);
     }
+    
+    public static Message sendMessage(MessageChannel channel, String str, Message toReference, boolean pingReference) {
+        MessageBuilder mb = new MessageBuilder(str);
+        return Messaging.sendMessage(channel, mb.build(), null, null, null, null, toReference, pingReference);
+    }
 
     public static Message sendMessage(MessageChannel channel, Message msg) {
         return Messaging.sendMessage(channel, msg, null, null);

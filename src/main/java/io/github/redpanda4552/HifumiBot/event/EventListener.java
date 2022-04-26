@@ -52,6 +52,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
@@ -112,6 +113,14 @@ public class EventListener extends ListenerAdapter {
 
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage(), now));
+        }
+        
+        if (hasBotPing(event.getMessage())) {
+            Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
+        }
+        
+        if (hasBotReply(event.getMessage())) {
+            Messaging.sendMessage(event.getChannel(), "You are replying to a bot.", event.getMessage(), false);
         }
         
         PixivSourceFetcher.getPixivLink(event.getMessage());
@@ -333,5 +342,35 @@ public class EventListener extends ListenerAdapter {
     
     public boolean getLockdown() {
         return lockdown;
+    }
+    
+    public boolean hasBotPing(Message msg) {
+        if (msg == null) {
+            return false;
+        }
+        
+        for (User usr : msg.getMentionedUsers()) {
+            if (usr.getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public boolean hasBotReply(Message msg) {
+        if (msg == null) {
+            return false;
+        }
+        
+        Message ref = msg.getReferencedMessage();
+        
+        if (ref != null) {
+            if (ref.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
