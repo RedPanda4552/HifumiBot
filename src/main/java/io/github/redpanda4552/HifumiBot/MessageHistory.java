@@ -28,9 +28,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 public class MessageHistory {
 
@@ -65,7 +65,7 @@ public class MessageHistory {
     }
     
     public synchronized void addMessage(Message msg) {
-        if (msg == null || msg.getContentRaw().isBlank()) {
+        if (msg == null || msg.getContentRaw().isBlank() || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, msg.getMember())) {
             return;
         }
         
