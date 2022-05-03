@@ -111,6 +111,7 @@ public class HifumiBot {
     private EventListener eventListener;
     private SlashCommandListener slashCommandListener;
     private KickHandler kickHandler;
+    private MessageHistory messageHistory;
 
     public HifumiBot() {
         self = this;
@@ -166,6 +167,7 @@ public class HifumiBot {
         jda.addEventListener(eventListener = new EventListener(this));
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         kickHandler = new KickHandler();
+        messageHistory = new MessageHistory();
 
         // Schedule repeating tasks
         scheduler.scheduleRepeating("wiki", () -> {
@@ -193,6 +195,10 @@ public class HifumiBot {
         scheduler.scheduleRepeating("fltr", () -> {
             kickHandler.flush();
         }, 1000 * 60 * 60);
+        
+        scheduler.scheduleRepeating("hist", () -> {
+            messageHistory.clean();
+        }, 1000 * 60 * 10);
 
         if (doSlashCommandUpsert) {
             commandIndex.upsertAllSlashCommands("all");
@@ -273,6 +279,10 @@ public class HifumiBot {
     
     public KickHandler getKickHandler() {
         return kickHandler;
+    }
+    
+    public MessageHistory getMessageHistory() {
+        return messageHistory;
     }
 
     public void shutdown(boolean reload) {

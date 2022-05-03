@@ -123,6 +123,8 @@ public class EventListener extends ListenerAdapter {
             Messaging.sendMessage(event.getChannel(), "You are replying to a bot.", event.getMessage(), false);
         }
         
+        HifumiBot.getSelf().getMessageHistory().addMessage(event.getMessage());
+        
         PixivSourceFetcher.getPixivLink(event.getMessage());
     }
 
