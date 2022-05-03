@@ -96,6 +96,9 @@ public class MessageHistory {
         
         if (mhu.duplicateCount >= HifumiBot.getSelf().getConfig().messageHistoryOptions.maxDuplicates) {
             Messaging.logInfo("MessageHistory", "addMessage", msg.getMember().getAsMention() + " (" + msg.getMember().getUser().getName() + "#" + msg.getMember().getUser().getDiscriminator() + ") set off the duplicate message detection, but no action was taken (this feature is being tested for now)");
+            
+            messages.remove(userId);
+            
             /*
             HifumiBot.getSelf().getKickHandler().doKick(msg.getMember());
             Messaging.logInfo("MessageHistory", "addMessage", "Successfully messaged and kicked " + msg.getMember().getAsMention() + " (" + msg.getMember().getUser().getName() + "#" + msg.getMember().getUser().getDiscriminator() + ") for exceeding the maximum number of duplicate messages.");
