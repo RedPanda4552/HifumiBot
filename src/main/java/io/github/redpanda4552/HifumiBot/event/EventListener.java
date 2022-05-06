@@ -90,6 +90,7 @@ public class EventListener extends ListenerAdapter {
             return;
         }
         
+        HifumiBot.getSelf().getMessageHistory().addMessage(event.getMessage());
         Instant now = Instant.now();
         
         if (HifumiBot.getSelf().getChatFilter().applyFilters(event)) {
@@ -122,8 +123,6 @@ public class EventListener extends ListenerAdapter {
         if (hasBotReply(event.getMessage())) {
             Messaging.sendMessage(event.getChannel(), "You are replying to a bot.", event.getMessage(), false);
         }
-        
-        HifumiBot.getSelf().getMessageHistory().addMessage(event.getMessage());
         
         PixivSourceFetcher.getPixivLink(event.getMessage());
     }
