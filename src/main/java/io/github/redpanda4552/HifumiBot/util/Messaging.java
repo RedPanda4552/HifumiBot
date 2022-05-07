@@ -40,11 +40,19 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 public class Messaging {
     
     public static Message sendPrivateMessage(User user, String str) {
+        if (str == null || str.isBlank()) {
+            return null;
+        }
+        
         MessageBuilder mb = new MessageBuilder(str);
         return sendPrivateMessage(user, mb.build());
     }
     
     public static Message sendPrivateMessage(User user, Message msg) {
+        if (msg == null) {
+            return null;
+        }
+        
         PrivateChannel channel = user.openPrivateChannel().complete();
         return channel.sendMessage(msg).complete();
     }
