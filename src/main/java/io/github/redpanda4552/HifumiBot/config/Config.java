@@ -151,11 +151,13 @@ public class Config implements IConfig {
     public class FilterOptions {
         public long incidentCooldownMS;
         public int maxIncidents;
+        public String warnMessage;
         public String kickMessage;
         
         public FilterOptions() {
             incidentCooldownMS = 1000 * 10;
             maxIncidents = 5;
+            warnMessage = new String("");
             kickMessage = new String("");
         }
     }

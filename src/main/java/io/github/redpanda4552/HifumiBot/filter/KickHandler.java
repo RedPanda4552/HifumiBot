@@ -59,6 +59,7 @@ public class KickHandler {
             
             if (newInstant.isAfter(cooldownEnd)) {
                 indexes.put(userId, Pair.of(newInstant, 1));
+                Messaging.sendPrivateMessage(user, HifumiBot.getSelf().getConfig().filterOptions.warnMessage);
             } else {
                 Integer toStore = p.getRight() + 1;
                 
@@ -73,6 +74,7 @@ public class KickHandler {
                     }
                 } else {
                     indexes.put(userId, Pair.of(newInstant, toStore));
+                    Messaging.sendPrivateMessage(user, HifumiBot.getSelf().getConfig().filterOptions.warnMessage);
                 }
             }
         }
