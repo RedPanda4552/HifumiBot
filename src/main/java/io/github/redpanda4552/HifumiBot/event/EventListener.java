@@ -90,13 +90,14 @@ public class EventListener extends ListenerAdapter {
             return;
         }
         
-        HifumiBot.getSelf().getMessageHistory().addMessage(event.getMessage());
         Instant now = Instant.now();
         
         if (HifumiBot.getSelf().getChatFilter().applyFilters(event)) {
             HifumiBot.getSelf().getKickHandler().storeIncident(event.getMember(), now);
             return;
         }
+        
+        HifumiBot.getSelf().getMessageHistory().addMessage(event.getMessage());
         
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
             HifumiBot.getSelf().getCommandInterpreter().execute(event);
