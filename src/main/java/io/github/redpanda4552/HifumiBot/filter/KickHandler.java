@@ -52,6 +52,7 @@ public class KickHandler {
         
         if (!indexes.containsKey(userId)) {
             indexes.put(userId, Pair.of(newInstant, 1));
+            Messaging.sendPrivateMessage(user, HifumiBot.getSelf().getConfig().filterOptions.warnMessage);
         } else {
             Pair<Instant, Integer> p = indexes.get(userId);
             Instant oldInstant = p.getLeft();
