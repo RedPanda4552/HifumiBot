@@ -125,6 +125,14 @@ public class EventListener extends ListenerAdapter {
             }
         }
         
+        if (event.getMember() != null && event.getMember().getRoles().isEmpty()) {
+            Instant joinTime = event.getMember().getGuild().retrieveMemberById(event.getAuthor().getId()).complete().getTimeJoined().toInstant();
+            
+            if (Duration.between(joinTime, now).toSeconds() >= HifumiBot.getSelf().getConfig().roles.autoAssignMemberTimeSeconds) {
+                event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.autoAssignMemberRoleId)).complete();
+            }
+        }
+        
         PixivSourceFetcher.getPixivLink(event.getMessage());
     }
 

@@ -119,9 +119,13 @@ public class Config implements IConfig {
     }
 
     public class Roles {
+        public String autoAssignMemberRoleId;
+        public long autoAssignMemberTimeSeconds;
         public String warezRoleId;
 
         public Roles() {
+            autoAssignMemberRoleId = new String("");
+            autoAssignMemberTimeSeconds = 60 * 15;
             warezRoleId = new String("");
         }
     }
