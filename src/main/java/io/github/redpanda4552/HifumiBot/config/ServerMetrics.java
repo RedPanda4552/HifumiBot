@@ -23,27 +23,23 @@
  */
 package io.github.redpanda4552.HifumiBot.config;
 
-public enum ConfigType {
+import java.util.HashMap;
 
-    CORE("./hifumi-conf.json", Config.class),
-    WAREZ("./warez-tracking.json", WarezTracking.class),
-    DYNCMD("./dyncmd-config.json", DynCmdConfig.class),
-    BUILDMAP("./build-map.json", BuildCommitMap.class),
-    SERVER_METRICS("./server-metrics.json", ServerMetrics.class);
-    
-    private String path;
-    private Class<?> clazz;
-    
-    private ConfigType(String path, Class<?> clazz) {
-        this.path = path;
-        this.clazz = clazz;
+public class ServerMetrics implements IConfig {
+
+    @Override
+    public ConfigType getConfigType() {
+        return ConfigType.SERVER_METRICS;
     }
     
-    public String getPath() {
-        return path;
+    @Override
+    public boolean usePrettyPrint() {
+        return false;
     }
     
-    public Class<?> getConfigClass() {
-        return clazz;
+    public HashMap<String, Integer> populationSnaps;
+
+    public ServerMetrics() {
+        populationSnaps = new HashMap<String, Integer>();
     }
 }

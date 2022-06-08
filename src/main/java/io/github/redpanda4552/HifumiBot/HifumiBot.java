@@ -23,6 +23,8 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import java.time.OffsetDateTime;
+
 import javax.security.auth.login.LoginException;
 
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
@@ -32,6 +34,7 @@ import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
+import io.github.redpanda4552.HifumiBot.config.ServerMetrics;
 import io.github.redpanda4552.HifumiBot.config.WarezTracking;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
@@ -44,6 +47,7 @@ import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import okhttp3.OkHttpClient;
@@ -97,6 +101,7 @@ public class HifumiBot {
     private WarezTracking warezTracking;
     private DynCmdConfig dynCmdConfig;
     private BuildCommitMap buildCommitMap;
+    private ServerMetrics serverMetrics;
     private final OkHttpClient http;
 
     private Scheduler scheduler;
@@ -152,6 +157,10 @@ public class HifumiBot {
             buildCommitMap.seedMap();
         }
         ConfigManager.write(buildCommitMap);
+        
+        ConfigManager.createConfigIfNotExists(ConfigType.SERVER_METRICS);
+        serverMetrics = (ServerMetrics) ConfigManager.read(ConfigType.SERVER_METRICS);
+        ConfigManager.write(serverMetrics);
 
         Internet.init();
         scheduler = new Scheduler();
@@ -199,6 +208,13 @@ public class HifumiBot {
         scheduler.scheduleRepeating("hist", () -> {
             messageHistory.clean();
         }, 1000 * 60 * 10);
+        
+        scheduler.scheduleRepeating("pop", () -> {
+            String serverId = HifumiBot.getSelf().getConfig().server.id;
+            Guild server = HifumiBot.getSelf().getJDA().getGuildById(serverId);
+            serverMetrics.populationSnaps.put(OffsetDateTime.now().toString(), server.getMemberCount());
+            ConfigManager.write(serverMetrics);
+        }, 1000 * 60 * 60 * 6);
 
         if (doSlashCommandUpsert) {
             commandIndex.upsertAllSlashCommands("all");
