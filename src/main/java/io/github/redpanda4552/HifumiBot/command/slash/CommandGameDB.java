@@ -46,13 +46,11 @@ public class CommandGameDB extends AbstractSlashCommand {
 
     @Override
     protected void onExecute(SlashCommandEvent event) {
-        event.deferReply().setEphemeral(true).queue();
-        
         OptionMapping opt = event.getOption("serial");
         
         if (opt == null) {
             Messaging.logInfo("CommandGameDB", "onExecute", "Command tampering? Missing option 'serial' (user = " + event.getUser().getAsMention() + ")");
-            event.getHook().sendMessage("Invalid option detected, admins have been alerted.").setEphemeral(true).queue();
+            event.reply("Invalid option detected, admins have been alerted.").setEphemeral(true).queue();
             return;
         }
         
@@ -60,13 +58,14 @@ public class CommandGameDB extends AbstractSlashCommand {
         Matcher m = GAMEDB_SERIAL_PATTERN.matcher(normalized);
         
         if (!m.matches()) {
-            event.getHook().sendMessage("Invalid serial detected; serial numbers follow this format: `SLUS-12345`").setEphemeral(true).queue();
+            event.reply("Invalid serial detected; serial numbers follow this format: `SLUS-12345`").setEphemeral(true).queue();
             return;
         }
         
-        event.getHook().sendMessage(":information_source: Checking GameDB for serial `" + normalized + "`, this might take a moment...").setEphemeral(true).queue();
+        event.deferReply().queue();
+        event.getHook().editOriginal(":information_source: Checking GameDB for serial `" + normalized + "`, this might take a moment...").queue();
         MessageEmbed embed = HifumiBot.getSelf().getGameDB().present(normalized);
-        event.getHook().sendMessageEmbeds(embed).setEphemeral(true).queue();
+        event.getHook().editOriginalEmbeds(embed).queue();
     }
 
     @Override
