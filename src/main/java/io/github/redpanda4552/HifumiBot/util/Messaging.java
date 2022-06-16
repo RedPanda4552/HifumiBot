@@ -137,10 +137,16 @@ public class Messaging {
             e.printStackTrace();
             return;
         }
+        
+        String messageContent = e.getMessage();
+        
+        if (messageContent == null) {
+            messageContent = "(message was null)";
+        }
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Exception caught in " + className + "." + methodName);
-        eb.addField("Message", e.getMessage(), false);
+        eb.addField("Message", messageContent, false);
         StringBuilder sb = new StringBuilder();
 
         for (StackTraceElement ste : e.getStackTrace()) {
