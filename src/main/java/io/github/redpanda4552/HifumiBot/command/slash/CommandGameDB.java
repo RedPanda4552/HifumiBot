@@ -71,7 +71,7 @@ public class CommandGameDB extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        CommandData data = new CommandData("gamedb", "Look up information stored in GameIndex.yaml (otherwise known as 'GameDB'")
+        CommandData data = new CommandData("gamedb", "Look up information stored in GameIndex.yaml (otherwise known as 'GameDB')")
                 .addOption(OptionType.STRING, "serial", "Serial number to search for (e.g. 'SLUS-12345')", true);
         return data;
     }
