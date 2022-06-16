@@ -93,6 +93,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandSupport());
         registerSlashCommand(new CommandSpamKick());
         registerSlashCommand(new CommandPanic());
+        registerSlashCommand(new CommandGameDB());
     }
     
     public void rebuildDynamic() {

@@ -103,7 +103,7 @@ public class HifumiBot {
     private BuildCommitMap buildCommitMap;
     private ServerMetrics serverMetrics;
     private final OkHttpClient http;
-
+    
     private Scheduler scheduler;
     private WikiIndex wikiIndex;
     private CpuIndex cpuIndex;
@@ -117,6 +117,7 @@ public class HifumiBot {
     private SlashCommandListener slashCommandListener;
     private KickHandler kickHandler;
     private MessageHistory messageHistory;
+    private GameDB gameDB;
 
     public HifumiBot() {
         self = this;
@@ -177,6 +178,7 @@ public class HifumiBot {
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         kickHandler = new KickHandler();
         messageHistory = new MessageHistory();
+        gameDB = new GameDB();
 
         // Schedule repeating tasks
         scheduler.scheduleRepeating("wiki", () -> {
@@ -299,6 +301,10 @@ public class HifumiBot {
     
     public MessageHistory getMessageHistory() {
         return messageHistory;
+    }
+    
+    public GameDB getGameDB() {
+        return gameDB;
     }
 
     public void shutdown(boolean reload) {
