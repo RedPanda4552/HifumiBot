@@ -156,7 +156,13 @@ public class Messaging {
         eb.addField("Stack Trace", StringUtils.abbreviate(sb.toString(), 1024), false);
 
         if (e.getCause() != null) {
-            eb.addField("Caused By", e.getCause().getMessage(), false);
+            String causeContent = e.getCause().getMessage();
+            
+            if (causeContent == null) {
+                causeContent = "(message was null)";
+            }
+            
+            eb.addField("Caused By", causeContent, false);
             sb = new StringBuilder();
 
             for (StackTraceElement ste : e.getCause().getStackTrace()) {
