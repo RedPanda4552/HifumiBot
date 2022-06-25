@@ -118,9 +118,7 @@ public class EventListener extends ListenerAdapter {
             
             if (hasBotPing(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
-            }
-            
-            if (hasBotReply(event.getMessage())) {
+            } else if (hasBotReply(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are replying to a bot.", event.getMessage(), false);
             }
         }
