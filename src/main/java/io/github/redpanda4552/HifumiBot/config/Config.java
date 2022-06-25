@@ -155,12 +155,14 @@ public class Config implements IConfig {
     public class FilterOptions {
         public long incidentCooldownMS;
         public int maxIncidents;
+        public boolean enableWarningMessages;
         public String warnMessage;
         public String kickMessage;
         
         public FilterOptions() {
             incidentCooldownMS = 1000 * 10;
             maxIncidents = 5;
+            enableWarningMessages = true;
             warnMessage = new String("");
             kickMessage = new String("");
         }

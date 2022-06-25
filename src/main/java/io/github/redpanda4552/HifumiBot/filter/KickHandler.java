@@ -75,7 +75,10 @@ public class KickHandler {
                     }
                 } else {
                     indexes.put(userId, Pair.of(newInstant, toStore));
-                    Messaging.sendPrivateMessage(user, HifumiBot.getSelf().getConfig().filterOptions.warnMessage);
+                    
+                    if (HifumiBot.getSelf().getConfig().filterOptions.enableWarningMessages) {
+                        Messaging.sendPrivateMessage(user, HifumiBot.getSelf().getConfig().filterOptions.warnMessage);
+                    }
                 }
             }
         }
