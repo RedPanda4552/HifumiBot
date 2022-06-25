@@ -116,11 +116,11 @@ public class EventListener extends ListenerAdapter {
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage(), now));
             
-            if (hasBotPing(event.getMessage())) {
-                Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
-            } else if (hasBotReply(event.getMessage())) {
+            if (hasBotReply(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are replying to a bot.", event.getMessage(), false);
-            }
+            } else if (hasBotPing(event.getMessage())) {
+                Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
+            } 
         }
         
         if (event.getMember() != null && event.getMember().getRoles().isEmpty()) {
