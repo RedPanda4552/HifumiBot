@@ -42,11 +42,11 @@ public class EmulogParser extends AbstractParser {
     private final Message message;
     private Attachment attachment;
 
-    private static Pattern iopUnknownWrite = Pattern.compile("IOP Unknown .+ write.*");
-    private static Pattern acPower = Pattern.compile("AC: ([0-9]{1,3})% / ([0-9]{1,3})%");
-    private static Pattern widescreenArchive = Pattern.compile("Loading patch '.{8,}.pnach' from archive.*");
-    private static Pattern widescreenPatch = Pattern.compile("Loaded (\\d+) Widescreen hacks from '.{8,}.pnach' at.*");
-    private static Pattern cheats = Pattern.compile("Loaded (\\d+) Cheats from '.{8,}.pnach' at.*");
+    private static Pattern iopUnknownWrite = Pattern.compile(".*IOP Unknown .+ write.*");
+    private static Pattern acPower = Pattern.compile(".*AC: ([0-9]{1,3})% / ([0-9]{1,3})%");
+    private static Pattern widescreenArchive = Pattern.compile(".*Loading patch '.{8,}.pnach' from archive.*");
+    private static Pattern widescreenPatch = Pattern.compile(".*Loaded (\\d+) Widescreen hacks from '.{8,}.pnach' at.*");
+    private static Pattern cheats = Pattern.compile(".*Loaded (\\d+) Cheats from '.{8,}.pnach' at.*");
 
     private HashMap<EmulogParserError, ArrayList<Integer>> errorMap;
 
@@ -94,33 +94,33 @@ public class EmulogParser extends AbstractParser {
 
                 if (line.contains("TLB Miss")) {
                     addError(EmulogParserError.TLB_MISS, lineNumber);
-                } else if (line.startsWith("Trap exception")) {
+                } else if (line.contains("Trap exception")) {
                     addError(EmulogParserError.TRAP_EXCEPTION, lineNumber);
-                } else if (line.startsWith("[GameDB] Found patch with CRC")) {
+                } else if (line.contains("[GameDB] Found patch with CRC")) {
                     addError(EmulogParserError.GAMEDB_PATCH_LOADED, lineNumber);
-                } else if (line.startsWith("microVU0 Warning: Branch, Branch, Branch!")) {
+                } else if (line.contains("microVU0 Warning: Branch, Branch, Branch!")) {
                     addError(EmulogParserError.VU0_TRIPLE_BRANCH, lineNumber);
-                } else if (line.startsWith("microVU1 Warning: Branch, Branch, Branch!")) {
+                } else if (line.contains("microVU1 Warning: Branch, Branch, Branch!")) {
                     addError(EmulogParserError.VU1_TRIPLE_BRANCH, lineNumber);
                 } else if ((m = iopUnknownWrite.matcher(line)).matches()) {
                     addError(EmulogParserError.IOP_UNKNOWN_WRITE, lineNumber);
-                } else if (line.startsWith("Loading savestate")) {
+                } else if (line.contains("Loading savestate")) {
                     addError(EmulogParserError.SSTATE_LOAD, lineNumber);
-                } else if (line.startsWith("Saving savestate")) {
+                } else if (line.contains("Saving savestate")) {
                     addError(EmulogParserError.SSTATE_SAVE, lineNumber);
-                } else if (line.startsWith("Savestate is corrupt or incomplete")) {
+                } else if (line.contains("Savestate is corrupt or incomplete")) {
                     addError(EmulogParserError.SSTATE_FAIL, lineNumber);
                 } else if (line.contains("Auto-ejecting memcard")) {
                     addError(EmulogParserError.AUTO_EJECT, lineNumber);
                 } else if (line.contains("Re-inserting auto-ejected memcard")) {
                     addError(EmulogParserError.AUTO_EJECT_INSERT, lineNumber);
-                } else if (line.startsWith("isoFile error: Block index is past the end of file!")) {
+                } else if (line.contains("isoFile error: Block index is past the end of file!")) {
                     addError(EmulogParserError.BLOCK_INDEX_EOF, lineNumber);
-                } else if (line.startsWith("Available VRAM is very low")) {
+                } else if (line.contains("Available VRAM is very low")) {
                     addError(EmulogParserError.OUT_OF_VRAM, lineNumber);
-                } else if (line.startsWith("(GameDB) Enabled Gamefix:")) {
+                } else if (line.contains("(GameDB) Enabled Gamefix:")) {
                     addError(EmulogParserError.GAMEDB_GAMEFIX_LOADED, lineNumber);
-                } else if (line.trim().startsWith("Bios Found:")) {
+                } else if (line.trim().contains("Bios Found:")) {
                     addError(EmulogParserError.BIOS_FOUND, lineNumber);
                 } else if ((m = acPower.matcher(line)).matches()) {
                     try {
@@ -153,7 +153,7 @@ public class EmulogParser extends AbstractParser {
                             addError(EmulogParserError.CHEAT_EMPTY, lineNumber);
                         }
                     } catch (NumberFormatException e) { }
-                } else if (line.startsWith("(Patch) Error Parsing:")) {
+                } else if (line.contains("(Patch) Error Parsing:")) {
                     addError(EmulogParserError.PATCH_ERROR, lineNumber);
                 }
             }
