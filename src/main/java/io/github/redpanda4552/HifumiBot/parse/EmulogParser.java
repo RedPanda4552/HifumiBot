@@ -96,6 +96,8 @@ public class EmulogParser extends AbstractParser {
                     addError(EmulogParserError.TLB_MISS, lineNumber);
                 } else if (line.contains("Trap exception")) {
                     addError(EmulogParserError.TRAP_EXCEPTION, lineNumber);
+                } else if (line.contains("GS: Memory allocation failure")) {
+                    addError(EmulogParserError.GS_MEM_FAIL, lineNumber);
                 } else if (line.contains("[GameDB] Found patch with CRC")) {
                     addError(EmulogParserError.GAMEDB_PATCH_LOADED, lineNumber);
                 } else if (line.contains("microVU0 Warning: Branch, Branch, Branch!")) {
