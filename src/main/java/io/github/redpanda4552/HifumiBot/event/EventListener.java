@@ -97,7 +97,7 @@ public class EventListener extends ListenerAdapter {
             return;
         }
         
-        HifumiBot.getSelf().getMessageHistory().addMessage(event.getMessage());
+        HifumiBot.getSelf().getBotDetection().addMessageHistoryEntry(event.getMessage());
         
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
             HifumiBot.getSelf().getCommandInterpreter().execute(event);

@@ -38,6 +38,7 @@ import io.github.redpanda4552.HifumiBot.config.ServerMetrics;
 import io.github.redpanda4552.HifumiBot.config.WarezTracking;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
+import io.github.redpanda4552.HifumiBot.filter.BotDetection;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
 import io.github.redpanda4552.HifumiBot.filter.KickHandler;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
@@ -116,8 +117,8 @@ public class HifumiBot {
     private EventListener eventListener;
     private SlashCommandListener slashCommandListener;
     private KickHandler kickHandler;
-    private MessageHistory messageHistory;
     private GameDB gameDB;
+    private BotDetection botDetection;
 
     public HifumiBot() {
         self = this;
@@ -177,8 +178,8 @@ public class HifumiBot {
         jda.addEventListener(eventListener = new EventListener(this));
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         kickHandler = new KickHandler();
-        messageHistory = new MessageHistory();
         gameDB = new GameDB();
+        botDetection = new BotDetection();
 
         // Schedule repeating tasks
         scheduler.scheduleRepeating("wiki", () -> {
@@ -207,16 +208,16 @@ public class HifumiBot {
             kickHandler.flush();
         }, 1000 * 60 * 60);
         
-        scheduler.scheduleRepeating("hist", () -> {
-            messageHistory.clean();
-        }, 1000 * 60 * 10);
-        
         scheduler.scheduleRepeating("pop", () -> {
             String serverId = HifumiBot.getSelf().getConfig().server.id;
             Guild server = HifumiBot.getSelf().getJDA().getGuildById(serverId);
             serverMetrics.populationSnaps.put(OffsetDateTime.now().toString(), server.getMemberCount());
             ConfigManager.write(serverMetrics);
         }, 1000 * 60 * 60 * 6);
+        
+        scheduler.scheduleRepeating("bot", () -> {
+            botDetection.clean();
+        }, 1000 * 60 * 15);
 
         if (doSlashCommandUpsert) {
             commandIndex.upsertAllSlashCommands("all");
@@ -299,12 +300,12 @@ public class HifumiBot {
         return kickHandler;
     }
     
-    public MessageHistory getMessageHistory() {
-        return messageHistory;
-    }
-    
     public GameDB getGameDB() {
         return gameDB;
+    }
+    
+    public BotDetection getBotDetection() {
+        return botDetection;
     }
 
     public void shutdown(boolean reload) {

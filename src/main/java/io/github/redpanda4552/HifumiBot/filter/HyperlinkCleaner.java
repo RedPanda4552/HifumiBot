@@ -68,4 +68,12 @@ public class HyperlinkCleaner implements Runnable {
         }
     }
 
+    public static boolean hasHyperlink(Message msg) {
+        return hasHyperlink(msg.getContentDisplay());
+    }
+    
+    public static boolean hasHyperlink(String msgContent) {
+        Matcher m = URL_PATTERN.matcher(msgContent);
+        return m.find();
+    }
 }

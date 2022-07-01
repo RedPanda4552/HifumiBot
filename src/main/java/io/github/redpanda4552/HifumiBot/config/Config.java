@@ -52,7 +52,6 @@ public class Config implements IConfig {
     public long ninjaInterval;
     public FilterOptions filterOptions;
     public boolean enableBotKicker;
-    public MessageHistoryOptions messageHistoryOptions;
 
     public Config() {
         useLocalDNSFiltering = false;
@@ -67,7 +66,6 @@ public class Config implements IConfig {
         filterOptions = new FilterOptions();
         ninjaInterval = 500;
         enableBotKicker = true;
-        messageHistoryOptions = new MessageHistoryOptions();
     }
     
     public class Server {
@@ -165,18 +163,6 @@ public class Config implements IConfig {
             enableWarningMessages = true;
             warnMessage = new String("");
             kickMessage = new String("");
-        }
-    }
-    
-    public class MessageHistoryOptions {
-        public int maxDuplicates;
-        public int trackedMessages;
-        public long timeoutLengthMinutes;
-        
-        public MessageHistoryOptions() {
-            maxDuplicates = 3;
-            trackedMessages = 5;
-            timeoutLengthMinutes = 60 * 24;
         }
     }
 }
