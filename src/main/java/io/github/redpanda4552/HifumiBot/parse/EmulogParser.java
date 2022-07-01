@@ -122,6 +122,8 @@ public class EmulogParser extends AbstractParser {
                     addError(EmulogParserError.OUT_OF_VRAM, lineNumber);
                 } else if (line.contains("(GameDB) Enabled Gamefix:")) {
                     addError(EmulogParserError.GAMEDB_GAMEFIX_LOADED, lineNumber);
+                } else if (line.contains("Manual GS hardware renderer fixes are enabled")) {
+                    addError(EmulogParserError.GAMEDB_MANUAL_FIXES, lineNumber);
                 } else if (line.trim().contains("Bios Found:")) {
                     addError(EmulogParserError.BIOS_FOUND, lineNumber);
                 } else if ((m = acPower.matcher(line)).matches()) {

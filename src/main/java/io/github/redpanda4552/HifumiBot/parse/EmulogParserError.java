@@ -43,6 +43,7 @@ public enum EmulogParserError {
     SSTATE_SAVE( "(*) Saved a savestate." ),
     GAMEDB_GAMEFIX_LOADED( "(*) Loaded a gamefix from gamedb." ),
     GAMEDB_PATCH_LOADED( "(*) Loaded a patch from gamedb." ),
+    GAMEDB_MANUAL_FIXES("(!) Manual Hardware Renderer Fixes are enabled, automatic fixes have been disabled and graphics may be broken."),
     WIDESCREEN_PATCH_LOADED( "(*) Loaded widescreen patches from a file." ),
     WIDESCREEN_PATCH_EMPTY( "(*) Found widescreen patch file, but nothing to load." ),
     WIDESCREEN_ARCHIVE_LOADED( "(*) Loaded widescreen patches from the archive." ),
