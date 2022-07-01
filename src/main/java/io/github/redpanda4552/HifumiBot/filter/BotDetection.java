@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -119,6 +118,7 @@ public class BotDetection {
             Member member = server.retrieveMemberById(userId).complete();
             Messaging.sendPrivateMessage(user, HifumiBot.getSelf().getConfig().filterOptions.kickMessage);
             member.kick().complete();
+            Messaging.logInfo("BotDetection", "removeBot", "Successfully messaged and kicked " + member.getUser().getAsMention() + " (" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + ") for setting off bot detection.");
             
             for (MessageHistoryEntry entry : messageHistory.get(userId)) {
                 TextChannel channel = HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId());
