@@ -54,7 +54,13 @@ public class Messaging {
         }
         
         PrivateChannel channel = user.openPrivateChannel().complete();
-        return channel.sendMessage(msg).complete();
+        Message ret = null;
+        
+        try {
+            channel.sendMessage(msg).complete();
+        } catch (Exception e) { }
+         
+        return ret;
     }
     
     public static Message sendMessage(MessageChannel channel, String str) {
