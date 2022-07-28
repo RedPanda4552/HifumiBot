@@ -97,8 +97,6 @@ public class EventListener extends ListenerAdapter {
             return;
         }
         
-        HifumiBot.getSelf().getBotDetection().addMessageHistoryEntry(event.getMessage());
-        
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
             HifumiBot.getSelf().getCommandInterpreter().execute(event);
 
@@ -115,6 +113,7 @@ public class EventListener extends ListenerAdapter {
 
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage(), now));
+            HifumiBot.getSelf().getBotDetection().addMessageHistoryEntry(event.getMessage());
             
             if (hasBotReply(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are replying to a bot.", event.getMessage(), false);
