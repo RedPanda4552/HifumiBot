@@ -53,10 +53,10 @@ public class Messaging {
             return null;
         }
         
-        PrivateChannel channel = user.openPrivateChannel().complete();
         Message ret = null;
         
         try {
+            PrivateChannel channel = user.openPrivateChannel().complete();
             channel.sendMessage(msg).complete();
         } catch (Exception e) { }
          
