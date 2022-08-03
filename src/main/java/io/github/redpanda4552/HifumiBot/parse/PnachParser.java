@@ -39,7 +39,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class PnachParser extends AbstractParser {
 
-    private static final String CRC_FILE_NAME_PATTERN = "[0-9a-fA-F]{8}\\.pnach";
+    private static final String CRC_FILE_NAME_PATTERN = "[0-9a-fA-F]{8}.*\\.pnach";
 
     private final Message message;
     private Attachment attachment;
