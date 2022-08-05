@@ -27,6 +27,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -40,26 +41,34 @@ public class CommandSupport extends AbstractSlashCommand {
 
     @Override
     protected void onExecute(SlashCommandEvent event) {
-        OptionMapping opt = event.getOption("name");
+        OptionMapping nameOpt = event.getOption("name");
         
-        if (opt == null) {
+        if (nameOpt == null) {
             event.reply("Missing required option `name`").setEphemeral(true).queue();
             return;
         }
         
-        DynamicCommand toExecute = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(opt.getAsString());
+        OptionMapping userOpt = event.getOption("user");
+        Member pingMember = null;
+        
+        if (userOpt != null) {
+            pingMember = userOpt.getAsMember();
+        }
+        
+        DynamicCommand toExecute = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(nameOpt.getAsString());
         
         if (toExecute != null && toExecute.getCategory().equals("support")) {
-            toExecute.execute(event);
+            toExecute.execute(event, pingMember);
         } else {
-            event.reply("Could not find support prompt `" + opt.getAsString() + "`, use `/help support` to browse options").setEphemeral(true).queue();
+            event.reply("Could not find support prompt `" + nameOpt.getAsString() + "`, use `/help support` to browse options").setEphemeral(true).queue();
         }
     }
 
     @Override
     protected CommandData defineSlashCommand() {
         return new CommandData("support", "Displays a support prompt (use /help for a list of options)")
-                .addOption(OptionType.STRING, "name", "Name of the support prompt command to use", true);
+                .addOption(OptionType.STRING, "name", "Name of the support prompt command to use", true)
+                .addOption(OptionType.USER, "user", "Specify a user to ping with this command", false);
     }
 
 }
