@@ -33,20 +33,16 @@ import javax.imageio.ImageIO;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandPFP extends AbstractSlashCommand {
     
-    public CommandPFP() {
-        super(PermissionLevel.SUPERUSER);
-    }
-
     private void setAvatar(String imageUrl) throws IOException, MalformedURLException {
         URL url = new URL(imageUrl);
         BufferedImage bImage = ImageIO.read(url);
@@ -56,7 +52,7 @@ public class CommandPFP extends AbstractSlashCommand {
     }
 
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
         
         try {
@@ -75,7 +71,7 @@ public class CommandPFP extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("pfp", "Set the bot's avatar")
+        return Commands.slash("pfp", "Set the bot's avatar")
                 .addOption(OptionType.STRING, "image-url", "URL pointing to the new avatar image", true);
     }
 }

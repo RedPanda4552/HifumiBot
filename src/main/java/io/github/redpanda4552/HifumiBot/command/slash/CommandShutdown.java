@@ -25,18 +25,14 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandShutdown extends AbstractSlashCommand {
     
-    public CommandShutdown() {
-        super(PermissionLevel.SUPER_ADMIN);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         HifumiBot.getSelf().getScheduler().runOnce(() -> {
             if (HifumiBot.getSelf() != null)
                 HifumiBot.getSelf().shutdown(false);
@@ -46,7 +42,7 @@ public class CommandShutdown extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("shutdown", "Shuts down the bot with no attempt to reload");
+        return Commands.slash("shutdown", "Shuts down the bot with no attempt to reload");
     }
 
 }

@@ -30,24 +30,20 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.Filter;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 public class CommandFilter extends AbstractSlashCommand {
     
     private static final String NO_SUCH_FILTER = ":x: No such filter '%s' exists.";
 
-    public CommandFilter() {
-        super(PermissionLevel.SUPER_ADMIN);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
         EmbedBuilder eb = new EmbedBuilder();
         Filter filter = null;
@@ -209,7 +205,7 @@ public class CommandFilter extends AbstractSlashCommand {
                 .addOption(OptionType.STRING, "filter-name", "Unique identifier of the target filter to modify", true);
         SubcommandData list = new SubcommandData("list", "List all filters");
         SubcommandData compile = new SubcommandData("compile", "Compile all filters");
-        return new CommandData("filter", "Create and manage chat filters")
+        return Commands.slash("filter", "Create and manage chat filters")
                 .addSubcommands(newFilter, add, remove, reply, get, delete, list, compile);
     }
 }

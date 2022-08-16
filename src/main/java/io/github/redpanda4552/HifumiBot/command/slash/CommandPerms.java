@@ -31,21 +31,18 @@ import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 public class CommandPerms extends AbstractSlashCommand {
     
-    public CommandPerms() {
-        super(PermissionLevel.SUPER_ADMIN);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
         OptionMapping optPermissionLevel = event.getOption("permission-level");
         PermissionLevel permissionLevel = null;
@@ -156,7 +153,7 @@ public class CommandPerms extends AbstractSlashCommand {
         
         SubcommandData list = new SubcommandData("list", "List current role assignments to permission levels");
         
-        return new CommandData("perms", "Manage permission levels")
+        return Commands.slash("perms", "Manage permission levels")
                 .addSubcommands(add, remove, list);
     }
 

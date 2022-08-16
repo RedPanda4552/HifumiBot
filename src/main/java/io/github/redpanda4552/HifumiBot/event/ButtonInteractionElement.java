@@ -23,7 +23,7 @@
  */
 package io.github.redpanda4552.HifumiBot.event;
 
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class ButtonInteractionElement extends AbstractInteractionElement {
     

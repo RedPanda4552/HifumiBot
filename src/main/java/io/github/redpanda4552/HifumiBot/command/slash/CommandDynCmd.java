@@ -26,24 +26,20 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Strings;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 public class CommandDynCmd extends AbstractSlashCommand {
     
-    public CommandDynCmd() {
-        super(PermissionLevel.ADMIN);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().setEphemeral(true).queue();
         String name = event.getOption("name").getAsString();
         OptionMapping categoryOpt = event.getOption("category");
@@ -117,12 +113,12 @@ public class CommandDynCmd extends AbstractSlashCommand {
             event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
             return;
         case "delete":
-            if (!HifumiBot.getSelf().getCommandIndex().isCommand(name)) {
+            if (!HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name)) {
                 event.getHook().sendMessage("No such command `" + name + "` exists").queue();
                 return;
             }
             
-            HifumiBot.getSelf().getCommandIndex().deleteCommand(name);
+            HifumiBot.getSelf().getCommandIndex().deleteDynamicCommand(name);
             event.getHook().sendMessage("Deleted command `" + name + "`").queue();
             return;
         }
@@ -159,7 +155,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
                         imageUrl);
         SubcommandData delete = new SubcommandData("delete", "Delete a dynamic command")
                 .addOptions(name.setRequired(true));
-        return new CommandData("dyncmd", "Manage dynamic commands")
+        return Commands.slash("dyncmd", "Manage dynamic commands")
                 .addSubcommands(get, newDyncmd, update, delete);
     }
     

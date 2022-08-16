@@ -33,10 +33,11 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandCPU extends AbstractSlashCommand {
     
@@ -70,12 +71,8 @@ public class CommandCPU extends AbstractSlashCommand {
         }
     }
 
-    public CommandCPU() {
-        super(PermissionLevel.GUEST);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         boolean isEphemeral = true;
         
         if (event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId) || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
@@ -135,7 +132,7 @@ public class CommandCPU extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("cpu", "Look up the single thread rating of a CPU")
+        return Commands.slash("cpu", "Look up the single thread rating of a CPU")
                 .addOption(OptionType.STRING, "name", "Name of the CPU to look up", true);
     }
 }

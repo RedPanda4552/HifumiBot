@@ -29,28 +29,24 @@ import java.util.List;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.event.SelectionInteractionElement;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 public class CommandWiki extends AbstractSlashCommand {
 
-    public CommandWiki() {
-        super(PermissionLevel.GUEST);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
         String query = event.getOption("game").getAsString();
         HashMap<String, Float> results = SimpleSearch.search(HifumiBot.getSelf().getWikiIndex().getAllTitles(), query);
@@ -84,7 +80,7 @@ public class CommandWiki extends AbstractSlashCommand {
     }
     
     @Override
-    public void onSelectionEvent(SelectionMenuEvent event) {
+    public void onSelectionEvent(SelectMenuInteractionEvent event) {
         try {
             List<SelectOption> options = event.getSelectedOptions();
             
@@ -131,7 +127,7 @@ public class CommandWiki extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("wiki", "Search the PCSX2 wiki for a game")
+        return Commands.slash("wiki", "Search the PCSX2 wiki for a game")
                 .addOption(OptionType.STRING, "game", "Title of the game to search for", true);
     }
 }

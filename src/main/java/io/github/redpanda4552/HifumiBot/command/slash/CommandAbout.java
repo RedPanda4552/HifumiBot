@@ -28,20 +28,16 @@ import io.github.redpanda4552.HifumiBot.Scheduler.NoSuchRunnableException;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.ConfigType;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandAbout extends AbstractSlashCommand {
     
-    public CommandAbout() {
-        super(PermissionLevel.ADMIN);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("About " + HifumiBot.getSelf().getJDA().getSelfUser().getName());
         eb.setDescription("A helper bot created for the PCSX2 Discord server.");
@@ -73,6 +69,6 @@ public class CommandAbout extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("about", "View general information about the bot and its health");
+        return Commands.slash("about", "View general information about the bot and its health");
     }
 }

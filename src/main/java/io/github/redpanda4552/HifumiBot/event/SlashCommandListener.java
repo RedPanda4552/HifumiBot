@@ -34,9 +34,9 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class SlashCommandListener extends ListenerAdapter {
@@ -46,7 +46,7 @@ public class SlashCommandListener extends ListenerAdapter {
     private HashMap<UUID, SelectionInteractionElement> selectionCache = new HashMap<UUID, SelectionInteractionElement>();
     
     @Override
-    public void onSlashCommand(SlashCommandEvent event) {
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (!event.isFromGuild()) {
             event.reply("Slash commands are disabled in DMs.").setEphemeral(true).queue();
             return;
@@ -63,7 +63,7 @@ public class SlashCommandListener extends ListenerAdapter {
     }
     
     @Override
-    public void onButtonClick(ButtonClickEvent event) {
+    public void onButtonInteraction(ButtonInteractionEvent event) {
         UUID uuid = null;
         
         try {
@@ -101,7 +101,7 @@ public class SlashCommandListener extends ListenerAdapter {
     }
     
     @Override 
-    public void onSelectionMenu(SelectionMenuEvent event) {
+    public void onSelectMenuInteraction(SelectMenuInteractionEvent event) {
         UUID uuid = null;
         
         try {

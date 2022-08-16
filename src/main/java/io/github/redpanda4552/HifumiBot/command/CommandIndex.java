@@ -34,19 +34,41 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.slash.*;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandBuildNumber;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandGameDB;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandMemes;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandPanic;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandPerms;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandReload;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandRun;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandSpamKick;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandSupport;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 public class CommandIndex {
 
     private static final int COMMANDS_PER_PAGE = 10;
 
+    private CommandListUpdateAction commandsToRegister;
     private HashMap<String, AbstractSlashCommand> slashCommands;
-    private HashMap<String, DynamicCommand> commandMap;
+    private HashMap<String, DynamicCommand> dynamicCommands;
     private HashMap<String, ArrayList<MessageEmbed>> helpPages;
     private HashMap<String, HashMap<String, Instant>> history;
 
@@ -56,30 +78,46 @@ public class CommandIndex {
      */
     public CommandIndex() {
         slashCommands = new HashMap<String, AbstractSlashCommand>();
-        commandMap = new HashMap<String, DynamicCommand>();
-        rebuildAll();
+        dynamicCommands = new HashMap<String, DynamicCommand>();
         history = new HashMap<String, HashMap<String, Instant>>();
+        rebuild();
+    }
+    
+    private void cleanupGuildCommands() {
+        List<Guild> servers = HifumiBot.getSelf().getJDA().getGuilds();
+        
+        for (Guild server : servers) {
+            List<Command> commands = server.retrieveCommands().complete();
+            
+            for (Command command : commands) {
+                String appId = HifumiBot.getSelf().getJDA().retrieveApplicationInfo().complete().getId();
+                String commandAppId = command.getApplicationId();
+                
+                if (appId.equals(commandAppId)) {
+                    command.delete().complete();
+                }
+            }
+        }
     }
 
     /**
      * Rebuild this CommandIndex from the Config object in HifumiBot.
      */
-    public void rebuildAll() {
+    public void rebuild() {
         rebuildSlash();
         rebuildDynamic();
+        cleanupGuildCommands();
     }
     
     public void rebuildSlash() {
         slashCommands.clear();
+        commandsToRegister = HifumiBot.getSelf().getJDA().updateCommands();
         registerSlashCommand(new CommandSay());
         registerSlashCommand(new CommandAbout());
-        registerSlashCommand(new CommandUpsert());
         registerSlashCommand(new CommandWarez());
         registerSlashCommand(new CommandShutdown());
         registerSlashCommand(new CommandReload());
         registerSlashCommand(new CommandWiki());
-        registerSlashCommand(new CommandBan());
-        registerSlashCommand(new CommandPrompt());
         registerSlashCommand(new CommandRun());
         registerSlashCommand(new CommandPFP());
         registerSlashCommand(new CommandPerms());
@@ -94,62 +132,23 @@ public class CommandIndex {
         registerSlashCommand(new CommandSpamKick());
         registerSlashCommand(new CommandPanic());
         registerSlashCommand(new CommandGameDB());
+        commandsToRegister.queue();
     }
     
     public void rebuildDynamic() {
-        commandMap.clear();
+        dynamicCommands.clear();
 
         for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands) {
-            commandMap.put(dynamicCommand.getName(), dynamicCommand);
+            dynamicCommands.put(dynamicCommand.getName(), dynamicCommand);
         }
 
         rebuildHelpPages();
     }
     
-    public void upsertAllSlashCommands(String mode) {
-        String serverId = HifumiBot.getSelf().getConfig().server.id;
-        List<Command> commands = HifumiBot.getSelf().getJDA().getGuildById(serverId).retrieveCommands().complete();
-        HashMap<String, Command> uploadedCommands = new HashMap<String, Command>();
-        
-        for (Command command : commands) {
-            if (!slashCommands.containsKey(command.getName())) {
-                HifumiBot.getSelf().getJDA().getGuildById(serverId).deleteCommandById(command.getId()).complete();
-            } else {
-                uploadedCommands.put(command.getName(), command);
-            }
-        }
-        
-        for (String commandName : slashCommands.keySet()) {
-            if (mode != null && mode.equals("all")) {
-                upsertSlashCommand(commandName);
-            } else if (mode != null && mode.equals("new")) {
-                if (!uploadedCommands.containsKey(commandName)) {
-                    upsertSlashCommand(commandName);
-                }
-            }
-        }
-    }
-    
-    public boolean upsertSlashCommand(String commandName) {
-        return upsertSlashCommand(slashCommands.get(commandName));
-    }
-    
-    public boolean upsertSlashCommand(AbstractSlashCommand slashCommand) {
-        try {
-            if (slashCommand != null) {
-                slashCommand.upsertSlashCommand();
-                return true;
-            }
-        } catch (Exception e) {
-            Messaging.logException("CommandIndex", "upsertSlashCommand", e);
-        }
-        
-        return false;
-    }
-    
     private void registerSlashCommand(AbstractSlashCommand slashCommand) {
         String name = slashCommand.defineSlashCommand().getName();
         slashCommands.put(name, slashCommand);
+        commandsToRegister.addCommands(slashCommand.defineSlashCommand().setDefaultPermissions(DefaultMemberPermissions.DISABLED));
     }
     
     public HashMap<String, AbstractSlashCommand> getSlashCommands() {
@@ -157,20 +156,15 @@ public class CommandIndex {
     }
 
     public Set<String> getAll() {
-        return commandMap.keySet();
-    }
-
-    public boolean isCommand(String name) {
-        return commandMap.get(name) != null;
+        return dynamicCommands.keySet();
     }
 
     public boolean isDynamicCommand(String name) {
-        DynamicCommand dyncmd = commandMap.get(name);
-        return dyncmd != null && dyncmd instanceof DynamicCommand;
+        return dynamicCommands.get(name) != null;
     }
 
     public DynamicCommand getDynamicCommand(String name) {
-        return commandMap.get(name);
+        return dynamicCommands.get(name);
     }
 
     public void addDynamicCommand(DynamicCommand dyncmd) {
@@ -198,7 +192,7 @@ public class CommandIndex {
         HifumiBot.getSelf().getCommandIndex().rebuildDynamic();
     }
 
-    public void deleteCommand(String name) {
+    public void deleteDynamicCommand(String name) {
         ArrayList<DynamicCommand> dynamicCommands = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands;
         Iterator<DynamicCommand> iter = dynamicCommands.iterator();
         DynamicCommand toDelete = null;
@@ -215,7 +209,7 @@ public class CommandIndex {
         if (toDelete != null) {
             dynamicCommands.remove(toDelete);
             ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
-            HifumiBot.getSelf().getCommandIndex().rebuildAll();
+            HifumiBot.getSelf().getCommandIndex().rebuildDynamic();
         }
     }
 
@@ -229,7 +223,7 @@ public class CommandIndex {
         HashMap<String, TreeSet<String>> ret = new HashMap<String, TreeSet<String>>();
 
         for (String commandName : commandNames) {
-            DynamicCommand command = commandMap.get(commandName);
+            DynamicCommand command = dynamicCommands.get(commandName);
             TreeSet<String> categoryCommands = null;
 
             if (ret.containsKey(command.getCategory())) {

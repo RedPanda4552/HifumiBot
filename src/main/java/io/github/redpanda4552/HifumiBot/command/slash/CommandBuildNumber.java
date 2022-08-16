@@ -29,21 +29,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandBuildNumber extends AbstractSlashCommand {
 
-    public CommandBuildNumber() {
-        super(PermissionLevel.GUEST);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping option = event.getOption("buildid");
         if (option == null) {
             event.reply("Build ID not provided or invalid!").setEphemeral(true).queue();
@@ -65,7 +61,7 @@ public class CommandBuildNumber extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("commitfrombuild", "Determine the git commit a build id is associated with")
+        return Commands.slash("commitfrombuild", "Determine the git commit a build id is associated with")
                 .addOption(OptionType.INTEGER, "buildid", "The build id", true);
     }
 }

@@ -30,11 +30,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 public class Messaging {
@@ -181,7 +181,7 @@ public class Messaging {
         Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId, eb.build());
     }
 
-    public static boolean messageHasEmulog(Message msg) {
+    public static boolean hasEmulog(Message msg) {
         for (Attachment attachment : msg.getAttachments()) {
             if (attachment.getFileName().equalsIgnoreCase("emulog.txt")) {
                 return true;
@@ -191,13 +191,43 @@ public class Messaging {
         return false;
     }
 
-    public static boolean messageHasPnach(Message msg) {
+    public static boolean hasPnach(Message msg) {
         for (Attachment attachment : msg.getAttachments()) {
             if (attachment.getFileExtension().equalsIgnoreCase("pnach")) {
                 return true;
             }
         }
 
+        return false;
+    }
+    
+    public static boolean hasBotPing(Message msg) {
+        if (msg == null) {
+            return false;
+        }
+        
+        for (User usr : msg.getMentions().getUsers()) {
+            if (usr.getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public static boolean hasBotReply(Message msg) {
+        if (msg == null) {
+            return false;
+        }
+        
+        Message ref = msg.getReferencedMessage();
+        
+        if (ref != null) {
+            if (ref.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+                return true;
+            }
+        }
+        
         return false;
     }
 }

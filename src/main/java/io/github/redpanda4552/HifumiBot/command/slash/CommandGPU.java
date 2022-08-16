@@ -33,14 +33,15 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandGPU extends AbstractSlashCommand {
     
-    private enum GPURating {
+    private enum GPURating {    
         x8NATIVE("8x Native (~5K)", 13030), 
         x6NATIVE("6x Native (~4K)", 8660), 
         x5NATIVE("5x Native (~3K)", 6700),
@@ -67,12 +68,8 @@ public class CommandGPU extends AbstractSlashCommand {
         }
     }
 
-    public CommandGPU() {
-        super(PermissionLevel.GUEST);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         boolean isEphemeral = true;
         
         if (event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId) || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
@@ -137,7 +134,7 @@ public class CommandGPU extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("gpu", "Look up the rating of a GPU")
+        return Commands.slash("gpu", "Look up the rating of a GPU")
                 .addOption(OptionType.STRING, "name", "Name of the GPU to look up", true);
     }
 }

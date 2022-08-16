@@ -25,22 +25,18 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandSpamKick extends AbstractSlashCommand {
 
-    public CommandSpamKick() {
-        super(PermissionLevel.SUPER_ADMIN);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping opt = event.getOption("user");
         
         if (opt == null) {
@@ -61,7 +57,7 @@ public class CommandSpamKick extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("spamkick", "Send a user a DM telling them their account is compromised and spamming, then kick the user")
+        return Commands.slash("spamkick", "Send a user a DM telling them their account is compromised and spamming, then kick the user")
                 .addOption(OptionType.USER, "user", "User to DM and kick", true);
     }
 

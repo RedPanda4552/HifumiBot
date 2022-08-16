@@ -28,7 +28,7 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 public class DynamicCommand {
 
@@ -57,11 +57,11 @@ public class DynamicCommand {
         Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
     }
     
-    public void execute(SlashCommandEvent event) {
+    public void execute(SlashCommandInteractionEvent event) {
         execute(event, null);
     }
     
-    public void execute(SlashCommandEvent event, Member pingMember) {
+    public void execute(SlashCommandInteractionEvent event, Member pingMember) {
         MessageBuilder mb = new MessageBuilder();
         
         if (pingMember != null) {

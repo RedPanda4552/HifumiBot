@@ -26,21 +26,17 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandSupport extends AbstractSlashCommand {
 
-    public CommandSupport() {
-        super(PermissionLevel.GUEST);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping nameOpt = event.getOption("name");
         
         if (nameOpt == null) {
@@ -66,7 +62,7 @@ public class CommandSupport extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("support", "Displays a support prompt (use /help for a list of options)")
+        return Commands.slash("support", "Displays a support prompt (use /help for a list of options)")
                 .addOption(OptionType.STRING, "name", "Name of the support prompt command to use", true)
                 .addOption(OptionType.USER, "user", "Specify a user to ping with this command", false);
     }

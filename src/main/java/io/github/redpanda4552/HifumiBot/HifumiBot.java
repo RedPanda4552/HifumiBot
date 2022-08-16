@@ -58,26 +58,19 @@ public class HifumiBot {
     private static HifumiBot self;
     private static String discordBotToken;
     private static String superuserId;
-    private static boolean doSlashCommandUpsert = false;
 
     public static void main(String[] args) {
         // Run via environment variables first, if not, fall-back to args
-        if (System.getenv().containsKey("DISCORD_BOT_TOKEN") && System.getenv().containsKey("SUPERUSER_ID") && System.getenv().containsKey("UPSERT_SLASH_COMMANDS")) {
+        if (System.getenv().containsKey("DISCORD_BOT_TOKEN") && System.getenv().containsKey("SUPERUSER_ID")) {
             System.out.println("Found environment variables, using those instead of cli-args!");
             discordBotToken = System.getenv("DISCORD_BOT_TOKEN");
             superuserId = System.getenv("SUPERUSER_ID");
-            doSlashCommandUpsert = Boolean.parseBoolean(System.getenv("UPSERT_SLASH_COMMANDS"));
         } else if (args.length < 2) {
-            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [-u]");
+            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id>");
             return;
         } else {
             discordBotToken = args[0];
             superuserId = args[1];
-            if (args.length >= 3) {
-                if (args[2].equals("-u")) {
-                    doSlashCommandUpsert = true;
-                }
-            }
             System.out.println("Parsed arguments from command line");
         }
 
@@ -130,8 +123,11 @@ public class HifumiBot {
         }
 
         try {
-            jda = JDABuilder.createDefault(discordBotToken).enableIntents(GatewayIntent.GUILD_MEMBERS)
-                    .setMemberCachePolicy(MemberCachePolicy.ALL).setAutoReconnect(true).build().awaitReady();
+            jda = JDABuilder.createDefault(discordBotToken)
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .setAutoReconnect(true)
+                    .build().awaitReady();
         } catch (LoginException | IllegalArgumentException | InterruptedException e) {
             Messaging.logException("HifumiBot", "(constructor)", e);
         }
@@ -218,10 +214,6 @@ public class HifumiBot {
         scheduler.scheduleRepeating("bot", () -> {
             botDetection.clean();
         }, 1000 * 60 * 15);
-
-        if (doSlashCommandUpsert) {
-            commandIndex.upsertAllSlashCommands("all");
-        }
 
         updateStatus("/help");
     }

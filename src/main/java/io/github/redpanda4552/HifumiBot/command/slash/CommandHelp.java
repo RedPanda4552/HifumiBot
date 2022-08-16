@@ -30,23 +30,19 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class CommandHelp extends AbstractSlashCommand {
     
-    public CommandHelp() {
-        super(PermissionLevel.GUEST);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().setEphemeral(true).queue();
         String category = event.getOption("category").getAsString();
         HashMap<String, ArrayList<MessageEmbed>> helpPages = HifumiBot.getSelf().getCommandIndex().getHelpPages();
@@ -56,7 +52,7 @@ public class CommandHelp extends AbstractSlashCommand {
     }
     
     @Override 
-    public void onButtonEvent(ButtonClickEvent event) {
+    public void onButtonEvent(ButtonInteractionEvent event) {
         try {
             if (event.getMessage().getEmbeds().isEmpty()) {
                 event.getHook().sendMessage("It looks like the help embed was deleted. Try using the help command again.").setEphemeral(true).queue();
@@ -129,7 +125,7 @@ public class CommandHelp extends AbstractSlashCommand {
                 .addChoice("support", "support")
                 .addChoice("memes", "memes")
                 .setRequired(true);
-        return new CommandData("help", "Help prompt for all dynamic commands")
+        return Commands.slash("help", "Help prompt for all dynamic commands")
                 .addOptions(categoryOpt);
     }
 }

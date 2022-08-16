@@ -25,20 +25,16 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class CommandRun extends AbstractSlashCommand {
     
-    public CommandRun() {
-        super(PermissionLevel.SUPER_ADMIN);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         String runnableName = event.getOption("runnable").getAsString();
         boolean result = HifumiBot.getSelf().getScheduler().runScheduledNow(runnableName);
         
@@ -57,7 +53,7 @@ public class CommandRun extends AbstractSlashCommand {
             runnable.addChoice(runnableName, runnableName);
         }
         
-        return new CommandData("run", "Execute a scheduled runnable immediately")
+        return Commands.slash("run", "Execute a scheduled runnable immediately")
                 .addOptions(runnable);
     }
 

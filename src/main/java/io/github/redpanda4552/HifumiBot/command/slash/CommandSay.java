@@ -25,24 +25,20 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 public class CommandSay extends AbstractSlashCommand {
 
-    public CommandSay() {
-        super(PermissionLevel.SUPER_ADMIN);
-    }
-    
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping stringOpt = event.getOption("string");
         OptionMapping messageLinkOpt = event.getOption("message-link");
         
@@ -139,12 +135,12 @@ public class CommandSay extends AbstractSlashCommand {
         SubcommandData get = new SubcommandData("get", "Get the raw message content from something the bot has said")
                 .addOption(OptionType.STRING, "message-link", "Link to the message to get", true);
         
-        return new CommandData("say", "Control basic bot message sending")
+        return Commands.slash("say", "Control basic bot message sending")
                 .addSubcommands(something, edit, get);
                 
     }
     
-    private void requiredArgStop(SlashCommandEvent event) {
+    private void requiredArgStop(SlashCommandInteractionEvent event) {
         Messaging.logInfo("CommandSay", "onExecute", "Missing required argument, command may have been tampered with.\nUser = " + event.getUser().getAsMention() + "\nChannel = " + event.getChannel().getAsMention());
         event.reply("Required argument missing - command aborted").setEphemeral(true).queue();
         return;

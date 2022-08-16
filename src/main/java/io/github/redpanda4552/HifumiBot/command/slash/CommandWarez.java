@@ -32,20 +32,17 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandWarez extends AbstractSlashCommand {
     
-    public CommandWarez() {
-        super(PermissionLevel.ADMIN);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
         
         try {
@@ -99,7 +96,7 @@ public class CommandWarez extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return new CommandData("warez", "Show a prompt about anti-piracy rules, with optional warez role assignment")
+        return Commands.slash("warez", "Show a prompt about anti-piracy rules, with optional warez role assignment")
                 .addOption(OptionType.USER, "user", "Optional user to assign warez role to");
     }
 }

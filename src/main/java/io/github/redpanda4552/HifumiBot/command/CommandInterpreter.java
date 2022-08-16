@@ -28,6 +28,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class CommandInterpreter {
@@ -63,7 +64,7 @@ public class CommandInterpreter {
             CommandMeta cm = new CommandMeta(event.getChannel(), event.getMember(), event.getAuthor());
             
             if (HifumiBot.getSelf().getCommandIndex().isNinja(command, event.getChannel().getId())) {
-                event.getMessage().addReaction(Emotes.NINJA).queue();
+                event.getMessage().addReaction(Emoji.fromFormatted(Emotes.NINJA)).queue();
             } else {
                 toExecute.execute(cm);
             }

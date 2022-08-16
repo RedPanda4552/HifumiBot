@@ -28,24 +28,20 @@ import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandGameDB extends AbstractSlashCommand {
 
     private static final Pattern GAMEDB_SERIAL_PATTERN = Pattern.compile("^[A-Z]{4}-[0-9]{5}$");
     
-    public CommandGameDB() {
-        super(PermissionLevel.GUEST);
-    }
-
     @Override
-    protected void onExecute(SlashCommandEvent event) {
+    protected void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping opt = event.getOption("serial");
         
         if (opt == null) {
@@ -70,8 +66,7 @@ public class CommandGameDB extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        CommandData data = new CommandData("gamedb", "Look up information stored in GameIndex.yaml (otherwise known as 'GameDB')")
+        return Commands.slash("gamedb", "Look up information stored in GameIndex.yaml (otherwise known as 'GameDB')")
                 .addOption(OptionType.STRING, "serial", "Serial number to search for (e.g. 'SLUS-12345')", true);
-        return data;
     }
 }

@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,22 +41,18 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.PixivSourceFetcher;
-import io.github.redpanda4552.HifumiBot.wiki.Emotes;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class EventListener extends ListenerAdapter {
@@ -100,12 +95,12 @@ public class EventListener extends ListenerAdapter {
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
             HifumiBot.getSelf().getCommandInterpreter().execute(event);
 
-            if (Messaging.messageHasEmulog(event.getMessage())) {
+            if (Messaging.hasEmulog(event.getMessage())) {
                 EmulogParser ep = new EmulogParser(event.getMessage());
                 HifumiBot.getSelf().getScheduler().runOnce(ep);
             }
 
-            if (Messaging.messageHasPnach(event.getMessage())) {
+            if (Messaging.hasPnach(event.getMessage())) {
                 PnachParser pp = new PnachParser(event.getMessage());
                 HifumiBot.getSelf().getScheduler().runOnce(pp);
             }
@@ -115,9 +110,9 @@ public class EventListener extends ListenerAdapter {
             HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage(), now));
             HifumiBot.getSelf().getBotDetection().addMessageHistoryEntry(event.getMessage());
             
-            if (hasBotReply(event.getMessage())) {
+            if (Messaging.hasBotReply(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are replying to a bot.", event.getMessage(), false);
-            } else if (hasBotPing(event.getMessage())) {
+            } else if (Messaging.hasBotPing(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
             } 
         }
@@ -244,46 +239,6 @@ public class EventListener extends ListenerAdapter {
         }
     }
 
-    @Override
-    public void onMessageReactionAdd(MessageReactionAddEvent event) {
-        String userId = event.getUser().getId();
-        String messageId = event.getMessageId();
-        String reactionEmoteName = event.getReactionEmote().getName().toLowerCase();
-        Message msg = messages.get(userId);
-
-        if (msg == null)
-            return;
-
-        if (msg.getId().equals(messageId)) {
-            String gameName = null;
-
-            List<Field> fields = msg.getEmbeds().get(0).getFields();
-
-            switch (reactionEmoteName) {
-            case Emotes.ONE:
-                gameName = fields.get(0).getValue();
-                break;
-            case Emotes.TWO:
-                gameName = fields.get(1).getValue();
-                break;
-            case Emotes.THREE:
-                gameName = fields.get(2).getValue();
-                break;
-            case Emotes.FOUR:
-                gameName = fields.get(3).getValue();
-                break;
-            case Emotes.FIVE:
-                gameName = fields.get(4).getValue();
-                break;
-            case Emotes.SIX:
-                gameName = fields.get(5).getValue();
-                break;
-            }
-
-            finalizeMessage(msg, gameName, userId);
-        }
-    }
-
     public void waitForMessage(String userId, Message msg) {
         if (messages.containsKey(userId))
             messages.get(userId).delete().complete();
@@ -349,35 +304,5 @@ public class EventListener extends ListenerAdapter {
     
     public boolean getLockdown() {
         return lockdown;
-    }
-    
-    public boolean hasBotPing(Message msg) {
-        if (msg == null) {
-            return false;
-        }
-        
-        for (User usr : msg.getMentionedUsers()) {
-            if (usr.getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    public boolean hasBotReply(Message msg) {
-        if (msg == null) {
-            return false;
-        }
-        
-        Message ref = msg.getReferencedMessage();
-        
-        if (ref != null) {
-            if (ref.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
-                return true;
-            }
-        }
-        
-        return false;
     }
 }
