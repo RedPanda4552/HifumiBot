@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -54,7 +55,8 @@ public class CommandRun extends AbstractSlashCommand {
         }
         
         return Commands.slash("run", "Execute a scheduled runnable immediately")
-                .addOptions(runnable);
+                .addOptions(runnable)
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
 
 }

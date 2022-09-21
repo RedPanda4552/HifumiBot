@@ -37,6 +37,7 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -72,6 +73,7 @@ public class CommandPFP extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("pfp", "Set the bot's avatar")
-                .addOption(OptionType.STRING, "image-url", "URL pointing to the new avatar image", true);
+                .addOption(OptionType.STRING, "image-url", "URL pointing to the new avatar image", true)
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
 }

@@ -28,6 +28,7 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -58,7 +59,8 @@ public class CommandSpamKick extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("spamkick", "Send a user a DM telling them their account is compromised and spamming, then kick the user")
-                .addOption(OptionType.USER, "user", "User to DM and kick", true);
+                .addOption(OptionType.USER, "user", "User to DM and kick", true)
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
 
 }

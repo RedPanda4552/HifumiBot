@@ -29,6 +29,7 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -136,7 +137,8 @@ public class CommandSay extends AbstractSlashCommand {
                 .addOption(OptionType.STRING, "message-link", "Link to the message to get", true);
         
         return Commands.slash("say", "Control basic bot message sending")
-                .addSubcommands(something, edit, get);
+                .addSubcommands(something, edit, get)
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
                 
     }
     

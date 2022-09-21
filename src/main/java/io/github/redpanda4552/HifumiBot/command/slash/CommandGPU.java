@@ -34,6 +34,7 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -135,6 +136,7 @@ public class CommandGPU extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("gpu", "Look up the rating of a GPU")
-                .addOption(OptionType.STRING, "name", "Name of the GPU to look up", true);
+                .addOption(OptionType.STRING, "name", "Name of the GPU to look up", true)
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 }

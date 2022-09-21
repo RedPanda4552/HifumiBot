@@ -31,6 +31,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -62,6 +63,7 @@ public class CommandBuildNumber extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("commitfrombuild", "Determine the git commit a build id is associated with")
-                .addOption(OptionType.INTEGER, "buildid", "The build id", true);
+                .addOption(OptionType.INTEGER, "buildid", "The build id", true)
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 }

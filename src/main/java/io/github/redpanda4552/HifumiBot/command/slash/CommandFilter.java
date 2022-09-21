@@ -32,6 +32,7 @@ import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.Filter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -206,6 +207,7 @@ public class CommandFilter extends AbstractSlashCommand {
         SubcommandData list = new SubcommandData("list", "List all filters");
         SubcommandData compile = new SubcommandData("compile", "Compile all filters");
         return Commands.slash("filter", "Create and manage chat filters")
-                .addSubcommands(newFilter, add, remove, reply, get, delete, list, compile);
+                .addSubcommands(newFilter, add, remove, reply, get, delete, list, compile)
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
 }

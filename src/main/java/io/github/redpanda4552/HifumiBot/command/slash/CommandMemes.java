@@ -27,6 +27,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -55,7 +56,8 @@ public class CommandMemes extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("memes", "Displays a meme (use /help for a list of options)")
-                .addOption(OptionType.STRING, "name", "Name of the meme command to use", true);
+                .addOption(OptionType.STRING, "name", "Name of the meme command to use", true)
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 
 }

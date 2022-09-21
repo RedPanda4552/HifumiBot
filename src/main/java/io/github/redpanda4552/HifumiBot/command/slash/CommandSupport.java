@@ -28,6 +28,7 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -64,7 +65,8 @@ public class CommandSupport extends AbstractSlashCommand {
     protected CommandData defineSlashCommand() {
         return Commands.slash("support", "Displays a support prompt (use /help for a list of options)")
                 .addOption(OptionType.STRING, "name", "Name of the support prompt command to use", true)
-                .addOption(OptionType.USER, "user", "Specify a user to ping with this command", false);
+                .addOption(OptionType.USER, "user", "Specify a user to ping with this command", false)
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 
 }

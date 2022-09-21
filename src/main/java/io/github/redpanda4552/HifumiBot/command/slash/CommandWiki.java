@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -128,6 +129,7 @@ public class CommandWiki extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("wiki", "Search the PCSX2 wiki for a game")
-                .addOption(OptionType.STRING, "game", "Title of the game to search for", true);
+                .addOption(OptionType.STRING, "game", "Title of the game to search for", true)
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 }

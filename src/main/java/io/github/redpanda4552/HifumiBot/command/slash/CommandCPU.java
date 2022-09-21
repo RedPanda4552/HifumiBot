@@ -34,6 +34,7 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -133,6 +134,7 @@ public class CommandCPU extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("cpu", "Look up the single thread rating of a CPU")
-                .addOption(OptionType.STRING, "name", "Name of the CPU to look up", true);
+                .addOption(OptionType.STRING, "name", "Name of the CPU to look up", true)
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 }

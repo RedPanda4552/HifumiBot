@@ -31,6 +31,7 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -67,6 +68,7 @@ public class CommandGameDB extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("gamedb", "Look up information stored in GameIndex.yaml (otherwise known as 'GameDB')")
-                .addOption(OptionType.STRING, "serial", "Serial number to search for (e.g. 'SLUS-12345')", true);
+                .addOption(OptionType.STRING, "serial", "Serial number to search for (e.g. 'SLUS-12345')", true)
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 }

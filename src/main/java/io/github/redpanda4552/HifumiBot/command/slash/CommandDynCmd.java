@@ -29,6 +29,7 @@ import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.util.Strings;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -156,7 +157,8 @@ public class CommandDynCmd extends AbstractSlashCommand {
         SubcommandData delete = new SubcommandData("delete", "Delete a dynamic command")
                 .addOptions(name.setRequired(true));
         return Commands.slash("dyncmd", "Manage dynamic commands")
-                .addSubcommands(get, newDyncmd, update, delete);
+                .addSubcommands(get, newDyncmd, update, delete)
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
     
     private EmbedBuilder getDynamicCommandEmbedBuilder(DynamicCommand dyncmd) {

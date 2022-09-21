@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -54,7 +55,8 @@ public class CommandPanic extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("panic", "Panic mode to restrict messaging and server joins")
-                .addOption(OptionType.BOOLEAN, "enable", "Enable or disable panic mode", true);
+                .addOption(OptionType.BOOLEAN, "enable", "Enable or disable panic mode", true)
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
 
     private void enable(SlashCommandInteractionEvent event) {

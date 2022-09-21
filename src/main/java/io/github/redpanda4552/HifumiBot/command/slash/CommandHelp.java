@@ -34,6 +34,7 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -126,6 +127,7 @@ public class CommandHelp extends AbstractSlashCommand {
                 .addChoice("memes", "memes")
                 .setRequired(true);
         return Commands.slash("help", "Help prompt for all dynamic commands")
-                .addOptions(categoryOpt);
+                .addOptions(categoryOpt)
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 }

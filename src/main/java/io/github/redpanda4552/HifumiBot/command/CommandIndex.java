@@ -148,7 +148,7 @@ public class CommandIndex {
     private void registerSlashCommand(AbstractSlashCommand slashCommand) {
         String name = slashCommand.defineSlashCommand().getName();
         slashCommands.put(name, slashCommand);
-        commandsToRegister.addCommands(slashCommand.defineSlashCommand().setDefaultPermissions(DefaultMemberPermissions.DISABLED));
+        commandsToRegister.addCommands(slashCommand.defineSlashCommand());
     }
     
     public HashMap<String, AbstractSlashCommand> getSlashCommands() {
