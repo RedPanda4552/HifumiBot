@@ -38,6 +38,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBuildNumber;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGameDB;
@@ -59,7 +60,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 public class CommandIndex {
@@ -106,7 +106,7 @@ public class CommandIndex {
     public void rebuild() {
         rebuildSlash();
         rebuildDynamic();
-        cleanupGuildCommands();
+        //cleanupGuildCommands();
     }
     
     public void rebuildSlash() {
@@ -132,6 +132,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandSpamKick());
         registerSlashCommand(new CommandPanic());
         registerSlashCommand(new CommandGameDB());
+        registerSlashCommand(new CommandEmulog());
         commandsToRegister.queue();
     }
     

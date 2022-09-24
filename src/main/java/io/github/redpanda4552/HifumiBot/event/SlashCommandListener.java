@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
@@ -87,6 +88,7 @@ public class SlashCommandListener extends ListenerAdapter {
         }
         
         CommandHelp commandHelp = (CommandHelp) slashCommands.get("help");
+        CommandEmulog commandEmulog = (CommandEmulog) slashCommands.get("emulog");
         
         switch (button.getCommandName()) {
         case "help_prev":
@@ -96,6 +98,11 @@ public class SlashCommandListener extends ListenerAdapter {
         case "help_next":
             event.deferEdit().queue();
             commandHelp.onButtonEvent(event);
+            break;
+        case "emulog_prev":
+        case "emulog_next":
+            event.deferEdit().queue();
+            commandEmulog.onButtonEvent(event);
             break;
         }
     }

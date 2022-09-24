@@ -34,6 +34,7 @@ import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
+import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
 import io.github.redpanda4552.HifumiBot.config.ServerMetrics;
 import io.github.redpanda4552.HifumiBot.config.WarezTracking;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
@@ -96,6 +97,7 @@ public class HifumiBot {
     private DynCmdConfig dynCmdConfig;
     private BuildCommitMap buildCommitMap;
     private ServerMetrics serverMetrics;
+    private EmulogParserConfig emulogParserConfig;
     private final OkHttpClient http;
     
     private Scheduler scheduler;
@@ -159,6 +161,10 @@ public class HifumiBot {
         ConfigManager.createConfigIfNotExists(ConfigType.SERVER_METRICS);
         serverMetrics = (ServerMetrics) ConfigManager.read(ConfigType.SERVER_METRICS);
         ConfigManager.write(serverMetrics);
+        
+        ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
+        emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
+        ConfigManager.write(emulogParserConfig);
 
         Internet.init();
         scheduler = new Scheduler();
@@ -231,6 +237,10 @@ public class HifumiBot {
     }
 
     public BuildCommitMap getBuildCommitMap() { return buildCommitMap; }
+    
+    public EmulogParserConfig getEmulogParserConfig() {
+        return emulogParserConfig;
+    }
     
     public OkHttpClient getHttpClient() {
         return http;

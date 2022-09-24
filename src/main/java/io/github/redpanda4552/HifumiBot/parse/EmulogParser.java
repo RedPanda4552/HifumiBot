@@ -33,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig.Rule;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
@@ -42,13 +43,8 @@ public class EmulogParser extends AbstractParser {
     private final Message message;
     private Attachment attachment;
 
-    private static Pattern iopUnknownWrite = Pattern.compile(".*IOP Unknown .+ write.*");
-    private static Pattern acPower = Pattern.compile(".*AC: ([0-9]{1,3})% / ([0-9]{1,3})%");
-    private static Pattern widescreenArchive = Pattern.compile(".*Loading patch '.{8,}.pnach' from archive.*");
-    private static Pattern widescreenPatch = Pattern.compile(".*Loaded (\\d+) Widescreen hacks from '.{8,}.pnach' at.*");
-    private static Pattern cheats = Pattern.compile(".*Loaded (\\d+) Cheats from '.{8,}.pnach' at.*");
-
-    private HashMap<EmulogParserError, ArrayList<Integer>> errorMap;
+    private HashMap<Rule, Pattern> patterns;
+    private HashMap<Rule, ArrayList<Integer>> lines;
 
     public EmulogParser(final Message message) {
         this.message = message;
@@ -60,10 +56,12 @@ public class EmulogParser extends AbstractParser {
             }
         }
 
-        this.errorMap = new HashMap<EmulogParserError, ArrayList<Integer>>();
-
-        for (EmulogParserError ppe : EmulogParserError.values()) {
-            this.errorMap.put(ppe, new ArrayList<Integer>());
+        patterns = new HashMap<Rule, Pattern>();
+        lines = new HashMap<Rule, ArrayList<Integer>>();
+        
+        for (Rule rule : HifumiBot.getSelf().getEmulogParserConfig().rules) {
+            patterns.put(rule, Pattern.compile(rule.toMatch.toLowerCase()));
+            lines.put(rule, new ArrayList<Integer>());
         }
     }
 
@@ -89,76 +87,17 @@ public class EmulogParser extends AbstractParser {
             String line;
 
             while ((line = reader.readLine()) != null) {
+                line = line.toLowerCase();
+                
                 lineNumber++;
-                Matcher m = null;
-
-                if (line.contains("TLB Miss")) {
-                    addError(EmulogParserError.TLB_MISS, lineNumber);
-                } else if (line.contains("Trap exception")) {
-                    addError(EmulogParserError.TRAP_EXCEPTION, lineNumber);
-                } else if (line.contains("GS: Memory allocation failure")) {
-                    addError(EmulogParserError.GS_MEM_FAIL, lineNumber);
-                } else if (line.contains("[GameDB] Found patch with CRC")) {
-                    addError(EmulogParserError.GAMEDB_PATCH_LOADED, lineNumber);
-                } else if (line.contains("microVU0 Warning: Branch, Branch, Branch!")) {
-                    addError(EmulogParserError.VU0_TRIPLE_BRANCH, lineNumber);
-                } else if (line.contains("microVU1 Warning: Branch, Branch, Branch!")) {
-                    addError(EmulogParserError.VU1_TRIPLE_BRANCH, lineNumber);
-                } else if ((m = iopUnknownWrite.matcher(line)).matches()) {
-                    addError(EmulogParserError.IOP_UNKNOWN_WRITE, lineNumber);
-                } else if (line.contains("Loading savestate")) {
-                    addError(EmulogParserError.SSTATE_LOAD, lineNumber);
-                } else if (line.contains("Saving savestate")) {
-                    addError(EmulogParserError.SSTATE_SAVE, lineNumber);
-                } else if (line.contains("Savestate is corrupt or incomplete")) {
-                    addError(EmulogParserError.SSTATE_FAIL, lineNumber);
-                } else if (line.contains("Auto-ejecting memcard")) {
-                    addError(EmulogParserError.AUTO_EJECT, lineNumber);
-                } else if (line.contains("Re-inserting auto-ejected memcard")) {
-                    addError(EmulogParserError.AUTO_EJECT_INSERT, lineNumber);
-                } else if (line.contains("isoFile error: Block index is past the end of file!")) {
-                    addError(EmulogParserError.BLOCK_INDEX_EOF, lineNumber);
-                } else if (line.contains("Available VRAM is very low")) {
-                    addError(EmulogParserError.OUT_OF_VRAM, lineNumber);
-                } else if (line.contains("(GameDB) Enabled Gamefix:")) {
-                    addError(EmulogParserError.GAMEDB_GAMEFIX_LOADED, lineNumber);
-                } else if (line.contains("Manual GS hardware renderer fixes are enabled")) {
-                    addError(EmulogParserError.GAMEDB_MANUAL_FIXES, lineNumber);
-                } else if (line.trim().contains("Bios Found:")) {
-                    addError(EmulogParserError.BIOS_FOUND, lineNumber);
-                } else if ((m = acPower.matcher(line)).matches()) {
-                    try {
-                        int first = Integer.parseInt(m.group(1));
-                        int second = Integer.parseInt(m.group(2));
-
-                        if (first != 100 || second != 100) {
-                            addError(EmulogParserError.CPU_AC_POWER, lineNumber);
-                        }
-                    } catch (NumberFormatException e) { }
-                } else if ((m = widescreenArchive.matcher(line)).matches()) {
-                    addError(EmulogParserError.WIDESCREEN_ARCHIVE_LOADED, lineNumber);
-                } else if ((m = widescreenPatch.matcher(line)).matches()) {
-                    try {
-                        int patches = Integer.parseInt(m.group(1));
-
-                        if (patches > 0) {
-                            addError(EmulogParserError.WIDESCREEN_PATCH_LOADED, lineNumber);
-                        } else {
-                            addError(EmulogParserError.WIDESCREEN_PATCH_EMPTY, lineNumber);
-                        }
-                    } catch (NumberFormatException e) { }
-                } else if ((m = cheats.matcher(line)).matches()) {
-                    try {
-                        int patches = Integer.parseInt(m.group(1));
-
-                        if (patches > 0) {
-                            addError(EmulogParserError.CHEAT_LOADED, lineNumber);
-                        } else {
-                            addError(EmulogParserError.CHEAT_EMPTY, lineNumber);
-                        }
-                    } catch (NumberFormatException e) { }
-                } else if (line.contains("(Patch) Error Parsing:")) {
-                    addError(EmulogParserError.PATCH_ERROR, lineNumber);
+                
+                for (Rule rule : patterns.keySet()) {
+                    Pattern p = patterns.get(rule);
+                    Matcher m = p.matcher(line);
+                    
+                    if (m.matches()) {
+                        addError(rule, lineNumber);
+                    }
                 }
             }
 
@@ -171,19 +110,35 @@ public class EmulogParser extends AbstractParser {
             bodyBuilder.append("(*) = Information (!) = Warning (X) = Critical").append("\n\n");
             boolean hasLines = false;
 
-            for (EmulogParserError epe : errorMap.keySet()) {
-                ArrayList<Integer> lines = errorMap.get(epe);
+            for (Rule rule : lines.keySet()) {
+                ArrayList<Integer> arr = lines.get(rule);
 
-                if (lines.size() > 0) {
+                if (arr.size() > 0) {
                     hasLines = true;
                     bodyBuilder
                             .append("--------------------------------------------------------------------------------")
                             .append("\n");
-                    bodyBuilder.append(epe.getDisplayString()).append("\n\n");
+                    
+                    switch (rule.severity) {
+                    case 0:
+                        bodyBuilder.append("(*) ");
+                        break;
+                    case 1:
+                        bodyBuilder.append("(!) ");
+                        break;
+                    case 2:
+                        bodyBuilder.append("(X) ");
+                        break;
+                    default:
+                        bodyBuilder.append("(?) ");
+                        break;
+                    }
+                    
+                    bodyBuilder.append(rule.message).append("\n\n");
                     bodyBuilder.append("Affected Lines:").append("\n");
                     StringBuilder lineBuilder = new StringBuilder();
 
-                    for (Integer i : lines) {
+                    for (Integer i : arr) {
                         if (lineBuilder.length() + String.valueOf(i).length() + String.valueOf(LINE_NUM_SEPARATOR).length() > MAX_LINE_LENGTH) {
                             bodyBuilder.append(lineBuilder.toString()).append("\n");
                             lineBuilder = new StringBuilder();
@@ -220,9 +175,9 @@ public class EmulogParser extends AbstractParser {
         }
     }
 
-    private void addError(EmulogParserError ppe, Integer line) {
-        ArrayList<Integer> lines = errorMap.get(ppe);
-        lines.add(line);
-        errorMap.put(ppe, lines);
+    private void addError(Rule rule, Integer line) {
+        ArrayList<Integer> arr = lines.get(rule);
+        arr.add(line);
+        lines.put(rule, arr);
     }
 }

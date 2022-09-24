@@ -23,28 +23,37 @@
  */
 package io.github.redpanda4552.HifumiBot.config;
 
-public enum ConfigType {
+import java.util.ArrayList;
 
-    CORE("./hifumi-conf.json", Config.class),
-    WAREZ("./warez-tracking.json", WarezTracking.class),
-    DYNCMD("./dyncmd-config.json", DynCmdConfig.class),
-    BUILDMAP("./build-map.json", BuildCommitMap.class),
-    SERVER_METRICS("./server-metrics.json", ServerMetrics.class),
-    EMULOG_PARSER("./emulog-parser.json", EmulogParserConfig.class);
+public class EmulogParserConfig implements IConfig {
+
+    @Override
+    public ConfigType getConfigType() {
+        return ConfigType.EMULOG_PARSER;
+    }
+
+    @Override
+    public boolean usePrettyPrint() {
+        return true;
+    }
+
+    public ArrayList<Rule> rules;
     
-    private String path;
-    private Class<?> clazz;
-    
-    private ConfigType(String path, Class<?> clazz) {
-        this.path = path;
-        this.clazz = clazz;
+    public EmulogParserConfig() {
+        rules = new ArrayList<Rule>();
     }
     
-    public String getPath() {
-        return path;
-    }
-    
-    public Class<?> getConfigClass() {
-        return clazz;
+    public class Rule {
+        public String name;
+        public String toMatch;
+        public String message;
+        public int severity;
+        
+        public Rule() {
+            name = new String("");
+            toMatch = new String("");
+            message = new String("");
+            severity = 0;
+        }
     }
 }
