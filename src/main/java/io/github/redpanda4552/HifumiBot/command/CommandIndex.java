@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.command.context.CommandTranslate;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBuildNumber;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
@@ -68,6 +69,7 @@ public class CommandIndex {
 
     private CommandListUpdateAction commandsToRegister;
     private HashMap<String, AbstractSlashCommand> slashCommands;
+    private HashMap<String, AbstractMessageContextCommand> messageCommands;
     private HashMap<String, DynamicCommand> dynamicCommands;
     private HashMap<String, ArrayList<MessageEmbed>> helpPages;
     private HashMap<String, HashMap<String, Instant>> history;
@@ -78,6 +80,7 @@ public class CommandIndex {
      */
     public CommandIndex() {
         slashCommands = new HashMap<String, AbstractSlashCommand>();
+        messageCommands = new HashMap<String, AbstractMessageContextCommand>();
         dynamicCommands = new HashMap<String, DynamicCommand>();
         history = new HashMap<String, HashMap<String, Instant>>();
         rebuild();
@@ -104,14 +107,16 @@ public class CommandIndex {
      * Rebuild this CommandIndex from the Config object in HifumiBot.
      */
     public void rebuild() {
+        commandsToRegister = HifumiBot.getSelf().getJDA().updateCommands();
         rebuildSlash();
+        rebuildMessage();
         rebuildDynamic();
         //cleanupGuildCommands();
+        commandsToRegister.queue();
     }
     
     public void rebuildSlash() {
         slashCommands.clear();
-        commandsToRegister = HifumiBot.getSelf().getJDA().updateCommands();
         registerSlashCommand(new CommandSay());
         registerSlashCommand(new CommandAbout());
         registerSlashCommand(new CommandWarez());
@@ -133,7 +138,11 @@ public class CommandIndex {
         registerSlashCommand(new CommandPanic());
         registerSlashCommand(new CommandGameDB());
         registerSlashCommand(new CommandEmulog());
-        commandsToRegister.queue();
+    }
+    
+    public void rebuildMessage() {
+        messageCommands.clear();
+        registerMessageCommand(new CommandTranslate());
     }
     
     public void rebuildDynamic() {
@@ -152,8 +161,18 @@ public class CommandIndex {
         commandsToRegister.addCommands(slashCommand.defineSlashCommand());
     }
     
+    private void registerMessageCommand(AbstractMessageContextCommand messageCommand) {
+        String name = messageCommand.defineMessageContextCommand().getName();
+        messageCommands.put(name, messageCommand);
+        commandsToRegister.addCommands(messageCommand.defineMessageContextCommand());
+    }
+    
     public HashMap<String, AbstractSlashCommand> getSlashCommands() {
         return slashCommands;
+    }
+    
+    public HashMap<String, AbstractMessageContextCommand> getMessageCommands() {
+        return messageCommands;
     }
 
     public Set<String> getAll() {
