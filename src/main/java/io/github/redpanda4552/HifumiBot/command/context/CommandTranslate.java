@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CommandTranslate extends AbstractMessageContextCommand {
 
@@ -44,7 +45,7 @@ public class CommandTranslate extends AbstractMessageContextCommand {
         try {
             String encoded = URLEncoder.encode(content, "UTF-8");
             String url = String.format(URL_FORMAT, encoded);
-            event.getHook().sendMessage(url).queue();
+            event.getHook().sendMessage(content).addActionRow(Button.link(url, "Go to Google Translate"), Button.link(event.getTarget().getJumpUrl(), "Jump to Original Message")).queue();
         } catch (UnsupportedEncodingException e) {
             event.getHook().sendMessage("Could not prepare a Google Translate link for this message, perhaps there are some weird characters in it?").queue();
         }
