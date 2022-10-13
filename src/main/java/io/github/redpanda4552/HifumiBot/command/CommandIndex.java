@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.command.context.CommandReverseImage;
 import io.github.redpanda4552.HifumiBot.command.context.CommandTranslate;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBuildNumber;
@@ -143,6 +144,7 @@ public class CommandIndex {
     public void rebuildMessage() {
         messageCommands.clear();
         registerMessageCommand(new CommandTranslate());
+        registerMessageCommand(new CommandReverseImage());
     }
     
     public void rebuildDynamic() {
