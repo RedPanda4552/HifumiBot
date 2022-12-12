@@ -36,7 +36,7 @@ public class DynCmdConfig implements IConfig {
     
     @Override
     public boolean usePrettyPrint() {
-        return false;
+        return true;
     }
     
     public HashMap<String, DynamicCommand> dynamicCommands;
