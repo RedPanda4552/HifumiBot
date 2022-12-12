@@ -77,14 +77,12 @@ public class Config implements IConfig {
     }
 
     public class Channels {
-        public String devBuildOutputChannelId;
         public String systemOutputChannelId;
         public String rulesChannelId;
         public String restrictedCommandChannelId;
         public String pixivChannelId;
 
         public Channels() {
-            devBuildOutputChannelId = new String("");
             systemOutputChannelId = new String("");
             rulesChannelId = new String("");
             restrictedCommandChannelId = new String("");
@@ -101,14 +99,12 @@ public class Config implements IConfig {
     }
     
     public class Dev {
-        public boolean enableBuildMonitor;
         public boolean sendEmbeds;
         public String windows;
         public String ubuntu;
         public String linux;
         
         public Dev() {
-            enableBuildMonitor = false;
             sendEmbeds = false;
             windows = new String("");
             ubuntu = new String("");

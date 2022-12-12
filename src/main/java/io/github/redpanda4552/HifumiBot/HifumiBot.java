@@ -104,7 +104,6 @@ public class HifumiBot {
     private WikiIndex wikiIndex;
     private CpuIndex cpuIndex;
     private GpuIndex gpuIndex;
-    private BuildMonitor buildMonitor;
     private CommandIndex commandIndex;
     private PermissionManager permissionManager;
     private ChatFilter chatFilter;
@@ -171,8 +170,6 @@ public class HifumiBot {
         wikiIndex = new WikiIndex();
         cpuIndex = new CpuIndex();
         gpuIndex = new GpuIndex();
-        buildMonitor = new BuildMonitor(
-                jda.getTextChannelById(HifumiBot.getSelf().getConfig().channels.devBuildOutputChannelId));
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
         chatFilter = new ChatFilter();
@@ -196,12 +193,6 @@ public class HifumiBot {
             HifumiBot.getSelf().getGpuIndex().refresh();
         }, 1000 * 60 * 60 * 24);
 
-        if (getConfig().dev.enableBuildMonitor) {
-            scheduler.scheduleRepeating("dev", () -> {
-                HifumiBot.getSelf().getBuildMonitor().refresh();
-            }, 1000 * 60 * 10);
-        }
-        
         scheduler.scheduleRepeating("ints", () -> {
             HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
         }, 1000 * getConfig().slashCommands.timeoutSeconds);
@@ -260,10 +251,6 @@ public class HifumiBot {
 
     public GpuIndex getGpuIndex() {
         return gpuIndex;
-    }
-
-    public BuildMonitor getBuildMonitor() {
-        return buildMonitor;
     }
 
     public CommandIndex getCommandIndex() {
