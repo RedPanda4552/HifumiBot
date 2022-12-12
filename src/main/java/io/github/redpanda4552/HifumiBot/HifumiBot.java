@@ -294,6 +294,10 @@ public class HifumiBot {
         return slashCommandListener;
     }
     
+    public MessageContextCommandListener getMessageCommandListener() {
+        return messageCommandListener;
+    }
+    
     public KickHandler getKickHandler() {
         return kickHandler;
     }
