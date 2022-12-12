@@ -30,8 +30,10 @@ import java.util.UUID;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -60,6 +62,19 @@ public class SlashCommandListener extends ListenerAdapter {
                 Messaging.logException("SlashCommandListener", "onSlashCommand", e);
                 event.reply("An internal exception occurred and has been reported to admins.").setEphemeral(true).queue();
             }
+        } else if (HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.containsKey(event.getName())) {
+            DynamicCommand command = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.get(event.getName());
+            
+            if (command.getSubcommands().containsKey(event.getSubcommandName())) {
+                DynamicSubcommand subcommand = command.getSubcommand(event.getSubcommandName());
+                
+                if (subcommand.getChoices().containsKey(event.getOption("choice").getAsString())) {
+                    DynamicChoice choice = subcommand.getChoice(event.getOption("choice").getAsString());
+                    choice.execute(event);
+                }
+            }
+        } else {
+            Messaging.logInfo("SlashCommandListener", "onSlashCommandInteraction", "Reveived slash command `" + event.getName() + "`, but we don't have any kind of handler for it!");
         }
     }
     
@@ -87,18 +102,9 @@ public class SlashCommandListener extends ListenerAdapter {
             return;
         }
         
-        CommandHelp commandHelp = (CommandHelp) slashCommands.get("help");
         CommandEmulog commandEmulog = (CommandEmulog) slashCommands.get("emulog");
         
         switch (button.getCommandName()) {
-        case "help_prev":
-            event.deferEdit().queue();
-            commandHelp.onButtonEvent(event);
-            break;
-        case "help_next":
-            event.deferEdit().queue();
-            commandHelp.onButtonEvent(event);
-            break;
         case "emulog_prev":
         case "emulog_next":
             event.deferEdit().queue();

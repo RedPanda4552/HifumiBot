@@ -23,14 +23,11 @@
  */
 package io.github.redpanda4552.HifumiBot.command.slash;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.command.DynamicCommand;
-import io.github.redpanda4552.HifumiBot.util.Strings;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -41,9 +38,13 @@ public class CommandDynCmd extends AbstractSlashCommand {
     
     @Override
     protected void onExecute(SlashCommandInteractionEvent event) {
+        event.reply("Temporarily disabled").setEphemeral(true).queue();
+        return;
+/*
         event.deferReply().setEphemeral(true).queue();
         String name = event.getOption("name").getAsString();
         OptionMapping categoryOpt = event.getOption("category");
+        OptionMapping subCategoryOpt = event.getOption("sub-category");
         OptionMapping helpOpt = event.getOption("help-text");
         OptionMapping titleOpt = event.getOption("title");
         OptionMapping bodyOpt = event.getOption("body");
@@ -62,8 +63,9 @@ public class CommandDynCmd extends AbstractSlashCommand {
             event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
             return;
         case "new":
-            String category = event.getOption("category").getAsString();
-            String helpText = event.getOption("help-text").getAsString();
+            String category = categoryOpt.getAsString();
+            String subCategory = subCategoryOpt.getAsString();
+            String helpText = helpOpt.getAsString();
             
             dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
             
@@ -73,8 +75,9 @@ public class CommandDynCmd extends AbstractSlashCommand {
             }
             
             dyncmd = new DynamicCommand(
+                    category,
+                    subCategory,
                     name, 
-                    category, 
                     helpText, 
                     titleOpt != null ? titleOpt.getAsString() : null, 
                     bodyOpt != null ? Strings.unescapeNewlines(bodyOpt.getAsString()) : null, 
@@ -123,14 +126,16 @@ public class CommandDynCmd extends AbstractSlashCommand {
             event.getHook().sendMessage("Deleted command `" + name + "`").queue();
             return;
         }
+*/
     }
 
     @Override
     protected CommandData defineSlashCommand() {
-        OptionData name = new OptionData(OptionType.STRING, "name", "The name of the command");
         OptionData category = new OptionData(OptionType.STRING, "category", "Category of the command")
                 .addChoice("support", "support")
                 .addChoice("memes", "memes");
+        OptionData subCategory = new OptionData(OptionType.STRING, "sub-category", "Sub-category of the command");
+        OptionData name = new OptionData(OptionType.STRING, "name", "The name of the command");
         OptionData helpText = new OptionData(OptionType.STRING, "help-text", "Help text for the command");
         OptionData title = new OptionData(OptionType.STRING, "title", "Title portion of the command output");
         OptionData body = new OptionData(OptionType.STRING, "body", "Body portion of the command output");
@@ -140,16 +145,18 @@ public class CommandDynCmd extends AbstractSlashCommand {
                 .addOptions(name.setRequired(true));
         SubcommandData newDyncmd = new SubcommandData("new", "Create a new dynamic command")
                 .addOptions(
+                        category.setRequired(true),
+                        subCategory.setRequired(true),
                         name.setRequired(true), 
-                        category.setRequired(true), 
                         helpText.setRequired(true),
                         title, 
                         body, 
                         imageUrl);
         SubcommandData update = new SubcommandData("update", "Update a dynamic command")
                 .addOptions(
-                        name.setRequired(true), 
-                        category.setRequired(false),
+                        category.setRequired(true),
+                        subCategory.setRequired(true),
+                        name.setRequired(true),
                         helpText.setRequired(false),
                         title, 
                         body, 
@@ -161,15 +168,11 @@ public class CommandDynCmd extends AbstractSlashCommand {
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
     
-    private EmbedBuilder getDynamicCommandEmbedBuilder(DynamicCommand dyncmd) {
+    private EmbedBuilder getDynamicCommandEmbedBuilder(DynamicChoice dyncmd) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(dyncmd.getName());
-        eb.setDescription(dyncmd.getHelpText());
+        eb.setDescription(dyncmd.getDescription());
 
-        if (dyncmd.getCategory() != null && !dyncmd.getCategory().isBlank()) {
-            eb.addField("Category", dyncmd.getCategory(), true);
-        }
-        
         if (dyncmd.getTitle() != null && !dyncmd.getTitle().isBlank()) {
             eb.addField("Title", dyncmd.getTitle(), true);
         }

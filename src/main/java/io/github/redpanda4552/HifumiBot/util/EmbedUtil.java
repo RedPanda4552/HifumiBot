@@ -24,7 +24,6 @@
 package io.github.redpanda4552.HifumiBot.util;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.command.CommandMeta;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -41,14 +40,6 @@ public class EmbedUtil {
             return EmbedUtil.newFootedEmbedBuilder(msg.getMember());
         } else {
             return EmbedUtil.newFootedEmbedBuilder(msg.getAuthor());
-        }
-    }
-
-    public static EmbedBuilder newFootedEmbedBuilder(CommandMeta cm) {
-        if (cm.getMember() != null) {
-            return EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else {
-            return EmbedUtil.newFootedEmbedBuilder(cm.getUser());
         }
     }
 

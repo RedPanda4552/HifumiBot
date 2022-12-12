@@ -21,27 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.config;
+package io.github.redpanda4552.HifumiBot.command.dynamic;
 
 import java.util.HashMap;
 
-import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
-
-public class DynCmdConfig implements IConfig {
+public class DynamicCommand {
     
-    @Override
-    public ConfigType getConfigType() {
-        return ConfigType.DYNCMD;
+    private String name;
+    private String description;
+    private HashMap<String, DynamicSubcommand> subcommands;
+    
+    public DynamicCommand(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
     
-    @Override
-    public boolean usePrettyPrint() {
-        return false;
+    public String getName() {
+        return name;
     }
     
-    public HashMap<String, DynamicCommand> dynamicCommands;
-
-    public DynCmdConfig() {
-        dynamicCommands = new HashMap<String, DynamicCommand>();
+    public String getDescription() {
+        return description;
+    }
+    
+    public HashMap<String, DynamicSubcommand> getSubcommands() {
+        return subcommands;
+    }
+    
+    public DynamicSubcommand getSubcommand(String subcommandName) {
+        return subcommands.get(subcommandName);
+    }
+    
+    public void putSubcommand(DynamicSubcommand subcommand) {
+        subcommands.put(subcommand.getName(), subcommand);
+    }
+    
+    public void clearSubcommand(String subcommandName) {
+        subcommands.remove(subcommandName);
     }
 }

@@ -21,33 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.command.dynamic;
 
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
+import java.util.HashMap;
 
-public class CommandMeta {
+public class DynamicSubcommand {
     
-    private MessageChannel channel;
-    private Member member;
-    private User user;
-
-    public CommandMeta(MessageChannel channel, Member member, User user) {
-        this.channel = channel;
-        this.member = member;
-        this.user = user;
+    private String name;
+    private String description;
+    private HashMap<String, DynamicChoice> choices;
+    
+    public DynamicSubcommand(String name, String description) {
+        this.name = name;
+        this.description = description;
+        this.choices = new HashMap<String, DynamicChoice>();
     }
-
-    public MessageChannel getChannel() {
-        return channel;
+    
+    public String getName() {
+        return name;
     }
-
-    public Member getMember() {
-        return member;
+    
+    public String getDescription() {
+        return description;
     }
-
-    public User getUser() {
-        return user;
+    
+    public HashMap<String, DynamicChoice> getChoices() {
+        return choices;
+    }
+    
+    public DynamicChoice getChoice(String choiceName) {
+        return choices.get(choiceName);
+    }
+    
+    public void putChoice(DynamicChoice choice) {
+        choices.put(choice.getName(), choice);
+    }
+    
+    public void clearChoice(String choiceName) {
+        choices.remove(choiceName);
     }
 }

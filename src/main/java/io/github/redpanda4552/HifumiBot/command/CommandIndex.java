@@ -23,19 +23,15 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
-import java.text.Collator;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.context.CommandReverseImage;
 import io.github.redpanda4552.HifumiBot.command.context.CommandTranslate;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBuildNumber;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
@@ -44,8 +40,6 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGameDB;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandHelp;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandMemes;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPanic;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPerms;
@@ -54,25 +48,21 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSpamKick;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandSupport;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
-import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 public class CommandIndex {
 
-    private static final int COMMANDS_PER_PAGE = 10;
-
     private CommandListUpdateAction commandsToRegister;
     private HashMap<String, AbstractSlashCommand> slashCommands;
     private HashMap<String, AbstractMessageContextCommand> messageCommands;
-    private HashMap<String, DynamicCommand> dynamicCommands;
-    private HashMap<String, ArrayList<MessageEmbed>> helpPages;
     private HashMap<String, HashMap<String, Instant>> history;
 
     /**
@@ -82,28 +72,10 @@ public class CommandIndex {
     public CommandIndex() {
         slashCommands = new HashMap<String, AbstractSlashCommand>();
         messageCommands = new HashMap<String, AbstractMessageContextCommand>();
-        dynamicCommands = new HashMap<String, DynamicCommand>();
         history = new HashMap<String, HashMap<String, Instant>>();
         rebuild();
     }
     
-    private void cleanupGuildCommands() {
-        List<Guild> servers = HifumiBot.getSelf().getJDA().getGuilds();
-        
-        for (Guild server : servers) {
-            List<Command> commands = server.retrieveCommands().complete();
-            
-            for (Command command : commands) {
-                String appId = HifumiBot.getSelf().getJDA().retrieveApplicationInfo().complete().getId();
-                String commandAppId = command.getApplicationId();
-                
-                if (appId.equals(commandAppId)) {
-                    command.delete().complete();
-                }
-            }
-        }
-    }
-
     /**
      * Rebuild this CommandIndex from the Config object in HifumiBot.
      */
@@ -112,7 +84,6 @@ public class CommandIndex {
         rebuildSlash();
         rebuildMessage();
         rebuildDynamic();
-        //cleanupGuildCommands();
         commandsToRegister.queue();
     }
     
@@ -131,10 +102,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandCPU());
         registerSlashCommand(new CommandGPU());
         registerSlashCommand(new CommandDynCmd());
-        registerSlashCommand(new CommandHelp());
         registerSlashCommand(new CommandBuildNumber());
-        registerSlashCommand(new CommandMemes());
-        registerSlashCommand(new CommandSupport());
         registerSlashCommand(new CommandSpamKick());
         registerSlashCommand(new CommandPanic());
         registerSlashCommand(new CommandGameDB());
@@ -148,13 +116,35 @@ public class CommandIndex {
     }
     
     public void rebuildDynamic() {
-        dynamicCommands.clear();
-
-        for (DynamicCommand dynamicCommand : HifumiBot.getSelf().getDynCmdConfig().dynamicCommands) {
-            dynamicCommands.put(dynamicCommand.getName(), dynamicCommand);
+        HashMap<String, DynamicCommand> commands = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands;
+        
+        for (String commandName : commands.keySet()) {
+            if (slashCommands.containsKey(commandName)) {
+                Messaging.logInfo("CommandIndex", "rebuildDynamic", "Skipping dynamic command \"" + commandName + "\", found a built-in command with the same name");
+                break;
+            }
+            
+            DynamicCommand command = commands.get(commandName);
+            SlashCommandData commandData = Commands.slash(command.getName(), command.getDescription());
+            HashMap<String, DynamicSubcommand> subcommands = command.getSubcommands();
+            
+            for (String subcommandName : subcommands.keySet()) {
+                DynamicSubcommand subcommand = subcommands.get(subcommandName);
+                SubcommandData subcommandData = new SubcommandData(subcommand.getName(), subcommand.getDescription());
+                OptionData opt = new OptionData(OptionType.STRING, "choice", "Command choice", true);
+                HashMap<String, DynamicChoice> choices = subcommand.getChoices();
+                
+                for (String choiceName : choices.keySet()) {
+                    DynamicChoice choice = choices.get(choiceName);
+                    opt.addChoice(choice.getName(), choice.getName());
+                }
+                
+                subcommandData.addOptions(opt);
+                commandData.addSubcommands(subcommandData);
+            }
+            
+            commandsToRegister.addCommands(commandData);
         }
-
-        rebuildHelpPages();
     }
     
     private void registerSlashCommand(AbstractSlashCommand slashCommand) {
@@ -177,127 +167,6 @@ public class CommandIndex {
         return messageCommands;
     }
 
-    public Set<String> getAll() {
-        return dynamicCommands.keySet();
-    }
-
-    public boolean isDynamicCommand(String name) {
-        return dynamicCommands.get(name) != null;
-    }
-
-    public DynamicCommand getDynamicCommand(String name) {
-        return dynamicCommands.get(name);
-    }
-
-    public void addDynamicCommand(DynamicCommand dyncmd) {
-        // Insert it into the ArrayList in Config, then reload the CommandIndex.
-        ArrayList<DynamicCommand> configDynamicCommands = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands;
-        Iterator<DynamicCommand> iter = configDynamicCommands.iterator();
-        DynamicCommand configDynamicCommand = null;
-        boolean commandExists = false;
-
-        while (iter.hasNext()) {
-            configDynamicCommand = iter.next();
-
-            if (configDynamicCommand.getName().equals(dyncmd.getName())) {
-                configDynamicCommand = dyncmd;
-                commandExists = true;
-            }
-        }
-
-        // If no command exists in the iterator, just add it
-        if (!commandExists) {
-            configDynamicCommands.add(dyncmd);
-        }
-
-        ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
-        HifumiBot.getSelf().getCommandIndex().rebuildDynamic();
-    }
-
-    public void deleteDynamicCommand(String name) {
-        ArrayList<DynamicCommand> dynamicCommands = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands;
-        Iterator<DynamicCommand> iter = dynamicCommands.iterator();
-        DynamicCommand toDelete = null;
-
-        while (iter.hasNext()) {
-            DynamicCommand dyncmd = iter.next();
-
-            if (dyncmd.getName().equals(name)) {
-                toDelete = dyncmd;
-                break;
-            }
-        }
-
-        if (toDelete != null) {
-            dynamicCommands.remove(toDelete);
-            ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
-            HifumiBot.getSelf().getCommandIndex().rebuildDynamic();
-        }
-    }
-
-    /**
-     * Get a HashMap<String, TreeSet<String>> organizing commands by their
-     * categories. Currently only used to simplify help page generation.
-     */
-    public HashMap<String, TreeSet<String>> getCategorizedCommandNames() {
-        Set<String> commandNames = new HashSet<String>();
-        commandNames.addAll(getAll());
-        HashMap<String, TreeSet<String>> ret = new HashMap<String, TreeSet<String>>();
-
-        for (String commandName : commandNames) {
-            DynamicCommand command = dynamicCommands.get(commandName);
-            TreeSet<String> categoryCommands = null;
-
-            if (ret.containsKey(command.getCategory())) {
-                categoryCommands = ret.get(command.getCategory());
-            } else {
-                categoryCommands = new TreeSet<String>(Collator.getInstance());
-            }
-
-            categoryCommands.add(commandName);
-            ret.put(command.getCategory(), categoryCommands);
-        }
-
-        return ret;
-    }
-
-    /**
-     * Fully rebuilds the help page lists.
-     */
-    private void rebuildHelpPages() {
-        helpPages = new HashMap<String, ArrayList<MessageEmbed>>();
-        HashMap<String, TreeSet<String>> commandMap = this.getCategorizedCommandNames();
-
-        for (String category : commandMap.keySet()) {
-            int pageCount = (int) Math.ceil((double) commandMap.get(category).size() / COMMANDS_PER_PAGE);
-            helpPages.put(category, new ArrayList<MessageEmbed>());
-            EmbedBuilder eb = new EmbedBuilder();
-
-            for (String command : commandMap.get(category)) {
-                eb.addField(command, this.getDynamicCommand(command).getHelpText(), false);
-
-                if (eb.getFields().size() >= COMMANDS_PER_PAGE) {
-                    addToPages(category, eb, pageCount);
-                    eb = new EmbedBuilder();
-                }
-            }
-
-            if (eb.getFields().size() > 0)
-                addToPages(category, eb, pageCount);
-        }
-    }
-
-    private void addToPages(String category, EmbedBuilder eb, int pageCount) {
-        eb.setTitle("Help - " + category);
-        eb.setDescription("============================ ============================");
-        eb.setFooter((helpPages.get(category).size() + 1) + " / " + pageCount);
-        helpPages.get(category).add(eb.build());
-    }
-
-    public HashMap<String, ArrayList<MessageEmbed>> getHelpPages() {
-        return helpPages;
-    }
-    
     /**
      * Check if this is a ninja command, update command history if not.
      * @param newHistory

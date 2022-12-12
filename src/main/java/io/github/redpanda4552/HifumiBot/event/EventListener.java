@@ -93,8 +93,6 @@ public class EventListener extends ListenerAdapter {
         }
         
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
-            HifumiBot.getSelf().getCommandInterpreter().execute(event);
-
             if (Messaging.hasEmulog(event.getMessage())) {
                 EmulogParser ep = new EmulogParser(event.getMessage());
                 HifumiBot.getSelf().getScheduler().runOnce(ep);

@@ -28,7 +28,6 @@ import java.time.OffsetDateTime;
 import javax.security.auth.login.LoginException;
 
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
-import io.github.redpanda4552.HifumiBot.command.CommandInterpreter;
 import io.github.redpanda4552.HifumiBot.config.BuildCommitMap;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
@@ -108,7 +107,6 @@ public class HifumiBot {
     private BuildMonitor buildMonitor;
     private CommandIndex commandIndex;
     private PermissionManager permissionManager;
-    private CommandInterpreter commandInterpreter;
     private ChatFilter chatFilter;
     private EventListener eventListener;
     private SlashCommandListener slashCommandListener;
@@ -177,7 +175,6 @@ public class HifumiBot {
                 jda.getTextChannelById(HifumiBot.getSelf().getConfig().channels.devBuildOutputChannelId));
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
-        commandInterpreter = new CommandInterpreter(this);
         chatFilter = new ChatFilter();
         jda.addEventListener(eventListener = new EventListener(this));
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
@@ -224,7 +221,7 @@ public class HifumiBot {
             botDetection.clean();
         }, 1000 * 60 * 15);
 
-        updateStatus("/help");
+        updateStatus("New Game!");
     }
 
     public Config getConfig() {
@@ -283,10 +280,6 @@ public class HifumiBot {
 
     public PermissionManager getPermissionManager() {
         return permissionManager;
-    }
-
-    public CommandInterpreter getCommandInterpreter() {
-        return commandInterpreter;
     }
 
     public ChatFilter getChatFilter() {

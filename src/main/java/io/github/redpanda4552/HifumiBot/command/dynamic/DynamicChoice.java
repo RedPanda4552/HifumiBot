@@ -21,42 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.redpanda4552.HifumiBot.command;
+package io.github.redpanda4552.HifumiBot.command.dynamic;
 
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-public class DynamicCommand {
+public class DynamicChoice {
 
-    protected String name, category, helpText, title, body, imageURL;
+    protected String name, description, title, body, imageURL;
 
-    public DynamicCommand(String name, String category, String helpText, String title, String body, String imageURL) {
+    public DynamicChoice(String name, String description, String title, String body, String imageURL) {
         this.name = name;
-        this.category = category;
-        this.helpText = helpText;
+        this.description = description;
         this.title = title;
         this.body = body;
         this.imageURL = imageURL;
     }
 
-    public void execute(CommandMeta cm) {
-        EmbedBuilder eb;
-
-        if (cm.getMember() != null) {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getMember());
-        } else {
-            eb = EmbedUtil.newFootedEmbedBuilder(cm.getUser());
-        }
-
-        eb.setTitle("Commands have moved");
-        eb.setDescription("All commands are now accessed via Discord's slash commands.\n\nInstead of `>" + name + "`, use `/" + category + " " + name + "`\n\nYou can browse an interactive list of all " + category + " commands with `/help " + category + "`");
-        Messaging.sendMessageEmbed(cm.getChannel(), eb.build());
-    }
-    
     public void execute(SlashCommandInteractionEvent event) {
         execute(event, null);
     }
@@ -76,25 +60,17 @@ public class DynamicCommand {
         mb.setEmbeds(eb.build());
         event.reply(mb.build()).queue();
     }
-    
+
     public String getName() {
         return name;
     }
-
-    public String getCategory() {
-        return category;
-    }
     
-    public void setCategory(String category) {
-        this.category = category;
-    }
-    
-    public String getHelpText() {
-        return helpText;
+    public String getDescription() {
+        return description;
     }
 
-    public void setHelpText(String helpText) {
-        this.helpText = helpText;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTitle() {
