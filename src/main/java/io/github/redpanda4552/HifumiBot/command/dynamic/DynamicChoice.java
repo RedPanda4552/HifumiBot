@@ -2,7 +2,6 @@
 package io.github.redpanda4552.HifumiBot.command.dynamic;
 
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;

@@ -18,6 +18,7 @@
         <gson.version>2.8.9</gson.version>
         <snakeyaml.version>1.30</snakeyaml.version>
         <dnsjava.version>3.4.3</dnsjava.version>
+        <lombok.version>1.18.24</lombok.version>
 
         <!-- Maven Plugin Versions -->
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
@@ -72,6 +73,13 @@
                             <style>GOOGLE</style>
                             <reflowLongStrings>true</reflowLongStrings>
                         </googleJavaFormat>
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
+                        </includes>
+                        <importOrder/>
+                        <removeUnusedImports/>
+                        <formatAnnotations/>
                         <licenseHeader>
                             <content>// SPDX-License-Identifier: MIT</content>
                         </licenseHeader>
@@ -102,6 +110,13 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

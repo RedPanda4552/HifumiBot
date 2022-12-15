@@ -6,7 +6,6 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import lombok.Getter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

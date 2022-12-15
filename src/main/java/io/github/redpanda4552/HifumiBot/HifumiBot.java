@@ -22,7 +22,6 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import java.time.OffsetDateTime;
 import javax.security.auth.login.LoginException;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.dv8tion.jda.api.JDA;

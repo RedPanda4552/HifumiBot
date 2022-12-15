@@ -2,7 +2,6 @@
 package io.github.redpanda4552.HifumiBot.filter;
 
 import java.time.Instant;
-
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Message;
 

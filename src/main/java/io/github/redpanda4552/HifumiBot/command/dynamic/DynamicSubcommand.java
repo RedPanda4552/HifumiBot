@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 package io.github.redpanda4552.HifumiBot.command.dynamic;
 
-import lombok.Getter;
-
 import java.util.HashMap;
+import lombok.Getter;
 
 @Getter
 public class DynamicSubcommand {
