@@ -1,31 +1,5 @@
-/**
- * This file is part of HifumiBot, licensed under the MIT License (MIT)
- * 
- * Copyright (c) 2020 RedPanda4552 (https://github.com/RedPanda4552)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+// SPDX-License-Identifier: MIT
 package io.github.redpanda4552.HifumiBot;
-
-import java.time.OffsetDateTime;
-
-import javax.security.auth.login.LoginException;
 
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.config.BuildCommitMap;
@@ -46,6 +20,8 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
+import java.time.OffsetDateTime;
+import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -56,257 +32,285 @@ import okhttp3.OkHttpClient;
 
 public class HifumiBot {
 
-    private static HifumiBot self;
-    private static String discordBotToken;
-    private static String superuserId;
+  private static HifumiBot self;
+  private static String discordBotToken;
+  private static String superuserId;
 
-    public static void main(String[] args) {
-        // Run via environment variables first, if not, fall-back to args
-        if (System.getenv().containsKey("DISCORD_BOT_TOKEN") && System.getenv().containsKey("SUPERUSER_ID")) {
-            System.out.println("Found environment variables, using those instead of cli-args!");
-            discordBotToken = System.getenv("DISCORD_BOT_TOKEN");
-            superuserId = System.getenv("SUPERUSER_ID");
-        } else if (args.length < 2) {
-            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id>");
-            return;
-        } else {
-            discordBotToken = args[0];
-            superuserId = args[1];
-            System.out.println("Parsed arguments from command line");
-        }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (self != null)
-                self.shutdown(false);
-        }));
-
-        self = new HifumiBot();
+  public static void main(String[] args) {
+    // Run via environment variables first, if not, fall-back to args
+    if (System.getenv().containsKey("DISCORD_BOT_TOKEN")
+        && System.getenv().containsKey("SUPERUSER_ID")) {
+      System.out.println("Found environment variables, using those instead of cli-args!");
+      discordBotToken = System.getenv("DISCORD_BOT_TOKEN");
+      superuserId = System.getenv("SUPERUSER_ID");
+    } else if (args.length < 2) {
+      System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id>");
+      return;
+    } else {
+      discordBotToken = args[0];
+      superuserId = args[1];
+      System.out.println("Parsed arguments from command line");
     }
 
-    public static HifumiBot getSelf() {
-        return self;
-    }
-    
-    public static String getSuperuserId() {
-        return superuserId;
-    }
+    Runtime.getRuntime()
+        .addShutdownHook(
+            new Thread(
+                () -> {
+                  if (self != null) self.shutdown(false);
+                }));
 
-    private JDA jda;
-    private Config config;
-    private WarezTracking warezTracking;
-    private DynCmdConfig dynCmdConfig;
-    private BuildCommitMap buildCommitMap;
-    private ServerMetrics serverMetrics;
-    private EmulogParserConfig emulogParserConfig;
-    private final OkHttpClient http;
-    
-    private Scheduler scheduler;
-    private WikiIndex wikiIndex;
-    private CpuIndex cpuIndex;
-    private GpuIndex gpuIndex;
-    private CommandIndex commandIndex;
-    private PermissionManager permissionManager;
-    private ChatFilter chatFilter;
-    private EventListener eventListener;
-    private SlashCommandListener slashCommandListener;
-    private MessageContextCommandListener messageCommandListener;
-    private KickHandler kickHandler;
-    private GameDB gameDB;
-    private BotDetection botDetection;
+    self = new HifumiBot();
+  }
 
-    public HifumiBot() {
-        self = this;
-        this.http = new OkHttpClient();
+  public static HifumiBot getSelf() {
+    return self;
+  }
 
-        if (discordBotToken == null || discordBotToken.isEmpty()) {
-            System.out.println("Attempted to start with a null or empty Discord bot token!");
-            return;
-        }
+  public static String getSuperuserId() {
+    return superuserId;
+  }
 
-        try {
-            jda = JDABuilder.createDefault(discordBotToken)
-                    .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
-                    .setMemberCachePolicy(MemberCachePolicy.ALL)
-                    .setAutoReconnect(true)
-                    .build().awaitReady();
-        } catch (LoginException | IllegalArgumentException | InterruptedException e) {
-            Messaging.logException("HifumiBot", "(constructor)", e);
-        }
+  private JDA jda;
+  private Config config;
+  private WarezTracking warezTracking;
+  private DynCmdConfig dynCmdConfig;
+  private BuildCommitMap buildCommitMap;
+  private ServerMetrics serverMetrics;
+  private EmulogParserConfig emulogParserConfig;
+  private final OkHttpClient http;
 
-        updateStatus("Starting...");
+  private Scheduler scheduler;
+  private WikiIndex wikiIndex;
+  private CpuIndex cpuIndex;
+  private GpuIndex gpuIndex;
+  private CommandIndex commandIndex;
+  private PermissionManager permissionManager;
+  private ChatFilter chatFilter;
+  private EventListener eventListener;
+  private SlashCommandListener slashCommandListener;
+  private MessageContextCommandListener messageCommandListener;
+  private KickHandler kickHandler;
+  private GameDB gameDB;
+  private BotDetection botDetection;
 
-        ConfigManager.createConfigIfNotExists(ConfigType.CORE);
-        config = (Config) ConfigManager.read(ConfigType.CORE);
-        // Write back the config so that if any new fields were added after an
-        // update, they are written to disk
-        ConfigManager.write(config);
-        // TODO - check vital fields and fail if they aren't set (all the channel and serverIds)
+  public HifumiBot() {
+    self = this;
+    this.http = new OkHttpClient();
 
-        ConfigManager.createConfigIfNotExists(ConfigType.WAREZ);
-        warezTracking = (WarezTracking) ConfigManager.read(ConfigType.WAREZ);
-        ConfigManager.write(warezTracking);
-
-        ConfigManager.createConfigIfNotExists(ConfigType.DYNCMD);
-        dynCmdConfig = (DynCmdConfig) ConfigManager.read(ConfigType.DYNCMD);
-        ConfigManager.write(dynCmdConfig);
-
-        ConfigManager.createConfigIfNotExists(ConfigType.BUILDMAP);
-        buildCommitMap = (BuildCommitMap) ConfigManager.read(ConfigType.BUILDMAP);
-        if (buildCommitMap != null) {
-            buildCommitMap.seedMap();
-        }
-        ConfigManager.write(buildCommitMap);
-        
-        ConfigManager.createConfigIfNotExists(ConfigType.SERVER_METRICS);
-        serverMetrics = (ServerMetrics) ConfigManager.read(ConfigType.SERVER_METRICS);
-        ConfigManager.write(serverMetrics);
-        
-        ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
-        emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
-        ConfigManager.write(emulogParserConfig);
-
-        Internet.init();
-        scheduler = new Scheduler();
-        wikiIndex = new WikiIndex();
-        cpuIndex = new CpuIndex();
-        gpuIndex = new GpuIndex();
-        commandIndex = new CommandIndex();
-        permissionManager = new PermissionManager(superuserId);
-        chatFilter = new ChatFilter();
-        jda.addEventListener(eventListener = new EventListener(this));
-        jda.addEventListener(slashCommandListener = new SlashCommandListener());
-        jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
-        kickHandler = new KickHandler();
-        gameDB = new GameDB();
-        botDetection = new BotDetection();
-
-        // Schedule repeating tasks
-        scheduler.scheduleRepeating("wiki", () -> {
-            HifumiBot.getSelf().getWikiIndex().refresh();
-        }, 1000 * 60 * 60 * 24);
-
-        scheduler.scheduleRepeating("cpu", () -> {
-            HifumiBot.getSelf().getCpuIndex().refresh();
-        }, 1000 * 60 * 60 * 24);
-
-        scheduler.scheduleRepeating("gpu", () -> {
-            HifumiBot.getSelf().getGpuIndex().refresh();
-        }, 1000 * 60 * 60 * 24);
-
-        scheduler.scheduleRepeating("ints", () -> {
-            HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
-        }, 1000 * getConfig().slashCommands.timeoutSeconds);
-        
-        scheduler.scheduleRepeating("fltr", () -> {
-            kickHandler.flush();
-        }, 1000 * 60 * 60);
-        
-        scheduler.scheduleRepeating("pop", () -> {
-            String serverId = HifumiBot.getSelf().getConfig().server.id;
-            Guild server = HifumiBot.getSelf().getJDA().getGuildById(serverId);
-            serverMetrics.populationSnaps.put(OffsetDateTime.now().toString(), server.getMemberCount());
-            ConfigManager.write(serverMetrics);
-        }, 1000 * 60 * 60 * 6);
-        
-        scheduler.scheduleRepeating("bot", () -> {
-            botDetection.clean();
-        }, 1000 * 60 * 15);
-
-        updateStatus("New Game!");
+    if (discordBotToken == null || discordBotToken.isEmpty()) {
+      System.out.println("Attempted to start with a null or empty Discord bot token!");
+      return;
     }
 
-    public Config getConfig() {
-        return config;
+    try {
+      jda =
+          JDABuilder.createDefault(discordBotToken)
+              .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
+              .setMemberCachePolicy(MemberCachePolicy.ALL)
+              .setAutoReconnect(true)
+              .build()
+              .awaitReady();
+    } catch (LoginException | IllegalArgumentException | InterruptedException e) {
+      Messaging.logException("HifumiBot", "(constructor)", e);
     }
 
-    public WarezTracking getWarezTracking() {
-        return warezTracking;
-    }
+    updateStatus("Starting...");
 
-    public DynCmdConfig getDynCmdConfig() {
-        return dynCmdConfig;
-    }
+    ConfigManager.createConfigIfNotExists(ConfigType.CORE);
+    config = (Config) ConfigManager.read(ConfigType.CORE);
+    // Write back the config so that if any new fields were added after an
+    // update, they are written to disk
+    ConfigManager.write(config);
+    // TODO - check vital fields and fail if they aren't set (all the channel and serverIds)
 
-    public BuildCommitMap getBuildCommitMap() { return buildCommitMap; }
-    
-    public EmulogParserConfig getEmulogParserConfig() {
-        return emulogParserConfig;
-    }
-    
-    public OkHttpClient getHttpClient() {
-        return http;
-    }
+    ConfigManager.createConfigIfNotExists(ConfigType.WAREZ);
+    warezTracking = (WarezTracking) ConfigManager.read(ConfigType.WAREZ);
+    ConfigManager.write(warezTracking);
 
-    public Scheduler getScheduler() {
-        return scheduler;
-    }
+    ConfigManager.createConfigIfNotExists(ConfigType.DYNCMD);
+    dynCmdConfig = (DynCmdConfig) ConfigManager.read(ConfigType.DYNCMD);
+    ConfigManager.write(dynCmdConfig);
 
-    public WikiIndex getWikiIndex() {
-        return wikiIndex;
+    ConfigManager.createConfigIfNotExists(ConfigType.BUILDMAP);
+    buildCommitMap = (BuildCommitMap) ConfigManager.read(ConfigType.BUILDMAP);
+    if (buildCommitMap != null) {
+      buildCommitMap.seedMap();
     }
+    ConfigManager.write(buildCommitMap);
 
-    public CpuIndex getCpuIndex() {
-        return cpuIndex;
-    }
+    ConfigManager.createConfigIfNotExists(ConfigType.SERVER_METRICS);
+    serverMetrics = (ServerMetrics) ConfigManager.read(ConfigType.SERVER_METRICS);
+    ConfigManager.write(serverMetrics);
 
-    public GpuIndex getGpuIndex() {
-        return gpuIndex;
-    }
+    ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
+    emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
+    ConfigManager.write(emulogParserConfig);
 
-    public CommandIndex getCommandIndex() {
-        return commandIndex;
-    }
+    Internet.init();
+    scheduler = new Scheduler();
+    wikiIndex = new WikiIndex();
+    cpuIndex = new CpuIndex();
+    gpuIndex = new GpuIndex();
+    commandIndex = new CommandIndex();
+    permissionManager = new PermissionManager(superuserId);
+    chatFilter = new ChatFilter();
+    jda.addEventListener(eventListener = new EventListener(this));
+    jda.addEventListener(slashCommandListener = new SlashCommandListener());
+    jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
+    kickHandler = new KickHandler();
+    gameDB = new GameDB();
+    botDetection = new BotDetection();
 
-    private void updateStatus(String str) {
-        jda.getPresence().setActivity(Activity.watching(str));
-    }
+    // Schedule repeating tasks
+    scheduler.scheduleRepeating(
+        "wiki",
+        () -> {
+          HifumiBot.getSelf().getWikiIndex().refresh();
+        },
+        1000 * 60 * 60 * 24);
 
-    public JDA getJDA() {
-        return jda;
-    }
+    scheduler.scheduleRepeating(
+        "cpu",
+        () -> {
+          HifumiBot.getSelf().getCpuIndex().refresh();
+        },
+        1000 * 60 * 60 * 24);
 
-    public PermissionManager getPermissionManager() {
-        return permissionManager;
-    }
+    scheduler.scheduleRepeating(
+        "gpu",
+        () -> {
+          HifumiBot.getSelf().getGpuIndex().refresh();
+        },
+        1000 * 60 * 60 * 24);
 
-    public ChatFilter getChatFilter() {
-        return chatFilter;
-    }
+    scheduler.scheduleRepeating(
+        "ints",
+        () -> {
+          HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
+        },
+        1000 * getConfig().slashCommands.timeoutSeconds);
 
-    public EventListener getEventListener() {
-        return eventListener;
-    }
-    
-    public SlashCommandListener getSlashCommandListener() {
-        return slashCommandListener;
-    }
-    
-    public MessageContextCommandListener getMessageCommandListener() {
-        return messageCommandListener;
-    }
-    
-    public KickHandler getKickHandler() {
-        return kickHandler;
-    }
-    
-    public GameDB getGameDB() {
-        return gameDB;
-    }
-    
-    public BotDetection getBotDetection() {
-        return botDetection;
-    }
+    scheduler.scheduleRepeating(
+        "fltr",
+        () -> {
+          kickHandler.flush();
+        },
+        1000 * 60 * 60);
 
-    public void shutdown(boolean reload) {
-        this.getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
-        this.getScheduler().shutdown();
-        jda.shutdown();
+    scheduler.scheduleRepeating(
+        "pop",
+        () -> {
+          String serverId = HifumiBot.getSelf().getConfig().server.id;
+          Guild server = HifumiBot.getSelf().getJDA().getGuildById(serverId);
+          serverMetrics.populationSnaps.put(
+              OffsetDateTime.now().toString(), server.getMemberCount());
+          ConfigManager.write(serverMetrics);
+        },
+        1000 * 60 * 60 * 6);
 
-        if (reload)
-            self = new HifumiBot();
-    }
+    scheduler.scheduleRepeating(
+        "bot",
+        () -> {
+          botDetection.clean();
+        },
+        1000 * 60 * 15);
 
-    public String getVersion() {
-        return getClass().getPackage().getImplementationVersion();
-    }
+    updateStatus("New Game!");
+  }
+
+  public Config getConfig() {
+    return config;
+  }
+
+  public WarezTracking getWarezTracking() {
+    return warezTracking;
+  }
+
+  public DynCmdConfig getDynCmdConfig() {
+    return dynCmdConfig;
+  }
+
+  public BuildCommitMap getBuildCommitMap() {
+    return buildCommitMap;
+  }
+
+  public EmulogParserConfig getEmulogParserConfig() {
+    return emulogParserConfig;
+  }
+
+  public OkHttpClient getHttpClient() {
+    return http;
+  }
+
+  public Scheduler getScheduler() {
+    return scheduler;
+  }
+
+  public WikiIndex getWikiIndex() {
+    return wikiIndex;
+  }
+
+  public CpuIndex getCpuIndex() {
+    return cpuIndex;
+  }
+
+  public GpuIndex getGpuIndex() {
+    return gpuIndex;
+  }
+
+  public CommandIndex getCommandIndex() {
+    return commandIndex;
+  }
+
+  private void updateStatus(String str) {
+    jda.getPresence().setActivity(Activity.watching(str));
+  }
+
+  public JDA getJDA() {
+    return jda;
+  }
+
+  public PermissionManager getPermissionManager() {
+    return permissionManager;
+  }
+
+  public ChatFilter getChatFilter() {
+    return chatFilter;
+  }
+
+  public EventListener getEventListener() {
+    return eventListener;
+  }
+
+  public SlashCommandListener getSlashCommandListener() {
+    return slashCommandListener;
+  }
+
+  public MessageContextCommandListener getMessageCommandListener() {
+    return messageCommandListener;
+  }
+
+  public KickHandler getKickHandler() {
+    return kickHandler;
+  }
+
+  public GameDB getGameDB() {
+    return gameDB;
+  }
+
+  public BotDetection getBotDetection() {
+    return botDetection;
+  }
+
+  public void shutdown(boolean reload) {
+    this.getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
+    this.getScheduler().shutdown();
+    jda.shutdown();
+
+    if (reload) self = new HifumiBot();
+  }
+
+  public String getVersion() {
+    return getClass().getPackage().getImplementationVersion();
+  }
 }
