@@ -7,6 +7,8 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import java.util.HashMap;
+
+import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -18,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class CommandGPU extends AbstractSlashCommand {
 
+  @Getter
   private enum GPURating {
     x8NATIVE("8x Native (~5K)", 13030),
     x6NATIVE("6x Native (~4K)", 8660),
@@ -28,36 +31,25 @@ public class CommandGPU extends AbstractSlashCommand {
     NATIVE("Native", 360),
     SLOW("Slow", 0);
 
-    private String displayName;
-    private int minimum;
+    private final String displayName;
+    private final int minimum;
 
-    private GPURating(String displayName, int minimum) {
+    GPURating(String displayName, int minimum) {
       this.displayName = displayName;
       this.minimum = minimum;
-    }
-
-    public String getDisplayName() {
-      return displayName;
-    }
-
-    public int getMinimum() {
-      return minimum;
     }
   }
 
   @Override
   protected void onExecute(SlashCommandInteractionEvent event) {
-    boolean isEphemeral = true;
-
-    if (event
-            .getChannel()
-            .getId()
-            .equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)
-        || HifumiBot.getSelf()
-            .getPermissionManager()
-            .hasPermission(PermissionLevel.MOD, event.getMember())) {
-      isEphemeral = false;
-    }
+    boolean isEphemeral =
+        !event
+                .getChannel()
+                .getId()
+                .equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)
+            && !HifumiBot.getSelf()
+                .getPermissionManager()
+                .hasPermission(PermissionLevel.MOD, event.getMember());
 
     EmbedBuilder eb = new EmbedBuilder();
     OptionMapping opt = event.getOption("name");
@@ -95,7 +87,7 @@ public class CommandGPU extends AbstractSlashCommand {
         try {
           highestScore =
               Integer.parseInt(gpuIndex.getGpuRating(highestName).replaceAll("[,. ]", ""));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
         }
 
         String highestScoreDescription = "";

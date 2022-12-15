@@ -38,7 +38,7 @@ public class CommandPanic extends AbstractSlashCommand {
   }
 
   private void enable(SlashCommandInteractionEvent event) {
-    if (HifumiBot.getSelf().getEventListener().getLockdown()) {
+    if (HifumiBot.getSelf().getEventListener().isLockdown()) {
       event.getHook().editOriginal("Panic mode is already enabled").queue();
       return;
     }

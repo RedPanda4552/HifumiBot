@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 package io.github.redpanda4552.HifumiBot.parse;
 
+import lombok.Getter;
+
+@Getter
 public enum PnachParserError {
   FILE_NAME("(X) File name is not a valid CRC"),
   START_LOWERCASE("(X) Starting keyword is not lower case."),
@@ -31,13 +34,9 @@ public enum PnachParserError {
   FIFTH_SCOPE("(!) Fifth parameter value exceeds scope of fourth parameter data type."),
   FIFTH_VALUE("(X) Fifth parameter is not a valid hexadecimal value.");
 
-  private String displayString;
+  private final String displayString;
 
   private PnachParserError(String displayString) {
     this.displayString = displayString;
-  }
-
-  public String getDisplayString() {
-    return displayString;
   }
 }

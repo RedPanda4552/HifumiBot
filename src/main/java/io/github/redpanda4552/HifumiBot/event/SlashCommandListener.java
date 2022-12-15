@@ -21,12 +21,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class SlashCommandListener extends ListenerAdapter {
 
-  private HashMap<String, AbstractSlashCommand> slashCommands =
+  private final HashMap<String, AbstractSlashCommand> slashCommands =
       HifumiBot.getSelf().getCommandIndex().getSlashCommands();
-  private HashMap<UUID, ButtonInteractionElement> buttonCache =
-      new HashMap<UUID, ButtonInteractionElement>();
-  private HashMap<UUID, SelectionInteractionElement> selectionCache =
-      new HashMap<UUID, SelectionInteractionElement>();
+  private final HashMap<UUID, ButtonInteractionElement> buttonCache = new HashMap<>();
+  private final HashMap<UUID, SelectionInteractionElement> selectionCache = new HashMap<>();
 
   @Override
   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
@@ -104,11 +102,10 @@ public class SlashCommandListener extends ListenerAdapter {
     CommandEmulog commandEmulog = (CommandEmulog) slashCommands.get("emulog");
 
     switch (button.getCommandName()) {
-      case "emulog_prev":
-      case "emulog_next":
+      case "emulog_prev", "emulog_next" -> {
         event.deferEdit().queue();
         commandEmulog.onButtonEvent(event);
-        break;
+      }
     }
   }
 
@@ -149,12 +146,10 @@ public class SlashCommandListener extends ListenerAdapter {
       return;
     }
 
-    switch (selection.getCommandName()) {
-      case "wiki":
-        event.deferEdit().queue();
-        CommandWiki commandWiki = (CommandWiki) slashCommands.get(selection.getCommandName());
-        commandWiki.onSelectionEvent(event);
-        break;
+    if ("wiki".equals(selection.getCommandName())) {
+      event.deferEdit().queue();
+      CommandWiki commandWiki = (CommandWiki) slashCommands.get(selection.getCommandName());
+      commandWiki.onSelectionEvent(event);
     }
   }
 
@@ -162,14 +157,14 @@ public class SlashCommandListener extends ListenerAdapter {
       String userId, String commandName, String label, ButtonType buttonType) {
     ButtonInteractionElement button =
         new ButtonInteractionElement(userId, commandName, label, buttonType);
-    this.buttonCache.put(button.getUUID(), button);
+    this.buttonCache.put(button.getUuid(), button);
     return button;
   }
 
   public synchronized void cleanInteractionElements() {
     for (UUID key : this.buttonCache.keySet()) {
       if (Duration.between(this.buttonCache.get(key).getCreatedInstant(), Instant.now()).toMillis()
-          > HifumiBot.getSelf().getConfig().slashCommands.timeoutSeconds * 1000) {
+          > HifumiBot.getSelf().getConfig().slashCommands.timeoutSeconds * 1000L) {
         this.buttonCache.remove(key);
       }
     }
@@ -177,7 +172,7 @@ public class SlashCommandListener extends ListenerAdapter {
     for (UUID key : this.selectionCache.keySet()) {
       if (Duration.between(this.selectionCache.get(key).getCreatedInstant(), Instant.now())
               .toMillis()
-          > HifumiBot.getSelf().getConfig().slashCommands.timeoutSeconds * 1000) {
+          > HifumiBot.getSelf().getConfig().slashCommands.timeoutSeconds * 1000L) {
         this.selectionCache.remove(key);
       }
     }
@@ -185,7 +180,7 @@ public class SlashCommandListener extends ListenerAdapter {
 
   public synchronized SelectionInteractionElement newSelection(String userId, String commandName) {
     SelectionInteractionElement selection = new SelectionInteractionElement(userId, commandName);
-    this.selectionCache.put(selection.getUUID(), selection);
+    this.selectionCache.put(selection.getUuid(), selection);
     return selection;
   }
 

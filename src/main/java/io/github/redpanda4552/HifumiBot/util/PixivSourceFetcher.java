@@ -57,7 +57,7 @@ public class PixivSourceFetcher {
           imageUrls.add(PIXIV_BASE_URL + m.group(1));
           break;
         }
-      } catch (IOException e) {
+      } catch (IOException ignored) {
       }
     }
 

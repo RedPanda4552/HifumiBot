@@ -12,10 +12,10 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class KickHandler {
 
-  private HashMap<String, Pair<Instant, Integer>> indexes;
+  private final HashMap<String, Pair<Instant, Integer>> indexes;
 
   public KickHandler() {
-    indexes = new HashMap<String, Pair<Instant, Integer>>();
+    indexes = new HashMap<>();
   }
 
   public synchronized void storeIncident(Member member, Instant newInstant) {

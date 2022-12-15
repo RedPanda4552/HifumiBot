@@ -147,7 +147,7 @@ public class Messaging {
 
   public static Message sendMessageEmbed(String channelId, MessageEmbed embed) {
     return Messaging.sendMessageEmbed(
-        HifumiBot.getSelf().getJDA().getTextChannelById(channelId), embed);
+        HifumiBot.getSelf().getJda().getTextChannelById(channelId), embed);
   }
 
   public static Message sendMessageEmbed(MessageChannel channel, MessageEmbed embed) {
@@ -167,7 +167,7 @@ public class Messaging {
   }
 
   public static void logException(String className, String methodName, Exception e) {
-    if (HifumiBot.getSelf().getJDA() == null) {
+    if (HifumiBot.getSelf().getJda() == null) {
       e.printStackTrace();
       return;
     }
@@ -236,7 +236,7 @@ public class Messaging {
     }
 
     for (User usr : msg.getMentions().getUsers()) {
-      if (usr.getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+      if (usr.getId().equals(HifumiBot.getSelf().getJda().getSelfUser().getId())) {
         return true;
       }
     }
@@ -252,7 +252,7 @@ public class Messaging {
     Message ref = msg.getReferencedMessage();
 
     if (ref != null) {
-      if (ref.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+      if (ref.getAuthor().getId().equals(HifumiBot.getSelf().getJda().getSelfUser().getId())) {
         return true;
       }
     }

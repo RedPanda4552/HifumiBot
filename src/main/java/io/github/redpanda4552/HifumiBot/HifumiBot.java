@@ -22,6 +22,9 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import java.time.OffsetDateTime;
 import javax.security.auth.login.LoginException;
+
+import lombok.AccessLevel;
+import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -30,11 +33,14 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import okhttp3.OkHttpClient;
 
+@Getter
 public class HifumiBot {
 
-  private static HifumiBot self;
+  @Getter(AccessLevel.NONE)
   private static String discordBotToken;
-  private static String superuserId;
+
+  @Getter private static HifumiBot self;
+  @Getter private static String superuserId;
 
   public static void main(String[] args) {
     // Run via environment variables first, if not, fall-back to args
@@ -60,14 +66,6 @@ public class HifumiBot {
                 }));
 
     self = new HifumiBot();
-  }
-
-  public static HifumiBot getSelf() {
-    return self;
-  }
-
-  public static String getSuperuserId() {
-    return superuserId;
   }
 
   private JDA jda;
@@ -188,7 +186,7 @@ public class HifumiBot {
         () -> {
           HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
         },
-        1000 * getConfig().slashCommands.timeoutSeconds);
+        1000L * getConfig().slashCommands.timeoutSeconds);
 
     scheduler.scheduleRepeating(
         "fltr",
@@ -201,7 +199,7 @@ public class HifumiBot {
         "pop",
         () -> {
           String serverId = HifumiBot.getSelf().getConfig().server.id;
-          Guild server = HifumiBot.getSelf().getJDA().getGuildById(serverId);
+          Guild server = HifumiBot.getSelf().getJda().getGuildById(serverId);
           serverMetrics.populationSnaps.put(
               OffsetDateTime.now().toString(), server.getMemberCount());
           ConfigManager.write(serverMetrics);
@@ -218,92 +216,12 @@ public class HifumiBot {
     updateStatus("New Game!");
   }
 
-  public Config getConfig() {
-    return config;
-  }
-
-  public WarezTracking getWarezTracking() {
-    return warezTracking;
-  }
-
-  public DynCmdConfig getDynCmdConfig() {
-    return dynCmdConfig;
-  }
-
-  public BuildCommitMap getBuildCommitMap() {
-    return buildCommitMap;
-  }
-
-  public EmulogParserConfig getEmulogParserConfig() {
-    return emulogParserConfig;
-  }
-
-  public OkHttpClient getHttpClient() {
-    return http;
-  }
-
-  public Scheduler getScheduler() {
-    return scheduler;
-  }
-
-  public WikiIndex getWikiIndex() {
-    return wikiIndex;
-  }
-
-  public CpuIndex getCpuIndex() {
-    return cpuIndex;
-  }
-
-  public GpuIndex getGpuIndex() {
-    return gpuIndex;
-  }
-
-  public CommandIndex getCommandIndex() {
-    return commandIndex;
-  }
-
   private void updateStatus(String str) {
     jda.getPresence().setActivity(Activity.watching(str));
   }
 
-  public JDA getJDA() {
-    return jda;
-  }
-
-  public PermissionManager getPermissionManager() {
-    return permissionManager;
-  }
-
-  public ChatFilter getChatFilter() {
-    return chatFilter;
-  }
-
-  public EventListener getEventListener() {
-    return eventListener;
-  }
-
-  public SlashCommandListener getSlashCommandListener() {
-    return slashCommandListener;
-  }
-
-  public MessageContextCommandListener getMessageCommandListener() {
-    return messageCommandListener;
-  }
-
-  public KickHandler getKickHandler() {
-    return kickHandler;
-  }
-
-  public GameDB getGameDB() {
-    return gameDB;
-  }
-
-  public BotDetection getBotDetection() {
-    return botDetection;
-  }
-
   public void shutdown(boolean reload) {
-    this.getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
+    this.getJda().getPresence().setActivity(Activity.watching("Shutting Down..."));
     this.getScheduler().shutdown();
     jda.shutdown();
 

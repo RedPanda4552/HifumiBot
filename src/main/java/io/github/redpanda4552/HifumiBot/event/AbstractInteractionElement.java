@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
 package io.github.redpanda4552.HifumiBot.event;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 public abstract class AbstractInteractionElement {
 
   protected Instant createdInstant;
@@ -16,21 +19,5 @@ public abstract class AbstractInteractionElement {
     this.userId = userId;
     this.commandName = commandName;
     this.uuid = UUID.nameUUIDFromBytes(new String(userId + commandName).getBytes());
-  }
-
-  public Instant getCreatedInstant() {
-    return createdInstant;
-  }
-
-  public UUID getUUID() {
-    return uuid;
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public String getCommandName() {
-    return commandName;
   }
 }

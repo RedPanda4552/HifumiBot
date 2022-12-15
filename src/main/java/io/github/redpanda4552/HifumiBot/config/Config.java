@@ -45,7 +45,7 @@ public class Config implements IConfig {
     enableBotKicker = true;
   }
 
-  public class Server {
+  public static class Server {
     public String id;
 
     public Server() {
@@ -53,7 +53,7 @@ public class Config implements IConfig {
     }
   }
 
-  public class Channels {
+  public static class Channels {
     public String systemOutputChannelId;
     public String rulesChannelId;
     public String restrictedCommandChannelId;
@@ -67,7 +67,7 @@ public class Config implements IConfig {
     }
   }
 
-  public class SlashCommands {
+  public static class SlashCommands {
     public int timeoutSeconds;
 
     public SlashCommands() {
@@ -75,7 +75,7 @@ public class Config implements IConfig {
     }
   }
 
-  public class Dev {
+  public static class Dev {
     public boolean sendEmbeds;
     public String windows;
     public String ubuntu;
@@ -89,7 +89,7 @@ public class Config implements IConfig {
     }
   }
 
-  public class Roles {
+  public static class Roles {
     public String autoAssignMemberRoleId;
     public long autoAssignMemberTimeSeconds;
     public String warezRoleId;
@@ -101,7 +101,7 @@ public class Config implements IConfig {
     }
   }
 
-  public class Integrations {
+  public static class Integrations {
     public String pastebinApiKey;
 
     public Integrations() {
@@ -109,7 +109,7 @@ public class Config implements IConfig {
     }
   }
 
-  public class Permissions {
+  public static class Permissions {
     public ArrayList<String> superAdminRoleIds;
     public ArrayList<String> adminRoleIds;
     public ArrayList<String> modRoleIds;
@@ -123,7 +123,7 @@ public class Config implements IConfig {
     }
   }
 
-  public class FilterOptions {
+  public static class FilterOptions {
     public long incidentCooldownMS;
     public int maxIncidents;
     public boolean enableWarningMessages;

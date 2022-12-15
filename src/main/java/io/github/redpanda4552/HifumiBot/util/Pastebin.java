@@ -23,7 +23,8 @@ public class Pastebin {
             .build();
     Request req =
         new Request.Builder().url("https://pastebin.com/api/api_post.php").post(body).build();
-    Response res = HifumiBot.getSelf().getHttpClient().newCall(req).execute();
-    return res.body().string();
+    try (Response res = HifumiBot.getSelf().getHttp().newCall(req).execute()) {
+      return res.body().string();
+    }
   }
 }

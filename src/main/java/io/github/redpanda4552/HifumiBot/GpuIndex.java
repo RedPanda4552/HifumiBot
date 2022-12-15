@@ -23,7 +23,7 @@ public class GpuIndex implements Refreshable {
   public static final String PASSMARK_LOW_END =
       "https://www.videocardbenchmark.net/low_end_gpus.html";
 
-  private ConcurrentHashMap<String, String> gpuMap = new ConcurrentHashMap<String, String>();
+  private final ConcurrentHashMap<String, String> gpuMap = new ConcurrentHashMap<>();
 
   public GpuIndex() {
     this.refresh();

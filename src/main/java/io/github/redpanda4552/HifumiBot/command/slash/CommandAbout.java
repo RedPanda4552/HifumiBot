@@ -18,7 +18,7 @@ public class CommandAbout extends AbstractSlashCommand {
   @Override
   protected void onExecute(SlashCommandInteractionEvent event) {
     EmbedBuilder eb = new EmbedBuilder();
-    eb.setTitle("About " + HifumiBot.getSelf().getJDA().getSelfUser().getName());
+    eb.setTitle("About " + HifumiBot.getSelf().getJda().getSelfUser().getName());
     eb.setDescription("A helper bot created for the PCSX2 Discord server.");
     eb.addField("Created By", "pandubz", true);
     String version = HifumiBot.getSelf().getVersion();

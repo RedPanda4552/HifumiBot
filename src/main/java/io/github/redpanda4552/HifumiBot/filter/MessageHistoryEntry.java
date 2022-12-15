@@ -2,16 +2,19 @@
 package io.github.redpanda4552.HifumiBot.filter;
 
 import java.time.Instant;
+
+import lombok.Getter;
 import net.dv8tion.jda.api.entities.Message;
 
+@Getter
 public class MessageHistoryEntry {
 
-  private String userId;
-  private String serverId;
-  private String channelId;
-  private String messageId;
-  private String messageContent;
-  private Instant instant;
+  private final String userId;
+  private final String serverId;
+  private final String channelId;
+  private final String messageId;
+  private final String messageContent;
+  private final Instant instant;
 
   public MessageHistoryEntry(Message msg) {
     this.userId = msg.getAuthor().getId();
@@ -20,29 +23,5 @@ public class MessageHistoryEntry {
     this.messageId = msg.getId();
     this.messageContent = msg.getContentRaw();
     this.instant = msg.getTimeCreated().toInstant();
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public String getServerId() {
-    return serverId;
-  }
-
-  public String getChannelId() {
-    return channelId;
-  }
-
-  public String getMessageId() {
-    return messageId;
-  }
-
-  public String getMessageContent() {
-    return messageContent;
-  }
-
-  public Instant getInstant() {
-    return instant;
   }
 }

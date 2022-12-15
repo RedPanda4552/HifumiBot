@@ -41,18 +41,10 @@ public class CommandEmulog extends AbstractSlashCommand {
     }
 
     switch (event.getSubcommandName()) {
-      case "browse":
-        browse(event);
-        break;
-      case "new":
-        newRule(event);
-        break;
-      case "update":
-        update(event);
-        break;
-      case "delete":
-        delete(event);
-        break;
+      case "browse" -> browse(event);
+      case "new" -> newRule(event);
+      case "update" -> update(event);
+      case "delete" -> delete(event);
     }
   }
 
@@ -209,7 +201,7 @@ public class CommandEmulog extends AbstractSlashCommand {
     String message = event.getOption("message").getAsString();
     Integer severity = event.getOption("severity").getAsInt();
 
-    Rule rule = HifumiBot.getSelf().getEmulogParserConfig().new Rule();
+    Rule rule = new Rule();
     rule.name = name;
     rule.toMatch = match;
     rule.message = message;

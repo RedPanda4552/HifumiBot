@@ -30,14 +30,12 @@ public class CommandFilter extends AbstractSlashCommand {
     String regex = null;
 
     switch (event.getSubcommandName()) {
-      case "new":
+      case "new" -> {
         filterName = event.getOption("filter-name").getAsString();
-
         if (HifumiBot.getSelf().getConfig().filters.containsKey(filterName)) {
           event.getHook().sendMessage(":x: A filter already exists with this name.").queue();
           return;
         }
-
         filter = new Filter();
         filter.name = filterName;
         HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
@@ -46,18 +44,16 @@ public class CommandFilter extends AbstractSlashCommand {
             .getHook()
             .sendMessage(":white_check_mark: Created empty filter '" + filter.name + "'.")
             .queue();
-        break;
-      case "add":
+      }
+      case "add" -> {
         filterName = event.getOption("filter-name").getAsString();
         regexName = event.getOption("regex-name").getAsString();
         regex = event.getOption("regex").getAsString();
         filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
-
         if (filter == null) {
           event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
           return;
         }
-
         try {
           Pattern.compile(regex);
         } catch (PatternSyntaxException e) {
@@ -69,7 +65,6 @@ public class CommandFilter extends AbstractSlashCommand {
               .queue();
           return;
         }
-
         filter.regexes.put(regexName, regex);
         HifumiBot.getSelf().getConfig().filters.put(filterName, filter);
         ConfigManager.write(HifumiBot.getSelf().getConfig());
@@ -83,17 +78,15 @@ public class CommandFilter extends AbstractSlashCommand {
                     + filter.name
                     + "'.")
             .queue();
-        return;
-      case "remove":
+      }
+      case "remove" -> {
         filterName = event.getOption("filter-name").getAsString();
         regexName = event.getOption("regex-name").getAsString();
         filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
-
         if (filter == null) {
           event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
           return;
         }
-
         if (filter.regexes.containsKey(regexName)) {
           filter.regexes.remove(regexName);
         } else {
@@ -108,7 +101,6 @@ public class CommandFilter extends AbstractSlashCommand {
               .queue();
           break;
         }
-
         HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
         ConfigManager.write(HifumiBot.getSelf().getConfig());
         HifumiBot.getSelf().getChatFilter().compile();
@@ -121,23 +113,19 @@ public class CommandFilter extends AbstractSlashCommand {
                     + filter.name
                     + "'.")
             .queue();
-        return;
-      case "reply":
+      }
+      case "reply" -> {
         filterName = event.getOption("filter-name").getAsString();
         OptionMapping opt = event.getOption("reply");
         String reply = "";
-
         if (opt != null) {
           reply = opt.getAsString();
         }
-
         filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
-
         if (filter == null) {
           event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
           return;
         }
-
         filter.replyMessage = reply;
         HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
         ConfigManager.write(HifumiBot.getSelf().getConfig());
@@ -145,37 +133,31 @@ public class CommandFilter extends AbstractSlashCommand {
             .getHook()
             .sendMessage(":white_check_mark: Set reply message on filter '" + filter.name + "'.")
             .queue();
-        return;
-      case "get":
+      }
+      case "get" -> {
         filterName = event.getOption("filter-name").getAsString();
         filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
-
         if (filter == null) {
           event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
           return;
         }
-
         eb.setTitle(filter.name);
         eb.setDescription(
             filter.replyMessage.isBlank()
                 ? "This filter has no reply message."
                 : "Replies with:\n```\n" + filter.replyMessage + "\n```");
-
         for (String str : filter.regexes.keySet()) {
           eb.addField(str, "`" + filter.regexes.get(str) + "`", false);
         }
-
         event.getHook().sendMessageEmbeds(eb.build()).queue();
-        return;
-      case "delete":
+      }
+      case "delete" -> {
         filterName = event.getOption("filter-name").getAsString();
         filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
-
         if (filter == null) {
           event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
           return;
         }
-
         HifumiBot.getSelf().getConfig().filters.remove(filter.name);
         ConfigManager.write(HifumiBot.getSelf().getConfig());
         HifumiBot.getSelf().getChatFilter().compile();
@@ -183,10 +165,9 @@ public class CommandFilter extends AbstractSlashCommand {
             .getHook()
             .sendMessage(":white_check_mark: Deleted filter '" + filter.name + "'.")
             .queue();
-        return;
-      case "list":
+      }
+      case "list" -> {
         eb.setTitle("Filter List");
-
         for (Filter f : HifumiBot.getSelf().getConfig().filters.values()) {
           eb.addField(
               f.name,
@@ -195,20 +176,18 @@ public class CommandFilter extends AbstractSlashCommand {
                   + !f.replyMessage.isBlank(),
               false);
         }
-
         if (eb.getFields().size() == 0) {
           eb.setDescription("oh yeah... THERE IS NONE.");
         }
-
         event.getHook().sendMessageEmbeds(eb.build()).queue();
-        return;
-      case "compile":
+      }
+      case "compile" -> {
         HifumiBot.getSelf().getChatFilter().compile();
         event
             .getHook()
             .sendMessage(":white_check_mark: Compiled all filter regular expressions.")
             .queue();
-        return;
+      }
     }
   }
 

@@ -18,6 +18,9 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
@@ -33,11 +36,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class EventListener extends ListenerAdapter {
 
-  private HifumiBot hifumiBot;
-  private HashMap<String, Message> messages = new HashMap<String, Message>();
-  private ConcurrentHashMap<String, OffsetDateTime> joinEvents =
+  private final HifumiBot hifumiBot;
+  private final HashMap<String, Message> messages = new HashMap<>();
+  private final ConcurrentHashMap<String, OffsetDateTime> joinEvents =
       new ConcurrentHashMap<String, OffsetDateTime>();
-  private boolean lockdown = false;
+  @Getter @Setter private boolean lockdown = false;
 
   public EventListener(HifumiBot hifumiBot) {
     this.hifumiBot = hifumiBot;
@@ -55,7 +58,7 @@ public class EventListener extends ListenerAdapter {
     }
 
     if (event.getChannelType() == ChannelType.PRIVATE) {
-      if (!event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+      if (!event.getAuthor().getId().equals(HifumiBot.getSelf().getJda().getSelfUser().getId())) {
         Messaging.logInfo(
             "EventListener",
             "onMessageReceived",
@@ -224,7 +227,7 @@ public class EventListener extends ListenerAdapter {
           kickNewUsers = true;
           Messaging.sendMessage(
               HifumiBot.getSelf()
-                  .getJDA()
+                  .getJda()
                   .getTextChannelById(
                       HifumiBot.getSelf().getConfig().channels.systemOutputChannelId),
               "@here");
@@ -248,7 +251,7 @@ public class EventListener extends ListenerAdapter {
       event.getGuild().addRoleToMember(event.getMember(), role).complete();
 
       // Then send a notification
-      EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(HifumiBot.getSelf().getJDA().getSelfUser());
+      EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(HifumiBot.getSelf().getJda().getSelfUser());
       eb.setTitle("Warez Member Rejoined");
       eb.setDescription("A user who was previously warez'd has rejoined the server.");
       eb.addField("User Name", event.getUser().getName(), true);
@@ -289,8 +292,8 @@ public class EventListener extends ListenerAdapter {
     for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
       StringBuilder regionBuilder = new StringBuilder();
 
-      if (!regionSet.getCRC().isEmpty()) {
-        regionBuilder.append("\n**CRC:\n**").append(regionSet.getCRC().replace(" ", "\n"));
+      if (!regionSet.getCrc().isEmpty()) {
+        regionBuilder.append("\n**CRC:\n**").append(regionSet.getCrc().replace(" ", "\n"));
       }
 
       if (!regionSet.getWindowsStatus().isEmpty()) {
@@ -323,13 +326,5 @@ public class EventListener extends ListenerAdapter {
 
     Messaging.editMessageEmbed(msg, eb.build());
     messages.remove(userId);
-  }
-
-  public void setLockdown(boolean lockdown) {
-    this.lockdown = lockdown;
-  }
-
-  public boolean getLockdown() {
-    return lockdown;
   }
 }

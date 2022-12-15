@@ -33,10 +33,9 @@ public class CommandWarez extends AbstractSlashCommand {
         Member member = event.getOption("user").getAsMember();
         mb.setContent(member.getAsMention());
 
-        if (member != null
-            && !HifumiBot.getSelf()
-                .getPermissionManager()
-                .hasPermission(PermissionLevel.MOD, member)) {
+        if (!HifumiBot.getSelf()
+            .getPermissionManager()
+            .hasPermission(PermissionLevel.MOD, member)) {
           try {
             Role warezRole =
                 event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);

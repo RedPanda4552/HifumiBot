@@ -18,6 +18,6 @@ public class ServerMetrics implements IConfig {
   public HashMap<String, Integer> populationSnaps;
 
   public ServerMetrics() {
-    populationSnaps = new HashMap<String, Integer>();
+    populationSnaps = new HashMap<>();
   }
 }

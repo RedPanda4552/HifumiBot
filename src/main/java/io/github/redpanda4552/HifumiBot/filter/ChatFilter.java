@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ChatFilter {
-  HashMap<String, ArrayList<Pattern>> patternMap = new HashMap<String, ArrayList<Pattern>>();
+  HashMap<String, ArrayList<Pattern>> patternMap = new HashMap<>();
 
   public ChatFilter() {
     this.compile();
@@ -41,7 +41,7 @@ public class ChatFilter {
    * @return True if a regular expression matched and the message was filtered out, false otherwise.
    */
   public synchronized boolean applyFilters(MessageReceivedEvent event) {
-    if (event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+    if (event.getAuthor().getId().equals(HifumiBot.getSelf().getJda().getSelfUser().getId())) {
       return false;
     }
 

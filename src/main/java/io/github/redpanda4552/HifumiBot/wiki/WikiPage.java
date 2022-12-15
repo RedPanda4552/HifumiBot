@@ -6,21 +6,26 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import lombok.Getter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+@Getter
 public class WikiPage {
 
   public static final String BASE_URL = "https://wiki.pcsx2.net";
 
   private Document page;
 
-  private String title, wikiPageUrl, coverArtUrl;
-  private HashMap<String, RegionSet> regionSets = new HashMap<String, RegionSet>();
-  private ArrayList<String> knownIssues = new ArrayList<String>();
-  private ArrayList<String> fixedIssues = new ArrayList<String>();
+  private String title;
+  private String wikiPageUrl;
+  private String coverArtUrl;
+  private final HashMap<String, RegionSet> regionSets = new HashMap<>();
+  private final ArrayList<String> knownIssues = new ArrayList<>();
+  private final ArrayList<String> fixedIssues = new ArrayList<>();
 
   public WikiPage(String url) {
     try {
@@ -62,7 +67,7 @@ public class WikiPage {
               } else if (left.text().contains("Release")) {
                 regionSet.setRelease(right.text());
               } else if (left.text().contains("CRC")) {
-                regionSet.setCRC(right.text().replace("?", "").trim());
+                regionSet.setCrc(right.text().replace("?", "").trim());
               } else if (left.text().contains("Windows")) {
                 regionSet.setWindowsStatus(right.text().replace("?", "").trim());
                 // regionSet.setWindowsStatusColor(Integer.parseInt(tableRow.attr("bgcolor").replace("#",
@@ -101,29 +106,5 @@ public class WikiPage {
         destination.add(currentElement.text());
       }
     }
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public String getWikiPageUrl() {
-    return wikiPageUrl;
-  }
-
-  public String getCoverArtUrl() {
-    return coverArtUrl;
-  }
-
-  public HashMap<String, RegionSet> getRegionSets() {
-    return regionSets;
-  }
-
-  public ArrayList<String> getKnownIssues() {
-    return knownIssues;
-  }
-
-  public ArrayList<String> getFixedIssues() {
-    return fixedIssues;
   }
 }

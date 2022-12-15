@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 package io.github.redpanda4552.HifumiBot.config;
 
+import lombok.Getter;
+
+@Getter
 public enum ConfigType {
   CORE("./hifumi-conf.json", Config.class),
   WAREZ("./warez-tracking.json", WarezTracking.class),
@@ -9,19 +12,11 @@ public enum ConfigType {
   SERVER_METRICS("./server-metrics.json", ServerMetrics.class),
   EMULOG_PARSER("./emulog-parser.json", EmulogParserConfig.class);
 
-  private String path;
-  private Class<?> clazz;
+  private final String path;
+  private final Class<?> clazz;
 
   private ConfigType(String path, Class<?> clazz) {
     this.path = path;
     this.clazz = clazz;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public Class<?> getConfigClass() {
-    return clazz;
   }
 }

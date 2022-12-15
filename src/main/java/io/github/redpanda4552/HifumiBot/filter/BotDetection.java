@@ -16,10 +16,10 @@ import net.dv8tion.jda.api.entities.User;
 
 public class BotDetection {
 
-  private ConcurrentHashMap<String, ArrayList<MessageHistoryEntry>> messageHistory;
+  private final ConcurrentHashMap<String, ArrayList<MessageHistoryEntry>> messageHistory;
 
   public BotDetection() {
-    this.messageHistory = new ConcurrentHashMap<String, ArrayList<MessageHistoryEntry>>();
+    this.messageHistory = new ConcurrentHashMap<>();
   }
 
   public void addMessageHistoryEntry(Message msg) {
@@ -87,9 +87,9 @@ public class BotDetection {
   }
 
   private void removeBot(String userId) {
-    User user = HifumiBot.getSelf().getJDA().getUserById(userId);
+    User user = HifumiBot.getSelf().getJda().getUserById(userId);
     String serverId = messageHistory.get(userId).get(0).getServerId();
-    Guild server = HifumiBot.getSelf().getJDA().getGuildById(serverId);
+    Guild server = HifumiBot.getSelf().getJda().getGuildById(serverId);
 
     if (user != null) {
       Member member = server.retrieveMemberById(userId).complete();
@@ -107,7 +107,7 @@ public class BotDetection {
               + ") for setting off bot detection.");
 
       for (MessageHistoryEntry entry : messageHistory.get(userId)) {
-        TextChannel channel = HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId());
+        TextChannel channel = HifumiBot.getSelf().getJda().getTextChannelById(entry.getChannelId());
         channel.deleteMessageById(entry.getMessageId()).complete();
       }
 

@@ -36,7 +36,7 @@ public class ConfigManager {
       String json = new String(iStream.readAllBytes());
       iStream.close();
       Gson gson = new Gson();
-      return gson.fromJson(json, TypeToken.get(configType.getConfigClass()).getType());
+      return gson.fromJson(json, TypeToken.get(configType.getClazz()).getType());
     } catch (IOException e) {
       Messaging.logException("ConfigManager", "read", e);
     }
@@ -54,8 +54,7 @@ public class ConfigManager {
       OutputStream oStream = Files.newOutputStream(file.toPath());
       GsonBuilder builder = new GsonBuilder();
       Gson gson = config.usePrettyPrint() ? builder.setPrettyPrinting().create() : builder.create();
-      String json =
-          gson.toJson(config, TypeToken.get(config.getConfigType().getConfigClass()).getType());
+      String json = gson.toJson(config, TypeToken.get(config.getConfigType().getClazz()).getType());
       oStream.write(json.getBytes());
       oStream.flush();
       oStream.close();

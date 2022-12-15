@@ -7,6 +7,8 @@ import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import java.util.HashMap;
+
+import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -20,6 +22,7 @@ public class CommandCPU extends AbstractSlashCommand {
 
   private static final int MAX_RESULTS = 5;
 
+  @Getter
   private enum CPURating {
     OVER_9000("IT'S OVER 9000", 9000),
     WTF("What the fuck, why?", 4000),
@@ -31,36 +34,25 @@ public class CommandCPU extends AbstractSlashCommand {
     VERY_SLOW("Very Slow", 800),
     AWFUL("Awful", 0);
 
-    private String displayName;
-    private int minimum;
+    private final String displayName;
+    private final int minimum;
 
     private CPURating(String displayName, int minimum) {
       this.displayName = displayName;
       this.minimum = minimum;
     }
-
-    public String getDisplayName() {
-      return displayName;
-    }
-
-    public int getMinimum() {
-      return minimum;
-    }
   }
 
   @Override
   protected void onExecute(SlashCommandInteractionEvent event) {
-    boolean isEphemeral = true;
-
-    if (event
-            .getChannel()
-            .getId()
-            .equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)
-        || HifumiBot.getSelf()
-            .getPermissionManager()
-            .hasPermission(PermissionLevel.MOD, event.getMember())) {
-      isEphemeral = false;
-    }
+    boolean isEphemeral =
+        !event
+                .getChannel()
+                .getId()
+                .equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)
+            && !HifumiBot.getSelf()
+                .getPermissionManager()
+                .hasPermission(PermissionLevel.MOD, event.getMember());
 
     EmbedBuilder eb = new EmbedBuilder();
     OptionMapping opt = event.getOption("name");

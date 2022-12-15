@@ -30,21 +30,14 @@ public class CommandPerms extends AbstractSlashCommand {
       permissionLevel = PermissionLevel.valueOf(optPermissionLevel.getAsString());
 
       switch (permissionLevel) {
-        case BLOCKED:
-          roleIds = HifumiBot.getSelf().getConfig().permissions.blockedRoleIds;
-          break;
-        case MOD:
-          roleIds = HifumiBot.getSelf().getConfig().permissions.modRoleIds;
-          break;
-        case ADMIN:
-          roleIds = HifumiBot.getSelf().getConfig().permissions.adminRoleIds;
-          break;
-        case SUPER_ADMIN:
-          roleIds = HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds;
-          break;
-        default:
+        case BLOCKED -> roleIds = HifumiBot.getSelf().getConfig().permissions.blockedRoleIds;
+        case MOD -> roleIds = HifumiBot.getSelf().getConfig().permissions.modRoleIds;
+        case ADMIN -> roleIds = HifumiBot.getSelf().getConfig().permissions.adminRoleIds;
+        case SUPER_ADMIN -> roleIds = HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds;
+        default -> {
           event.getHook().sendMessage("Sanity check.").queue();
           return;
+        }
       }
 
       if (roleIds == null) {
@@ -113,7 +106,7 @@ public class CommandPerms extends AbstractSlashCommand {
       case "list":
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(
-            HifumiBot.getSelf().getJDA().getSelfUser().getName()
+            HifumiBot.getSelf().getJda().getSelfUser().getName()
                 + " - Roles Assigned to Permission Levels");
         StringBuilder sb = new StringBuilder();
 

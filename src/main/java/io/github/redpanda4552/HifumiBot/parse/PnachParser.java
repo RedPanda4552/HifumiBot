@@ -21,7 +21,7 @@ public class PnachParser extends AbstractParser {
   private final Message message;
   private Attachment attachment;
 
-  private HashMap<PnachParserError, ArrayList<Integer>> errorMap;
+  private final HashMap<PnachParserError, ArrayList<Integer>> errorMap;
 
   public PnachParser(final Message message) {
     this.message = message;
@@ -33,16 +33,16 @@ public class PnachParser extends AbstractParser {
       }
     }
 
-    this.errorMap = new HashMap<PnachParserError, ArrayList<Integer>>();
+    this.errorMap = new HashMap<>();
 
     for (PnachParserError ppe : PnachParserError.values()) {
-      this.errorMap.put(ppe, new ArrayList<Integer>());
+      this.errorMap.put(ppe, new ArrayList<>());
     }
   }
 
   @Override
   public void run() {
-    URL url = null;
+    URL url;
 
     try {
       url = new URL(attachment.getUrl());
@@ -252,7 +252,7 @@ public class PnachParser extends AbstractParser {
             .append("\n");
 
         if (bodyBuilder.toString().getBytes().length
-            <= HifumiBot.getSelf().getJDA().getSelfUser().getAllowedFileSize()) {
+            <= HifumiBot.getSelf().getJda().getSelfUser().getAllowedFileSize()) {
           Messaging.sendMessage(
               message.getChannel(),
               ":information_source: Found something! Results are in this text file!",

@@ -20,8 +20,8 @@ public class EmulogParser extends AbstractParser {
   private final Message message;
   private Attachment attachment;
 
-  private HashMap<Rule, Pattern> patterns;
-  private HashMap<Rule, ArrayList<Integer>> lines;
+  private final HashMap<Rule, Pattern> patterns;
+  private final HashMap<Rule, ArrayList<Integer>> lines;
 
   public EmulogParser(final Message message) {
     this.message = message;
@@ -33,12 +33,12 @@ public class EmulogParser extends AbstractParser {
       }
     }
 
-    patterns = new HashMap<Rule, Pattern>();
-    lines = new HashMap<Rule, ArrayList<Integer>>();
+    patterns = new HashMap<>();
+    lines = new HashMap<>();
 
     for (Rule rule : HifumiBot.getSelf().getEmulogParserConfig().rules) {
       patterns.put(rule, Pattern.compile(rule.toMatch.toLowerCase()));
-      lines.put(rule, new ArrayList<Integer>());
+      lines.put(rule, new ArrayList<>());
     }
   }
 
@@ -153,7 +153,7 @@ public class EmulogParser extends AbstractParser {
             .append("\n");
 
         if (bodyBuilder.toString().getBytes().length
-            <= HifumiBot.getSelf().getJDA().getSelfUser().getAllowedFileSize()) {
+            <= HifumiBot.getSelf().getJda().getSelfUser().getAllowedFileSize()) {
           Messaging.sendMessage(
               message.getChannel(),
               ":information_source: Found something! Results are in this text file!",

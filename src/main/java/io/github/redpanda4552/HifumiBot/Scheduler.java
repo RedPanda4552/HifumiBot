@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 package io.github.redpanda4552.HifumiBot;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -10,9 +11,9 @@ import java.util.concurrent.TimeUnit;
 
 public class Scheduler {
 
-  private ScheduledExecutorService threadPool;
-  private HashMap<String, Runnable> runnables = new HashMap<String, Runnable>();
-  private HashMap<String, ScheduledFuture<?>> statuses = new HashMap<String, ScheduledFuture<?>>();
+  private final ScheduledExecutorService threadPool;
+  private final HashMap<String, Runnable> runnables = new HashMap<>();
+  private final HashMap<String, ScheduledFuture<?>> statuses = new HashMap<>();
 
   public Scheduler() {
     this.threadPool = Executors.newScheduledThreadPool(4);
@@ -51,7 +52,7 @@ public class Scheduler {
 
     try {
       threadPool.awaitTermination(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
+    } catch (InterruptedException ignored) {
     }
   }
 
@@ -69,8 +70,8 @@ public class Scheduler {
     return !statuses.get(name).isDone();
   }
 
-  public class NoSuchRunnableException extends Exception {
-    private static final long serialVersionUID = -6509265497680687398L;
+  public static class NoSuchRunnableException extends Exception {
+    @Serial private static final long serialVersionUID = -6509265497680687398L;
 
     public NoSuchRunnableException(String message) {
       super(message);

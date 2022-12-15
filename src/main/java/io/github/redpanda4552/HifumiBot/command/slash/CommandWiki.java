@@ -89,8 +89,8 @@ public class CommandWiki extends AbstractSlashCommand {
       for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
         StringBuilder regionBuilder = new StringBuilder();
 
-        if (!regionSet.getCRC().isEmpty()) {
-          regionBuilder.append("\n**CRC:\n**").append(regionSet.getCRC().replace(" ", "\n"));
+        if (!regionSet.getCrc().isEmpty()) {
+          regionBuilder.append("\n**CRC:\n**").append(regionSet.getCrc().replace(" ", "\n"));
         }
 
         if (!regionSet.getWindowsStatus().isEmpty()) {

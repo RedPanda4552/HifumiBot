@@ -19,6 +19,6 @@ public class WarezTracking implements IConfig {
   public HashMap<String, OffsetDateTime> warezUsers;
 
   public WarezTracking() {
-    warezUsers = new HashMap<String, OffsetDateTime>();
+    warezUsers = new HashMap<>();
   }
 }

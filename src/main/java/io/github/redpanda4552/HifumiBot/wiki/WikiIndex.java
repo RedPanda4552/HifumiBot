@@ -16,7 +16,7 @@ public class WikiIndex implements Refreshable {
 
   private static final String FULL_GAMES_URL = "https://wiki.pcsx2.net/Complete_List_of_Games";
 
-  private ConcurrentHashMap<String, String> fullGamesMap = new ConcurrentHashMap<String, String>();
+  private final ConcurrentHashMap<String, String> fullGamesMap = new ConcurrentHashMap<>();
 
   public WikiIndex() {
     this.refresh();

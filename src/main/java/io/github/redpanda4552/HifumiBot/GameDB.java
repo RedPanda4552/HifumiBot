@@ -147,9 +147,7 @@ public class GameDB implements Refreshable {
   public void refresh() {
     Request req = new Request.Builder().url(GAMEDB_LOCATION).get().build();
 
-    try {
-      Response res = HifumiBot.getSelf().getHttpClient().newCall(req).execute();
-
+    try (Response res = HifumiBot.getSelf().getHttp().newCall(req).execute()) {
       if (res.isSuccessful()) {
         Yaml yaml = new Yaml();
         map = yaml.load(res.body().charStream());

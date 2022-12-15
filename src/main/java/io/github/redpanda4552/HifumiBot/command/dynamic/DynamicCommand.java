@@ -1,29 +1,20 @@
 // SPDX-License-Identifier: MIT
 package io.github.redpanda4552.HifumiBot.command.dynamic;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 
+@Getter
 public class DynamicCommand {
 
-  private String name;
-  private String description;
+  private final String name;
+  private final String description;
   private HashMap<String, DynamicSubcommand> subcommands;
 
   public DynamicCommand(String name, String description) {
     this.name = name;
     this.description = description;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public HashMap<String, DynamicSubcommand> getSubcommands() {
-    return subcommands;
   }
 
   public DynamicSubcommand getSubcommand(String subcommandName) {

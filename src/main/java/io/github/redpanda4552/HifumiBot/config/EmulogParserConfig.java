@@ -18,10 +18,10 @@ public class EmulogParserConfig implements IConfig {
   public ArrayList<Rule> rules;
 
   public EmulogParserConfig() {
-    rules = new ArrayList<Rule>();
+    rules = new ArrayList<>();
   }
 
-  public class Rule {
+  public static class Rule {
     public String name;
     public String toMatch;
     public String message;

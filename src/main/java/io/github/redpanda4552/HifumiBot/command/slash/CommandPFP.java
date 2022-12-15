@@ -26,7 +26,7 @@ public class CommandPFP extends AbstractSlashCommand {
     ByteArrayOutputStream oStream = new ByteArrayOutputStream();
     ImageIO.write(bImage, "png", oStream);
     HifumiBot.getSelf()
-        .getJDA()
+        .getJda()
         .getSelfUser()
         .getManager()
         .setAvatar(Icon.from(oStream.toByteArray()))

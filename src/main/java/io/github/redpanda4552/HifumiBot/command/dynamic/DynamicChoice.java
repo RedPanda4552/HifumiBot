@@ -2,14 +2,23 @@
 package io.github.redpanda4552.HifumiBot.command.dynamic;
 
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
+@Getter
+@Setter
 public class DynamicChoice {
 
-  protected String name, description, title, body, imageURL;
+  protected String name;
+  protected String description;
+  protected String title;
+  protected String body;
+  protected String imageURL;
 
   public DynamicChoice(
       String name, String description, String title, String body, String imageURL) {
@@ -38,41 +47,5 @@ public class DynamicChoice {
 
     mb.setEmbeds(eb.build());
     event.reply(mb.build()).queue();
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getTitle() {
-    return this.title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getBody() {
-    return this.body;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
-
-  public String getImageURL() {
-    return this.imageURL;
-  }
-
-  public void setImageURL(String imageURL) {
-    this.imageURL = imageURL;
   }
 }

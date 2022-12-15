@@ -7,7 +7,7 @@ import org.apache.commons.text.similarity.JaccardSimilarity;
 
 public class SimpleSearch {
 
-  private static JaccardSimilarity jaccard = new JaccardSimilarity();
+  private static final JaccardSimilarity jaccard = new JaccardSimilarity();
 
   public static synchronized HashMap<String, Float> search(
       Collection<String> searchAgainst, String query) {

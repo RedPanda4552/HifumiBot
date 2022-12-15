@@ -21,18 +21,16 @@ public class BuildCommitMap implements IConfig {
     return false;
   }
 
-  private HashMap<Long, String> buildIdToCommit;
+  private final HashMap<Long, String> buildIdToCommit;
 
   public BuildCommitMap() {
-    buildIdToCommit = new HashMap<Long, String>();
+    buildIdToCommit = new HashMap<>();
   }
 
   public void seedMap() {
     // Seed the map from a resources file
-    try {
-      InputStream stream = getClass().getResourceAsStream("/fixture-build-map.json");
+    try (InputStream stream = getClass().getResourceAsStream("/fixture-build-map.json")) {
       String content = new String(stream.readAllBytes());
-
       Gson gson = new Gson();
       var mapType = new TypeToken<Map<Long, String>>() {}.getType();
       Map<Long, String> seedMap = gson.fromJson(content, mapType);

@@ -7,25 +7,25 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 public class PermissionManager {
-  private String superuserId;
+  private final String superuserId;
 
   public PermissionManager(String superuserId) {
     this.superuserId = superuserId;
 
     if (HifumiBot.getSelf().getConfig().permissions.blockedRoleIds == null) {
-      HifumiBot.getSelf().getConfig().permissions.blockedRoleIds = new ArrayList<String>();
+      HifumiBot.getSelf().getConfig().permissions.blockedRoleIds = new ArrayList<>();
     }
 
     if (HifumiBot.getSelf().getConfig().permissions.modRoleIds == null) {
-      HifumiBot.getSelf().getConfig().permissions.modRoleIds = new ArrayList<String>();
+      HifumiBot.getSelf().getConfig().permissions.modRoleIds = new ArrayList<>();
     }
 
     if (HifumiBot.getSelf().getConfig().permissions.adminRoleIds == null) {
-      HifumiBot.getSelf().getConfig().permissions.adminRoleIds = new ArrayList<String>();
+      HifumiBot.getSelf().getConfig().permissions.adminRoleIds = new ArrayList<>();
     }
 
     if (HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds == null) {
-      HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds = new ArrayList<String>();
+      HifumiBot.getSelf().getConfig().permissions.superAdminRoleIds = new ArrayList<>();
     }
   }
 

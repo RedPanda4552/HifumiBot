@@ -30,23 +30,20 @@ public class CommandSay extends AbstractSlashCommand {
     Message msg = null;
 
     switch (event.getSubcommandName()) {
-      case "something":
+      case "something" -> {
         if (stringOpt == null) {
           requiredArgStop(event);
           return;
         }
-
         event.reply(stringOpt.getAsString()).queue();
-        break;
-      case "edit":
+      }
+      case "edit" -> {
         if (messageLinkOpt == null || stringOpt == null) {
           requiredArgStop(event);
           return;
         }
-
         messageLink = messageLinkOpt.getAsString();
         newContent = stringOpt.getAsString();
-
         if (!messageLink.startsWith("http")) {
           event
               .reply("Error while parsing message-link, this doesn't look like a valid link.")
@@ -54,9 +51,7 @@ public class CommandSay extends AbstractSlashCommand {
               .queue();
           return;
         }
-
         parts = messageLink.split("/");
-
         if (parts.length < 3) {
           event
               .reply("Error while parsing message-link, this doesn't look like a valid link.")
@@ -64,33 +59,27 @@ public class CommandSay extends AbstractSlashCommand {
               .queue();
           return;
         }
-
         event.deferReply(true).queue();
         messageId = parts[parts.length - 1];
         channelId = parts[parts.length - 2];
-
-        channel = HifumiBot.getSelf().getJDA().getTextChannelById(channelId);
+        channel = HifumiBot.getSelf().getJda().getTextChannelById(channelId);
         msg = channel.retrieveMessageById(messageId).complete();
-
-        if (!msg.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+        if (!msg.getAuthor().getId().equals(HifumiBot.getSelf().getJda().getSelfUser().getId())) {
           event
               .getHook()
               .sendMessage("You cannot edit a user's message, only the bot's messages.")
               .queue();
           return;
         }
-
         event.getHook().editMessageById(messageId, newContent).queue();
         event.getHook().sendMessage("Edit complete!").queue();
-        break;
-      case "get":
+      }
+      case "get" -> {
         if (messageLinkOpt == null) {
           requiredArgStop(event);
           return;
         }
-
         messageLink = messageLinkOpt.getAsString();
-
         if (!messageLink.startsWith("http")) {
           event
               .reply("Error while parsing message-link, this doesn't look like a valid link.")
@@ -98,9 +87,7 @@ public class CommandSay extends AbstractSlashCommand {
               .queue();
           return;
         }
-
         parts = messageLink.split("/");
-
         if (parts.length < 3) {
           event
               .reply("Error while parsing message-link, this doesn't look like a valid link.")
@@ -108,14 +95,12 @@ public class CommandSay extends AbstractSlashCommand {
               .queue();
           return;
         }
-
         messageId = parts[parts.length - 1];
         channelId = parts[parts.length - 2];
-
-        channel = HifumiBot.getSelf().getJDA().getTextChannelById(channelId);
+        channel = HifumiBot.getSelf().getJda().getTextChannelById(channelId);
         msg = channel.retrieveMessageById(messageId).complete();
         event.reply("```\n" + msg.getContentRaw() + "\n```").setEphemeral(true).queue();
-        break;
+      }
     }
   }
 

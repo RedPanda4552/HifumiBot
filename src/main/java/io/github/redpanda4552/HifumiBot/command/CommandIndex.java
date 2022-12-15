@@ -28,6 +28,8 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import java.time.Instant;
 import java.util.HashMap;
+
+import lombok.Getter;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -38,8 +40,8 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 public class CommandIndex {
 
   private CommandListUpdateAction commandsToRegister;
-  private HashMap<String, AbstractSlashCommand> slashCommands;
-  private HashMap<String, AbstractMessageContextCommand> messageCommands;
+  @Getter private HashMap<String, AbstractSlashCommand> slashCommands;
+  @Getter private HashMap<String, AbstractMessageContextCommand> messageCommands;
   private HashMap<String, HashMap<String, Instant>> history;
 
   /** Create a new CommandIndex and invoke the {@link CommandIndex#rebuild rebuild()} method. */
@@ -52,7 +54,7 @@ public class CommandIndex {
 
   /** Rebuild this CommandIndex from the Config object in HifumiBot. */
   public void rebuild() {
-    commandsToRegister = HifumiBot.getSelf().getJDA().updateCommands();
+    commandsToRegister = HifumiBot.getSelf().getJda().updateCommands();
     rebuildSlash();
     rebuildMessage();
     rebuildDynamic();
@@ -138,18 +140,9 @@ public class CommandIndex {
     commandsToRegister.addCommands(messageCommand.defineMessageContextCommand());
   }
 
-  public HashMap<String, AbstractSlashCommand> getSlashCommands() {
-    return slashCommands;
-  }
-
-  public HashMap<String, AbstractMessageContextCommand> getMessageCommands() {
-    return messageCommands;
-  }
-
   /**
    * Check if this is a ninja command, update command history if not.
    *
-   * @param newHistory
    * @return True if ninja, false if not ninja and updated.
    */
   public boolean isNinja(String commandName, String channelId) {

@@ -19,6 +19,6 @@ public class DynCmdConfig implements IConfig {
   public HashMap<String, DynamicCommand> dynamicCommands;
 
   public DynCmdConfig() {
-    dynamicCommands = new HashMap<String, DynamicCommand>();
+    dynamicCommands = new HashMap<>();
   }
 }
