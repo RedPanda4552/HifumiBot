@@ -25,8 +25,10 @@ package io.github.redpanda4552.HifumiBot;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -124,6 +126,11 @@ public class GameDB implements Refreshable {
         put(1, "Force Enabled");
     }};
     
+    private static final HashMap<Integer, String> ENABLE_DISABLE = new HashMap<Integer, String>() {{
+        put(0, "Disabled");
+        put(1, "Enabled");
+    }};
+    
     private Map<String, Object> map;
     
     public GameDB() {
@@ -170,6 +177,12 @@ public class GameDB implements Refreshable {
                     eb.appendDescription("Compatibility: " + COMPAT.get((int) entry.get("compat")));
                 }
                 
+                if (entry.containsKey("memcardFilters")) {
+                    List<String> memcardFilters = (List<String>) entry.get("memcardFilters");
+                    
+                    eb.addField("Memcard Filters", StringUtils.joinWith("\n", memcardFilters.toArray()), true);
+                }
+                
                 if (entry.containsKey("roundModes")) {
                     Map<String, Object> roundModes = (Map<String, Object>) entry.get("roundModes");
                     
@@ -179,6 +192,18 @@ public class GameDB implements Refreshable {
                     
                     if (roundModes.containsKey("vuRoundMode")) {
                         eb.addField("VU Rounding Mode", ROUNDING.get((int) roundModes.get("vuRoundMode")), true);
+                    }
+                }
+                
+                if (entry.containsKey("speedHacks")) {
+                    Map<String, Object> speedhacks = (Map<String, Object>) entry.get("speedHacks");
+                    
+                    if (speedhacks.containsKey("InstantVU1SpeedHack")) {
+                        eb.addField("Instant VU1", ENABLE_DISABLE.get((int) speedhacks.get("InstantVU1SpeedHack")), true);
+                    }
+                    
+                    if (speedhacks.containsKey("MTVUSpeedHack")) {
+                        eb.addField("Multi-Threaded VU1 (MTVU)", ENABLE_DISABLE.get((int) speedhacks.get("MTVUSpeedHack")), true);
                     }
                 }
                 
@@ -192,6 +217,12 @@ public class GameDB implements Refreshable {
                     if (clampModes.containsKey("vuClampMode")) {
                         eb.addField("VU Clamping Mode", VU_CLAMPING.get((int) clampModes.get("vuClampMode")), true);
                     }
+                }
+                
+                if (entry.containsKey("gameFixes")) {
+                    List<String> gameFixes = (List<String>) entry.get("gameFixes");
+                    
+                    eb.addField("Game Fixes", StringUtils.joinWith("\n", gameFixes.toArray()), true);
                 }
                 
                 if (entry.containsKey("gsHWFixes")) {
@@ -279,6 +310,19 @@ public class GameDB implements Refreshable {
                     
                     if (gsHWFixes.containsKey("roundSprite")) {
                         eb.addField("Round Sprite", ROUND_SPRITE.get((int) gsHWFixes.get("roundSprite")), true);
+                    }
+                }
+                
+                if (entry.containsKey("patches")) {
+                    Map<String, Object> patches = (Map<String, Object>) entry.get("patches");
+                    
+                    for (String crcName : patches.keySet()) {
+                        Map<String, Object> patch = (Map<String, Object>) patches.get(crcName);
+                        
+                        if (patch.containsKey("content")) {
+                            String content = (String) patch.get("content");
+                            eb.addField("Patch (" + crcName + ")", content, false);
+                        }
                     }
                 }
             }
