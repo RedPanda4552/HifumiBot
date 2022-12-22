@@ -93,14 +93,16 @@ public class GameDB implements Refreshable {
     }};
     
     private static final HashMap<Integer, String> DEINTERLACING = new HashMap<Integer, String>() {{
-        put(0, "Off");
-        put(1, "Weave (TFF)");
-        put(2, "Weave (BFF)");
-        put(3, "Bob (TFF)");
-        put(4, "Bob (BFF)");
-        put(5, "Blend (TFF)");
-        put(6, "Blend (BFF)");
-        put(7, "Automatic");
+        put(0, "Automatic");
+        put(1, "None");
+        put(2, "Weave (TFF)");
+        put(3, "Weave (BFF)");
+        put(4, "Bob (TFF)");
+        put(5, "Bob (BFF)");
+        put(6, "Blend (TFF)");
+        put(7, "Blend (BFF)");
+        put(8, "Adaptive (TFF)");
+        put(8, "Adaptive (BFF)");
     }};
     
     private static final HashMap<Integer, String> GENERIC_BOOLEAN = new HashMap<Integer, String>() {{
@@ -124,11 +126,6 @@ public class GameDB implements Refreshable {
     private static final HashMap<Integer, String> HALF_BOTTOM = new HashMap<Integer, String>() {{
         put(0, "Force Disabled");
         put(1, "Force Enabled");
-    }};
-    
-    private static final HashMap<Integer, String> ENABLE_DISABLE = new HashMap<Integer, String>() {{
-        put(0, "Disabled");
-        put(1, "Enabled");
     }};
     
     private Map<String, Object> map;
@@ -199,11 +196,11 @@ public class GameDB implements Refreshable {
                     Map<String, Object> speedhacks = (Map<String, Object>) entry.get("speedHacks");
                     
                     if (speedhacks.containsKey("InstantVU1SpeedHack")) {
-                        eb.addField("Instant VU1", ENABLE_DISABLE.get((int) speedhacks.get("InstantVU1SpeedHack")), true);
+                        eb.addField("Instant VU1", GENERIC_BOOLEAN.get((int) speedhacks.get("InstantVU1SpeedHack")), true);
                     }
                     
                     if (speedhacks.containsKey("MTVUSpeedHack")) {
-                        eb.addField("Multi-Threaded VU1 (MTVU)", ENABLE_DISABLE.get((int) speedhacks.get("MTVUSpeedHack")), true);
+                        eb.addField("Multi-Threaded VU1 (MTVU)", GENERIC_BOOLEAN.get((int) speedhacks.get("MTVUSpeedHack")), true);
                     }
                 }
                 
@@ -228,40 +225,20 @@ public class GameDB implements Refreshable {
                 if (entry.containsKey("gsHWFixes")) {
                     Map<String, Object> gsHWFixes = (Map<String, Object>) entry.get("gsHWFixes");
                     
-                    if (gsHWFixes.containsKey("mipmap")) {
-                        eb.addField("Mipmapping", MIPMAP.get((int) gsHWFixes.get("mipmap")), true);
-                    }
-
-                    if (gsHWFixes.containsKey("trilinearFiltering")) {
-                        eb.addField("Trilinear Filtering", TRILINEAR.get((int) gsHWFixes.get("trilinearFiltering")), true);
+                    if (gsHWFixes.containsKey("autoFlush")) {
+                        eb.addField("Auto Flush", GENERIC_BOOLEAN.get((int) gsHWFixes.get("autoFlush")), true);
                     }
                     
                     if (gsHWFixes.containsKey("conservativeFramebuffer")) {
                         eb.addField("Conservative Framebuffer", GENERIC_BOOLEAN.get((int) gsHWFixes.get("conservativeFramebuffer")), true);
                     }
                     
-                    if (gsHWFixes.containsKey("texturePreloading")) {
-                        eb.addField("Texture Preloading", TEXTURE_PRELOADING.get((int) gsHWFixes.get("texturePreloading")), true);
-                    }
-                    
-                    if (gsHWFixes.containsKey("deinterlace")) {
-                        eb.addField("Deinterlacing", DEINTERLACING.get((int) gsHWFixes.get("deinterlace")), true);
-                    }
-                    
-                    if (gsHWFixes.containsKey("autoFlush")) {
-                        eb.addField("Auto Flush", GENERIC_BOOLEAN.get((int) gsHWFixes.get("autoFlush")), true);
+                    if (gsHWFixes.containsKey("cpuFramebufferConversion")) {
+                        eb.addField("Frame Buffer Conversion", GENERIC_BOOLEAN.get((int) gsHWFixes.get("cpuFramebufferConversion")), true);
                     }
                     
                     if (gsHWFixes.containsKey("disableDepthSupport")) {
                         eb.addField("Disable Depth Emulation", GENERIC_BOOLEAN.get((int) gsHWFixes.get("disableDepthSupport")), true);
-                    }
-                    
-                    if (gsHWFixes.containsKey("disablePartialInvalidation")) {
-                        eb.addField("Disable Partial Invalidation", GENERIC_BOOLEAN.get((int) gsHWFixes.get("disablePartialInvalidation")), true);
-                    }
-                    
-                    if (gsHWFixes.containsKey("cpuFramebufferConversion")) {
-                        eb.addField("Frame Buffer Conversion", GENERIC_BOOLEAN.get((int) gsHWFixes.get("cpuFramebufferConversion")), true);
                     }
                     
                     if (gsHWFixes.containsKey("wrapGSMem")) {
@@ -272,16 +249,12 @@ public class GameDB implements Refreshable {
                         eb.addField("Preload Frame Data", GENERIC_BOOLEAN.get((int) gsHWFixes.get("preloadFrameData")), true);
                     }
                     
+                    if (gsHWFixes.containsKey("disablePartialInvalidation")) {
+                        eb.addField("Disable Partial Invalidation", GENERIC_BOOLEAN.get((int) gsHWFixes.get("disablePartialInvalidation")), true);
+                    }
+                    
                     if (gsHWFixes.containsKey("textureInsideRT")) {
                         eb.addField("Texture Inside RT", GENERIC_BOOLEAN.get((int) gsHWFixes.get("textureInsideRT")), true);
-                    }
-                    
-                    if (gsHWFixes.containsKey("halfBottomOverride")) {
-                        eb.addField("Half Screen Fix", HALF_BOTTOM.get((int) gsHWFixes.get("halfBottomOverride")), true);
-                    }
-                    
-                    if (gsHWFixes.containsKey("pointListPalette")) {
-                        eb.addField("Disable Safe Features", GENERIC_BOOLEAN.get((int) gsHWFixes.get("pointListPalette")), true);
                     }
                     
                     if (gsHWFixes.containsKey("alignSprite")) {
@@ -296,6 +269,18 @@ public class GameDB implements Refreshable {
                         eb.addField("Wild Arms Hack", GENERIC_BOOLEAN.get((int) gsHWFixes.get("wildArmsHack")), true);
                     }
                     
+                    if (gsHWFixes.containsKey("pointListPalette")) {
+                        eb.addField("Disable Safe Features", GENERIC_BOOLEAN.get((int) gsHWFixes.get("pointListPalette")), true);
+                    }
+                    
+                    if (gsHWFixes.containsKey("mipmap")) {
+                        eb.addField("Mipmapping", MIPMAP.get((int) gsHWFixes.get("mipmap")), true);
+                    }
+
+                    if (gsHWFixes.containsKey("trilinearFiltering")) {
+                        eb.addField("Trilinear Filtering", TRILINEAR.get((int) gsHWFixes.get("trilinearFiltering")), true);
+                    }
+                    
                     if (gsHWFixes.containsKey("skipDrawStart")) {
                         eb.addField("Skipdraw Range (Start)", String.valueOf((int) gsHWFixes.get("skipDrawStart")), true);
                     }
@@ -304,12 +289,36 @@ public class GameDB implements Refreshable {
                         eb.addField("Skipdraw Range (End)", String.valueOf((int) gsHWFixes.get("skipDrawEnd")), true);
                     }
                     
+                    if (gsHWFixes.containsKey("halfBottomOverride")) {
+                        eb.addField("Half Screen Fix", HALF_BOTTOM.get((int) gsHWFixes.get("halfBottomOverride")), true);
+                    }
+                    
                     if (gsHWFixes.containsKey("halfPixelOffset")) {
                         eb.addField("Half Pixel Offset", HALF_PIXEL_OFFSET.get((int) gsHWFixes.get("halfPixelOffset")), true);
                     }
                     
                     if (gsHWFixes.containsKey("roundSprite")) {
                         eb.addField("Round Sprite", ROUND_SPRITE.get((int) gsHWFixes.get("roundSprite")), true);
+                    }
+                    
+                    if (gsHWFixes.containsKey("texturePreloading")) {
+                        eb.addField("Texture Preloading", TEXTURE_PRELOADING.get((int) gsHWFixes.get("texturePreloading")), true);
+                    }
+                    
+                    if (gsHWFixes.containsKey("deinterlace")) {
+                        eb.addField("Deinterlacing", DEINTERLACING.get((int) gsHWFixes.get("deinterlace")), true);
+                    }
+                    
+                    if (gsHWFixes.containsKey("cpuSpriteRenderBW")) {
+                        eb.addField("CPU Sprite Render Size", String.valueOf((int) gsHWFixes.get("cpuSpriteRenderBW")), true);
+                    }
+                    
+                    if (gsHWFixes.containsKey("cpuCLUTRender")) {
+                        eb.addField("Software CLUT Render", String.valueOf((int) gsHWFixes.get("cpuCLUTRender")), true);
+                    }
+                    
+                    if (gsHWFixes.containsKey("gpuPaletteConversion")) {
+                        eb.addField("Software CLUT Render", GENERIC_BOOLEAN.get((int) gsHWFixes.get("gpuPaletteConversion")), true);
                     }
                 }
                 
