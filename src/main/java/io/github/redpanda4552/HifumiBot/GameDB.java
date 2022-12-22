@@ -128,6 +128,12 @@ public class GameDB implements Refreshable {
         put(1, "Force Enabled");
     }};
     
+    private static final HashMap<Integer, String> GPU_PALETTE_CONVERSION = new HashMap<Integer, String>() {{
+        put(0, "Off");
+        put(1, "On");
+        put(2, "On, but with attitude");
+    }};
+    
     private Map<String, Object> map;
     
     public GameDB() {
@@ -318,7 +324,7 @@ public class GameDB implements Refreshable {
                     }
                     
                     if (gsHWFixes.containsKey("gpuPaletteConversion")) {
-                        eb.addField("Software CLUT Render", GENERIC_BOOLEAN.get((int) gsHWFixes.get("gpuPaletteConversion")), true);
+                        eb.addField("GPU Palette Conversion", GPU_PALETTE_CONVERSION.get((int) gsHWFixes.get("gpuPaletteConversion")), true);
                     }
                 }
                 
