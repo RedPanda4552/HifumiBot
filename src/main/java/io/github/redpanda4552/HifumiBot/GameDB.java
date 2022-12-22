@@ -131,7 +131,7 @@ public class GameDB implements Refreshable {
     private static final HashMap<Integer, String> GPU_PALETTE_CONVERSION = new HashMap<Integer, String>() {{
         put(0, "Off");
         put(1, "On");
-        put(2, "On, but with attitude");
+        put(2, "On + Restrict paltex");
     }};
     
     private Map<String, Object> map;
