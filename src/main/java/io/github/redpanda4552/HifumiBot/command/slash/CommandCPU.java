@@ -46,13 +46,12 @@ public class CommandCPU extends AbstractSlashCommand {
 
     private enum CPURating {
         OVER_9000("IT'S OVER 9000", 9000),
-        WTF("What the fuck, why?", 4000),
-        OVERKILL("Overkill", 2800), 
-        GREAT("Great for most", 2400), 
-        GOOD("Good for most", 2000),
-        MINIMUM_3D("Okay for some 3D", 1600), 
-        MINIMUM_2D("Okay for some 2D", 1200), 
-        VERY_SLOW("Very Slow", 800),
+        OVERKILL("Overkill", 3400), 
+        EVERYTHING("Any games", 3000),
+        HEAVIER("Heavier games", 2600), 
+        MODERATE("Moderate games", 2200),
+        LIGHTER("Lightweight games", 1800), 
+        VERY_SLOW("Very Slow", 1000),
         AWFUL("Awful", 0);
 
         private String displayName;
