@@ -66,7 +66,9 @@ public class CommandPanic extends AbstractSlashCommand {
         }
         
         event.getGuild().getTextChannels().forEach((channel) -> {
-            channel.getManager().setSlowmode(1).queue();
+            if (channel.getGuild().getPublicRole().hasAccess(channel)) {
+                channel.getManager().setSlowmode(1).queue();
+            }
         });
         
         HifumiBot.getSelf().getEventListener().setLockdown(true);
@@ -75,7 +77,9 @@ public class CommandPanic extends AbstractSlashCommand {
     
     private void disable(SlashCommandInteractionEvent event) {
         event.getGuild().getTextChannels().forEach((channel) -> {
-            channel.getManager().setSlowmode(0).queue();
+            if (channel.getGuild().getPublicRole().hasAccess(channel)) {
+                channel.getManager().setSlowmode(0).queue();
+            }
         });
         
         HifumiBot.getSelf().getEventListener().setLockdown(false);
