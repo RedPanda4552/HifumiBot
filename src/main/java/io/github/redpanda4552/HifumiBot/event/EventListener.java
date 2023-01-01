@@ -68,15 +68,6 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (lockdown) {
-            Member member = event.getMember();
-            
-            if (member.getRoles().isEmpty()) {
-                event.getMessage().delete().queue();
-                return;
-            }
-        }
-        
         if (event.getChannelType() == ChannelType.PRIVATE) {
             if (!event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
                 Messaging.logInfo("EventListener", "onMessageReceived", "DM sent to Hifumi by user " + event.getAuthor().getAsMention() + " (" + event.getAuthor().getAsTag() + ")\n\n```\n" + StringUtils.truncate(event.getMessage().getContentRaw(), 500) + "\n```\nMessage content displayed raw format, truncated to 500 chars. Original length: " + event.getMessage().getContentRaw().length());

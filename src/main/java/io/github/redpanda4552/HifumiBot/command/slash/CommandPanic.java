@@ -72,7 +72,7 @@ public class CommandPanic extends AbstractSlashCommand {
         });
         
         HifumiBot.getSelf().getEventListener().setLockdown(true);
-        event.getHook().editOriginal("Panic mode activated.\n- 1 second slow mode is applied to all channels (including restricted channels)\n- New users are being instantly kicked but will receive a PM explaining why\n- Any users without roles are having messages automatically deleted.").queue();
+        event.getHook().editOriginal("Panic mode activated.\n- 1 second slow mode is applied to all channels visible to role-less viewers\n- New users are being instantly kicked but will receive a DM explaining why").queue();
     }
     
     private void disable(SlashCommandInteractionEvent event) {
