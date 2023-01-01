@@ -37,7 +37,6 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
@@ -81,67 +80,36 @@ public class SlashCommandListener extends ListenerAdapter {
     
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
-        String componentId = event.getComponentId();
-
-        String[] parts = componentId.split(":");
-
-        if (parts.length < 2) {
-            Messaging.logInfo("SlashCommandListener", "onButtonInteraction", "Received a button click event, but got a malformed button ID. Received:\n```\n" + componentId + "\n```");
-            event.reply("Something went wrong with this button. Admins have been notified.").setEphemeral(true).queue();
+        UUID uuid = null;
+        
+        try {
+            uuid = UUID.fromString(event.getComponentId());
+        } catch (IllegalArgumentException e) {
+            Messaging.logException("SlashCommandListener", "onButtonClick", e);
+            event.reply("Button tampering detected, admins have been notified.").setEphemeral(true).queue();
             return;
         }
-
-        String reply = null;
-
-        switch (parts[0]) {
-            case "emulog_prev":
-            case "emulog_next":
-                CommandEmulog commandEmulog = (CommandEmulog) slashCommands.get("emulog");
-                event.deferEdit().queue();
-                commandEmulog.onButtonEvent(event);
-                break;
-            case "timeout":
-                try {
-                    if (event.getMember().hasPermission(Permission.MODERATE_MEMBERS)) {
-                        event.getGuild().getMemberById(parts[1]).timeoutFor(Duration.ofMinutes(60)).queue();
-                        reply = "Member timed out successfully!";
-                    } else {
-                        reply = "You don't have permission to timeout members";
-                    }    
-                } catch (Exception e) {
-                    reply = "An error occurred while attempting to timeout the member - are they still in the server?";
-                }
-
-                event.reply(reply).setEphemeral(true).queue();
-                break;
-            case "kick":
-                try {
-                    if (event.getMember().hasPermission(Permission.KICK_MEMBERS)) {
-                        event.getGuild().getMemberById(parts[1]).kick().queue();
-                        reply = "Member kicked successfully!";
-                    } else {
-                        reply = "You don't have permission to kick members";
-                    }    
-                } catch (Exception e) {
-                    reply = "An error occurred while attempting to timeout the member - are they still in the server?";
-                }
-
-                event.reply(reply).setEphemeral(true).queue();
-                break;
-            case "ban":
-                try {
-                    if (event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
-                        event.getGuild().getMemberById(parts[1]).ban(1).queue();
-                        reply = "Member banned successfully!";
-                    } else {
-                        reply = "You don't have permission to ban members";
-                    }    
-                } catch (Exception e) {
-                    reply = "An error occurred while attempting to ban the member - are they still in the server?";
-                }
-
-                event.reply(reply).setEphemeral(true).queue();
-                break;
+        
+        if (!buttonCache.containsKey(uuid)) {
+            event.reply("Whoops! This button has expired. You'll need to run the command again to get an active button.");
+            return;
+        }
+        
+        ButtonInteractionElement button = buttonCache.get(uuid);
+        
+        if (!button.getUserId().equals(event.getUser().getId())) {
+            event.reply("You did not send this original command; you are not allowed to interact with this button.").setEphemeral(true).queue();
+            return;
+        }
+        
+        CommandEmulog commandEmulog = (CommandEmulog) slashCommands.get("emulog");
+        
+        switch (button.getCommandName()) {
+        case "emulog_prev":
+        case "emulog_next":
+            event.deferEdit().queue();
+            commandEmulog.onButtonEvent(event);
+            break;
         }
     }
     
