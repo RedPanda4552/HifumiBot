@@ -44,6 +44,9 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 public class CommandEmulog extends AbstractSlashCommand {
 
@@ -134,8 +137,7 @@ public class CommandEmulog extends AbstractSlashCommand {
                 return;
             }
             
-            ButtonInteractionElement button = HifumiBot.getSelf().getSlashCommandListener().getButton(event.getButton().getId());
-            String buttonValue = button.getCommandName();
+            String buttonValue = event.getComponentId().split(":")[0];
             
             switch (buttonValue) {
             case "emulog_prev":
@@ -152,9 +154,10 @@ public class CommandEmulog extends AbstractSlashCommand {
                 currentPage = totalPages;
             }
             
-            ButtonInteractionElement prev = HifumiBot.getSelf().getSlashCommandListener().newButton(event.getUser().getId(), "emulog_prev", "Previous", ButtonType.SECONDARY);
-            ButtonInteractionElement next = HifumiBot.getSelf().getSlashCommandListener().newButton(event.getUser().getId(), "emulog_next", "Next", ButtonType.PRIMARY);
-            event.getHook().editOriginalEmbeds(rulePages.get((int) currentPage - 1)).setActionRow(prev.getButton(), next.getButton()).queue();
+            event.getHook().editOriginalEmbeds(rulePages.get((int) currentPage - 1)).setActionRow(
+                Button.of(ButtonStyle.SECONDARY, "emulog_prev:" + event.getMember().getId(), "Previous"),
+                Button.of(ButtonStyle.PRIMARY, "emulog_next:" + event.getMember().getId(), "Next")
+            ).queue();
         } catch (Exception e) {
             event.getHook().editOriginal("An internal error occurred, aborting.").queue();
             Messaging.logException("CommandEmulog", "onButtonEvent", e);
@@ -170,9 +173,10 @@ public class CommandEmulog extends AbstractSlashCommand {
     }
     
     private void browse(SlashCommandInteractionEvent event) {
-        ButtonInteractionElement prev = HifumiBot.getSelf().getSlashCommandListener().newButton(event.getUser().getId(), event.getName() + "_prev", "Previous", ButtonType.SECONDARY);
-        ButtonInteractionElement next = HifumiBot.getSelf().getSlashCommandListener().newButton(event.getUser().getId(), event.getName() + "_next", "Next", ButtonType.PRIMARY);
-        event.getHook().sendMessageEmbeds(rulePages.get(0)).addActionRow(prev.getButton(), next.getButton()).queue();
+        event.getHook().sendMessageEmbeds(rulePages.get(0)).addActionRow(
+            Button.of(ButtonStyle.SECONDARY, "emulog_prev:" + event.getMember().getId(), "Previous"),
+            Button.of(ButtonStyle.PRIMARY, "emulog_next:" + event.getMember().getId(), "Next")
+        ).queue();
     }
 
     private void newRule(SlashCommandInteractionEvent event) {
