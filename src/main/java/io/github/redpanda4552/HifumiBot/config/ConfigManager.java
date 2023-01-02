@@ -66,7 +66,7 @@ public class ConfigManager {
             //builder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
             Gson gson = builder.create();
             return gson.fromJson(json, TypeToken.get(configType.getConfigClass()).getType());
-        } catch (IOException e) {
+        } catch (Exception e) {
             Messaging.logException("ConfigManager", "read", e);
         }
 
