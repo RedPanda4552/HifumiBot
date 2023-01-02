@@ -110,6 +110,7 @@ public class SlashCommandListener extends ListenerAdapter {
                     }    
                 } catch (Exception e) {
                     reply = "An error occurred while attempting to timeout the member - are they still in the server?";
+                    reply += "\nException message: " + e.getMessage();
                 }
 
                 event.reply(reply).queue();
@@ -124,6 +125,7 @@ public class SlashCommandListener extends ListenerAdapter {
                     }    
                 } catch (Exception e) {
                     reply = "An error occurred while attempting to timeout the member - are they still in the server?";
+                    reply += "\nException message: " + e.getMessage();
                 }
 
                 event.reply(reply).queue();
@@ -138,6 +140,7 @@ public class SlashCommandListener extends ListenerAdapter {
                     }    
                 } catch (Exception e) {
                     reply = "An error occurred while attempting to ban the member - are they still in the server?";
+                    reply += "\nException message: " + e.getMessage();
                 }
 
                 event.reply(reply).queue();
