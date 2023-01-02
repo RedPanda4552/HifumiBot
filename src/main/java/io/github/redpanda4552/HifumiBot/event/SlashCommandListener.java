@@ -103,7 +103,7 @@ public class SlashCommandListener extends ListenerAdapter {
             case "timeout":
                 try {
                     if (event.getMember().hasPermission(Permission.MODERATE_MEMBERS)) {
-                        event.getGuild().getMemberById(parts[1]).timeoutFor(Duration.ofMinutes(60)).queue();
+                        event.getGuild().retrieveMemberById(parts[1]).complete().timeoutFor(Duration.ofMinutes(60)).queue();
                         reply = "Member timed out successfully!";
                     } else {
                         reply = "You don't have permission to timeout members";
@@ -118,7 +118,7 @@ public class SlashCommandListener extends ListenerAdapter {
             case "kick":
                 try {
                     if (event.getMember().hasPermission(Permission.KICK_MEMBERS)) {
-                        event.getGuild().getMemberById(parts[1]).kick().queue();
+                        event.getGuild().retrieveMemberById(parts[1]).complete().kick().queue();
                         reply = "Member kicked successfully!";
                     } else {
                         reply = "You don't have permission to kick members";
@@ -133,7 +133,7 @@ public class SlashCommandListener extends ListenerAdapter {
             case "ban":
                 try {
                     if (event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
-                        event.getGuild().getMemberById(parts[1]).ban(1).queue();
+                        event.getGuild().retrieveMemberById(parts[1]).complete().ban(1).queue();
                         reply = "Member banned successfully!";
                     } else {
                         reply = "You don't have permission to ban members";
