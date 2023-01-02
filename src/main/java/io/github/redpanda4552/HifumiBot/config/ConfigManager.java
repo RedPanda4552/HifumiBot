@@ -61,7 +61,7 @@ public class ConfigManager {
             iStream.close();
             Gson gson = new Gson();
             return gson.fromJson(json, TypeToken.get(configType.getConfigClass()).getType());
-        } catch (IOException e) {
+        } catch (Exception e) {
             Messaging.logException("ConfigManager", "read", e);
         }
 
