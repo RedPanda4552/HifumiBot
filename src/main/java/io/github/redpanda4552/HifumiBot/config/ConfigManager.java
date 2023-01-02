@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.time.OffsetDateTime;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -59,7 +60,9 @@ public class ConfigManager {
             InputStream iStream = Files.newInputStream(file.toPath());
             String json = new String(iStream.readAllBytes());
             iStream.close();
-            Gson gson = new Gson();
+            GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter());
+            Gson gson = builder.create();
             return gson.fromJson(json, TypeToken.get(configType.getConfigClass()).getType());
         } catch (Exception e) {
             Messaging.logException("ConfigManager", "read", e);
@@ -77,6 +80,7 @@ public class ConfigManager {
             File file = new File(config.getConfigType().getPath());
             OutputStream oStream = Files.newOutputStream(file.toPath());
             GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter());
             Gson gson = config.usePrettyPrint() ? builder.setPrettyPrinting().create() : builder.create();
             String json = gson.toJson(config, TypeToken.get(config.getConfigType().getConfigClass()).getType());
             oStream.write(json.getBytes());
