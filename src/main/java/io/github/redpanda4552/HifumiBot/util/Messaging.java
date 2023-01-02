@@ -62,6 +62,10 @@ public class Messaging {
          
         return ret;
     }
+
+    public static Message sendMessage(String channelId, Message msg) {
+        return Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(channelId), msg);
+    }
     
     public static Message sendMessage(MessageChannel channel, String str) {
         MessageBuilder mb = new MessageBuilder(str);
@@ -136,6 +140,14 @@ public class Messaging {
         eb.setTitle("Info from " + className + "." + methodName);
         eb.addField("Message", msg, false);
         Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId, eb.build());
+    }
+
+    public static void logInfoMessage(Message msg) {
+        Messaging.sendMessage(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId, msg);
+    }
+
+    public static void logInfoEmbed(MessageEmbed embed) {
+        Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId, embed);
     }
 
     public static void logException(String className, String methodName, Exception e) {
