@@ -112,7 +112,7 @@ public class SlashCommandListener extends ListenerAdapter {
                     reply = "An error occurred while attempting to timeout the member - are they still in the server?";
                 }
 
-                event.reply(reply).setEphemeral(true).queue();
+                event.reply(reply).queue();
                 break;
             case "kick":
                 try {
@@ -126,7 +126,7 @@ public class SlashCommandListener extends ListenerAdapter {
                     reply = "An error occurred while attempting to timeout the member - are they still in the server?";
                 }
 
-                event.reply(reply).setEphemeral(true).queue();
+                event.reply(reply).queue();
                 break;
             case "ban":
                 try {
@@ -140,7 +140,7 @@ public class SlashCommandListener extends ListenerAdapter {
                     reply = "An error occurred while attempting to ban the member - are they still in the server?";
                 }
 
-                event.reply(reply).setEphemeral(true).queue();
+                event.reply(reply).queue();
                 break;
         }
     }
