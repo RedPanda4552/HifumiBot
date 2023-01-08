@@ -56,6 +56,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 public class CommandIndex {
@@ -130,17 +131,16 @@ public class CommandIndex {
             
             for (String subcommandName : subcommands.keySet()) {
                 DynamicSubcommand subcommand = subcommands.get(subcommandName);
-                SubcommandData subcommandData = new SubcommandData(subcommand.getName(), subcommand.getDescription());
-                OptionData opt = new OptionData(OptionType.STRING, "choice", "Command choice", true);
+                SubcommandGroupData subgroup = new SubcommandGroupData(subcommand.getName(), subcommand.getDescription());
                 HashMap<String, DynamicChoice> choices = subcommand.getChoices();
                 
                 for (String choiceName : choices.keySet()) {
                     DynamicChoice choice = choices.get(choiceName);
-                    opt.addChoice(choice.getName(), choice.getName());
+                    SubcommandData subcommandData = new SubcommandData(choice.getName(), choice.getDescription());
+                    subgroup.addSubcommands(subcommandData);
                 }
-                
-                subcommandData.addOptions(opt);
-                commandData.addSubcommands(subcommandData);
+
+                commandData.addSubcommandGroups(subgroup);
             }
             
             commandsToRegister.addCommands(commandData);
