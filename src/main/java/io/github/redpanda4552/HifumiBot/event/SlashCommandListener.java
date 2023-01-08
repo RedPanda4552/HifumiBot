@@ -66,11 +66,11 @@ public class SlashCommandListener extends ListenerAdapter {
         } else if (HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.containsKey(event.getName())) {
             DynamicCommand command = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.get(event.getName());
             
-            if (command.getSubcommands().containsKey(event.getSubcommandName())) {
-                DynamicSubcommand subcommand = command.getSubcommand(event.getSubcommandName());
+            if (command.getSubcommands().containsKey(event.getSubcommandGroup())) {
+                DynamicSubcommand subcommand = command.getSubcommand(event.getSubcommandGroup());
                 
-                if (subcommand.getChoices().containsKey(event.getOption("choice").getAsString())) {
-                    DynamicChoice choice = subcommand.getChoice(event.getOption("choice").getAsString());
+                if (subcommand.getChoices().containsKey(event.getSubcommandName())) {
+                    DynamicChoice choice = subcommand.getChoice(event.getSubcommandName());
                     choice.execute(event);
                 }
             }
