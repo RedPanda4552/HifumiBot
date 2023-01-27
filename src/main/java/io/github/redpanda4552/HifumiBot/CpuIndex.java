@@ -39,10 +39,11 @@ public class CpuIndex implements Refreshable {
 
     public static final String PASSMARK_STR_URL = "https://www.cpubenchmark.net/singleThread.html";
 
+    private boolean isInitialized = false;
     private ConcurrentHashMap<String, String> cpuMap = new ConcurrentHashMap<String, String>();
 
     public CpuIndex() {
-        this.refresh();
+        
     }
 
     public synchronized void refresh() {
@@ -63,9 +64,15 @@ public class CpuIndex implements Refreshable {
                     }
                 }
             }
+
+            this.isInitialized = true;
         } catch (IOException e) {
             Messaging.logException("CpuIndex", "refresh", e);
         }
+    }
+
+    public synchronized boolean isInitialized() {
+        return this.isInitialized;
     }
 
     public synchronized void clear() {

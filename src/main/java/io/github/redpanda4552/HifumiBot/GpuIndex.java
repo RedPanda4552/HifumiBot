@@ -43,10 +43,11 @@ public class GpuIndex implements Refreshable {
     public static final String PASSMARK_MID_LOW = "https://www.videocardbenchmark.net/midlow_range_gpus.html";
     public static final String PASSMARK_LOW_END = "https://www.videocardbenchmark.net/low_end_gpus.html";
 
+    private boolean isInitialized = false;
     private ConcurrentHashMap<String, String> gpuMap = new ConcurrentHashMap<String, String>();
 
     public GpuIndex() {
-        this.refresh();
+        
     }
 
     public synchronized void refresh() {
@@ -78,11 +79,17 @@ public class GpuIndex implements Refreshable {
                     ret.put(gpuName, rating);
                 }
             }
+
+            this.isInitialized = true;
         } catch (IOException e) {
             Messaging.logException("GpuIndex", "refresh", e);
         }
 
         return ret;
+    }
+
+    public synchronized boolean isInitialized() {
+        return this.isInitialized;
     }
 
     public synchronized void clear() {

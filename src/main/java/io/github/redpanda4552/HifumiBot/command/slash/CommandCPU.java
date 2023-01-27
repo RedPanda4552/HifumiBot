@@ -89,6 +89,12 @@ public class CommandCPU extends AbstractSlashCommand {
 
         String name = opt.getAsString();
         CpuIndex cpuIndex = HifumiBot.getSelf().getCpuIndex();
+
+        if (!cpuIndex.isInitialized()) {
+            event.reply("Whoa there! The bot is still fetching data from Passmark, please wait a moment while that finishes!").queue();
+            return;
+        }
+
         HashMap<String, Float> results = SimpleSearch.search(cpuIndex.getAllCpus(), StringUtils.join(name, " "));
 
         if (results.size() > 0) {

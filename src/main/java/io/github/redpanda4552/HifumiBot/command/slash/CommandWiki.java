@@ -89,6 +89,11 @@ public class CommandWiki extends AbstractSlashCommand {
                 event.getHook().editOriginal("An error occurred; did not recieve your selection. Try again in a few moments.").queue();
                 return;
             }
+
+            if (!HifumiBot.getSelf().getWikiIndex().isInitialized()) {
+                event.getHook().editOriginal("Whoa there! The bot is still fetching data from the wiki, please wait a moment while that finishes!").queue();
+                return;
+            }
             
             String gameName = options.get(0).getValue();
             WikiPage wikiPage = new WikiPage(HifumiBot.getSelf().getWikiIndex().getWikiPageUrl(gameName));

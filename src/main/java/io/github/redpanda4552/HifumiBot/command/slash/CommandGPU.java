@@ -87,6 +87,12 @@ public class CommandGPU extends AbstractSlashCommand {
         
         String name = opt.getAsString();
         GpuIndex gpuIndex = HifumiBot.getSelf().getGpuIndex();
+
+        if (!gpuIndex.isInitialized()) {
+            event.reply("Whoa there! The bot is still fetching data from Passmark, please wait a moment while that finishes!").queue();
+            return;
+        }
+
         HashMap<String, Float> results = SimpleSearch.search(gpuIndex.getAllGpus(), StringUtils.join(name, " "));
         
         if (results.size() > 0) {

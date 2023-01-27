@@ -180,6 +180,12 @@ public class HifumiBot {
         gameDB = new GameDB();
         botDetection = new BotDetection();
 
+        scheduler.runOnce(() -> {
+            wikiIndex.refresh();
+            cpuIndex.refresh();
+            gpuIndex.refresh();
+        });
+
         // Schedule repeating tasks
         scheduler.scheduleRepeating("wiki", () -> {
             HifumiBot.getSelf().getWikiIndex().refresh();

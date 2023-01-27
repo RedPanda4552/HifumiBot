@@ -40,10 +40,11 @@ public class WikiIndex implements Refreshable {
 
     private static final String FULL_GAMES_URL = "https://wiki.pcsx2.net/Complete_List_of_Games";
 
+    private boolean isInitialized = false;
     private ConcurrentHashMap<String, String> fullGamesMap = new ConcurrentHashMap<String, String>();
 
     public WikiIndex() {
-        this.refresh();
+        
     }
 
     @Override
@@ -59,9 +60,15 @@ public class WikiIndex implements Refreshable {
             for (Element anchor : anchors) {
                 this.addGame(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
             }
+
+            this.isInitialized = true;
         } catch (IOException e) {
             Messaging.logException("WikiIndex", "refresh", e);
         }
+    }
+
+    public synchronized boolean isInitialized() {
+        return this.isInitialized;
     }
 
     public synchronized void clear() {
