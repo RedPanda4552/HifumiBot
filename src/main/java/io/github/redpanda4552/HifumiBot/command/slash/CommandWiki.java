@@ -100,6 +100,10 @@ public class CommandWiki extends AbstractSlashCommand {
             for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
                 StringBuilder regionBuilder = new StringBuilder();
 
+                if (!regionSet.getSerial().isEmpty()) {
+                    regionBuilder.append("\n**Serial:\n**").append(regionSet.getSerial().replace(" ", "\n"));
+                }
+
                 if (!regionSet.getCRC().isEmpty()) {
                     regionBuilder.append("\n**CRC:\n**").append(regionSet.getCRC().replace(" ", "\n"));
                 }
@@ -117,7 +121,34 @@ public class CommandWiki extends AbstractSlashCommand {
 
                 eb.addField("__" + regionSet.getRegion() + "__", regionBuilder.toString(), true);
             }
+
+            if (wikiPage.getKnownIssues() != null && wikiPage.getKnownIssues().size() > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+
+                for (String knownIssue : wikiPage.getKnownIssues())
+                {
+                    sb.append(knownIssue);
+                    sb.append("\n");
+                }
+
+                eb.addField("__Known Issues__", sb.toString().trim(), true);
+            }
+
+            if (wikiPage.getFixedIssues() != null && wikiPage.getFixedIssues().size() > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+
+                for (String fixedIssue : wikiPage.getFixedIssues())
+                {
+                    sb.append(fixedIssue);
+                    sb.append("\n");
+                }
+
+                eb.addField("__Fixed Issues__", sb.toString().trim(), true);
+            }
             
+            eb.setDescription("*Note: The wiki is independently maintained by the PCSX2 community and may not be up to date or fully accurate.*");
             mb.setEmbeds(eb.build());
             event.getHook().editOriginal(mb.build()).setActionRow(Button.link(wikiPage.getWikiPageUrl(), "Go to PCSX2 Wiki")).queue();
         } catch (Exception e) {

@@ -50,7 +50,7 @@ public class WikiPage {
         try {
             wikiPageUrl = url;
             page = Jsoup.connect(url).header("user-agent", "hifumibot/" + HifumiBot.getSelf().getVersion()).maxBodySize(0).get();
-            title = page.getElementById("firstHeading").ownText();
+            title = page.getElementById("firstHeading").text();
             Element infoBox = page.getElementsByClass("infobox").first();
             Elements tables = infoBox.getElementsByTag("table");
             coverArtUrl = BASE_URL + infoBox.getElementsByTag("img").first().attr("src");
