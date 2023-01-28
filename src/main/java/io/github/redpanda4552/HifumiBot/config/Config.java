@@ -76,17 +76,31 @@ public class Config implements IConfig {
         }
     }
 
+    public class Logging {
+        public String memberJoin;
+        public String memberLeave;
+        public String memberBan;
+
+        public Logging() {
+            memberJoin = new String("");
+            memberLeave = new String("");
+            memberBan = new String("");
+        }
+    }
+
     public class Channels {
         public String systemOutputChannelId;
         public String rulesChannelId;
         public String restrictedCommandChannelId;
         public String pixivChannelId;
+        public Logging logging;
 
         public Channels() {
             systemOutputChannelId = new String("");
             rulesChannelId = new String("");
             restrictedCommandChannelId = new String("");
             pixivChannelId = new String("");
+            logging = new Logging();
         }
     }
     

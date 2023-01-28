@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
@@ -44,20 +45,19 @@ import io.github.redpanda4552.HifumiBot.util.PixivSourceFetcher;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 public class EventListener extends ListenerAdapter {
 
@@ -154,28 +154,7 @@ public class EventListener extends ListenerAdapter {
             }
         }
         
-        OffsetDateTime now = OffsetDateTime.now();
-
-        if (Duration.between(event.getMember().getTimeCreated(), now).toMinutes() <= 5) {
-            Member retrievedMember = event.getGuild().retrieveMemberById(event.getMember().getId()).complete();
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle("New Member Joined - Unusually Young Account");
-            eb.setDescription("An account which was created very recently has joined the server.");
-            eb.addField("Username (As Mention)", retrievedMember.getAsMention(), true);
-            eb.addField("Username (Plain Text)", retrievedMember.getUser().getName() + "#" + retrievedMember.getUser().getDiscriminator(), true);
-            eb.addField("Current Display Name", retrievedMember.getEffectiveName(), true);
-            eb.addField("User ID", retrievedMember.getId(), true);
-            eb.addField("Account Created", retrievedMember.getTimeCreated().format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC", true);
-            eb.addField("Joined Server", retrievedMember.getTimeJoined().format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC", true);
-            MessageBuilder mb = new MessageBuilder();
-            mb.setEmbeds(eb.build());
-            mb.setActionRows(ActionRow.of(
-                Button.of(ButtonStyle.PRIMARY, "timeout:" + retrievedMember.getId(), "Timeout (1 hr)"),
-                Button.of(ButtonStyle.SECONDARY, "kick:" + retrievedMember.getId(), "Kick"),
-                Button.of(ButtonStyle.DANGER, "ban:" + retrievedMember.getId(), "Ban (And delete msgs from 24 hrs)")
-            ));
-            Messaging.logInfoMessage(mb.build());
-        }
+        EventLogging.logGuildMemberJoinEvent(event);
 
         if (HifumiBot.getSelf().getConfig().enableBotKicker) {
             if (cooldown != null && OffsetDateTime.now().isAfter(cooldown)) {
@@ -251,6 +230,16 @@ public class EventListener extends ListenerAdapter {
                     event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId),
                     eb.build());
         }
+    }
+
+    @Override 
+    public void onGuildMemberRemove(GuildMemberRemoveEvent event) {
+        EventLogging.logGuildMemberRemoveEvent(event);
+    }
+
+    @Override
+    public void onGuildBan(GuildBanEvent event) {
+        EventLogging.logGuildBanEvent(event);
     }
 
     public void waitForMessage(String userId, Message msg) {

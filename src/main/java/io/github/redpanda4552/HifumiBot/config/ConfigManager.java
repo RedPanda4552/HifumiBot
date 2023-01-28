@@ -81,6 +81,7 @@ public class ConfigManager {
             OutputStream oStream = Files.newOutputStream(file.toPath());
             GsonBuilder builder = new GsonBuilder();
             builder.registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter());
+            builder.serializeNulls();
             Gson gson = config.usePrettyPrint() ? builder.setPrettyPrinting().create() : builder.create();
             String json = gson.toJson(config, TypeToken.get(config.getConfigType().getConfigClass()).getType());
             oStream.write(json.getBytes());
