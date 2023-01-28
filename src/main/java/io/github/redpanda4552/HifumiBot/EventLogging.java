@@ -33,8 +33,8 @@ public class EventLogging {
         eb.setColor(Color.GREEN);
         eb.setTitle("Member Joined");
         
-        if (diff.toMinutes() < 5) {
-            eb.appendDescription(":warning: Account appears to be less than 5 minutes old\n");
+        if (diff.toHours() < 1) {
+            eb.appendDescription(":warning: Account appears to be less than an hour old\n");
         }
 
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
