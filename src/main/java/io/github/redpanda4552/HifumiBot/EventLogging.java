@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
-import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
@@ -27,22 +26,21 @@ public class EventLogging {
         }
 
         OffsetDateTime now = OffsetDateTime.now();
-        long diff = Duration.between(event.getMember().getTimeCreated(), now).toMinutes();
+        Duration diff = Duration.between(event.getUser().getTimeCreated(), now);
         
         Member retrievedMember = event.getGuild().retrieveMemberById(event.getMember().getId()).complete();
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.GREEN);
         eb.setTitle("Member Joined");
         
-        if (diff < 5) {
+        if (diff.toMinutes() < 5) {
             eb.appendDescription(":warning: Account appears to be less than 5 minutes old\n");
         }
 
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
         eb.addField("Username (Plain Text)", event.getUser().getName() + "#" + event.getUser().getDiscriminator(), true);
         eb.addField("User ID", event.getUser().getId(), true);
-        eb.addField("Account Created", event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC", true);
-        eb.addField("Joined Server", event.getMember().getTimeJoined().format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC", true);
+        eb.addField("Account Age", getAgeString(diff), true);
         eb.addField("Current Display Name", event.getMember().getEffectiveName(), true);
 
         MessageBuilder mb = new MessageBuilder();
@@ -62,16 +60,18 @@ public class EventLogging {
             return;
         }
 
+        OffsetDateTime now = OffsetDateTime.now();
+        Duration diff = Duration.between(event.getUser().getTimeCreated(), now);
+
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.ORANGE);
         eb.setTitle("Member Left");
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
         eb.addField("Username (Plain Text)", event.getUser().getName() + "#" + event.getUser().getDiscriminator(), true);
         eb.addField("User ID", event.getUser().getId(), true);
-        eb.addField("Account Created", event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC", true);
+        eb.addField("Account Age", getAgeString(diff), true);
 
         if (event.getMember() != null) {
-            eb.addField("Joined Server", event.getMember().getTimeJoined().format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC", true);
             eb.addField("Current Display Name", event.getMember().getEffectiveName(), true);
         }
         
@@ -87,16 +87,35 @@ public class EventLogging {
             return;
         }
 
+        OffsetDateTime now = OffsetDateTime.now();
+        Duration diff = Duration.between(event.getUser().getTimeCreated(), now);
+
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.RED);
         eb.setTitle("Member Banned");
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
         eb.addField("Username (Plain Text)", event.getUser().getName() + "#" + event.getUser().getDiscriminator(), true);
         eb.addField("User ID", event.getUser().getId(), true);
-        eb.addField("Account Created", event.getUser().getTimeCreated().format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC", true);
+        eb.addField("Account Age", getAgeString(diff), true);
 
         MessageBuilder mb = new MessageBuilder();
         mb.setEmbeds(eb.build());
         Messaging.sendMessage(channelId, mb.build());
+    }
+
+    private static String getAgeString(Duration diff) {
+        String ageStr = "";
+
+        if (diff.toSeconds() < 60) {
+            ageStr = diff.toSeconds() + "s";
+        } else if (diff.toMinutes() < 60) {
+            ageStr = diff.toMinutes() + "m " + diff.toSecondsPart() + "s";
+        } else if (diff.toHours() < 24) {
+            ageStr = diff.toHours() + "h " + diff.toMinutesPart() + "m";
+        } else {
+            ageStr = diff.toDays() + "d " + diff.toHoursPart() + "h";
+        }
+
+        return ageStr;
     }
 }
