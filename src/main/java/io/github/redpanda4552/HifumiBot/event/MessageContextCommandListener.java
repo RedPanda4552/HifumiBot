@@ -27,13 +27,16 @@ import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractMessageContextCommand;
+import io.github.redpanda4552.HifumiBot.command.AbstractUserContextCommand;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class MessageContextCommandListener extends ListenerAdapter {
 
     private HashMap<String, AbstractMessageContextCommand> messageCommands = HifumiBot.getSelf().getCommandIndex().getMessageCommands();
+    private HashMap<String, AbstractUserContextCommand> userCommands = HifumiBot.getSelf().getCommandIndex().getUserCommands();
     
     @Override
     public void onMessageContextInteraction(MessageContextInteractionEvent event) {
@@ -51,4 +54,22 @@ public class MessageContextCommandListener extends ListenerAdapter {
             }
         }
     }
+    
+    @Override
+    public void onUserContextInteraction(UserContextInteractionEvent event) {
+        if (!event.isFromGuild()) {
+            event.reply("User context commands are disabled in DMs.").setEphemeral(true).queue();
+            return;
+        }
+        
+        if (userCommands.containsKey(event.getName())) {
+            try {
+                userCommands.get(event.getName()).executeIfPermission(event);
+            } catch (Exception e) {
+                Messaging.logException("MessageContextCommandListener", "onUserContextInteraction", e);
+                event.reply("An internal exception occurred and has been reported to admins.").setEphemeral(true).queue();
+            }
+        }
+    }
+
 }

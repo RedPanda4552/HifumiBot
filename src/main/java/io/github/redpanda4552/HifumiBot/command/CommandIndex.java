@@ -27,6 +27,7 @@ import java.time.Instant;
 import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.command.context.CommandBan;
 import io.github.redpanda4552.HifumiBot.command.context.CommandReverseImage;
 import io.github.redpanda4552.HifumiBot.command.context.CommandTranslate;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
@@ -51,9 +52,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandSpamKick;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
@@ -64,6 +63,7 @@ public class CommandIndex {
     private CommandListUpdateAction commandsToRegister;
     private HashMap<String, AbstractSlashCommand> slashCommands;
     private HashMap<String, AbstractMessageContextCommand> messageCommands;
+    private HashMap<String, AbstractUserContextCommand> userCommands;
     private HashMap<String, HashMap<String, Instant>> history;
 
     /**
@@ -73,6 +73,7 @@ public class CommandIndex {
     public CommandIndex() {
         slashCommands = new HashMap<String, AbstractSlashCommand>();
         messageCommands = new HashMap<String, AbstractMessageContextCommand>();
+        userCommands = new HashMap<String, AbstractUserContextCommand>();
         history = new HashMap<String, HashMap<String, Instant>>();
         rebuild();
     }
@@ -84,6 +85,7 @@ public class CommandIndex {
         commandsToRegister = HifumiBot.getSelf().getJDA().updateCommands();
         rebuildSlash();
         rebuildMessage();
+        rebuildUser();
         rebuildDynamic();
         commandsToRegister.queue();
     }
@@ -114,6 +116,11 @@ public class CommandIndex {
         messageCommands.clear();
         registerMessageCommand(new CommandTranslate());
         registerMessageCommand(new CommandReverseImage());
+    }
+
+    public void rebuildUser() {
+        userCommands.clear();
+        registerUserCommand(new CommandBan());
     }
     
     public void rebuildDynamic() {
@@ -158,6 +165,12 @@ public class CommandIndex {
         messageCommands.put(name, messageCommand);
         commandsToRegister.addCommands(messageCommand.defineMessageContextCommand());
     }
+
+    private void registerUserCommand(AbstractUserContextCommand userCommand) {
+        String name = userCommand.defineUserContextCommand().getName();
+        userCommands.put(name, userCommand);
+        commandsToRegister.addCommands(userCommand.defineUserContextCommand());
+    }
     
     public HashMap<String, AbstractSlashCommand> getSlashCommands() {
         return slashCommands;
@@ -165,6 +178,10 @@ public class CommandIndex {
     
     public HashMap<String, AbstractMessageContextCommand> getMessageCommands() {
         return messageCommands;
+    }
+
+    public HashMap<String, AbstractUserContextCommand> getUserCommands() {
+        return userCommands;
     }
 
     /**
