@@ -134,10 +134,11 @@ public class GameDB implements Refreshable {
         put(2, "On + Restrict paltex");
     }};
     
+    private boolean isInitialized = false;
     private Map<String, Object> map;
     
     public GameDB() {
-        refresh();
+        
     }
     
     @Override
@@ -151,9 +152,15 @@ public class GameDB implements Refreshable {
                 Yaml yaml = new Yaml();
                 map = yaml.load(res.body().charStream());
             }
+
+            this.isInitialized = true;
         } catch (IOException e) {
             Messaging.logException("GameDB", "refresh", e);
         }
+    }
+
+    public boolean isInitialized() {
+        return this.isInitialized;
     }
 
     public Map<String, Object> getMap() {

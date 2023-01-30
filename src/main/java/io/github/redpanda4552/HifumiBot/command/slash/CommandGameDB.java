@@ -50,6 +50,11 @@ public class CommandGameDB extends AbstractSlashCommand {
             event.reply("Invalid option detected, admins have been alerted.").setEphemeral(true).queue();
             return;
         }
+
+        if (!HifumiBot.getSelf().getGameDB().isInitialized()) {
+            event.reply("Whoa there! The bot is still fetching data from GameIndex.yaml, please wait a moment while that finishes!").queue();
+            return;
+        }
         
         String normalized = opt.getAsString().toUpperCase();
         Matcher m = GAMEDB_SERIAL_PATTERN.matcher(normalized);

@@ -184,6 +184,7 @@ public class HifumiBot {
             wikiIndex.refresh();
             cpuIndex.refresh();
             gpuIndex.refresh();
+            gameDB.refresh();
         });
 
         // Schedule repeating tasks
@@ -198,6 +199,10 @@ public class HifumiBot {
         scheduler.scheduleRepeating("gpu", () -> {
             HifumiBot.getSelf().getGpuIndex().refresh();
         }, 1000 * 60 * 60 * 24);
+        
+        scheduler.scheduleRepeating("gdb", () -> {
+            HifumiBot.getSelf().getGameDB().refresh();
+        }, 1000 * 60 * 60 * 4);
 
         scheduler.scheduleRepeating("ints", () -> {
             HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
