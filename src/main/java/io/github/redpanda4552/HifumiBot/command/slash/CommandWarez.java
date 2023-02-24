@@ -23,8 +23,11 @@
  */
 package io.github.redpanda4552.HifumiBot.command.slash;
 
+import java.time.OffsetDateTime;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
+import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -53,6 +56,14 @@ public class CommandWarez extends AbstractSlashCommand {
             
             if (user != null) {
                 Member member = event.getOption("user").getAsMember();
+
+                if (member == null) {
+                    HifumiBot.getSelf().getWarezTracking().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
+                    ConfigManager.write(HifumiBot.getSelf().getWarezTracking());
+                    event.getHook().sendMessage("Warez record logged (User has already left the server)").queue();
+                    return;
+                }
+
                 mb.setContent(member.getAsMention());
                 
                 if (member != null && !HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, member)) {
