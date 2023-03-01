@@ -205,7 +205,7 @@ public class GameDB implements Refreshable {
                     }
 
                     if (roundModes.containsKey("vu1RoundMode")) {
-                        eb.addField("VU1 Rounding Mode", ROUNDING.get((int) roundModes.get("vu0RoundMode")), true);
+                        eb.addField("VU1 Rounding Mode", ROUNDING.get((int) roundModes.get("vu1RoundMode")), true);
                     }
                 }
                 
