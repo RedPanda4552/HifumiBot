@@ -200,8 +200,12 @@ public class GameDB implements Refreshable {
                         eb.addField("EE Rounding Mode", ROUNDING.get((int) roundModes.get("eeRoundMode")), true);
                     }
                     
-                    if (roundModes.containsKey("vuRoundMode")) {
-                        eb.addField("VU Rounding Mode", ROUNDING.get((int) roundModes.get("vuRoundMode")), true);
+                    if (roundModes.containsKey("vu0RoundMode")) {
+                        eb.addField("VU1 Rounding Mode", ROUNDING.get((int) roundModes.get("vu0RoundMode")), true);
+                    }
+
+                    if (roundModes.containsKey("vu1RoundMode")) {
+                        eb.addField("VU1 Rounding Mode", ROUNDING.get((int) roundModes.get("vu0RoundMode")), true);
                     }
                 }
                 
@@ -224,8 +228,12 @@ public class GameDB implements Refreshable {
                         eb.addField("EE Clamping Mode", EE_CLAMPING.get((int) clampModes.get("eeClampMode")), true);
                     }
                     
-                    if (clampModes.containsKey("vuClampMode")) {
-                        eb.addField("VU Clamping Mode", VU_CLAMPING.get((int) clampModes.get("vuClampMode")), true);
+                    if (clampModes.containsKey("vu0ClampMode")) {
+                        eb.addField("VU0 Clamping Mode", VU_CLAMPING.get((int) clampModes.get("vu0ClampMode")), true);
+                    }
+                    
+                    if (clampModes.containsKey("vu1ClampMode")) {
+                        eb.addField("VU1 Clamping Mode", VU_CLAMPING.get((int) clampModes.get("vu1ClampMode")), true);
                     }
                 }
                 
