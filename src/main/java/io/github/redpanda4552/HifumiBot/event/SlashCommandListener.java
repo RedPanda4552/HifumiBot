@@ -42,6 +42,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class SlashCommandListener extends ListenerAdapter {
 
@@ -71,7 +72,14 @@ public class SlashCommandListener extends ListenerAdapter {
                 
                 if (subcommand.getChoices().containsKey(event.getSubcommandName())) {
                     DynamicChoice choice = subcommand.getChoice(event.getSubcommandName());
-                    choice.execute(event);
+
+                    OptionMapping mentionOpt = event.getOption("mention");
+
+                    if (mentionOpt != null) {
+                        choice.execute(event, mentionOpt.getAsMember());
+                    } else {
+                        choice.execute(event);
+                    }
                 }
             }
         } else {

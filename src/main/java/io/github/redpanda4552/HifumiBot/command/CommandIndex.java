@@ -52,6 +52,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandSpamKick;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -144,6 +145,7 @@ public class CommandIndex {
                 for (String choiceName : choices.keySet()) {
                     DynamicChoice choice = choices.get(choiceName);
                     SubcommandData subcommandData = new SubcommandData(choice.getName(), choice.getDescription());
+                    subcommandData.addOption(OptionType.USER, "mention", "Mention user");
                     subgroup.addSubcommands(subcommandData);
                 }
 
