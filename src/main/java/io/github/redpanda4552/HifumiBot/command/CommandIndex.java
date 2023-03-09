@@ -145,7 +145,7 @@ public class CommandIndex {
                 for (String choiceName : choices.keySet()) {
                     DynamicChoice choice = choices.get(choiceName);
                     SubcommandData subcommandData = new SubcommandData(choice.getName(), choice.getDescription());
-                    subcommandData.addOption(OptionType.USER, "mention", "Mention user");
+                    subcommandData.addOption(OptionType.USER, "mention", "Mention");
                     subgroup.addSubcommands(subcommandData);
                 }
 
