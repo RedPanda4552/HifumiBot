@@ -44,7 +44,7 @@ public class PnachParser extends AbstractParser {
     private final Message message;
     private Attachment attachment;
 
-    private HashMap<PnachParserError, ArrayList<Integer>> errorMap;
+    private HashMap<PnachParserError, ArrayList<String>> errorMap;
 
     public PnachParser(final Message message) {
         this.message = message;
@@ -56,10 +56,10 @@ public class PnachParser extends AbstractParser {
             }
         }
 
-        this.errorMap = new HashMap<PnachParserError, ArrayList<Integer>>();
+        this.errorMap = new HashMap<PnachParserError, ArrayList<String>>();
 
         for (PnachParserError ppe : PnachParserError.values()) {
-            this.errorMap.put(ppe, new ArrayList<Integer>());
+            this.errorMap.put(ppe, new ArrayList<String>());
         }
     }
 
@@ -79,14 +79,12 @@ public class PnachParser extends AbstractParser {
             Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Testing your PNACH ( " + attachment.getFileName() + " )");
 
             if (!Pattern.matches(CRC_FILE_NAME_PATTERN, attachment.getFileName())) {
-                addError(PnachParserError.FILE_NAME, -1);
+                addError(PnachParserError.FILE_NAME, "(filename)");
             }
 
-            int lineNumber = 0;
             String line;
 
             while ((line = reader.readLine()) != null) {
-                lineNumber++;
                 // Test the start of the line. Is it one of the accepted tags,
                 // a comment, or blank?
                 if (line.isBlank() || line.startsWith("//")) {
@@ -98,13 +96,19 @@ public class PnachParser extends AbstractParser {
                     if (lineStart.equals("author") || lineStart.equals("comment") || lineStart.equals("gametitle")) {
                         continue;
                     } else if (lineStart.equalsIgnoreCase("author") || lineStart.equalsIgnoreCase("comment") || lineStart.equalsIgnoreCase("gametitle")) {
-                        addError(PnachParserError.START_LOWERCASE, lineNumber);
+                        addError(PnachParserError.START_LOWERCASE, line);
                     } else if (lineStart.equals("patch")) {
                         int lastEquals = line.lastIndexOf('=');
 
                         if (firstEquals == lastEquals) {
                             try {
+                                int firstInlineComment = line.contains("//") ? line.indexOf("//") : -1;
                                 String paramStr = line.substring(firstEquals + 1);
+
+                                if (firstInlineComment != -1) {
+                                    paramStr = paramStr.substring(0, firstInlineComment);
+                                }
+
                                 String[] params = paramStr.split(",");
 
                                 if (params.length == 5) {
@@ -113,19 +117,19 @@ public class PnachParser extends AbstractParser {
                                         int mode = Integer.parseInt(params[0]);
 
                                         if (mode < 0 || mode > 2) {
-                                            addError(PnachParserError.FIRST_RANGE, lineNumber);
+                                            addError(PnachParserError.FIRST_RANGE, line);
                                         }
                                     } catch (NumberFormatException e) {
-                                        addError(PnachParserError.FIRST_NAN, lineNumber);
+                                        addError(PnachParserError.FIRST_NAN, line);
                                     }
 
                                     // Param 1
                                     if (params[1].equals("EE") || params[1].equals("IOP")) {
                                         // Do nothing
                                     } else if (params[1].equalsIgnoreCase("EE") || params[1].equalsIgnoreCase("IOP")) {
-                                        addError(PnachParserError.SECOND_CAPS, lineNumber);
+                                        addError(PnachParserError.SECOND_CAPS, line);
                                     } else {
-                                        addError(PnachParserError.SECOND_CPU, lineNumber);
+                                        addError(PnachParserError.SECOND_CPU, line);
                                     }
 
                                     // Param 2
@@ -137,17 +141,17 @@ public class PnachParser extends AbstractParser {
 
                                         if (params[3].equals("extended")) {
                                             if (leading < 0 || leading > 2) {
-                                                addError(PnachParserError.THIRD_LEAD_UNCHECKED, lineNumber);
+                                                addError(PnachParserError.THIRD_LEAD_UNCHECKED, line);
                                             }
                                         } else {
                                             if (leading != 0) {
-                                                addError(PnachParserError.THIRD_LEAD_NOT_ALLOWED, lineNumber);
+                                                addError(PnachParserError.THIRD_LEAD_NOT_ALLOWED, line);
                                             } else if (addr >= 0x02000000) {
-                                                addError(PnachParserError.THIRD_RANGE, lineNumber);
+                                                addError(PnachParserError.THIRD_RANGE, line);
                                             }
                                         }
                                     } catch (NumberFormatException e) {
-                                        addError(PnachParserError.THIRD_ADDRESS, lineNumber);
+                                        addError(PnachParserError.THIRD_ADDRESS, line);
                                     }
                                     // Param 3
                                     if (params[3].equals("byte") || params[3].equals("short")
@@ -158,9 +162,9 @@ public class PnachParser extends AbstractParser {
                                             || params[3].equalsIgnoreCase("word")
                                             || params[3].equalsIgnoreCase("double")
                                             || params[3].equalsIgnoreCase("extended")) {
-                                        addError(PnachParserError.FOURTH_LOWERCASE, lineNumber);
+                                        addError(PnachParserError.FOURTH_LOWERCASE, line);
                                     } else {
-                                        addError(PnachParserError.FOURTH_TYPE, lineNumber);
+                                        addError(PnachParserError.FOURTH_TYPE, line);
                                     }
                                     // Param 4
                                     try {
@@ -169,11 +173,11 @@ public class PnachParser extends AbstractParser {
 
                                         if (params[3].equals("byte") || (params[3].equals("extended") && leading == 0)) {
                                             if (Integer.compareUnsigned(value, 0xff) > 0) {
-                                                addError(PnachParserError.FIFTH_SCOPE, lineNumber);
+                                                addError(PnachParserError.FIFTH_SCOPE, line);
                                             }
                                         } else if (params[3].equals("short") || (params[3].equals("extended") && leading == 1)) {
                                             if (Integer.compareUnsigned(value, 0xffff) > 0) {
-                                                addError(PnachParserError.FIFTH_SCOPE, lineNumber);
+                                                addError(PnachParserError.FIFTH_SCOPE, line);
                                             }
                                         } else if (params[3].equals("word") || (params[3].equals("extended") && leading == 2)) {
                                             // Nothing to report on
@@ -181,22 +185,22 @@ public class PnachParser extends AbstractParser {
                                             // Nothing to report on
                                         }
                                     } catch (NumberFormatException e) {
-                                        addError(PnachParserError.FIFTH_VALUE, lineNumber);
+                                        addError(PnachParserError.FIFTH_VALUE, line);
                                     }
                                 } else {
-                                    addError(PnachParserError.PARAM_COUNT, lineNumber);
+                                    addError(PnachParserError.PARAM_COUNT, line);
                                 }
                             } catch (IndexOutOfBoundsException e) {
-                                addError(PnachParserError.MISSING_RIGHT, lineNumber);
+                                addError(PnachParserError.MISSING_RIGHT, line);
                             }
                         } else {
-                            addError(PnachParserError.SECOND_EQUALS, lineNumber);
+                            addError(PnachParserError.SECOND_EQUALS, line);
                         }
                     } else {
-                        addError(PnachParserError.START_KEYWORD, lineNumber);
+                        addError(PnachParserError.START_KEYWORD, line);
                     }
                 } else {
-                    addError(PnachParserError.NO_EQUALS, lineNumber);
+                    addError(PnachParserError.NO_EQUALS, line);
                 }
             }
 
@@ -210,29 +214,17 @@ public class PnachParser extends AbstractParser {
             boolean hasLines = false;
 
             for (PnachParserError epe : errorMap.keySet()) {
-                ArrayList<Integer> lines = errorMap.get(epe);
+                ArrayList<String> lines = errorMap.get(epe);
 
                 if (lines.size() > 0) {
                     hasLines = true;
                     bodyBuilder.append("--------------------------------------------------------------------------------")
                             .append("\n")
-                            .append(epe.getDisplayString()).append("\n\n")
-                            .append("Affected Lines:").append("\n");
+                            .append(epe.getDisplayString()).append("\n\n");
                     StringBuilder lineBuilder = new StringBuilder();
 
-                    for (Integer i : lines) {
-                        if (lineBuilder.length() + String.valueOf(i).length() + String.valueOf(LINE_NUM_SEPARATOR).length() > MAX_LINE_LENGTH) {
-                            bodyBuilder.append(lineBuilder.toString()).append("\n");
-                            lineBuilder = new StringBuilder();
-                        } else if (lineBuilder.length() != 0) {
-                            lineBuilder.append(LINE_NUM_SEPARATOR);
-                        }
-
-                        lineBuilder.append(i);
-                    }
-
-                    if (lineBuilder.length() != 0) {
-                        bodyBuilder.append(lineBuilder.toString()).append("\n");
+                    for (String str : lines) {
+                        bodyBuilder.append(str).append("\n");
                     }
                 }
             }
@@ -257,8 +249,8 @@ public class PnachParser extends AbstractParser {
         }
     }
 
-    private void addError(PnachParserError ppe, Integer line) {
-        ArrayList<Integer> lines = errorMap.get(ppe);
+    private void addError(PnachParserError ppe, String line) {
+        ArrayList<String> lines = errorMap.get(ppe);
         lines.add(line);
         errorMap.put(ppe, lines);
     }
