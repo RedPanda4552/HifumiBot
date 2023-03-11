@@ -143,6 +143,12 @@ public class GameDB implements Refreshable {
         put(4, "Full");
         put(5, "Maximum");
     }};
+
+    private static final HashMap<Integer, String> GPU_TARGET_CLUT = new HashMap<Integer, String>() {{
+        put(0, "Disabled");
+        put(1, "Enabled (Exact Match)");
+        put(2, "Enabled (Check Inside Target)");
+    }};
     
     private boolean isInitialized = false;
     private Map<String, Object> map;
@@ -411,6 +417,20 @@ public class GameDB implements Refreshable {
                             String.valueOf((int) gsHWFixes.get("skipDrawEnd")),
                             true));
                     }
+
+                    if (gsHWFixes.containsKey("getSkipCount")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Get Skip Count",
+                            (String) gsHWFixes.get("getSkipCount"),
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("beforeDraw")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Before Draw",
+                            (String) gsHWFixes.get("beforeDraw"),
+                            true));
+                    }
                     
                     if (gsHWFixes.containsKey("halfBottomOverride")) {
                         eb.addField(EmbedUtil.prebuildField(
@@ -457,6 +477,13 @@ public class GameDB implements Refreshable {
                         eb.addField(EmbedUtil.prebuildField(
                             "Software CLUT Render", 
                             String.valueOf((int) gsHWFixes.get("cpuCLUTRender")), 
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("gpuTargetCLUT")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "GPU Target CLUT", 
+                            GPU_TARGET_CLUT.get((int) gsHWFixes.get("gpuTargetCLUT")),
                             true));
                     }
                     
