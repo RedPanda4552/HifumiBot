@@ -23,13 +23,29 @@
  */
 package io.github.redpanda4552.HifumiBot.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.User;
 
 public class EmbedUtil {
+
+    public static Field prebuildField(String title, String value, boolean inline) {
+        if (title.length() > MessageEmbed.TITLE_MAX_LENGTH) {
+            title = StringUtils.truncate(title, MessageEmbed.TITLE_MAX_LENGTH);
+        }
+
+        if (value.length() > MessageEmbed.VALUE_MAX_LENGTH) {
+            value = StringUtils.truncate(value, MessageEmbed.VALUE_MAX_LENGTH);
+        }
+
+        return new Field(title, value, inline);
+    }
 
     public static EmbedBuilder newFootedEmbedBuilderForFilters() {
         return newFootedEmbedBuilder(null, HifumiBot.getSelf().getJDA().getSelfUser().getAvatarUrl());

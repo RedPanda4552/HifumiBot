@@ -31,6 +31,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
+import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Refreshable;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -190,22 +191,34 @@ public class GameDB implements Refreshable {
                 if (entry.containsKey("memcardFilters")) {
                     List<String> memcardFilters = (List<String>) entry.get("memcardFilters");
                     
-                    eb.addField("Memcard Filters", StringUtils.joinWith("\n", memcardFilters.toArray()), true);
+                    eb.addField(EmbedUtil.prebuildField(
+                        "Memcard Filters", 
+                        StringUtils.joinWith("\n", memcardFilters.toArray()), 
+                        true));
                 }
                 
                 if (entry.containsKey("roundModes")) {
                     Map<String, Object> roundModes = (Map<String, Object>) entry.get("roundModes");
                     
                     if (roundModes.containsKey("eeRoundMode")) {
-                        eb.addField("EE Rounding Mode", ROUNDING.get((int) roundModes.get("eeRoundMode")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "EE Rounding Mode", 
+                            ROUNDING.get((int) roundModes.get("eeRoundMode")), 
+                            true));
                     }
                     
                     if (roundModes.containsKey("vu0RoundMode")) {
-                        eb.addField("VU1 Rounding Mode", ROUNDING.get((int) roundModes.get("vu0RoundMode")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "VU1 Rounding Mode", 
+                            ROUNDING.get((int) roundModes.get("vu0RoundMode")), 
+                            true));
                     }
 
                     if (roundModes.containsKey("vu1RoundMode")) {
-                        eb.addField("VU1 Rounding Mode", ROUNDING.get((int) roundModes.get("vu1RoundMode")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "VU1 Rounding Mode", 
+                            ROUNDING.get((int) roundModes.get("vu1RoundMode")), 
+                            true));
                     }
                 }
                 
@@ -213,11 +226,17 @@ public class GameDB implements Refreshable {
                     Map<String, Object> speedhacks = (Map<String, Object>) entry.get("speedHacks");
                     
                     if (speedhacks.containsKey("InstantVU1SpeedHack")) {
-                        eb.addField("Instant VU1", GENERIC_BOOLEAN.get((int) speedhacks.get("InstantVU1SpeedHack")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Instant VU1", 
+                            GENERIC_BOOLEAN.get((int) speedhacks.get("InstantVU1SpeedHack")), 
+                            true));
                     }
                     
                     if (speedhacks.containsKey("MTVUSpeedHack")) {
-                        eb.addField("Multi-Threaded VU1 (MTVU)", GENERIC_BOOLEAN.get((int) speedhacks.get("MTVUSpeedHack")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Multi-Threaded VU1 (MTVU)", 
+                            GENERIC_BOOLEAN.get((int) speedhacks.get("MTVUSpeedHack")), 
+                            true));
                     }
                 }
                 
@@ -225,121 +244,204 @@ public class GameDB implements Refreshable {
                     Map<String, Object> clampModes = (Map<String, Object>) entry.get("clampModes");
                     
                     if (clampModes.containsKey("eeClampMode")) {
-                        eb.addField("EE Clamping Mode", EE_CLAMPING.get((int) clampModes.get("eeClampMode")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "EE Clamping Mode", 
+                            EE_CLAMPING.get((int) clampModes.get("eeClampMode")), 
+                            true));
                     }
                     
                     if (clampModes.containsKey("vu0ClampMode")) {
-                        eb.addField("VU0 Clamping Mode", VU_CLAMPING.get((int) clampModes.get("vu0ClampMode")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "VU0 Clamping Mode", 
+                            VU_CLAMPING.get((int) clampModes.get("vu0ClampMode")), 
+                            true));
                     }
                     
                     if (clampModes.containsKey("vu1ClampMode")) {
-                        eb.addField("VU1 Clamping Mode", VU_CLAMPING.get((int) clampModes.get("vu1ClampMode")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "VU1 Clamping Mode", 
+                            VU_CLAMPING.get((int) clampModes.get("vu1ClampMode")), 
+                            true));
                     }
                 }
                 
                 if (entry.containsKey("gameFixes")) {
                     List<String> gameFixes = (List<String>) entry.get("gameFixes");
                     
-                    eb.addField("Game Fixes", StringUtils.joinWith("\n", gameFixes.toArray()), true);
+                    eb.addField(EmbedUtil.prebuildField(
+                        "Game Fixes", 
+                        StringUtils.joinWith("\n", gameFixes.toArray()), 
+                        true));
                 }
                 
                 if (entry.containsKey("gsHWFixes")) {
                     Map<String, Object> gsHWFixes = (Map<String, Object>) entry.get("gsHWFixes");
                     
                     if (gsHWFixes.containsKey("autoFlush")) {
-                        eb.addField("Auto Flush", GENERIC_BOOLEAN.get((int) gsHWFixes.get("autoFlush")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Auto Flush", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("autoFlush")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("conservativeFramebuffer")) {
-                        eb.addField("Conservative Framebuffer", GENERIC_BOOLEAN.get((int) gsHWFixes.get("conservativeFramebuffer")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Conservative Framebuffer", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("conservativeFramebuffer")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("cpuFramebufferConversion")) {
-                        eb.addField("Frame Buffer Conversion", GENERIC_BOOLEAN.get((int) gsHWFixes.get("cpuFramebufferConversion")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Frame Buffer Conversion", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("cpuFramebufferConversion")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("disableDepthSupport")) {
-                        eb.addField("Disable Depth Emulation", GENERIC_BOOLEAN.get((int) gsHWFixes.get("disableDepthSupport")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Disable Depth Emulation", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("disableDepthSupport")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("wrapGSMem")) {
-                        eb.addField("Memory Wrapping", GENERIC_BOOLEAN.get((int) gsHWFixes.get("wrapGSMem")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Memory Wrapping", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("wrapGSMem")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("preloadFrameData")) {
-                        eb.addField("Preload Frame Data", GENERIC_BOOLEAN.get((int) gsHWFixes.get("preloadFrameData")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Preload Frame Data", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("preloadFrameData")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("disablePartialInvalidation")) {
-                        eb.addField("Disable Partial Invalidation", GENERIC_BOOLEAN.get((int) gsHWFixes.get("disablePartialInvalidation")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Disable Partial Invalidation", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("disablePartialInvalidation")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("textureInsideRT")) {
-                        eb.addField("Texture Inside RT", GENERIC_BOOLEAN.get((int) gsHWFixes.get("textureInsideRT")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Texture Inside RT", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("textureInsideRT")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("alignSprite")) {
-                        eb.addField("Align Sprite", GENERIC_BOOLEAN.get((int) gsHWFixes.get("alignSprite")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Align Sprite", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("alignSprite")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("mergeSprite")) {
-                        eb.addField("Merge Sprite", GENERIC_BOOLEAN.get((int) gsHWFixes.get("mergeSprite")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Merge Sprite", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("mergeSprite")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("wildArmsHack")) {
-                        eb.addField("Wild Arms Hack", GENERIC_BOOLEAN.get((int) gsHWFixes.get("wildArmsHack")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Wild Arms Hack", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("wildArmsHack")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("pointListPalette")) {
-                        eb.addField("Disable Safe Features", GENERIC_BOOLEAN.get((int) gsHWFixes.get("pointListPalette")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Disable Safe Features", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("pointListPalette")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("mipmap")) {
-                        eb.addField("Mipmapping", MIPMAP.get((int) gsHWFixes.get("mipmap")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Mipmapping", 
+                            MIPMAP.get((int) gsHWFixes.get("mipmap")), 
+                            true));
                     }
 
                     if (gsHWFixes.containsKey("trilinearFiltering")) {
-                        eb.addField("Trilinear Filtering", TRILINEAR.get((int) gsHWFixes.get("trilinearFiltering")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Trilinear Filtering", 
+                            TRILINEAR.get((int) gsHWFixes.get("trilinearFiltering")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("skipDrawStart")) {
-                        eb.addField("Skipdraw Range (Start)", String.valueOf((int) gsHWFixes.get("skipDrawStart")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Skipdraw Range (Start)", 
+                            String.valueOf((int) gsHWFixes.get("skipDrawStart")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("skipDrawEnd")) {
-                        eb.addField("Skipdraw Range (End)", String.valueOf((int) gsHWFixes.get("skipDrawEnd")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Skipdraw Range (End)",
+                            String.valueOf((int) gsHWFixes.get("skipDrawEnd")),
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("halfBottomOverride")) {
-                        eb.addField("Half Screen Fix", HALF_BOTTOM.get((int) gsHWFixes.get("halfBottomOverride")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Half Screen Fix", 
+                            HALF_BOTTOM.get((int) gsHWFixes.get("halfBottomOverride")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("halfPixelOffset")) {
-                        eb.addField("Half Pixel Offset", HALF_PIXEL_OFFSET.get((int) gsHWFixes.get("halfPixelOffset")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Half Pixel Offset", 
+                            HALF_PIXEL_OFFSET.get((int) gsHWFixes.get("halfPixelOffset")), true);
                     }
                     
                     if (gsHWFixes.containsKey("roundSprite")) {
-                        eb.addField("Round Sprite", ROUND_SPRITE.get((int) gsHWFixes.get("roundSprite")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Round Sprite", 
+                            ROUND_SPRITE.get((int) gsHWFixes.get("roundSprite")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("texturePreloading")) {
-                        eb.addField("Texture Preloading", TEXTURE_PRELOADING.get((int) gsHWFixes.get("texturePreloading")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Texture Preloading", 
+                            TEXTURE_PRELOADING.get((int) gsHWFixes.get("texturePreloading")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("deinterlace")) {
-                        eb.addField("Deinterlacing", DEINTERLACING.get((int) gsHWFixes.get("deinterlace")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Deinterlacing",
+                            DEINTERLACING.get((int) gsHWFixes.get("deinterlace")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("cpuSpriteRenderBW")) {
-                        eb.addField("CPU Sprite Render Size", String.valueOf((int) gsHWFixes.get("cpuSpriteRenderBW")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "CPU Sprite Render Size", 
+                            String.valueOf((int) gsHWFixes.get("cpuSpriteRenderBW")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("cpuCLUTRender")) {
-                        eb.addField("Software CLUT Render", String.valueOf((int) gsHWFixes.get("cpuCLUTRender")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Software CLUT Render", 
+                            String.valueOf((int) gsHWFixes.get("cpuCLUTRender")), 
+                            true));
                     }
                     
                     if (gsHWFixes.containsKey("gpuPaletteConversion")) {
-                        eb.addField("GPU Palette Conversion", GPU_PALETTE_CONVERSION.get((int) gsHWFixes.get("gpuPaletteConversion")), true);
+                        eb.addField(EmbedUtil.prebuildField(
+                            "GPU Palette Conversion",
+                            GPU_PALETTE_CONVERSION.get((int) gsHWFixes.get("gpuPaletteConversion")), 
+                            true));
                     }
                 }
                 
@@ -351,7 +453,10 @@ public class GameDB implements Refreshable {
                         
                         if (patch.containsKey("content")) {
                             String content = (String) patch.get("content");
-                            eb.addField("Patch (" + crcName + ")", content, false);
+                            eb.addField(EmbedUtil.prebuildField(
+                                "Patch (" + crcName + ")", 
+                                content, 
+                                false));
                         }
                     }
                 }
