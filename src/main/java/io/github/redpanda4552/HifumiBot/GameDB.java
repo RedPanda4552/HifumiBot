@@ -134,6 +134,15 @@ public class GameDB implements Refreshable {
         put(1, "On");
         put(2, "On + Restrict paltex");
     }};
+
+    private static final HashMap<Integer, String> BLENDING_ACCURACY = new HashMap<Integer, String>() {{
+        put(0, "Minimum");
+        put(1, "Basic");
+        put(2, "Medium");
+        put(3, "High");
+        put(4, "Full");
+        put(5, "Maximum");
+    }};
     
     private boolean isInitialized = false;
     private Map<String, Object> map;
@@ -399,7 +408,7 @@ public class GameDB implements Refreshable {
                     if (gsHWFixes.containsKey("halfPixelOffset")) {
                         eb.addField(EmbedUtil.prebuildField(
                             "Half Pixel Offset", 
-                            HALF_PIXEL_OFFSET.get((int) gsHWFixes.get("halfPixelOffset")), true);
+                            HALF_PIXEL_OFFSET.get((int) gsHWFixes.get("halfPixelOffset")), true));
                     }
                     
                     if (gsHWFixes.containsKey("roundSprite")) {
@@ -441,6 +450,27 @@ public class GameDB implements Refreshable {
                         eb.addField(EmbedUtil.prebuildField(
                             "GPU Palette Conversion",
                             GPU_PALETTE_CONVERSION.get((int) gsHWFixes.get("gpuPaletteConversion")), 
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("recommendedBlendingLevel")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Blending Accuracy (Recommended)",
+                            BLENDING_ACCURACY.get((int) gsHWFixes.get("recommendedBlendingLevel")), 
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("maximumBlendingLevel")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Blending Accuracy (Maximum)",
+                            BLENDING_ACCURACY.get((int) gsHWFixes.get("maximumBlendingLevel")), 
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("minimumBlendingLevel")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Blending Accuracy (Minimum)",
+                            BLENDING_ACCURACY.get((int) gsHWFixes.get("minimumBlendingLevel")), 
                             true));
                     }
                 }
