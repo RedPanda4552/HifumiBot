@@ -44,7 +44,7 @@ public class EmulogParser extends AbstractParser {
     private Attachment attachment;
 
     private HashMap<Rule, Pattern> patterns;
-    private HashMap<Rule, ArrayList<Integer>> lines;
+    private HashMap<Rule, ArrayList<String>> lines;
 
     public EmulogParser(final Message message) {
         this.message = message;
@@ -57,11 +57,11 @@ public class EmulogParser extends AbstractParser {
         }
 
         patterns = new HashMap<Rule, Pattern>();
-        lines = new HashMap<Rule, ArrayList<Integer>>();
+        lines = new HashMap<Rule, ArrayList<String>>();
         
         for (Rule rule : HifumiBot.getSelf().getEmulogParserConfig().rules) {
             patterns.put(rule, Pattern.compile(rule.toMatch.toLowerCase()));
-            lines.put(rule, new ArrayList<Integer>());
+            lines.put(rule, new ArrayList<String>());
         }
     }
 
@@ -83,20 +83,18 @@ public class EmulogParser extends AbstractParser {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
             Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Checking your emulog.txt for information/errors...");
-            int lineNumber = 0;
-            String line;
+            String originalLine;
+            String normalizedLine;
 
-            while ((line = reader.readLine()) != null) {
-                line = line.toLowerCase();
-                
-                lineNumber++;
+            while ((originalLine = reader.readLine()) != null) {
+                normalizedLine = originalLine.toLowerCase();
                 
                 for (Rule rule : patterns.keySet()) {
                     Pattern p = patterns.get(rule);
-                    Matcher m = p.matcher(line);
+                    Matcher m = p.matcher(normalizedLine);
                     
                     if (m.matches()) {
-                        addError(rule, lineNumber);
+                        addError(rule, originalLine);
                     }
                 }
             }
@@ -111,7 +109,7 @@ public class EmulogParser extends AbstractParser {
             boolean hasLines = false;
 
             for (Rule rule : lines.keySet()) {
-                ArrayList<Integer> arr = lines.get(rule);
+                ArrayList<String> arr = lines.get(rule);
 
                 if (arr.size() > 0) {
                     hasLines = true;
@@ -135,22 +133,9 @@ public class EmulogParser extends AbstractParser {
                     }
                     
                     bodyBuilder.append(rule.message).append("\n\n");
-                    bodyBuilder.append("Affected Lines:").append("\n");
-                    StringBuilder lineBuilder = new StringBuilder();
 
-                    for (Integer i : arr) {
-                        if (lineBuilder.length() + String.valueOf(i).length() + String.valueOf(LINE_NUM_SEPARATOR).length() > MAX_LINE_LENGTH) {
-                            bodyBuilder.append(lineBuilder.toString()).append("\n");
-                            lineBuilder = new StringBuilder();
-                        } else if (lineBuilder.length() != 0) {
-                            lineBuilder.append(LINE_NUM_SEPARATOR);
-                        }
-
-                        lineBuilder.append(i);
-                    }
-
-                    if (lineBuilder.length() != 0) {
-                        bodyBuilder.append(lineBuilder.toString()).append("\n");
+                    for (String str : arr) {
+                        bodyBuilder.append(str).append("\n");
                     }
                 }
             }
@@ -175,8 +160,8 @@ public class EmulogParser extends AbstractParser {
         }
     }
 
-    private void addError(Rule rule, Integer line) {
-        ArrayList<Integer> arr = lines.get(rule);
+    private void addError(Rule rule, String line) {
+        ArrayList<String> arr = lines.get(rule);
         arr.add(line);
         lines.put(rule, arr);
     }
