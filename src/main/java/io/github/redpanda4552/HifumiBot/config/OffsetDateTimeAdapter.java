@@ -53,7 +53,7 @@ public class OffsetDateTimeAdapter extends TypeAdapter<OffsetDateTime> {
                     totalSeconds = reader.nextInt();
                 reader.endObject();
             reader.endObject();
-            return OffsetDateTime.of(year, month, month, hour, minute, second, nano, ZoneOffset.ofTotalSeconds(totalSeconds));
+            return OffsetDateTime.of(year, month, day, hour, minute, second, nano, ZoneOffset.ofTotalSeconds(totalSeconds));
         } catch (DateTimeParseException e) {
             return null;
         }
