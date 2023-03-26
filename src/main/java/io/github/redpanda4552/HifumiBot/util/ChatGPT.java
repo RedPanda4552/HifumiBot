@@ -104,7 +104,7 @@ public class ChatGPT {
         public String content = "Translate the following to ";
 
         public RequestTemplateMessage(String content, String lang) {
-            this.content += lang + ", then identify the source language: " + content;
+            this.content += lang + ", then identify the source language on a new line: " + content;
         }
     }
 

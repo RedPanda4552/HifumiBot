@@ -32,10 +32,8 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
-public class CommandTranslate extends AbstractMessageContextCommand {
+public class CommandTranslateEN extends AbstractMessageContextCommand {
 
-    private static final String URL_FORMAT = "https://translate.google.com/?sl=auto&tl=en&text=%s&op=translate";
-    
     @Override
     protected void onExecute(MessageContextInteractionEvent event) {
         event.deferReply(true).queue();
@@ -49,7 +47,13 @@ public class CommandTranslate extends AbstractMessageContextCommand {
             eb.setTitle("Chat GPT Translation");
             eb.setDescription(translated);
             event.getTarget().replyEmbeds(eb.build()).queue();
-            event.getHook().deleteOriginal().queue();
+
+            try {
+                event.getHook().deleteOriginal().queue();    
+            } catch (Exception e) {
+                // Squelch
+            }
+            
         } else {
             event.getHook().editOriginal("Either an error occurred, or you are being rate limited. Please try again in a few minutes.").queue();
         }
@@ -57,7 +61,7 @@ public class CommandTranslate extends AbstractMessageContextCommand {
 
     @Override
     protected CommandData defineMessageContextCommand() {
-        return Commands.message("translate")
+        return Commands.message("translate-en")
                 .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 }

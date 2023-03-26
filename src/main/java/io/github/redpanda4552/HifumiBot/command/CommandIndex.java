@@ -29,7 +29,7 @@ import java.util.HashMap;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.context.CommandBan;
 import io.github.redpanda4552.HifumiBot.command.context.CommandReverseImage;
-import io.github.redpanda4552.HifumiBot.command.context.CommandTranslate;
+import io.github.redpanda4552.HifumiBot.command.context.CommandTranslateEN;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
@@ -49,6 +49,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSpamKick;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandTranslate;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -111,11 +112,12 @@ public class CommandIndex {
         registerSlashCommand(new CommandPanic());
         registerSlashCommand(new CommandGameDB());
         registerSlashCommand(new CommandEmulog());
+        registerSlashCommand(new CommandTranslate());
     }
     
     public void rebuildMessage() {
         messageCommands.clear();
-        registerMessageCommand(new CommandTranslate());
+        registerMessageCommand(new CommandTranslateEN());
         registerMessageCommand(new CommandReverseImage());
     }
 
