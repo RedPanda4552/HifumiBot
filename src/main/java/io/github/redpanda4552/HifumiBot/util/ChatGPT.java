@@ -45,7 +45,6 @@ public class ChatGPT {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         String bodyStr = gson.toJson(template);
-        System.out.print(bodyStr);
         Builder builder = new Request.Builder()
             .url(CHAT_GPT_ENDPOINT)
             .header("Authorization", "Bearer " + HifumiBot.getChatGptToken())
@@ -62,7 +61,6 @@ public class ChatGPT {
                 this.requestHistory.put(Instant.now(), resObj.usage.total_tokens);
                 return resObj.choices.get(0).message.content;
             } else {
-                System.out.print(res.body().string());
                 return null;
             }
         } catch (IOException e) {
