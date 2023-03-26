@@ -23,15 +23,14 @@
  */
 package io.github.redpanda4552.HifumiBot.command.context;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
+import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractMessageContextCommand;
+import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CommandTranslate extends AbstractMessageContextCommand {
 
@@ -40,14 +39,19 @@ public class CommandTranslate extends AbstractMessageContextCommand {
     @Override
     protected void onExecute(MessageContextInteractionEvent event) {
         event.deferReply(true).queue();
+        String userId = event.getTarget().getAuthor().getId();
         String content = event.getTarget().getContentDisplay();
-        
-        try {
-            String encoded = URLEncoder.encode(content, "UTF-8");
-            String url = String.format(URL_FORMAT, encoded);
-            event.getHook().sendMessage(content).addActionRow(Button.link(url, "Go to Google Translate"), Button.link(event.getTarget().getJumpUrl(), "Jump to Original Message")).queue();
-        } catch (UnsupportedEncodingException e) {
-            event.getHook().sendMessage("Could not prepare a Google Translate link for this message, perhaps there are some weird characters in it?").queue();
+        event.getHook().editOriginal(":hourglass: Sending a translation request to Chat GPT... This may take a moment...").queue();
+        String translated = HifumiBot.getSelf().getChatGPT().translate(userId, content);
+
+        if (translated != null) {
+            EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(event.getMember());
+            eb.setTitle("Chat GPT Translation");
+            eb.setDescription(translated);
+            event.getTarget().replyEmbeds(eb.build()).queue();
+            event.getHook().deleteOriginal().queue();
+        } else {
+            event.getHook().editOriginal("Either an error occurred, or you are being rate limited. Please try again in a few minutes.").queue();
         }
     }
 

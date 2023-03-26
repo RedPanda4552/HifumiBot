@@ -43,6 +43,7 @@ import io.github.redpanda4552.HifumiBot.filter.BotDetection;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
 import io.github.redpanda4552.HifumiBot.filter.KickHandler;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
+import io.github.redpanda4552.HifumiBot.util.ChatGPT;
 import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
@@ -59,6 +60,7 @@ public class HifumiBot {
     private static HifumiBot self;
     private static String discordBotToken;
     private static String superuserId;
+    private static String chatGptToken;
 
     public static void main(String[] args) {
         // Run via environment variables first, if not, fall-back to args
@@ -66,12 +68,20 @@ public class HifumiBot {
             System.out.println("Found environment variables, using those instead of cli-args!");
             discordBotToken = System.getenv("DISCORD_BOT_TOKEN");
             superuserId = System.getenv("SUPERUSER_ID");
+
+            if (System.getenv().containsKey("CHAT_GPT_TOKEN")) {
+                chatGptToken = System.getenv("CHAT_GPT_TOKEN");
+            }
         } else if (args.length < 2) {
-            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id>");
+            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [chat-gpt-token]");
             return;
         } else {
             discordBotToken = args[0];
             superuserId = args[1];
+
+            if (args.length >= 3) {
+                chatGptToken = args[2];
+            }
             System.out.println("Parsed arguments from command line");
         }
 
@@ -89,6 +99,10 @@ public class HifumiBot {
     
     public static String getSuperuserId() {
         return superuserId;
+    }
+
+    public static String getChatGptToken() {
+        return chatGptToken;
     }
 
     private JDA jda;
@@ -113,6 +127,7 @@ public class HifumiBot {
     private KickHandler kickHandler;
     private GameDB gameDB;
     private BotDetection botDetection;
+    private ChatGPT chatGPT;
 
     public HifumiBot() {
         self = this;
@@ -179,6 +194,7 @@ public class HifumiBot {
         kickHandler = new KickHandler();
         gameDB = new GameDB();
         botDetection = new BotDetection();
+        chatGPT = new ChatGPT();
 
         scheduler.runOnce(() -> {
             wikiIndex.refresh();
@@ -306,6 +322,10 @@ public class HifumiBot {
     
     public BotDetection getBotDetection() {
         return botDetection;
+    }
+
+    public ChatGPT getChatGPT() {
+        return chatGPT;
     }
 
     public void shutdown(boolean reload) {

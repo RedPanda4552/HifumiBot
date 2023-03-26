@@ -1,0 +1,131 @@
+package io.github.redpanda4552.HifumiBot.util;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import io.github.redpanda4552.HifumiBot.HifumiBot;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.Request.Builder;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+public class ChatGPT {
+
+    private static final String CHAT_GPT_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+    private static final int CHAT_GPT_RPM = 20;
+    private static final int CHAT_GPT_TPM = 40000;
+
+    private HashMap<Instant, Integer> requestHistory;
+    private int tokens;
+
+    public ChatGPT() {
+        this.requestHistory = new HashMap<Instant, Integer>();
+        this.tokens = 0;
+    }
+
+    public synchronized String translate(String userId, String str) {
+        this.cleanupHistory();
+
+        if (HifumiBot.getChatGptToken() == null || this.requestHistory.size() >= CHAT_GPT_RPM || this.tokens >= CHAT_GPT_TPM) {
+            return null;
+        }
+
+        RequestTemplate template = new RequestTemplate(userId);
+        template.messages.add(new RequestTemplateMessage(str));
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        String bodyStr = gson.toJson(template);
+        System.out.print(bodyStr);
+        Builder builder = new Request.Builder()
+            .url(CHAT_GPT_ENDPOINT)
+            .header("Authorization", "Bearer " + HifumiBot.getChatGptToken())
+            .header("Content-Type", "application/json")
+            .post(RequestBody.create(bodyStr, MediaType.parse("application/json")));
+        
+        Request req = builder.build();
+        
+        try {
+            Response res = HifumiBot.getSelf().getHttpClient().newCall(req).execute();
+            
+            if (res.isSuccessful()) {
+                ResponseTemplate resObj = (ResponseTemplate) gson.fromJson(res.body().string(), ResponseTemplate.class);
+                return resObj.choices.get(0).message.content;
+            } else {
+                System.out.print(res.body().string());
+                return null;
+            }
+        } catch (IOException e) {
+            Messaging.logException("ChatGPT", "translate", e);
+        } catch (Exception e) {
+            Messaging.logException("ChatGPT", "translate", e);
+        }
+        
+        return null;
+    }
+
+    private void cleanupHistory() {
+        Instant now = Instant.now();
+        this.tokens = 0;
+        
+        for (Instant instant : this.requestHistory.keySet()) {
+            if (instant.plusSeconds(60).isBefore(now)) {
+                this.requestHistory.remove(instant);
+            } else {
+                this.tokens += this.requestHistory.get(instant);
+            }
+        }
+    }
+
+    private class RequestTemplate {
+        public String model;
+        public ArrayList<RequestTemplateMessage> messages;
+        public String user;
+
+        public RequestTemplate(String userId) {
+            this.model = "gpt-3.5-turbo";
+            this.messages = new ArrayList<RequestTemplateMessage>();
+            this.user = userId;
+        }
+    }
+
+    private class RequestTemplateMessage {
+        public String role = "user";
+        public String content = "Translate the following to English: ";
+
+        public RequestTemplateMessage(String content) {
+            this.content += content;
+        }
+    }
+
+    private class ResponseTemplate {
+        public String id;
+        public String object;
+        public long created;
+        public String model;
+        public ResponseTemplateUsage usage;
+        public ArrayList<ResponseTemplateChoice> choices;
+    }
+
+    private class ResponseTemplateUsage {
+        public int prompt_tokens;
+        public int completion_tokens;
+        public int total_tokens;
+    }
+
+    private class ResponseTemplateChoice {
+        public ResponseTemplateChoiceMessage message;
+        public String finish_reason;
+        public int index;
+    }
+
+    private class ResponseTemplateChoiceMessage {
+        public String role;
+        public String content;
+    }
+}
