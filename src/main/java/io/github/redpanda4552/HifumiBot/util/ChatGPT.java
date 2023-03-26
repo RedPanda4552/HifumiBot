@@ -30,6 +30,10 @@ public class ChatGPT {
     }
 
     public synchronized String translate(String userId, String str) {
+        return translate(userId, str, "english");
+    }
+
+    public synchronized String translate(String userId, String str, String lang) {
         this.cleanupHistory();
 
         if (HifumiBot.getChatGptToken() == null || this.requestHistory.size() >= CHAT_GPT_RPM || this.tokens >= CHAT_GPT_TPM) {
@@ -37,7 +41,7 @@ public class ChatGPT {
         }
 
         RequestTemplate template = new RequestTemplate(userId);
-        template.messages.add(new RequestTemplateMessage(str));
+        template.messages.add(new RequestTemplateMessage(str, lang));
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         String bodyStr = gson.toJson(template);
@@ -97,10 +101,10 @@ public class ChatGPT {
 
     private class RequestTemplateMessage {
         public String role = "user";
-        public String content = "Translate the following to English: ";
+        public String content = "Translate the following to ";
 
-        public RequestTemplateMessage(String content) {
-            this.content += content;
+        public RequestTemplateMessage(String content, String lang) {
+            this.content += lang + ", then identify the source language: " + content;
         }
     }
 
