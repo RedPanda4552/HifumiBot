@@ -55,6 +55,7 @@ public class ChatGPT {
             
             if (res.isSuccessful()) {
                 ResponseTemplate resObj = (ResponseTemplate) gson.fromJson(res.body().string(), ResponseTemplate.class);
+                this.requestHistory.put(Instant.now(), resObj.usage.total_tokens);
                 return resObj.choices.get(0).message.content;
             } else {
                 System.out.print(res.body().string());
