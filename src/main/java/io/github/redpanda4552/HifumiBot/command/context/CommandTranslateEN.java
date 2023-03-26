@@ -46,7 +46,7 @@ public class CommandTranslateEN extends AbstractMessageContextCommand {
             EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(event.getMember());
             eb.setTitle("Chat GPT Translation");
             eb.setDescription(translated);
-            event.getTarget().replyEmbeds(eb.build()).queue();
+            event.getTarget().replyEmbeds(eb.build()).mentionRepliedUser(false).queue();
 
             try {
                 event.getHook().deleteOriginal().queue();    
