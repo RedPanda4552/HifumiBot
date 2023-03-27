@@ -75,13 +75,10 @@ public class ChatGPT {
     private void cleanupHistory() {
         Instant now = Instant.now();
         this.tokens = 0;
+        this.requestHistory.entrySet().removeIf(entry -> (entry.getKey().plusSeconds(60).isBefore(now)));
         
         for (Instant instant : this.requestHistory.keySet()) {
-            if (instant.plusSeconds(60).isBefore(now)) {
-                this.requestHistory.remove(instant);
-            } else {
-                this.tokens += this.requestHistory.get(instant);
-            }
+            this.tokens += this.requestHistory.get(instant);
         }
     }
 
