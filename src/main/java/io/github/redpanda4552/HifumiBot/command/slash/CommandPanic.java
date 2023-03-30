@@ -60,7 +60,7 @@ public class CommandPanic extends AbstractSlashCommand {
     }
 
     private void enable(SlashCommandInteractionEvent event) {
-        if (HifumiBot.getSelf().getEventListener().getLockdown()) {
+        if (HifumiBot.getSelf().getMemberEventListener().getLockdown()) {
             event.getHook().editOriginal("Panic mode is already enabled").queue();
             return;
         }
@@ -71,7 +71,7 @@ public class CommandPanic extends AbstractSlashCommand {
             }
         });
         
-        HifumiBot.getSelf().getEventListener().setLockdown(true);
+        HifumiBot.getSelf().getMemberEventListener().setLockdown(true);
         event.getHook().editOriginal("Panic mode activated.\n- 1 second slow mode is applied to all channels visible to role-less viewers\n- New users are being instantly kicked but will receive a DM explaining why").queue();
     }
     
@@ -82,7 +82,7 @@ public class CommandPanic extends AbstractSlashCommand {
             }
         });
         
-        HifumiBot.getSelf().getEventListener().setLockdown(false);
+        HifumiBot.getSelf().getMemberEventListener().setLockdown(false);
         event.getHook().editOriginal("Panic mode deactivated. All previous changes have been reverted.").queue();
     }
 }

@@ -37,6 +37,7 @@ import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
 import io.github.redpanda4552.HifumiBot.config.ServerMetrics;
 import io.github.redpanda4552.HifumiBot.config.WarezTracking;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
+import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.BotDetection;
@@ -121,9 +122,12 @@ public class HifumiBot {
     private CommandIndex commandIndex;
     private PermissionManager permissionManager;
     private ChatFilter chatFilter;
+    
     private EventListener eventListener;
+    private MemberEventListener memberEventListener;
     private SlashCommandListener slashCommandListener;
     private MessageContextCommandListener messageCommandListener;
+    
     private KickHandler kickHandler;
     private GameDB gameDB;
     private BotDetection botDetection;
@@ -189,6 +193,7 @@ public class HifumiBot {
         permissionManager = new PermissionManager(superuserId);
         chatFilter = new ChatFilter();
         jda.addEventListener(eventListener = new EventListener(this));
+        jda.addEventListener(memberEventListener = new MemberEventListener());
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
         kickHandler = new KickHandler();
@@ -302,6 +307,10 @@ public class HifumiBot {
 
     public EventListener getEventListener() {
         return eventListener;
+    }
+
+    public MemberEventListener getMemberEventListener() {
+        return memberEventListener;
     }
     
     public SlashCommandListener getSlashCommandListener() {

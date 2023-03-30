@@ -26,46 +26,35 @@ package io.github.redpanda4552.HifumiBot.event;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.PixivSourceFetcher;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.guild.GuildBanEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class EventListener extends ListenerAdapter {
 
     private HifumiBot hifumiBot;
     private HashMap<String, Message> messages = new HashMap<String, Message>();
-    private ConcurrentHashMap<String, OffsetDateTime> joinEvents = new ConcurrentHashMap<String, OffsetDateTime>();
-    private boolean lockdown = false;
-
+    
     public EventListener(HifumiBot hifumiBot) {
         this.hifumiBot = hifumiBot;
     }
@@ -142,106 +131,6 @@ public class EventListener extends ListenerAdapter {
         }
     }
     
-    private boolean kickNewUsers = false;
-    private OffsetDateTime cooldown;
-
-    @Override
-    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        if (lockdown) {
-            if (event.getMember() != null) {
-                HifumiBot.getSelf().getKickHandler().doKickForBotJoin(event.getMember());
-                return;
-            }
-        }
-        
-        EventLogging.logGuildMemberJoinEvent(event);
-
-        if (HifumiBot.getSelf().getConfig().enableBotKicker) {
-            if (cooldown != null && OffsetDateTime.now().isAfter(cooldown)) {
-                kickNewUsers = false;
-                cooldown = null;
-                Messaging.logInfo("EventListener", "onGuildMemberJoin", "Cooldown has been released, new users are now able to join the server again.");
-            }
-            
-            if (kickNewUsers) {
-                Member member = event.getGuild().getMemberById(event.getUser().getId());
-                HifumiBot.getSelf().getKickHandler().doKickForBotJoin(member);
-            }
-            
-            joinEvents.put(event.getUser().getId(), OffsetDateTime.now());
-            
-            while (joinEvents.size() > 3) {
-                String toRemove = null;
-                
-                for (String userId : joinEvents.keySet()) {
-                    if (toRemove == null || joinEvents.get(userId).isBefore(joinEvents.get(toRemove))) {
-                        toRemove = userId;
-                    }
-                }
-                
-                if (toRemove != null) {
-                    joinEvents.remove(toRemove);
-                }
-            }
-            
-            if (joinEvents.size() == 3) {
-                OffsetDateTime minTime = null;
-                OffsetDateTime maxTime = null;
-                
-                for (String userId : joinEvents.keySet()) {
-                    if (minTime == null || joinEvents.get(userId).isBefore(minTime)) {
-                        minTime = joinEvents.get(userId);
-                    }
-                    
-                    if (maxTime == null || joinEvents.get(userId).isAfter(maxTime)) {
-                        maxTime = joinEvents.get(userId);
-                    }
-                }
-                
-                if (Math.abs(Duration.between(minTime, maxTime).toSeconds()) < 1) {
-                    cooldown = OffsetDateTime.now().plusSeconds(60 * 5);
-                    kickNewUsers = true;
-                    Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId), "@here");
-                    Messaging.logInfo("EventListener", "onGuildMemberJoin", "Cooldown has been tripped by three users joining in under one second; new users will be automatically messaged and kicked for the next five minutes.");
-                    
-                    for (String userId : joinEvents.keySet()) {
-                        Member member = event.getGuild().getMemberById(userId);
-                        HifumiBot.getSelf().getKickHandler().doKickForBotJoin(member);
-                    }
-                }
-            }
-        }
-
-        if (HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
-            // First assign the warez role
-            Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
-            event.getGuild().addRoleToMember(event.getMember(), role).complete();
-
-            // Then send a notification
-            EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(HifumiBot.getSelf().getJDA().getSelfUser());
-            eb.setTitle("Warez Member Rejoined");
-            eb.setDescription("A user who was previously warez'd has rejoined the server.");
-            eb.addField("User Name", event.getUser().getName(), true);
-            eb.addField("Display Name", event.getMember().getEffectiveName(), true);
-            String dateStr = HifumiBot.getSelf().getWarezTracking().warezUsers.get(event.getUser().getId())
-                    .format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
-            eb.addField("Warez Date", dateStr, true);
-            Messaging.sendMessageEmbed(
-                    event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId),
-                    eb.build());
-        }
-    }
-
-    @Override 
-    public void onGuildMemberRemove(GuildMemberRemoveEvent event) {
-        EventLogging.logGuildMemberRemoveEvent(event);
-    }
-
-    @Override
-    public void onGuildBan(GuildBanEvent event) {
-        EventLogging.logGuildBanEvent(event);
-    }
-
     public void waitForMessage(String userId, Message msg) {
         if (messages.containsKey(userId))
             messages.get(userId).delete().complete();
@@ -299,13 +188,5 @@ public class EventListener extends ListenerAdapter {
 
         Messaging.editMessageEmbed(msg, eb.build());
         messages.remove(userId);
-    }
-    
-    public void setLockdown(boolean lockdown) {
-        this.lockdown = lockdown;
-    }
-    
-    public boolean getLockdown() {
-        return lockdown;
     }
 }

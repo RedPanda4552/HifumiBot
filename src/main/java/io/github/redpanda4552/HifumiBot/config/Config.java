@@ -51,7 +51,6 @@ public class Config implements IConfig {
     public HashMap<String, Filter> filters;
     public long ninjaInterval;
     public FilterOptions filterOptions;
-    public boolean enableBotKicker;
 
     public Config() {
         useLocalDNSFiltering = false;
@@ -65,7 +64,6 @@ public class Config implements IConfig {
         filters = new HashMap<String, Filter>();
         filterOptions = new FilterOptions();
         ninjaInterval = 500;
-        enableBotKicker = true;
     }
     
     public class Server {
