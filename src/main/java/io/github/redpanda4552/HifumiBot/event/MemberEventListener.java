@@ -26,26 +26,13 @@ public class MemberEventListener extends ListenerAdapter {
             }
         }
         
-        EventLogging.logGuildMemberJoinEvent(event);
-
+        // Reassign warez
         if (HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
-            // First assign the warez role
             Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
-            event.getGuild().addRoleToMember(event.getMember(), role).complete();
-
-            // Then send a notification
-            EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(HifumiBot.getSelf().getJDA().getSelfUser());
-            eb.setTitle("Warez Member Rejoined");
-            eb.setDescription("A user who was previously warez'd has rejoined the server.");
-            eb.addField("User Name", event.getUser().getName(), true);
-            eb.addField("Display Name", event.getMember().getEffectiveName(), true);
-            String dateStr = HifumiBot.getSelf().getWarezTracking().warezUsers.get(event.getUser().getId())
-                    .format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
-            eb.addField("Warez Date", dateStr, true);
-            Messaging.sendMessageEmbed(
-                    event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId),
-                    eb.build());
+            event.getGuild().addRoleToMember(event.getMember(), role).queue();
         }
+
+        EventLogging.logGuildMemberJoinEvent(event);
     }
 
     @Override 
