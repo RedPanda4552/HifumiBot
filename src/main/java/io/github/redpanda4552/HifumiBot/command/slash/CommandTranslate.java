@@ -3,9 +3,7 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -13,6 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
 public class CommandTranslate extends AbstractSlashCommand {
 
@@ -45,10 +44,10 @@ public class CommandTranslate extends AbstractSlashCommand {
             EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(event.getMember());
             eb.setTitle("Chat GPT Translation");
             eb.setDescription(translated);
-            MessageBuilder mb = new MessageBuilder();
+            MessageEditBuilder mb = new MessageEditBuilder();
             
             if (member != null) {
-                mb.append(member.getAsMention());
+                mb.setContent(member.getAsMention());
             }
 
             mb.setEmbeds(eb.build());

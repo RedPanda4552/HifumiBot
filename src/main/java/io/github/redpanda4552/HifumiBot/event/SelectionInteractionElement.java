@@ -24,14 +24,15 @@
 package io.github.redpanda4552.HifumiBot.event;
 
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 public class SelectionInteractionElement extends AbstractInteractionElement {
     
-    private SelectMenu.Builder selectionMenu;
+    private StringSelectMenu.Builder selectionMenu;
 
     public SelectionInteractionElement(String userId, String commandName) {
         super(userId, commandName);
-        this.selectionMenu = SelectMenu.create(uuid.toString());
+        this.selectionMenu = StringSelectMenu.create(uuid.toString());
     }
     
     public void addOption(String label, String value) {

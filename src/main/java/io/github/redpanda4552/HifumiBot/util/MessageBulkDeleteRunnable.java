@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class MessageBulkDeleteRunnable implements Runnable {
 

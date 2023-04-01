@@ -31,11 +31,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class PixivSourceFetcher {
 
@@ -49,7 +48,7 @@ public class PixivSourceFetcher {
         }
         
         ArrayList<String> imageUrls = new ArrayList<String>();
-        MessageBuilder mb = new MessageBuilder();
+        MessageCreateBuilder mb = new MessageCreateBuilder();
         
         for (Attachment attach : message.getAttachments()) {
             int pos = 0;
@@ -83,10 +82,10 @@ public class PixivSourceFetcher {
         }
         
         if (!imageUrls.isEmpty()) {
-            mb.append("Found the sauce! ");
+            mb.addContent("Found the sauce! ");
             
             if (imageUrls.size() > 1) {
-                mb.append("(button order matches image order)");
+                mb.addContent("(button order matches image order)");
             }
             
             ArrayList<Button> buttons = new ArrayList<Button>();
@@ -95,12 +94,12 @@ public class PixivSourceFetcher {
                 if (buttons.size() < 5) {
                     buttons.add(Button.link(imageUrl, "Go to Pixiv"));
                 } else {
-                    mb.append(" (max button count reached, other images will not be linked)");
+                    mb.addContent(" (max button count reached, other images will not be linked)");
                     break;
                 }
             }
             
-            mb.setActionRows(ActionRow.of(buttons));
+            mb.setActionRow(buttons);
             message.reply(mb.build()).mentionRepliedUser(false).queue();
         }
     }

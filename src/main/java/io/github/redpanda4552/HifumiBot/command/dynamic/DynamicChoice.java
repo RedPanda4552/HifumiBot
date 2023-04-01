@@ -25,9 +25,9 @@ package io.github.redpanda4552.HifumiBot.command.dynamic;
 
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class DynamicChoice {
 
@@ -46,7 +46,7 @@ public class DynamicChoice {
     }
     
     public void execute(SlashCommandInteractionEvent event, Member pingMember) {
-        MessageBuilder mb = new MessageBuilder();
+        MessageCreateBuilder mb = new MessageCreateBuilder();
         
         if (pingMember != null) {
             mb.setContent(pingMember.getAsMention());

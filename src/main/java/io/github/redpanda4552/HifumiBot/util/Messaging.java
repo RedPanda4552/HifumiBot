@@ -27,15 +27,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 public class Messaging {
     
@@ -44,11 +46,12 @@ public class Messaging {
             return null;
         }
         
-        MessageBuilder mb = new MessageBuilder(str);
+        MessageCreateBuilder mb = new MessageCreateBuilder();
+        mb.addContent(str);
         return sendPrivateMessage(user, mb.build());
     }
     
-    public static Message sendPrivateMessage(User user, Message msg) {
+    public static Message sendPrivateMessage(User user, MessageCreateData msg) {
         if (msg == null) {
             return null;
         }
@@ -63,52 +66,58 @@ public class Messaging {
         return ret;
     }
 
-    public static Message sendMessage(String channelId, Message msg) {
+    public static Message sendMessage(String channelId, MessageCreateData msg) {
         return Messaging.sendMessage(HifumiBot.getSelf().getJDA().getTextChannelById(channelId), msg);
     }
     
     public static Message sendMessage(MessageChannel channel, String str) {
-        MessageBuilder mb = new MessageBuilder(str);
+        MessageCreateBuilder mb = new MessageCreateBuilder();
+        mb.addContent(str);
         return Messaging.sendMessage(channel, mb.build(), null, null);
     }
     
     public static Message sendMessage(MessageChannel channel, String str, Message toReference, boolean pingReference) {
-        MessageBuilder mb = new MessageBuilder(str);
+        MessageCreateBuilder mb = new MessageCreateBuilder();
+        mb.addContent(str);
         return Messaging.sendMessage(channel, mb.build(), null, null, null, null, toReference, pingReference);
     }
 
-    public static Message sendMessage(MessageChannel channel, Message msg) {
+    public static Message sendMessage(MessageChannel channel, MessageCreateData msg) {
         return Messaging.sendMessage(channel, msg, null, null);
     }
 
     public static Message sendMessage(MessageChannel channel, String str, String fileName, String fileContents) {
-        MessageBuilder mb = new MessageBuilder(str);
+        MessageCreateBuilder mb = new MessageCreateBuilder();
+        mb.addContent(str);
         return Messaging.sendMessage(channel, mb.build(), fileName, fileContents);
     }
 
-    public static Message sendMessage(MessageChannel channel, Message msg, String fileName, String fileContents) {
+    public static Message sendMessage(MessageChannel channel, MessageCreateData msg, String fileName, String fileContents) {
         return Messaging.sendMessage(channel, msg, fileName, fileContents, null, null);
     }
     
     public static Message sendMessage(MessageChannel channel, String str, String fileName, String fileContents, String linkLabel, String linkDestination) {
-        MessageBuilder mb = new MessageBuilder(str);
+        MessageCreateBuilder mb = new MessageCreateBuilder();
+        mb.addContent(str);
         return Messaging.sendMessage(channel, mb.build(), fileName, fileContents, linkLabel, linkDestination); 
     }
     
-    public static Message sendMessage(MessageChannel channel, Message msg, String fileName, String fileContents, String linkLabel, String linkDestination) {
+    public static Message sendMessage(MessageChannel channel, MessageCreateData msg, String fileName, String fileContents, String linkLabel, String linkDestination) {
         return Messaging.sendMessage(channel, msg, fileName, fileContents, linkLabel, linkDestination, null, false);
     }
     
     public static Message sendMessage(MessageChannel channel, String str, String fileName, String fileContents, String linkLabel, String linkDestination, Message toReference, boolean pingReference) {
-        MessageBuilder mb = new MessageBuilder(str);
+        MessageCreateBuilder mb = new MessageCreateBuilder();
+        mb.addContent(str);
         return Messaging.sendMessage(channel, mb.build(), fileName, fileContents, linkLabel, linkDestination, toReference, pingReference); 
     }
     
-    public static Message sendMessage(MessageChannel channel, Message msg, String fileName, String fileContents, String linkLabel, String linkDestination, Message toReference, boolean pingReference) {
-        MessageAction action = channel.sendMessage(msg);
+    public static Message sendMessage(MessageChannel channel, MessageCreateData msg, String fileName, String fileContents, String linkLabel, String linkDestination, Message toReference, boolean pingReference) {
+        MessageCreateAction action = channel.sendMessage(msg);
         
         if (fileName != null && !fileName.isBlank() && fileContents != null && !fileContents.isBlank()) {
-            action.addFile(fileContents.getBytes(), fileName);
+            FileUpload file = FileUpload.fromData(fileContents.getBytes(), fileName);
+            action.addFiles(file);
         }
         
         if (linkLabel != null && !linkLabel.isBlank() && linkDestination != null && !linkDestination.isBlank()) {
@@ -116,7 +125,7 @@ public class Messaging {
         }
         
         if (toReference != null) {
-            action.reference(toReference);
+            action.setMessageReference(toReference);
             action.mentionRepliedUser(pingReference);
         }
         
@@ -142,7 +151,7 @@ public class Messaging {
         Messaging.sendMessageEmbed(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId, eb.build());
     }
 
-    public static void logInfoMessage(Message msg) {
+    public static void logInfoMessage(MessageCreateData msg) {
         Messaging.sendMessage(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId, msg);
     }
 

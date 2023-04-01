@@ -7,14 +7,13 @@ import java.time.format.DateTimeFormatter;
 
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class EventLogging {
     
@@ -49,13 +48,13 @@ public class EventLogging {
         eb.addField("Account Age", getAgeString(diff), true);
         eb.addField("Current Display Name", event.getMember().getEffectiveName(), true);
 
-        MessageBuilder mb = new MessageBuilder();
+        MessageCreateBuilder mb = new MessageCreateBuilder();
         mb.setEmbeds(eb.build());
-        mb.setActionRows(ActionRow.of(
+        mb.addActionRow(
             Button.of(ButtonStyle.PRIMARY, "timeout:" + retrievedMember.getId(), "Timeout (1 hr)"),
             Button.of(ButtonStyle.SECONDARY, "kick:" + retrievedMember.getId(), "Kick"),
             Button.of(ButtonStyle.DANGER, "ban:" + retrievedMember.getId(), "Ban (And delete msgs from 24 hrs)")
-        ));
+        );
         Messaging.sendMessage(channelId, mb.build());
     }
 
@@ -81,7 +80,7 @@ public class EventLogging {
             eb.addField("Current Display Name", event.getMember().getEffectiveName(), true);
         }
         
-        MessageBuilder mb = new MessageBuilder();
+        MessageCreateBuilder mb = new MessageCreateBuilder();
         mb.setEmbeds(eb.build());
         Messaging.sendMessage(channelId, mb.build());
     }
@@ -104,7 +103,7 @@ public class EventLogging {
         eb.addField("User ID", event.getUser().getId(), true);
         eb.addField("Account Age", getAgeString(diff), true);
 
-        MessageBuilder mb = new MessageBuilder();
+        MessageCreateBuilder mb = new MessageCreateBuilder();
         mb.setEmbeds(eb.build());
         Messaging.sendMessage(channelId, mb.build());
     }

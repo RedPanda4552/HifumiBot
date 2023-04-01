@@ -25,8 +25,6 @@ package io.github.redpanda4552.HifumiBot;
 
 import java.time.OffsetDateTime;
 
-import javax.security.auth.login.LoginException;
-
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.config.BuildCommitMap;
 import io.github.redpanda4552.HifumiBot.config.Config;
@@ -148,7 +146,7 @@ public class HifumiBot {
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .setAutoReconnect(true)
                     .build().awaitReady();
-        } catch (LoginException | IllegalArgumentException | InterruptedException e) {
+        } catch (Exception e) {
             Messaging.logException("HifumiBot", "(constructor)", e);
         }
 

@@ -1,5 +1,7 @@
 package io.github.redpanda4552.HifumiBot.command.context;
 
+import java.util.concurrent.TimeUnit;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractUserContextCommand;
 import io.github.redpanda4552.HifumiBot.util.MessageBulkDeleteRunnable;
@@ -23,7 +25,7 @@ public class CommandBan extends AbstractUserContextCommand {
         Member member = event.getTargetMember();
 
         if (member != null) {
-            member.ban(0).queue();
+            member.ban(0, TimeUnit.SECONDS).queue();
         }
         
         MessageBulkDeleteRunnable runnable = new MessageBulkDeleteRunnable(event.getGuild().getId(), event.getTarget().getId());

@@ -1,12 +1,7 @@
 package io.github.redpanda4552.HifumiBot.event;
 
-import java.time.format.DateTimeFormatter;
-
 import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;

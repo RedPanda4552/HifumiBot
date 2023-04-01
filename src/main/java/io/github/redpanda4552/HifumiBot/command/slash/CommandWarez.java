@@ -31,10 +31,9 @@ import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -42,6 +41,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class CommandWarez extends AbstractSlashCommand {
     
@@ -50,7 +50,7 @@ public class CommandWarez extends AbstractSlashCommand {
         event.deferReply().queue();
         
         try {
-            MessageBuilder mb = new MessageBuilder();
+            MessageCreateBuilder mb = new MessageCreateBuilder();
             EmbedBuilder eb = new EmbedBuilder();
             OptionMapping user = event.getOption("user");
             

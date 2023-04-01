@@ -34,15 +34,15 @@ import io.github.redpanda4552.HifumiBot.util.SimpleSearch;
 import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
 import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
 public class CommandWiki extends AbstractSlashCommand {
 
@@ -81,7 +81,7 @@ public class CommandWiki extends AbstractSlashCommand {
     }
     
     @Override
-    public void onSelectionEvent(SelectMenuInteractionEvent event) {
+    public void onStringSelectEvent(StringSelectInteractionEvent event) {
         try {
             List<SelectOption> options = event.getSelectedOptions();
             
@@ -97,7 +97,7 @@ public class CommandWiki extends AbstractSlashCommand {
             
             String gameName = options.get(0).getValue();
             WikiPage wikiPage = new WikiPage(HifumiBot.getSelf().getWikiIndex().getWikiPageUrl(gameName));
-            MessageBuilder mb = new MessageBuilder();
+            MessageEditBuilder mb = new MessageEditBuilder();
             EmbedBuilder eb = new EmbedBuilder();
             eb.setTitle(wikiPage.getTitle(), wikiPage.getWikiPageUrl());
             eb.setThumbnail(wikiPage.getCoverArtUrl());

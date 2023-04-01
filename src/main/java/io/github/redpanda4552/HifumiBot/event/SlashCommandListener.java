@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
@@ -40,7 +41,7 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
@@ -141,7 +142,7 @@ public class SlashCommandListener extends ListenerAdapter {
             case "ban":
                 try {
                     if (event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
-                        event.getGuild().retrieveMemberById(parts[1]).complete().ban(1).queue();
+                        event.getGuild().retrieveMemberById(parts[1]).complete().ban(1, TimeUnit.HOURS).queue();
                         reply = "Member banned successfully!";
                     } else {
                         reply = "You don't have permission to ban members";
@@ -157,7 +158,7 @@ public class SlashCommandListener extends ListenerAdapter {
     }
     
     @Override 
-    public void onSelectMenuInteraction(SelectMenuInteractionEvent event) {
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
         UUID uuid = null;
         
         try {
@@ -184,7 +185,7 @@ public class SlashCommandListener extends ListenerAdapter {
         case "wiki":
             event.deferEdit().queue();
             CommandWiki commandWiki = (CommandWiki) slashCommands.get(selection.getCommandName());
-            commandWiki.onSelectionEvent(event);
+            commandWiki.onStringSelectEvent(event);
             break;
         }
     }

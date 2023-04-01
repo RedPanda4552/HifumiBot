@@ -25,7 +25,7 @@ package io.github.redpanda4552.HifumiBot.command;
 
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public abstract class AbstractMessageContextCommand {
@@ -36,6 +36,6 @@ public abstract class AbstractMessageContextCommand {
     
     protected abstract void onExecute(MessageContextInteractionEvent event);
     public void onButtonEvent(ButtonInteractionEvent event) { }
-    public void onSelectionEvent(SelectMenuInteractionEvent event) { }
+    public void onSelectionEvent(EntitySelectInteractionEvent event) { }
     protected abstract CommandData defineMessageContextCommand();
 }

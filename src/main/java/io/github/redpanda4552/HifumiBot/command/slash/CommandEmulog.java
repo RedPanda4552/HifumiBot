@@ -29,8 +29,6 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig.Rule;
-import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement;
-import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
 import io.github.redpanda4552.HifumiBot.util.CommandUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
