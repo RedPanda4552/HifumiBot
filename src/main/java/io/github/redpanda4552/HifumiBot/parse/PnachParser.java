@@ -221,7 +221,6 @@ public class PnachParser extends AbstractParser {
                     bodyBuilder.append("--------------------------------------------------------------------------------")
                             .append("\n")
                             .append(epe.getDisplayString()).append("\n\n");
-                    StringBuilder lineBuilder = new StringBuilder();
 
                     for (String str : lines) {
                         bodyBuilder.append(str).append("\n");

@@ -20,7 +20,6 @@ public class OffsetDateTimeAdapter extends TypeAdapter<OffsetDateTime> {
         }
 
         try {
-            String name = "";
             int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0, nano = 0, totalSeconds = 0;
 
             reader.beginObject();

@@ -82,7 +82,7 @@ public class ChatGPT {
         }
     }
 
-    private class RequestTemplate {
+    public class RequestTemplate {
         public String model;
         public ArrayList<RequestTemplateMessage> messages;
         public String user;
@@ -94,7 +94,7 @@ public class ChatGPT {
         }
     }
 
-    private class RequestTemplateMessage {
+    public class RequestTemplateMessage {
         public String role = "user";
         public String content = "Translate the following to ";
 
@@ -103,7 +103,7 @@ public class ChatGPT {
         }
     }
 
-    private class ResponseTemplate {
+    public class ResponseTemplate {
         public String id;
         public String object;
         public long created;
@@ -112,19 +112,19 @@ public class ChatGPT {
         public ArrayList<ResponseTemplateChoice> choices;
     }
 
-    private class ResponseTemplateUsage {
+    public class ResponseTemplateUsage {
         public int prompt_tokens;
         public int completion_tokens;
         public int total_tokens;
     }
 
-    private class ResponseTemplateChoice {
+    public class ResponseTemplateChoice {
         public ResponseTemplateChoiceMessage message;
         public String finish_reason;
         public int index;
     }
 
-    private class ResponseTemplateChoiceMessage {
+    public class ResponseTemplateChoiceMessage {
         public String role;
         public String content;
     }
