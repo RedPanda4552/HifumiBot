@@ -10,13 +10,13 @@
         
         <!-- Dependency Versions -->
         <jda.version>5.0.0-beta.6</jda.version>
-        <logback.version>1.2.9</logback.version>
-        <jsoup.version>1.14.3</jsoup.version>
+        <logback.version>1.2.12</logback.version>
+        <jsoup.version>1.15.4</jsoup.version>
         <commonslang.version>3.12.0</commonslang.version>
-        <commonstext.version>1.9</commonstext.version>
-        <gson.version>2.10</gson.version>
-        <snakeyaml.version>1.30</snakeyaml.version>
-        <dnsjava.version>3.4.3</dnsjava.version>
+        <commonstext.version>1.10.0</commonstext.version>
+        <gson.version>2.10.1</gson.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
+        <dnsjava.version>3.5.2</dnsjava.version>
         
         <!-- Maven Plugin Versions -->
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
