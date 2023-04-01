@@ -39,7 +39,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import okhttp3.Request;
 import okhttp3.Response;
 
-@SuppressWarnings("serial")
 public class GameDB implements Refreshable {
 
     private static final String GAMEDB_LOCATION = "https://raw.githubusercontent.com/PCSX2/pcsx2/master/bin/resources/GameIndex.yaml";
