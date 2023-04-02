@@ -23,11 +23,18 @@
  */
 package io.github.redpanda4552.HifumiBot.command.slash;
 
+import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
+import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.config.ConfigType;
+import io.github.redpanda4552.HifumiBot.util.Strings;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -38,131 +45,218 @@ public class CommandDynCmd extends AbstractSlashCommand {
     
     @Override
     protected void onExecute(SlashCommandInteractionEvent event) {
-        event.reply("Temporarily disabled").setEphemeral(true).queue();
-        return;
-/*
         event.deferReply().setEphemeral(true).queue();
-        String name = event.getOption("name").getAsString();
-        OptionMapping categoryOpt = event.getOption("category");
-        OptionMapping subCategoryOpt = event.getOption("sub-category");
-        OptionMapping helpOpt = event.getOption("help-text");
+        OptionMapping commandOpt = event.getOption("command");
+        OptionMapping subcommandOpt = event.getOption("subcommand");
+        OptionMapping choiceOpt = event.getOption("choice");
+        OptionMapping descriptionOpt = event.getOption("description");
         OptionMapping titleOpt = event.getOption("title");
         OptionMapping bodyOpt = event.getOption("body");
         OptionMapping imageOpt = event.getOption("image-url");
-        DynamicCommand dyncmd = null;
+
+        if (commandOpt == null || subcommandOpt == null || choiceOpt == null) {
+            event.getHook().sendMessage("Missing required arguments - a command, subcommand, and choice are required.").queue();
+            return;
+        }
+
+        String commandStr = commandOpt.getAsString();
+        String subcommandStr = subcommandOpt.getAsString();
+        String choiceStr = choiceOpt.getAsString();
+        String descriptionStr = descriptionOpt != null ? descriptionOpt.getAsString() : null;
+        String titleStr = titleOpt != null ? titleOpt.getAsString() : null;
+        String bodyStr = bodyOpt != null ? bodyOpt.getAsString() : null;
+        String imageStr = imageOpt != null ? imageOpt.getAsString() : null;
+        DynamicCommand command = null;
+        DynamicSubcommand subcommand = null;
+        DynamicChoice choice = null;
         
         switch (event.getSubcommandName()) {
         case "get":
-            dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
+            command = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.get(commandStr);
+
+            if (command == null) {
+                event.getHook().sendMessage("No such command `" + commandStr + "` exists").queue();
+                return;
+            }
+
+            subcommand = command.getSubcommand(subcommandStr);
+
+            if (subcommand == null) {
+                event.getHook().sendMessage("No such subcommand `" + subcommandStr + "` exists").queue();
+                return;
+            }
+
+            choice = subcommand.getChoice(choiceStr);
             
-            if (dyncmd == null) {
-                event.getHook().sendMessage("No such command `" + name + "` exists").queue();
+            if (choice == null) {
+                event.getHook().sendMessage("No such choice `" + choiceStr + "` exists").queue();
                 return;
             }
             
-            event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
+            event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(choice).build()).queue();
             return;
         case "new":
-            String category = categoryOpt.getAsString();
-            String subCategory = subCategoryOpt.getAsString();
-            String helpText = helpOpt.getAsString();
-            
-            dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
-            
-            if (dyncmd != null) {
-                event.getHook().sendMessage("Command `" + name + "` already exists").queue();
+            command = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.get(commandStr);
+
+            if (command != null) {
+                subcommand = command.getSubcommand(subcommandStr);
+
+                if (subcommand != null) {
+                    choice = subcommand.getChoice(choiceStr);
+                
+                    if (choice != null) {
+                        event.getHook().sendMessage("Command `" + commandStr + " " + subcommandStr + " " + choiceStr + "` exists").queue();
+                        return;
+                    }
+                }
+            }
+
+            if (descriptionStr == null) {
+                event.getHook().sendMessage("Missing required argument `description`").queue();
                 return;
             }
             
-            dyncmd = new DynamicCommand(
-                    category,
-                    subCategory,
-                    name, 
-                    helpText, 
-                    titleOpt != null ? titleOpt.getAsString() : null, 
-                    bodyOpt != null ? Strings.unescapeNewlines(bodyOpt.getAsString()) : null, 
-                    imageOpt != null ? imageOpt.getAsString() : null);
-            HifumiBot.getSelf().getCommandIndex().addDynamicCommand(dyncmd);
-            event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
+            choice = new DynamicChoice(choiceStr, descriptionStr, titleStr, bodyStr, imageStr);
+            
+            if (subcommand == null) {
+                subcommand = new DynamicSubcommand(subcommandStr, descriptionStr);
+            }
+            
+            subcommand.putChoice(choice);
+            
+            if (command == null) {
+                command = new DynamicCommand(commandStr, descriptionStr);
+            }
+
+            command.putSubcommand(subcommand);
+
+            HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.put(commandStr, command);
+            ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
+            HifumiBot.getSelf().getCommandIndex().rebuild();
+            event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(choice).build()).queue();
             return;
         case "update":
-            dyncmd = HifumiBot.getSelf().getCommandIndex().getDynamicCommand(name);
-            
-            if (dyncmd == null) {
-                event.getHook().sendMessage("No such command `" + name + "` exists").queue();
+            command = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.get(commandStr);
+
+            if (command == null) {
+                event.getHook().sendMessage("No such command `" + commandStr + "` exists").queue();
                 return;
             }
+
+            subcommand = command.getSubcommand(subcommandStr);
+
+            if (subcommand == null) {
+                event.getHook().sendMessage("No such subcommand `" + subcommandStr + "` exists").queue();
+                return;
+            }
+
+            choice = subcommand.getChoice(choiceStr);
             
-            if (categoryOpt != null) {
-                dyncmd.setCategory(categoryOpt.getAsString());
+            if (choice == null) {
+                event.getHook().sendMessage("No such choice `" + choiceStr + "` exists").queue();
+                return;
+            }
+
+            if (descriptionStr != null) {
+                choice.setDescription(descriptionStr);
             }
             
-            if (helpOpt != null) {
-                dyncmd.setHelpText(helpOpt.getAsString());
+            if (titleStr != null) {
+                choice.setTitle(titleStr);
             }
             
-            if (titleOpt != null) {
-                dyncmd.setTitle(titleOpt.getAsString());
+            if (bodyStr != null) {
+                choice.setBody(bodyStr);
             }
             
-            if (bodyOpt != null) {
-                dyncmd.setBody(Strings.unescapeNewlines(bodyOpt.getAsString()));
+            if (imageStr != null) {
+                choice.setImageURL(imageStr);
             }
+
+            subcommand.putChoice(choice);
+            command.putSubcommand(subcommand);
             
-            if (imageOpt != null) {
-                dyncmd.setImageURL(imageOpt.getAsString());
-            }
-            
-            HifumiBot.getSelf().getCommandIndex().addDynamicCommand(dyncmd);
-            event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(dyncmd).build()).queue();
+            HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.put(commandStr, command);
+            ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
+            HifumiBot.getSelf().getCommandIndex().rebuild();
+            event.getHook().sendMessageEmbeds(getDynamicCommandEmbedBuilder(choice).build()).queue();
             return;
         case "delete":
-            if (!HifumiBot.getSelf().getCommandIndex().isDynamicCommand(name)) {
-                event.getHook().sendMessage("No such command `" + name + "` exists").queue();
+            command = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.get(commandStr);
+
+            if (command == null) {
+                event.getHook().sendMessage("No such command `" + commandStr + "` exists").queue();
+                return;
+            }
+
+            subcommand = command.getSubcommand(subcommandStr);
+
+            if (subcommand == null) {
+                event.getHook().sendMessage("No such subcommand `" + subcommandStr + "` exists").queue();
+                return;
+            }
+
+            choice = subcommand.getChoice(choiceStr);
+            
+            if (choice == null) {
+                event.getHook().sendMessage("No such choice `" + choiceStr + "` exists").queue();
                 return;
             }
             
-            HifumiBot.getSelf().getCommandIndex().deleteDynamicCommand(name);
-            event.getHook().sendMessage("Deleted command `" + name + "`").queue();
+            subcommand.clearChoice(choiceStr);
+
+            if (subcommand.getChoices().size() == 0) {
+                HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.remove(commandStr);
+            } else {
+                command.putSubcommand(subcommand);
+                HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.put(commandStr, command);
+            }
+
+            ConfigManager.write(HifumiBot.getSelf().getDynCmdConfig());
+            HifumiBot.getSelf().getCommandIndex().rebuild();
+            event.getHook().sendMessage("Deleted command `" + commandStr + " " + subcommandStr + " " + choiceStr + "`").queue();
             return;
         }
-*/
     }
 
     @Override
     protected CommandData defineSlashCommand() {
-        OptionData category = new OptionData(OptionType.STRING, "category", "Category of the command")
-                .addChoice("support", "support")
-                .addChoice("memes", "memes");
-        OptionData subCategory = new OptionData(OptionType.STRING, "sub-category", "Sub-category of the command");
-        OptionData name = new OptionData(OptionType.STRING, "name", "The name of the command");
-        OptionData helpText = new OptionData(OptionType.STRING, "help-text", "Help text for the command");
+        OptionData command = new OptionData(OptionType.STRING, "command", "Command name");
+        OptionData subcommand = new OptionData(OptionType.STRING, "subcommand", "Subcommand name");
+        OptionData choice = new OptionData(OptionType.STRING, "choice", "Choice name");
+        OptionData description = new OptionData(OptionType.STRING, "description", "Description");
         OptionData title = new OptionData(OptionType.STRING, "title", "Title portion of the command output");
         OptionData body = new OptionData(OptionType.STRING, "body", "Body portion of the command output");
         OptionData imageUrl = new OptionData(OptionType.STRING, "image-url", "URL of an image to display in the command output's embed");
         
         SubcommandData get = new SubcommandData("get", "Get attributes of a dynamic command")
-                .addOptions(name.setRequired(true));
+                .addOptions(
+                    command.setRequired(true), 
+                    subcommand.setRequired(true), 
+                    choice.setRequired(true));
         SubcommandData newDyncmd = new SubcommandData("new", "Create a new dynamic command")
                 .addOptions(
-                        category.setRequired(true),
-                        subCategory.setRequired(true),
-                        name.setRequired(true), 
-                        helpText.setRequired(true),
+                        command.setRequired(true),
+                        subcommand.setRequired(true),
+                        choice.setRequired(true), 
+                        description.setRequired(true),
                         title, 
                         body, 
                         imageUrl);
         SubcommandData update = new SubcommandData("update", "Update a dynamic command")
                 .addOptions(
-                        category.setRequired(true),
-                        subCategory.setRequired(true),
-                        name.setRequired(true),
-                        helpText.setRequired(false),
+                        command.setRequired(true),
+                        subcommand.setRequired(true),
+                        choice.setRequired(true),
+                        description,
                         title, 
                         body, 
                         imageUrl);
         SubcommandData delete = new SubcommandData("delete", "Delete a dynamic command")
-                .addOptions(name.setRequired(true));
+                .addOptions(
+                    command.setRequired(true), 
+                    subcommand.setRequired(true), 
+                    choice.setRequired(true));
         return Commands.slash("dyncmd", "Manage dynamic commands")
                 .addSubcommands(get, newDyncmd, update, delete)
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);

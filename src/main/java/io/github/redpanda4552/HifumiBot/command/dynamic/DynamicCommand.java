@@ -34,6 +34,7 @@ public class DynamicCommand {
     public DynamicCommand(String name, String description) {
         this.name = name;
         this.description = description;
+        this.subcommands = new HashMap<String, DynamicSubcommand>();
     }
     
     public String getName() {
