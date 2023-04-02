@@ -38,7 +38,6 @@ import io.github.redpanda4552.HifumiBot.event.EventListener;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
-import io.github.redpanda4552.HifumiBot.filter.BotDetection;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
 import io.github.redpanda4552.HifumiBot.filter.KickHandler;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
@@ -128,7 +127,6 @@ public class HifumiBot {
     
     private KickHandler kickHandler;
     private GameDB gameDB;
-    private BotDetection botDetection;
     private ChatGPT chatGPT;
 
     public HifumiBot() {
@@ -196,7 +194,6 @@ public class HifumiBot {
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
         kickHandler = new KickHandler();
         gameDB = new GameDB();
-        botDetection = new BotDetection();
         chatGPT = new ChatGPT();
 
         scheduler.runOnce(() -> {
@@ -238,10 +235,6 @@ public class HifumiBot {
             ConfigManager.write(serverMetrics);
         }, 1000 * 60 * 60 * 6);
         
-        scheduler.scheduleRepeating("bot", () -> {
-            botDetection.clean();
-        }, 1000 * 60 * 15);
-
         updateStatus("New Game!");
     }
 
@@ -327,10 +320,6 @@ public class HifumiBot {
         return gameDB;
     }
     
-    public BotDetection getBotDetection() {
-        return botDetection;
-    }
-
     public ChatGPT getChatGPT() {
         return chatGPT;
     }

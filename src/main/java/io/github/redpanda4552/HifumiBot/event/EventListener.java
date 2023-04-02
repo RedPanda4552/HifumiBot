@@ -90,7 +90,6 @@ public class EventListener extends ListenerAdapter {
 
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage(), now));
-            HifumiBot.getSelf().getBotDetection().addMessageHistoryEntry(event.getMessage());
             
             if (Messaging.hasBotPing(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
