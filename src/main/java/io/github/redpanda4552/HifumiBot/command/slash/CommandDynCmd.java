@@ -240,18 +240,18 @@ public class CommandDynCmd extends AbstractSlashCommand {
                         subcommand.setRequired(true),
                         choice.setRequired(true), 
                         description.setRequired(true),
-                        title, 
-                        body, 
-                        imageUrl);
+                        title.setRequired(false), 
+                        body.setRequired(false), 
+                        imageUrl.setRequired(false));
         SubcommandData update = new SubcommandData("update", "Update a dynamic command")
                 .addOptions(
                         command.setRequired(true),
                         subcommand.setRequired(true),
                         choice.setRequired(true),
-                        description,
-                        title, 
-                        body, 
-                        imageUrl);
+                        description.setRequired(false),
+                        title.setRequired(false), 
+                        body.setRequired(false), 
+                        imageUrl.setRequired(false));
         SubcommandData delete = new SubcommandData("delete", "Delete a dynamic command")
                 .addOptions(
                     command.setRequired(true), 
