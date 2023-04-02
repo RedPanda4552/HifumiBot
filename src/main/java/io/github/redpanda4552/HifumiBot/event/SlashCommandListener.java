@@ -62,8 +62,9 @@ public class SlashCommandListener extends ListenerAdapter {
             try {
                 slashCommands.get(event.getName()).executeIfPermission(event);
             } catch (Exception e) {
+                e.printStackTrace();
                 Messaging.logException("SlashCommandListener", "onSlashCommand", e);
-                event.reply("An internal exception occurred and has been reported to admins.").setEphemeral(true).queue();
+                event.getHook().sendMessage("An internal exception occurred and has been reported to admins.").setEphemeral(true).queue();
             }
         } else if (HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.containsKey(event.getName())) {
             DynamicCommand command = HifumiBot.getSelf().getDynCmdConfig().dynamicCommands.get(event.getName());
