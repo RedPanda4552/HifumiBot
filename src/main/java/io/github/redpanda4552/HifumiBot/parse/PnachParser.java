@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
@@ -77,8 +78,9 @@ public class PnachParser extends AbstractParser {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
             Messaging.sendMessage(message.getChannel(), ":hourglass: " + message.getAuthor().getAsMention() + " Testing your PNACH ( " + attachment.getFileName() + " )");
+            Pattern p = Pattern.compile(CRC_FILE_NAME_PATTERN, Pattern.CASE_INSENSITIVE);
 
-            if (!Pattern.matches(CRC_FILE_NAME_PATTERN, attachment.getFileName())) {
+            if (!p.matcher(attachment.getFileName()).matches()) {
                 addError(PnachParserError.FILE_NAME, "(filename)");
             }
 
