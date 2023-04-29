@@ -116,7 +116,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
                 return;
             }
             
-            choice = new DynamicChoice(choiceStr, descriptionStr, titleStr, bodyStr, imageStr);
+            choice = new DynamicChoice(choiceStr, descriptionStr, titleStr, normalizeBody(bodyStr), imageStr);
             
             if (subcommand == null) {
                 subcommand = new DynamicSubcommand(subcommandStr, descriptionStr);
@@ -166,7 +166,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
             }
             
             if (bodyStr != null) {
-                choice.setBody(bodyStr);
+                choice.setBody(normalizeBody(bodyStr));
             }
             
             if (imageStr != null) {
@@ -280,5 +280,9 @@ public class CommandDynCmd extends AbstractSlashCommand {
         }
         
         return eb;
+    }
+
+    private String normalizeBody(String input) {
+        return input.replace("\\n", "\n");
     }
 }
