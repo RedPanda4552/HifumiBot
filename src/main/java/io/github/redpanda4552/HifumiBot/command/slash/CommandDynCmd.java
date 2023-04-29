@@ -224,7 +224,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
         OptionData command = new OptionData(OptionType.STRING, "command", "Command name");
         OptionData subcommand = new OptionData(OptionType.STRING, "subcommand", "Subcommand name");
         OptionData choice = new OptionData(OptionType.STRING, "choice", "Choice name");
-        OptionData description = new OptionData(OptionType.STRING, "description", "Description");
         OptionData title = new OptionData(OptionType.STRING, "title", "Title portion of the command output");
         OptionData body = new OptionData(OptionType.STRING, "body", "Body portion of the command output");
         OptionData imageUrl = new OptionData(OptionType.STRING, "image-url", "URL of an image to display in the command output's embed");
@@ -239,7 +238,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
                         command.setRequired(true),
                         subcommand.setRequired(true),
                         choice.setRequired(true), 
-                        description.setRequired(true),
+                        new OptionData(OptionType.STRING, "description", "Description").setRequired(true),
                         title.setRequired(false), 
                         body.setRequired(false), 
                         imageUrl.setRequired(false));
@@ -248,7 +247,7 @@ public class CommandDynCmd extends AbstractSlashCommand {
                         command.setRequired(true),
                         subcommand.setRequired(true),
                         choice.setRequired(true),
-                        description.setRequired(false),
+                        new OptionData(OptionType.STRING, "description", "Description").setRequired(false),
                         title.setRequired(false), 
                         body.setRequired(false), 
                         imageUrl.setRequired(false));
