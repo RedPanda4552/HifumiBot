@@ -39,7 +39,7 @@ public class EventLogging {
         if (HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
             String dateStr = HifumiBot.getSelf().getWarezTracking().warezUsers.get(event.getUser().getId())
                     .format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
-            eb.appendDescription(":piratekot: This user was previously warez'd (" + dateStr + ")\n");
+            eb.appendDescription(":pirate_flag: This user was previously warez'd (" + dateStr + ")\n");
         }
 
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
