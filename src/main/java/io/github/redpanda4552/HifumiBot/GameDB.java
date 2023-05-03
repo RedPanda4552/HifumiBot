@@ -148,6 +148,18 @@ public class GameDB implements Refreshable {
         put(1, "Enabled (Exact Match)");
         put(2, "Enabled (Check Inside Target)");
     }};
+
+    private static final HashMap<Integer, String> AUTO_FLUSH = new HashMap<Integer, String>() {{
+        put(0, "Off");
+        put(1, "Sprites Only");
+        put(2, "All Primitives");
+    }};
+
+    private static final HashMap<Integer, String> CPU_SPRITE_RENDER_LEVEL = new HashMap<Integer, String>() {{
+        put(0, "Sprites Only");
+        put(1, "Sprites/Triangles");
+        put(2, "Blended Sprites/Triangles");
+    }};
     
     private boolean isInitialized = false;
     private Map<String, Object> map;
@@ -308,7 +320,7 @@ public class GameDB implements Refreshable {
                     if (gsHWFixes.containsKey("autoFlush")) {
                         eb.addField(EmbedUtil.prebuildField(
                             "Auto Flush", 
-                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("autoFlush")), 
+                            AUTO_FLUSH.get((int) gsHWFixes.get("autoFlush")), 
                             true));
                     }
                     
@@ -511,6 +523,41 @@ public class GameDB implements Refreshable {
                         eb.addField(EmbedUtil.prebuildField(
                             "Blending Accuracy (Minimum)",
                             BLENDING_ACCURACY.get((int) gsHWFixes.get("minimumBlendingLevel")), 
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("PCRTCOffsets")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Screen Offsets", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("PCRTCOffsets")), 
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("PCRTCOverscan")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Show Overscan", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("PCRTCOverscan")), 
+                            true));
+                    }
+                    
+                    if (gsHWFixes.containsKey("cpuSpriteRenderLevel")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "CPU Sprite Render Level", 
+                            CPU_SPRITE_RENDER_LEVEL.get((int) gsHWFixes.get("cpuSpriteRenderLevel")), 
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("nativePaletteDraw")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Unscaled Palette Texture Draws", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("nativePaletteDraw")), 
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("bilinearUpscale")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Bilinear Dirty Upscale", 
+                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("bilinearUpscale")), 
                             true));
                     }
                 }
