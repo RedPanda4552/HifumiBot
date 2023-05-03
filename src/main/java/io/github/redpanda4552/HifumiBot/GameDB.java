@@ -102,7 +102,7 @@ public class GameDB implements Refreshable {
         put(6, "Blend (TFF)");
         put(7, "Blend (BFF)");
         put(8, "Adaptive (TFF)");
-        put(8, "Adaptive (BFF)");
+        put(9, "Adaptive (BFF)");
     }};
     
     private static final HashMap<Integer, String> GENERIC_BOOLEAN = new HashMap<Integer, String>() {{
