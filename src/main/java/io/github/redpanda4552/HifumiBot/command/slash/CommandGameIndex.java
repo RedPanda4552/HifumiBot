@@ -37,27 +37,27 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
-public class CommandGameDB extends AbstractSlashCommand {
+public class CommandGameIndex extends AbstractSlashCommand {
 
-    private static final Pattern GAMEDB_SERIAL_PATTERN = Pattern.compile("^[A-Z]{4}-[0-9]{5}$");
+    private static final Pattern GAMEINDEX_SERIAL_PATTERN = Pattern.compile("^[A-Z]{4}-[0-9]{5}$");
     
     @Override
     protected void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping opt = event.getOption("serial");
         
         if (opt == null) {
-            Messaging.logInfo("CommandGameDB", "onExecute", "Command tampering? Missing option 'serial' (user = " + event.getUser().getAsMention() + ")");
+            Messaging.logInfo("CommandGameIndex", "onExecute", "Command tampering? Missing option 'serial' (user = " + event.getUser().getAsMention() + ")");
             event.reply("Invalid option detected, admins have been alerted.").setEphemeral(true).queue();
             return;
         }
 
-        if (!HifumiBot.getSelf().getGameDB().isInitialized()) {
+        if (!HifumiBot.getSelf().getGameIndex().isInitialized()) {
             event.reply("Whoa there! The bot is still fetching data from GameIndex.yaml, please wait a moment while that finishes!").queue();
             return;
         }
         
         String normalized = opt.getAsString().toUpperCase();
-        Matcher m = GAMEDB_SERIAL_PATTERN.matcher(normalized);
+        Matcher m = GAMEINDEX_SERIAL_PATTERN.matcher(normalized);
         
         if (!m.matches()) {
             event.reply("Invalid serial detected; serial numbers follow this format: `SLUS-12345`").setEphemeral(true).queue();
@@ -65,14 +65,14 @@ public class CommandGameDB extends AbstractSlashCommand {
         }
         
         event.deferReply().queue();
-        event.getHook().editOriginal(":information_source: Checking GameDB for serial `" + normalized + "`, this might take a moment...").queue();
-        MessageEmbed embed = HifumiBot.getSelf().getGameDB().present(normalized);
+        event.getHook().editOriginal(":information_source: Checking GameIndex.yaml for serial `" + normalized + "`, this might take a moment...").queue();
+        MessageEmbed embed = HifumiBot.getSelf().getGameIndex().present(normalized);
         event.getHook().editOriginalEmbeds(embed).queue();
     }
 
     @Override
     protected CommandData defineSlashCommand() {
-        return Commands.slash("gamedb", "Look up information stored in GameIndex.yaml (otherwise known as 'GameDB')")
+        return Commands.slash("gameindex", "Look up information stored in GameIndex.yaml (otherwise known as 'GameDB')")
                 .addOption(OptionType.STRING, "serial", "Serial number to search for (e.g. 'SLUS-12345')", true)
                 .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }

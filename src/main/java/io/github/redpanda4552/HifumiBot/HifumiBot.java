@@ -126,7 +126,7 @@ public class HifumiBot {
     private MessageContextCommandListener messageCommandListener;
     
     private KickHandler kickHandler;
-    private GameDB gameDB;
+    private GameIndex gameIndex;
     private ChatGPT chatGPT;
 
     public HifumiBot() {
@@ -193,14 +193,14 @@ public class HifumiBot {
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
         kickHandler = new KickHandler();
-        gameDB = new GameDB();
+        gameIndex = new GameIndex();
         chatGPT = new ChatGPT();
 
         scheduler.runOnce(() -> {
             wikiIndex.refresh();
             cpuIndex.refresh();
             gpuIndex.refresh();
-            gameDB.refresh();
+            gameIndex.refresh();
         });
 
         // Schedule repeating tasks
@@ -217,7 +217,7 @@ public class HifumiBot {
         }, 1000 * 60 * 60 * 24);
         
         scheduler.scheduleRepeating("gdb", () -> {
-            HifumiBot.getSelf().getGameDB().refresh();
+            HifumiBot.getSelf().getGameIndex().refresh();
         }, 1000 * 60 * 60 * 4);
 
         scheduler.scheduleRepeating("ints", () -> {
@@ -316,8 +316,8 @@ public class HifumiBot {
         return kickHandler;
     }
     
-    public GameDB getGameDB() {
-        return gameDB;
+    public GameIndex getGameIndex() {
+        return gameIndex;
     }
     
     public ChatGPT getChatGPT() {

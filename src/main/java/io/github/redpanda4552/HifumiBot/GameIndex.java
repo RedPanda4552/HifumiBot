@@ -39,9 +39,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class GameDB implements Refreshable {
+public class GameIndex implements Refreshable {
 
-    private static final String GAMEDB_LOCATION = "https://raw.githubusercontent.com/PCSX2/pcsx2/master/bin/resources/GameIndex.yaml";
+    private static final String GAMEINDEX_LOCATION = "https://raw.githubusercontent.com/PCSX2/pcsx2/master/bin/resources/GameIndex.yaml";
     
     private static final HashMap<Integer, String> COMPAT = new HashMap<Integer, String>() {{
         put(0, "Unknown");
@@ -164,13 +164,13 @@ public class GameDB implements Refreshable {
     private boolean isInitialized = false;
     private Map<String, Object> map;
     
-    public GameDB() {
+    public GameIndex() {
         
     }
     
     @Override
     public void refresh() {
-        Request req = new Request.Builder().url(GAMEDB_LOCATION).get().build();
+        Request req = new Request.Builder().url(GAMEINDEX_LOCATION).get().build();
         
         try {
             Response res = HifumiBot.getSelf().getHttpClient().newCall(req).execute();
@@ -182,7 +182,7 @@ public class GameDB implements Refreshable {
 
             this.isInitialized = true;
         } catch (IOException e) {
-            Messaging.logException("GameDB", "refresh", e);
+            Messaging.logException("GameIndex", "refresh", e);
         }
     }
 
@@ -599,8 +599,8 @@ public class GameDB implements Refreshable {
         }
         
         if (!entryFound) {
-            eb.setTitle("No GameDB Entry Found");
-            eb.setDescription("Serial `" + serial + "` did not appear anywhere in GameDB. Verify spelling and try again.");
+            eb.setTitle("No GameIndex Entry Found");
+            eb.setDescription("Serial `" + serial + "` did not appear anywhere in GameIndex.yaml - Verify spelling and try again.");
         }
         
         return eb.build();

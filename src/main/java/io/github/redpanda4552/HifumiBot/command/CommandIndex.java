@@ -40,7 +40,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandGameDB;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandGameIndex;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPanic;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPerms;
@@ -110,7 +110,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandBuildNumber());
         registerSlashCommand(new CommandSpamKick());
         registerSlashCommand(new CommandPanic());
-        registerSlashCommand(new CommandGameDB());
+        registerSlashCommand(new CommandGameIndex());
         registerSlashCommand(new CommandEmulog());
         registerSlashCommand(new CommandTranslate());
     }
