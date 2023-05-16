@@ -563,17 +563,35 @@ public class GameDB implements Refreshable {
                 }
                 
                 if (entry.containsKey("patches")) {
-                    Map<String, Object> patches = (Map<String, Object>) entry.get("patches");
-                    
-                    for (String crcName : patches.keySet()) {
-                        Map<String, Object> patch = (Map<String, Object>) patches.get(crcName);
-                        
-                        if (patch.containsKey("content")) {
-                            String content = (String) patch.get("content");
-                            eb.addField(EmbedUtil.prebuildField(
-                                "Patch (" + crcName + ")", 
-                                content, 
-                                false));
+                    Object patchesObj = entry.get("patches");
+
+                    try {
+                        Map<String, Object> patches = (Map<String, Object>) patchesObj;    
+
+                        for (String crcName : patches.keySet()) {
+                            Map<String, Object> patch = (Map<String, Object>) patches.get(crcName);
+                            
+                            if (patch.containsKey("content")) {
+                                String content = (String) patch.get("content");
+                                eb.addField(EmbedUtil.prebuildField(
+                                    "Patch (" + crcName + ")", 
+                                    content, 
+                                    false));
+                            }
+                        }
+                    } catch (Exception e) {
+                        Map<Integer, Object> patches = (Map<Integer, Object>) patchesObj;    
+
+                        for (Integer crcName : patches.keySet()) {
+                            Map<String, Object> patch = (Map<String, Object>) patches.get(crcName);
+                            
+                            if (patch.containsKey("content")) {
+                                String content = (String) patch.get("content");
+                                eb.addField(EmbedUtil.prebuildField(
+                                    "Patch (" + crcName + ")", 
+                                    content, 
+                                    false));
+                            }
                         }
                     }
                 }
