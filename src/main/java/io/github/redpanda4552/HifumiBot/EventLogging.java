@@ -31,6 +31,7 @@ public class EventLogging {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.GREEN);
         eb.setTitle("Member Joined");
+        eb.setThumbnail(event.getUser().getAvatarUrl());
         
         if (diff.toHours() < 1) {
             eb.appendDescription(":warning: Account appears to be less than an hour old\n");
@@ -71,6 +72,7 @@ public class EventLogging {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.ORANGE);
         eb.setTitle("Member Left");
+        eb.setThumbnail(event.getUser().getAvatarUrl());
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
         eb.addField("Username (Plain Text)", event.getUser().getName() + "#" + event.getUser().getDiscriminator(), true);
         eb.addField("User ID", event.getUser().getId(), true);
