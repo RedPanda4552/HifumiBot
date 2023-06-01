@@ -29,18 +29,20 @@ public class EventLogging {
         
         Member retrievedMember = event.getGuild().retrieveMemberById(event.getMember().getId()).complete();
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setColor(Color.GREEN);
+        eb.setColor(Color.BLUE);
         eb.setTitle("Member Joined");
         eb.setThumbnail(event.getUser().getAvatarUrl());
         
         if (diff.toHours() < 1) {
             eb.appendDescription(":warning: Account appears to be less than an hour old\n");
+            eb.setColor(Color.GREEN);
         }
 
         if (HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
             String dateStr = HifumiBot.getSelf().getWarezTracking().warezUsers.get(event.getUser().getId())
                     .format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.appendDescription(":pirate_flag: This user was previously warez'd (" + dateStr + ")\n");
+            eb.setColor(Color.GREEN);
         }
 
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
