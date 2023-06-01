@@ -53,11 +53,13 @@ public class EventLogging {
 
         MessageCreateBuilder mb = new MessageCreateBuilder();
         mb.setEmbeds(eb.build());
+        /*
         mb.addActionRow(
             Button.of(ButtonStyle.PRIMARY, "timeout:" + retrievedMember.getId(), "Timeout (1 hr)"),
             Button.of(ButtonStyle.SECONDARY, "kick:" + retrievedMember.getId(), "Kick"),
             Button.of(ButtonStyle.DANGER, "ban:" + retrievedMember.getId(), "Ban (And delete msgs from 24 hrs)")
         );
+         */
         Messaging.sendMessage(channelId, mb.build());
     }
 
