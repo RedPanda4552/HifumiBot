@@ -236,7 +236,7 @@ public class PnachParser extends AbstractParser {
                         .append("\n");
 
                 if (bodyBuilder.toString().getBytes().length <= HifumiBot.getSelf().getJDA().getSelfUser().getAllowedFileSize()) {
-                    Messaging.sendMessage(message.getChannel(), ":information_source: Found something! Results are in this text file!", "Pnach_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
+                    Messaging.sendMessage(message.getChannel(), ":information_source: Found something! Results are in this text file!\n:warning: I only know how to deal with pnach v1! If you are using the new format, my results are going to include a bunch of false errors!", "Pnach_" + message.getAuthor().getName() + ".txt", bodyBuilder.toString());
                 } else {
                     Messaging.sendMessage(message.getChannel(), ":warning: Your pnach generated such a large results file that I can't upload it. A human is gonna have to read through your pnach manually.");
                 }
