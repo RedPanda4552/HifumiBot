@@ -89,6 +89,7 @@ public class Config implements IConfig {
     public class Channels {
         public String systemOutputChannelId;
         public String rulesChannelId;
+        public String appealsChannelId;
         public String restrictedCommandChannelId;
         public String pixivChannelId;
         public Logging logging;
@@ -96,6 +97,7 @@ public class Config implements IConfig {
         public Channels() {
             systemOutputChannelId = new String("");
             rulesChannelId = new String("");
+            appealsChannelId = new String("");
             restrictedCommandChannelId = new String("");
             pixivChannelId = new String("");
             logging = new Logging();

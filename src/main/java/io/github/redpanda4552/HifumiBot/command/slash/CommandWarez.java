@@ -77,6 +77,7 @@ public class CommandWarez extends AbstractSlashCommand {
             }
             
             TextChannel welcomeRules = event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.rulesChannelId);
+            TextChannel appeals = event.getGuild().getTextChannelById(HifumiBot.getSelf().getConfig().channels.appealsChannelId);
             eb.setTitle("PCSX2 Anti-Warez Rules");
             eb.setDescription("As per ")
                     .appendDescription(welcomeRules.getAsMention())
@@ -86,8 +87,8 @@ public class CommandWarez extends AbstractSlashCommand {
                     .appendDescription("- Do not discuss why you think piracy should be allowed\n");
             eb.addField("Enforcement", "Enforcement is at the discretion of server staff, as they see fit.", false);
             eb.addField(
-                    "Appeal",
-                    "You may appeal a warez tag by proving that you own the item in question and disposing of any pirated copies. Staff will want to see some visual proof that you own the item (E.g. A picture of the item with your Discord username and the current date on a sticky note next to it).",
+                    "Permissions",
+                    "Your warez role makes you ineligible for support; you no longer have access to chat in our general or help channels. However, you are free to remain in the server and may chat in any off topic channels about non-support topics.",
                     false);
             eb.addField(
                     "Your Stance On Piracy",
@@ -96,6 +97,10 @@ public class CommandWarez extends AbstractSlashCommand {
             eb.addField(
                     "\"But a friend gave it to me!\" or \"I own a copy, and just downloaded it instead!\"",
                     "Games, BIOS files and other materials must be from discs, a console or other device that you own.",
+                    false);
+            eb.addField(
+                    "Appeal",
+                    "Should you wish to appeal and have your warez role removed, use the " + appeals.getAsMention() + " channel, and **follow the instructions in the pinned messages**.",
                     false);
 
             mb.setEmbeds(eb.build());
