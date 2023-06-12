@@ -100,7 +100,7 @@ public class CommandWarez extends AbstractSlashCommand {
                     false);
             eb.addField(
                     "Appeal",
-                    "Should you wish to appeal and have your warez role removed, use the " + appeals.getAsMention() + " channel, and **follow the instructions in the pinned messages**.",
+                    "Should you wish to appeal and have your warez role removed, use the " + appeals.getAsMention() + " channel, and **follow the instructions in the pinned messages**. Staff will want to see some visual proof that you own the items you were warez'd for - a picture of the item(s) with your Discord username written on a piece of paper next to it.",
                     false);
 
             mb.setEmbeds(eb.build());
