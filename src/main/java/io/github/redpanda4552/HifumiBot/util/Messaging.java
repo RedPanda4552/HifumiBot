@@ -23,6 +23,9 @@
  */
 package io.github.redpanda4552.HifumiBot.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
@@ -41,6 +44,8 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 public class Messaging {
     
+    private static final Pattern FILE_NAME_PATTERN = Pattern.compile("crash-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{3}.txt");
+
     public static Message sendPrivateMessage(User user, String str) {
         if (str == null || str.isBlank()) {
             return null;
@@ -215,6 +220,18 @@ public class Messaging {
     public static boolean hasPnach(Message msg) {
         for (Attachment attachment : msg.getAttachments()) {
             if (attachment.getFileExtension().equalsIgnoreCase("pnach")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean hasCrashLog(Message msg) {
+        for (Attachment attachment : msg.getAttachments()) {
+            Matcher m = FILE_NAME_PATTERN.matcher(attachment.getFileName());
+
+            if (m.matches()) {
                 return true;
             }
         }

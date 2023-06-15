@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
+import io.github.redpanda4552.HifumiBot.parse.CrashParser;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
@@ -85,6 +86,11 @@ public class EventListener extends ListenerAdapter {
             if (Messaging.hasPnach(event.getMessage())) {
                 PnachParser pp = new PnachParser(event.getMessage());
                 HifumiBot.getSelf().getScheduler().runOnce(pp);
+            }
+
+            if (Messaging.hasCrashLog(event.getMessage())) {
+                CrashParser crashp = new CrashParser(event.getMessage());
+                HifumiBot.getSelf().getScheduler().runOnce(crashp);
             }
         }
 
