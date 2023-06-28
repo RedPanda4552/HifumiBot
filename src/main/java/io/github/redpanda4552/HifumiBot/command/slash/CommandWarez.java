@@ -33,6 +33,7 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -52,15 +53,19 @@ public class CommandWarez extends AbstractSlashCommand {
         try {
             MessageCreateBuilder mb = new MessageCreateBuilder();
             EmbedBuilder eb = new EmbedBuilder();
-            OptionMapping user = event.getOption("user");
+            OptionMapping userOpt = event.getOption("user");
             
-            if (user != null) {
+            if (userOpt != null) {
                 Member member = event.getOption("user").getAsMember();
+                User user = event.getOption("user").getAsUser();
 
-                if (member == null) {
-                    HifumiBot.getSelf().getWarezTracking().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
+                if (member == null && user != null) {
+                    HifumiBot.getSelf().getWarezTracking().warezUsers.put(user.getId(), OffsetDateTime.now());
                     ConfigManager.write(HifumiBot.getSelf().getWarezTracking());
                     event.getHook().sendMessage("Warez record logged (User has already left the server)").queue();
+                    return;
+                } else if (user == null) {
+                    event.getHook().sendMessage("Could not record warez; supplied user parameter did not match any actual users").queue();
                     return;
                 }
 
