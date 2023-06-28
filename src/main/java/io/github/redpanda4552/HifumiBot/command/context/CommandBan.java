@@ -6,7 +6,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractUserContextCommand;
 import io.github.redpanda4552.HifumiBot.util.MessageBulkDeleteRunnable;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -22,10 +22,10 @@ public class CommandBan extends AbstractUserContextCommand {
         }
 
         event.deferReply(true).queue();
-        Member member = event.getTargetMember();
+        User user = event.getTarget();
 
-        if (member != null) {
-            member.ban(0, TimeUnit.SECONDS).queue();
+        if (user != null) {
+            event.getGuild().ban(user, 0, TimeUnit.SECONDS).queue();
         }
         
         MessageBulkDeleteRunnable runnable = new MessageBulkDeleteRunnable(event.getGuild().getId(), event.getTarget().getId());
