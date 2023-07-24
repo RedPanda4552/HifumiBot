@@ -35,6 +35,7 @@ import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBuildNumber;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandBulkDelete;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
@@ -113,6 +114,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandGameIndex());
         registerSlashCommand(new CommandEmulog());
         registerSlashCommand(new CommandTranslate());
+        registerSlashCommand(new CommandBulkDelete());
     }
     
     public void rebuildMessage() {
