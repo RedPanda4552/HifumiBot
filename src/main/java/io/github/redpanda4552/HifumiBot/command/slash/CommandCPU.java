@@ -24,6 +24,7 @@
 package io.github.redpanda4552.HifumiBot.command.slash;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,12 +48,11 @@ public class CommandCPU extends AbstractSlashCommand {
     private enum CPURating {
         OVER_9000("IT'S OVER 9000", 9000),
         OVERKILL("Overkill", 3400), 
-        EVERYTHING("Any games", 3000),
         HEAVIER("Heavier games", 2600), 
-        MODERATE("Moderate games", 2200),
-        LIGHTER("Lightweight games", 1800), 
-        VERY_SLOW("Very Slow", 1000),
-        AWFUL("Awful", 0);
+        MODERATE("Moderate games", 2000),
+        LIGHTER("Lightweight games", 1500),
+        SLOW("Slow", 1200),
+        UNUSABLE("Unusable", 0);
 
         private String displayName;
         private int minimum;
@@ -69,6 +69,14 @@ public class CommandCPU extends AbstractSlashCommand {
         public int getMinimum() {
             return minimum;
         }
+    }
+
+    private HashMap<String, Float> badArchMap;
+
+    public CommandCPU() {
+        this.badArchMap = new HashMap<String, Float>();
+        this.badArchMap.put("AMD FX", 0.66f);
+        this.badArchMap.put("[0-9]{1,}U", 0.66f);
     }
 
     @Override
@@ -100,9 +108,10 @@ public class CommandCPU extends AbstractSlashCommand {
         if (results.size() > 0) {
             eb.setAuthor("Passmark CPU Single Thread Performance", "https://www.cpubenchmark.net/singleThread.html");
             eb.setTitle("Search results for '" + StringUtils.join(name, " ").trim() + "'");
-            eb.setDescription(":warning: Some games may have unusually high CPU requirements! If in doubt, ask!");
+            eb.setDescription(":warning: Some games may have unusually high CPU requirements! If in doubt, ask!\n:potato: Some CPUs have design flaws, and their scores are adjusted to be more representative of their true PCSX2 performance.");
             String highestName = null;
             float highestWeight = 0;
+            String footerStr = "";
 
             while (!results.isEmpty() && eb.getFields().size() < MAX_RESULTS) {
                 for (String cpuName : results.keySet()) {
@@ -124,10 +133,23 @@ public class CommandCPU extends AbstractSlashCommand {
                     }
                 }
 
-                eb.addField(highestName, highestScore + " (" + highestScoreDescription + ")", false);
+                String scoreStr = "";
+
+                for (String key : this.badArchMap.keySet()) {
+                    if (Pattern.matches(".*" + key + ".*", highestName)) {
+                        scoreStr += (int) (highestScore * this.badArchMap.get(key)) + " (" + highestScoreDescription + ") :potato: (" + String.format("%.0f%%", this.badArchMap.get(key) * 100) + ")";
+                    }
+                }
+
+                if (scoreStr == "") {
+                    scoreStr += highestScore + " (" + highestScoreDescription + ")";
+                }
+
+                eb.addField(highestName, scoreStr, false);
             }
 
             eb.setColor(0x00ff00);
+            eb.setFooter(footerStr);
         } else {
             eb.setTitle("No results matched your query!");
             eb.setColor(0xff0000);
