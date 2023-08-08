@@ -108,7 +108,7 @@ public class CommandCPU extends AbstractSlashCommand {
         if (results.size() > 0) {
             eb.setAuthor("Passmark CPU Single Thread Performance", "https://www.cpubenchmark.net/singleThread.html");
             eb.setTitle("Search results for '" + StringUtils.join(name, " ").trim() + "'");
-            eb.setDescription(":warning: Some games may have unusually high CPU requirements! If in doubt, ask!\n:potato: Some CPUs have design flaws, and their scores are adjusted to be more representative of their true PCSX2 performance.");
+            eb.setDescription(":warning: Some games may have unusually high CPU requirements! If in doubt, ask!\n:potato: Some CPUs have design flaws. The percentage is what we think is representative of their true PCSX2 performance.");
             String highestName = null;
             float highestWeight = 0;
             String footerStr = "";
@@ -137,7 +137,7 @@ public class CommandCPU extends AbstractSlashCommand {
 
                 for (String key : this.badArchMap.keySet()) {
                     if (Pattern.matches(".*" + key + ".*", highestName)) {
-                        scoreStr += (int) (highestScore * this.badArchMap.get(key)) + " (" + highestScoreDescription + ") :potato: (" + String.format("%.0f%%", this.badArchMap.get(key) * 100) + ")";
+                        scoreStr += highestScore + " (" + highestScoreDescription + ") :potato: (" + String.format("%.0f%%", this.badArchMap.get(key) * 100) + ")";
                     }
                 }
 
