@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
+import io.github.redpanda4552.HifumiBot.filter.FilterRunnable;
 import io.github.redpanda4552.HifumiBot.parse.CrashParser;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
@@ -72,11 +72,6 @@ public class EventListener extends ListenerAdapter {
         
         Instant now = Instant.now();
         
-        if (HifumiBot.getSelf().getChatFilter().applyFilters(event)) {
-            HifumiBot.getSelf().getKickHandler().storeIncident(event.getMember(), now);
-            return;
-        }
-        
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
             if (Messaging.hasEmulog(event.getMessage())) {
                 EmulogParser ep = new EmulogParser(event.getMessage());
@@ -95,7 +90,7 @@ public class EventListener extends ListenerAdapter {
         }
 
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
-            HifumiBot.getSelf().getScheduler().runOnce(new HyperlinkCleaner(event.getMessage(), now));
+            HifumiBot.getSelf().getScheduler().runOnce(new FilterRunnable(event.getMessage(), now));
             
             if (Messaging.hasBotPing(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);

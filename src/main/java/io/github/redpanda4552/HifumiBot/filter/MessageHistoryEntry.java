@@ -24,8 +24,10 @@
 package io.github.redpanda4552.HifumiBot.filter;
 
 import java.time.Instant;
+import java.util.ArrayList;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class MessageHistoryEntry {
 
@@ -35,6 +37,8 @@ public class MessageHistoryEntry {
     private String messageId;
     private String messageContent;
     private Instant instant;
+    private ArrayList<String> attachmentUrls;
+    private int count;
     
     public MessageHistoryEntry(Message msg) {
         this.userId = msg.getAuthor().getId();
@@ -43,6 +47,13 @@ public class MessageHistoryEntry {
         this.messageId = msg.getId();
         this.messageContent = msg.getContentRaw();
         this.instant = msg.getTimeCreated().toInstant();
+        this.attachmentUrls = new ArrayList<String>();
+
+        for (Attachment attachment : msg.getAttachments()) {
+            this.attachmentUrls.add(attachment.getProxyUrl());
+        }
+
+        this.count = 1;
     }
     
     public String getUserId() {
@@ -67,5 +78,17 @@ public class MessageHistoryEntry {
     
     public Instant getInstant() {
         return instant;
+    }
+
+    public ArrayList<String> getAttachmentUrls() {
+        return attachmentUrls;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

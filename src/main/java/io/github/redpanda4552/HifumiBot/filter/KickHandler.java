@@ -24,7 +24,7 @@
 package io.github.redpanda4552.HifumiBot.filter;
 
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -36,13 +36,13 @@ import net.dv8tion.jda.api.entities.User;
 
 public class KickHandler {
 
-    private HashMap<String, Pair<Instant, Integer>> indexes;
+    private ConcurrentHashMap<String, Pair<Instant, Integer>> indexes;
     
     public KickHandler() {
-        indexes = new HashMap<String, Pair<Instant, Integer>>();
+        indexes = new ConcurrentHashMap<String, Pair<Instant, Integer>>();
     }
     
-    public synchronized void storeIncident(Member member, Instant newInstant) {
+    public void storeIncident(Member member, Instant newInstant) {
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, member)) {
             return;
         }
@@ -84,12 +84,12 @@ public class KickHandler {
         }
     }
     
-    public synchronized void doKick(Member member) {
+    public void doKick(Member member) {
         Messaging.sendPrivateMessage(member.getUser(), HifumiBot.getSelf().getConfig().filterOptions.kickMessage);
         member.kick().complete();
     }
     
-    public synchronized void doKickForBotJoin(Member member) {
+    public void doKickForBotJoin(Member member) {
         StringBuilder sb = new StringBuilder("**You have been automatically kicked from the PCSX2 server.**\n\n");
         sb.append("Our bot has detected a raid by bot accounts, and you have attempted to join our server at the same time as those bots.\n\n");
         sb.append("**If you have no idea why you are receiving this message:** Your account is compromised and being used as a spam bot on Discord. Change your password as soon as you can.\n\n");
@@ -99,7 +99,7 @@ public class KickHandler {
         member.kick().queue();
     }
     
-    public synchronized void flush() {
+    public void flush() {
         Instant now = Instant.now();
         
         for (String key : indexes.keySet()) {

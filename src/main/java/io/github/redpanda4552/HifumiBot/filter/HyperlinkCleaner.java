@@ -23,30 +23,23 @@
  */
 package io.github.redpanda4552.HifumiBot.filter;
 
-import java.time.Instant;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.DNSQueryResult;
 import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 
-public class HyperlinkCleaner implements Runnable {
+public class HyperlinkCleaner {
     private static final Pattern URL_PATTERN = Pattern
             .compile("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 
-    private final Message message;
-    private final Instant instant;
-
-    public HyperlinkCleaner(Message message, Instant instant) {
-        this.message = message;
-        this.instant = instant;
+    public HyperlinkCleaner() {
+        
     }
 
-    @Override
-    public void run() {
+    public boolean applyDNSFilter(Message message) {
         Matcher m = URL_PATTERN.matcher(message.getContentDisplay().toLowerCase());
 
         while (m.find()) {
@@ -59,13 +52,11 @@ public class HyperlinkCleaner implements Runnable {
                         + ">; DNS query on a URL inside failed and may be malicious.\n\nUser's message (formatting stripped):\n```\n"
                         + message.getContentStripped() + "\n```");
                 
-                if (instant != null) {
-                    HifumiBot.getSelf().getKickHandler().storeIncident(message.getMember(), instant);
-                }
-                
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
     public static boolean hasHyperlink(Message msg) {

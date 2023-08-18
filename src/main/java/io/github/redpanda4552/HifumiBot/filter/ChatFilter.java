@@ -24,24 +24,25 @@
 package io.github.redpanda4552.HifumiBot.filter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class ChatFilter {
-    HashMap<String, ArrayList<Pattern>> patternMap = new HashMap<String, ArrayList<Pattern>>();
+    
+    private ConcurrentHashMap<String, ArrayList<Pattern>> patternMap = new ConcurrentHashMap<String, ArrayList<Pattern>>();
 
     public ChatFilter() {
         this.compile();
     }
 
-    public synchronized void compile() {
+    public void compile() {
         patternMap.clear();
 
         for (Filter filter : HifumiBot.getSelf().getConfig().filters.values()) {
@@ -64,35 +65,35 @@ public class ChatFilter {
      * @return True if a regular expression matched and the message was filtered
      *         out, false otherwise.
      */
-    public synchronized boolean applyFilters(MessageReceivedEvent event) {
-        if (event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+    public boolean applyFilters(Message message) {
+        if (message.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
             return false;
         }
 
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, message.getMember())) {
             return false;
         }
 
         for (String filterName : patternMap.keySet()) {
             for (Pattern p : patternMap.get(filterName)) {
-                String filteredMessage = event.getMessage().getContentDisplay().toLowerCase().replaceAll("[\n\r\t]", " ");
+                String filteredMessage = message.getContentDisplay().toLowerCase().replaceAll("[\n\r\t]", " ");
                 Matcher m = p.matcher(filteredMessage);
                 boolean matches = m.matches();
                 boolean find = m.find();
 
                 if (matches || find) {
-                    event.getMessage().delete().complete();
+                    message.delete().complete();
                     String replyMessage = HifumiBot.getSelf().getConfig().filters.get(filterName).replyMessage;
 
                     if (!replyMessage.isBlank()) {
-                        Messaging.sendMessage(event.getChannel(), replyMessage);
+                        Messaging.sendMessage(message.getChannel(), replyMessage);
                     }
                     
-                    User usr = event.getMessage().getAuthor();
+                    User usr = message.getAuthor();
                     Messaging.logInfo("ChatFilter", "applyFilters",
                             "Message from user " + usr.getAsMention() + " (" + usr.getName() + "#" + usr.getDiscriminator() + ")"
-                                    + " was filtered from channel `" + event.getChannel().getName() + "`.\n\nUser's message (formatting stripped):\n```\n"
-                                    + event.getMessage().getContentStripped()
+                                    + " was filtered from channel `" + message.getChannel().getName() + "`.\n\nUser's message (formatting stripped):\n```\n"
+                                    + message.getContentStripped()
                                     + "\n```\nMatched this regular expression in filter `" + filterName + "` :\n```\n"
                                     + p.pattern() + "\n```");
                     return true;

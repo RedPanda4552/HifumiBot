@@ -39,7 +39,9 @@ import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
+import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
 import io.github.redpanda4552.HifumiBot.filter.KickHandler;
+import io.github.redpanda4552.HifumiBot.filter.MessageHistory;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.ChatGPT;
 import io.github.redpanda4552.HifumiBot.util.Internet;
@@ -119,6 +121,8 @@ public class HifumiBot {
     private CommandIndex commandIndex;
     private PermissionManager permissionManager;
     private ChatFilter chatFilter;
+    private HyperlinkCleaner hyperlinkCleaner;
+    private MessageHistory messageHistory;
     
     private EventListener eventListener;
     private MemberEventListener memberEventListener;
@@ -188,6 +192,8 @@ public class HifumiBot {
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
         chatFilter = new ChatFilter();
+        hyperlinkCleaner = new HyperlinkCleaner();
+        messageHistory = new MessageHistory();
         jda.addEventListener(eventListener = new EventListener(this));
         jda.addEventListener(memberEventListener = new MemberEventListener());
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
@@ -234,6 +240,10 @@ public class HifumiBot {
             serverMetrics.populationSnaps.put(OffsetDateTime.now().toString(), server.getMemberCount());
             ConfigManager.write(serverMetrics);
         }, 1000 * 60 * 60 * 6);
+
+        scheduler.scheduleRepeating("hist", () -> {
+            messageHistory.flush();
+        }, 1000 * 60 * 15);
         
         updateStatus("New Game!");
     }
@@ -294,6 +304,14 @@ public class HifumiBot {
 
     public ChatFilter getChatFilter() {
         return chatFilter;
+    }
+
+    public HyperlinkCleaner getHyperlinkCleaner() {
+        return hyperlinkCleaner;
+    }
+
+    public MessageHistory getMessageHistory() {
+        return messageHistory;
     }
 
     public EventListener getEventListener() {
