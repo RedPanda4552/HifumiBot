@@ -36,7 +36,7 @@ public class MessageBulkDeleteTargetedRunnable implements Runnable {
             List<Message> messages = null;
                 
             do {
-                messages = channel.getIterableHistory().takeAsync(1000).thenApply((list) -> 
+                messages = channel.getIterableHistory().takeAsync(100).thenApply((list) -> 
                     list.stream().filter((m) -> 
                         m.getAuthor().getId().equals(userId)
                     ).filter((m) ->
