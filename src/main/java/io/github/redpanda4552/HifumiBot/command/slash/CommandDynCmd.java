@@ -280,6 +280,10 @@ public class CommandDynCmd extends AbstractSlashCommand {
     }
 
     private String normalizeBody(String input) {
+        if (input == null) {
+            return input;
+        }
+
         return input.replace("\\n", "\n");
     }
 }
