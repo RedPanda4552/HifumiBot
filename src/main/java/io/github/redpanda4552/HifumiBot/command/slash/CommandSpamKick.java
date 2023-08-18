@@ -50,6 +50,7 @@ public class CommandSpamKick extends AbstractSlashCommand {
         try {
             HifumiBot.getSelf().getKickHandler().doKick(member);
             event.reply("Successfully messaged and kicked " + member.getUser().getAsMention()).setEphemeral(true).queue();
+            Messaging.logInfo("CommandSpamKick", "onExecute", "Sent a DM to user " + member.getAsMention() + " warning them that we think they are a bot, and kicked the user from the server.\n\nThis action was taken by " + event.getUser().getAsMention() + ".");
         } catch (Exception e) {
             Messaging.logException("CommandSpamKick", "onExecute", e);
             event.reply("An internal error occurred, check the bot logging channel").setEphemeral(true).queue();
