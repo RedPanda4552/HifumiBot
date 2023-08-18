@@ -29,8 +29,6 @@ import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.config.ConfigType;
-import io.github.redpanda4552.HifumiBot.util.Strings;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
