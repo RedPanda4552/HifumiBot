@@ -45,6 +45,11 @@ public class CommandAbout extends AbstractSlashCommand {
         eb.addField("Created By", "pandubz", true);
         String version = HifumiBot.getSelf().getVersion();
         eb.addField("Version", version != null ? version : "[Debug Mode]", true);
+        
+        long total = Runtime.getRuntime().totalMemory();
+        long free = Runtime.getRuntime().freeMemory();
+
+        eb.addField("Memory (Total / Free / Used)", String.format("%d MB / %d MB / %d MB", total / 1024 / 1024, free / 1024 / 1024, (total - free) / 1024 / 1024), false);
 
         StringBuilder storageBuilder = new StringBuilder("| ");
         storageBuilder.append("Config: ").append((ConfigManager.getSizeBytes(ConfigType.CORE) / 1024) + " KB | ");
