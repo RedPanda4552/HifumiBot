@@ -39,7 +39,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 
 public class PnachParser extends AbstractParser {
 
-    private static final String CRC_FILE_NAME_PATTERN = "[0-9a-fA-F]{8}.*\\.pnach";
+    private static final String CRC_FILE_NAME_PATTERN = "[A-Z]{4}-[0-9]{5}_[0-9a-fA-F]{8}.*\\.pnach";
 
     private final Message message;
     private Attachment attachment;
@@ -90,13 +90,19 @@ public class PnachParser extends AbstractParser {
                 // a comment, or blank?
                 if (line.isBlank() || line.startsWith("//")) {
                     continue;
+                } else if ((line.startsWith("["))) {
+                    if (line.endsWith("]")) {
+                        continue;
+                    } else {
+                        addError(PnachParserError.BAD_BRACKET, line);
+                    }
                 } else if (line.contains("=")) {
                     int firstEquals = line.indexOf('=');
                     String lineStart = line.substring(0, firstEquals);
 
-                    if (lineStart.equals("author") || lineStart.equals("comment") || lineStart.equals("gametitle")) {
+                    if (lineStart.equals("author") || lineStart.equals("description")) {
                         continue;
-                    } else if (lineStart.equalsIgnoreCase("author") || lineStart.equalsIgnoreCase("comment") || lineStart.equalsIgnoreCase("gametitle")) {
+                    } else if (lineStart.equalsIgnoreCase("author") || lineStart.equalsIgnoreCase("description")) {
                         addError(PnachParserError.START_LOWERCASE, line);
                     } else if (lineStart.equals("patch")) {
                         int lastEquals = line.lastIndexOf('=');
