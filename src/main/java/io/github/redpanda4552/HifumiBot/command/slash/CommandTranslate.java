@@ -98,7 +98,7 @@ public class CommandTranslate extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return Commands.slash("translate", "Translate some text using Chat GPT")
+        return Commands.slash("translate", "Translate some text using DeepL")
                 .addOption(OptionType.STRING, "lang", "Target language. Standard ISO codes (en-US, fr, es)", true)
                 .addOption(OptionType.STRING, "text", "Text to translate", true)
                 .addOption(OptionType.USER, "user", "User to ping")
