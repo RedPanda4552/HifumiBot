@@ -1,8 +1,13 @@
 package io.github.redpanda4552.HifumiBot.command.slash;
 
+import java.util.HashMap;
+
+import com.deepl.api.Language;
+import com.deepl.api.TextResult;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -15,6 +20,20 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 
 public class CommandTranslate extends AbstractSlashCommand {
 
+    private HashMap<String, String> supportedLanguages;
+
+    public CommandTranslate() {
+        this.supportedLanguages = new HashMap<String, String>();
+        
+        try {
+            for (Language lang : HifumiBot.getSelf().getDeepL().getTargetLanguages()) {
+                supportedLanguages.put(lang.getCode(), lang.getName());
+            }
+        } catch (Exception e) {
+            Messaging.logException("CommandTranslate", "(constructor)", e);
+        }
+    }
+
     @Override
     protected void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping langOpt = event.getOption("lang");
@@ -22,14 +41,23 @@ public class CommandTranslate extends AbstractSlashCommand {
         OptionMapping userOpt = event.getOption("user");
         
         if (langOpt == null) {
-            event.reply("Required option `lang` missing").setEphemeral(true);
+            event.reply("Required option `lang` missing").setEphemeral(true).queue();
+            return;
+        }
+
+        String lang = langOpt.getAsString();
+
+        if (!this.supportedLanguages.containsKey(lang)) {
+            event.reply("Unsupported language. Please use a valid ISO language code:\n" + this.supportedLanguages.keySet().toString()).setEphemeral(true).queue();
             return;
         }
         
         if (textOpt == null) {
-            event.reply("Required option `text` missing").setEphemeral(true);
+            event.reply("Required option `text` missing").setEphemeral(true).queue();
             return;
         }
+
+        String text = textOpt.getAsString();
         
         Member member = null;
 
@@ -38,12 +66,23 @@ public class CommandTranslate extends AbstractSlashCommand {
         }
 
         event.deferReply().queue();
-        String translated = HifumiBot.getSelf().getChatGPT().translate(event.getUser().getId(), textOpt.getAsString(), langOpt.getAsString());
-        
-        if (translated != null) {
-            EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(event.getMember());
-            eb.setTitle("Chat GPT Translation");
+        TextResult res = null;
+
+        try {
+            res = HifumiBot.getSelf().getDeepL().translateText(text, null, lang);
+        } catch (Exception e) {
+            Messaging.logException("CommandTranslate", "onExecute", e);
+            event.getHook().editOriginal("An error occurred while trying to translate. Admins have been notified.").queue();
+            return;
+        }
+
+        if (res != null) {
+            String translated = res.getText();
+
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("DeepL Translation");
             eb.setDescription(translated);
+            eb.setFooter("Target Language (ISO Code): " + lang);
             MessageEditBuilder mb = new MessageEditBuilder();
             
             if (member != null) {
@@ -53,14 +92,14 @@ public class CommandTranslate extends AbstractSlashCommand {
             mb.setEmbeds(eb.build());
             event.getHook().editOriginal(mb.build()).queue();
         } else {
-            event.getHook().editOriginal("Either an error occurred, or you are being rate limited. Please try again in a few minutes.").queue();
+            event.getHook().editOriginal("An unknown error occurred. Please try again in a few minutes.").queue();
         }
     }
 
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("translate", "Translate some text using Chat GPT")
-                .addOption(OptionType.STRING, "lang", "Target language", true)
+                .addOption(OptionType.STRING, "lang", "Target language. Standard ISO codes (en-US, fr, es)", true)
                 .addOption(OptionType.STRING, "text", "Text to translate", true)
                 .addOption(OptionType.USER, "user", "User to ping")
                 .setDefaultPermissions(DefaultMemberPermissions.ENABLED);

@@ -25,6 +25,8 @@ package io.github.redpanda4552.HifumiBot;
 
 import java.time.OffsetDateTime;
 
+import com.deepl.api.Translator;
+
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.config.BuildCommitMap;
 import io.github.redpanda4552.HifumiBot.config.Config;
@@ -43,7 +45,6 @@ import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
 import io.github.redpanda4552.HifumiBot.filter.KickHandler;
 import io.github.redpanda4552.HifumiBot.filter.MessageHistory;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
-import io.github.redpanda4552.HifumiBot.util.ChatGPT;
 import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
@@ -60,7 +61,7 @@ public class HifumiBot {
     private static HifumiBot self;
     private static String discordBotToken;
     private static String superuserId;
-    private static String chatGptToken;
+    private static String deepLKey;
 
     public static void main(String[] args) {
         // Run via environment variables first, if not, fall-back to args
@@ -69,18 +70,18 @@ public class HifumiBot {
             discordBotToken = System.getenv("DISCORD_BOT_TOKEN");
             superuserId = System.getenv("SUPERUSER_ID");
 
-            if (System.getenv().containsKey("CHAT_GPT_TOKEN")) {
-                chatGptToken = System.getenv("CHAT_GPT_TOKEN");
+            if (System.getenv().containsKey("DEEPL_KEY")) {
+                deepLKey = System.getenv("DEEPL_KEY");
             }
         } else if (args.length < 2) {
-            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [chat-gpt-token]");
+            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [deepl-key]");
             return;
         } else {
             discordBotToken = args[0];
             superuserId = args[1];
 
             if (args.length >= 3) {
-                chatGptToken = args[2];
+                deepLKey = args[2];
             }
             System.out.println("Parsed arguments from command line");
         }
@@ -99,10 +100,6 @@ public class HifumiBot {
     
     public static String getSuperuserId() {
         return superuserId;
-    }
-
-    public static String getChatGptToken() {
-        return chatGptToken;
     }
 
     private JDA jda;
@@ -131,7 +128,7 @@ public class HifumiBot {
     
     private KickHandler kickHandler;
     private GameIndex gameIndex;
-    private ChatGPT chatGPT;
+    private Translator deepL;
 
     public HifumiBot() {
         self = this;
@@ -185,6 +182,7 @@ public class HifumiBot {
         ConfigManager.write(emulogParserConfig);
 
         Internet.init();
+        deepL = new Translator(deepLKey);
         scheduler = new Scheduler();
         wikiIndex = new WikiIndex();
         cpuIndex = new CpuIndex();
@@ -200,7 +198,6 @@ public class HifumiBot {
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
         kickHandler = new KickHandler();
         gameIndex = new GameIndex();
-        chatGPT = new ChatGPT();
 
         scheduler.runOnce(() -> {
             wikiIndex.refresh();
@@ -338,8 +335,8 @@ public class HifumiBot {
         return gameIndex;
     }
     
-    public ChatGPT getChatGPT() {
-        return chatGPT;
+    public Translator getDeepL() {
+        return deepL;
     }
 
     public void shutdown(boolean reload) {

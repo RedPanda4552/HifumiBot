@@ -23,9 +23,13 @@
  */
 package io.github.redpanda4552.HifumiBot.command.context;
 
+import java.awt.Color;
+
+import com.deepl.api.TextResult;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractMessageContextCommand;
-import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -40,12 +44,26 @@ public class CommandTranslateEN extends AbstractMessageContextCommand {
         String userId = event.getTarget().getAuthor().getId();
         String content = event.getTarget().getContentDisplay();
         event.getHook().editOriginal(":hourglass: Sending a translation request to Chat GPT... This may take a moment...").queue();
-        String translated = HifumiBot.getSelf().getChatGPT().translate(userId, content);
+        
+        TextResult res = null;
+        
+        try {
+            res = HifumiBot.getSelf().getDeepL().translateText(content, null, "en-US");
+        } catch (Exception e) {
+            Messaging.logException("CommandTranslateEN", "onExecute", e);
+            event.getHook().editOriginal("An error occurred while trying to translate. Admins have been notified.").queue();
+            return;
+        }
 
-        if (translated != null) {
-            EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(event.getMember());
-            eb.setTitle("Chat GPT Translation");
+        if (res != null) {
+            String translated = res.getText();
+            String sourceLang = res.getDetectedSourceLanguage();
+
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("DeepL Translation");
             eb.setDescription(translated);
+            eb.setColor(Color.BLUE);
+            eb.setFooter("Source Language (ISO Code): " + sourceLang);
             event.getTarget().replyEmbeds(eb.build()).mentionRepliedUser(false).queue();
 
             try {
@@ -53,9 +71,8 @@ public class CommandTranslateEN extends AbstractMessageContextCommand {
             } catch (Exception e) {
                 // Squelch
             }
-            
         } else {
-            event.getHook().editOriginal("Either an error occurred, or you are being rate limited. Please try again in a few minutes.").queue();
+            event.getHook().editOriginal("An unknown error occurred. Please try again in a few minutes.").queue();
         }
     }
 
