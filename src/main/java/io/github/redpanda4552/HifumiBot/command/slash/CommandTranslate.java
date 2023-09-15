@@ -1,5 +1,6 @@
 package io.github.redpanda4552.HifumiBot.command.slash;
 
+import java.awt.Color;
 import java.util.HashMap;
 
 import com.deepl.api.Language;
@@ -82,6 +83,7 @@ public class CommandTranslate extends AbstractSlashCommand {
             EmbedBuilder eb = new EmbedBuilder();
             eb.setTitle("DeepL Translation");
             eb.setDescription(translated);
+            eb.setColor(Color.MAGENTA);
             eb.setFooter("Target Language (ISO Code): " + lang);
             MessageEditBuilder mb = new MessageEditBuilder();
             
