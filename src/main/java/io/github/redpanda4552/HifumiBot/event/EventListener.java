@@ -93,7 +93,7 @@ public class EventListener extends ListenerAdapter {
             }
         }
 
-        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
+        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new FilterRunnable(event.getMessage(), now));
             
             if (Messaging.hasBotPing(event.getMessage())) {
