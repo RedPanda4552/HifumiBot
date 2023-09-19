@@ -27,6 +27,10 @@ public class MessageHistory {
         return this.history.get(messageId);
     }
 
+    public void removeMessage(String messageId) {
+        this.history.remove(messageId);
+    }
+
     public boolean storeAndCheckDuplicate(Message msg) {
         MessageHistoryEntry entry = new MessageHistoryEntry(msg);
         this.history.put(msg.getId(), entry);
