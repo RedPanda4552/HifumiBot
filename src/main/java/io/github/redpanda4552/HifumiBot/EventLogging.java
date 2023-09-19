@@ -129,7 +129,7 @@ public class EventLogging {
         User user = HifumiBot.getSelf().getJDA().getUserById(entry.getUserId());
 
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setColor(Color.RED);
+        eb.setColor(Color.MAGENTA);
         eb.setTitle("Message Deleted");
         eb.addField("Username (As Mention)", user.getAsMention(), true);
         eb.addField("Username (Plain Text)", user.getName() + "#" + user.getDiscriminator(), true);
