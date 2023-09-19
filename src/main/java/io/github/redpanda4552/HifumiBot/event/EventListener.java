@@ -30,9 +30,12 @@ import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.FilterRunnable;
+import io.github.redpanda4552.HifumiBot.filter.MessageHistory;
+import io.github.redpanda4552.HifumiBot.filter.MessageHistoryEntry;
 import io.github.redpanda4552.HifumiBot.parse.CrashParser;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
@@ -48,6 +51,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -89,7 +93,7 @@ public class EventListener extends ListenerAdapter {
             }
         }
 
-        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new FilterRunnable(event.getMessage(), now));
             
             if (Messaging.hasBotPing(event.getMessage())) {
@@ -106,6 +110,15 @@ public class EventListener extends ListenerAdapter {
         }
         
         PixivSourceFetcher.getPixivLink(event.getMessage());
+    }
+
+    @Override
+    public void onMessageDelete(MessageDeleteEvent event) {
+        MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistory().fetchMessage(event.getMessageId());
+
+        if (entry != null) {
+            EventLogging.logMessageDeleteEvent(event, entry);
+        }
     }
 
     @Override

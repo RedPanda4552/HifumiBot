@@ -5,11 +5,18 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.swing.RowFilter.Entry;
+
+import org.apache.commons.lang3.StringUtils;
+
+import io.github.redpanda4552.HifumiBot.filter.MessageHistoryEntry;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class EventLogging {
@@ -104,6 +111,32 @@ public class EventLogging {
         eb.addField("Username (Plain Text)", event.getUser().getName() + "#" + event.getUser().getDiscriminator(), true);
         eb.addField("User ID", event.getUser().getId(), true);
         eb.addField("Account Age", getAgeString(diff), true);
+
+        MessageCreateBuilder mb = new MessageCreateBuilder();
+        mb.setEmbeds(eb.build());
+        Messaging.sendMessage(channelId, mb.build());
+    }
+
+    public static void logMessageDeleteEvent(MessageDeleteEvent event, MessageHistoryEntry entry) {
+        String channelId = HifumiBot.getSelf().getConfig().channels.logging.messageDelete;
+
+        if (channelId == null || channelId.isBlank()) {
+            return;
+        }
+
+        OffsetDateTime now = OffsetDateTime.now();
+        Duration diff = Duration.between(entry.getInstant(), now);
+        User user = HifumiBot.getSelf().getJDA().getUserById(entry.getUserId());
+
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(Color.RED);
+        eb.setTitle("Message Deleted");
+        eb.addField("Username (As Mention)", user.getAsMention(), true);
+        eb.addField("Username (Plain Text)", user.getName() + "#" + user.getDiscriminator(), true);
+        eb.addField("User ID", user.getId(), true);
+        eb.addField("Channel", HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId()).getAsMention(), true);
+        eb.addField("Message Age", getAgeString(diff), true);
+        eb.addField("Message Content (Truncated to 512 chars)", "```\n" + StringUtils.truncate(entry.getMessageContent(), 512) + "\n```", false);
 
         MessageCreateBuilder mb = new MessageCreateBuilder();
         mb.setEmbeds(eb.build());

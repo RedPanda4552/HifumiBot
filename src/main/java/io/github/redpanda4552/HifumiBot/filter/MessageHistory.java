@@ -15,20 +15,30 @@ import net.dv8tion.jda.api.entities.Message;
 public class MessageHistory {
     
     private ConcurrentHashMap<String, MessageHistoryEntry> history;
+    // Map of User IDs to Message IDs, used to make accessing MessageHistoryEntries by user easier.
+    private ConcurrentHashMap<String, String> duplicateMap;
 
     public MessageHistory() {
         this.history = new ConcurrentHashMap<String, MessageHistoryEntry>();
+        this.duplicateMap = new ConcurrentHashMap<String, String>();
     }
 
-    public boolean storeAndCheckDuplicate(MessageHistoryEntry entry) {
+    public MessageHistoryEntry fetchMessage(String messageId) {
+        return this.history.get(messageId);
+    }
+
+    public boolean storeAndCheckDuplicate(Message msg) {
+        MessageHistoryEntry entry = new MessageHistoryEntry(msg);
+        this.history.put(msg.getId(), entry);
+        
         // If it is a super short message, its probably just repeated emotes or acknowledgements.
         if (entry.getMessageContent().length() <= 16) {
             return false;
         }
 
         // If we have a prior entry, check it
-        if (history.containsKey(entry.getUserId())) {
-            MessageHistoryEntry oldEntry = history.get(entry.getUserId());
+        if (this.duplicateMap.containsKey(entry.getUserId())) {
+            MessageHistoryEntry oldEntry = this.history.get(this.duplicateMap.get(entry.getUserId()));
             
             if (checkMessage(oldEntry, entry) || checkAttachments(oldEntry, entry)) {
                 return true;
@@ -36,7 +46,7 @@ public class MessageHistory {
         }
         
         // Log this new entry
-        history.put(entry.getUserId(), entry);
+        this.duplicateMap.put(entry.getUserId(), entry.getMessageId());
         return false;
     }
 
@@ -80,7 +90,7 @@ public class MessageHistory {
         message.delete().complete();
         MessageBulkDeleteTargetedRunnable runnable = new MessageBulkDeleteTargetedRunnable(entry.getServerId(), member.getId(), entry.getChannelId(), entry.getMessageContent(), 1);
         HifumiBot.getSelf().getScheduler().runOnce(runnable);
-        history.remove(member.getId());
+        this.duplicateMap.remove(member.getId());
         
         Messaging.logInfo("ChatFilter", "applyFilters",
                 "Message from user " + member.getUser().getAsMention() + " (" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + ")"
@@ -91,14 +101,31 @@ public class MessageHistory {
     }
 
     public void flush() {
-        Instant now = Instant.now();
-        
-        for (String key : history.keySet()) {
-            MessageHistoryEntry entry = history.get(key);
-            Instant cooldownEnd = entry.getInstant().plusMillis(HifumiBot.getSelf().getConfig().filterOptions.incidentCooldownMS);
+        // Yeah it's n^2, sue me
+        while (this.history.size() > 131072) {
+            String oldestId = null;
+            Instant oldestTime = null;
+
+            for (String messageId : this.history.keySet()) {
+                MessageHistoryEntry entry = this.history.get(messageId);
+                if (oldestId == null || entry.getInstant().isBefore(oldestTime)) {
+                    oldestId = messageId;
+                    oldestTime = entry.getInstant();
+                }
+            }
             
-            if (now.isAfter(cooldownEnd)) {
-                history.remove(key);
+            if (oldestId == null) {
+                throw new IllegalStateException("Flush triggered sanity check");
+            }
+
+            this.history.remove(oldestId);
+        }
+        
+        for (String key : this.duplicateMap.keySet()) {
+            String messageId = this.duplicateMap.get(key);
+
+            if (!this.history.containsKey(messageId)) {
+                this.duplicateMap.remove(key);
             }
         }
     }
