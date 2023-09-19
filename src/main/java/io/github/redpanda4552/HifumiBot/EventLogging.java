@@ -117,7 +117,7 @@ public class EventLogging {
         Messaging.sendMessage(channelId, mb.build());
     }
 
-    public static void logMessageDeleteEvent(MessageDeleteEvent event, MessageHistoryEntry entry) {
+    public static void logMessageDeleteEvent(MessageHistoryEntry entry) {
         String channelId = HifumiBot.getSelf().getConfig().channels.logging.messageDelete;
 
         if (channelId == null || channelId.isBlank()) {

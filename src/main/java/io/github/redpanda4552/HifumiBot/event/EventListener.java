@@ -34,7 +34,6 @@ import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.FilterRunnable;
-import io.github.redpanda4552.HifumiBot.filter.MessageHistory;
 import io.github.redpanda4552.HifumiBot.filter.MessageHistoryEntry;
 import io.github.redpanda4552.HifumiBot.parse.CrashParser;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
@@ -51,6 +50,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -117,7 +117,20 @@ public class EventListener extends ListenerAdapter {
         MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistory().fetchMessage(event.getMessageId());
 
         if (entry != null) {
-            EventLogging.logMessageDeleteEvent(event, entry);
+            EventLogging.logMessageDeleteEvent(entry);
+            HifumiBot.getSelf().getMessageHistory().removeMessage(event.getMessageId());
+        }
+    }
+
+    @Override 
+    public void onMessageBulkDelete(MessageBulkDeleteEvent event) {
+        for (String messageId : event.getMessageIds()) {
+            MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistory().fetchMessage(messageId);
+
+            if (entry != null) {
+                EventLogging.logMessageDeleteEvent(entry);
+                HifumiBot.getSelf().getMessageHistory().removeMessage(messageId);
+            }
         }
     }
 
