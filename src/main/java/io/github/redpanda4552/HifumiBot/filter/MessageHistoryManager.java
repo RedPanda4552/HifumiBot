@@ -43,7 +43,7 @@ public class MessageHistoryManager {
         if (this.duplicateMap.containsKey(entry.getUserId())) {
             MessageHistoryEntry oldEntry = HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.get(this.duplicateMap.get(entry.getUserId()));
             
-            if (checkMessage(oldEntry, entry) || checkAttachments(oldEntry, entry)) {
+            if (oldEntry != null && (checkMessage(oldEntry, entry) || checkAttachments(oldEntry, entry))) {
                 return true;
             }
         }
