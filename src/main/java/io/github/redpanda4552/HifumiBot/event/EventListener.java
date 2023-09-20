@@ -119,6 +119,8 @@ public class EventListener extends ListenerAdapter {
         if (entry != null) {
             EventLogging.logMessageDeleteEvent(entry);
             HifumiBot.getSelf().getMessageHistory().removeMessage(event.getMessageId());
+        } else {
+            EventLogging.logMessageDeleteEvent(event.getGuildChannel().getAsMention(), event.getMessageId());
         }
     }
 
@@ -130,6 +132,8 @@ public class EventListener extends ListenerAdapter {
             if (entry != null) {
                 EventLogging.logMessageDeleteEvent(entry);
                 HifumiBot.getSelf().getMessageHistory().removeMessage(messageId);
+            } else {
+                EventLogging.logMessageDeleteEvent(event.getChannel().getAsMention(), messageId);
             }
         }
     }

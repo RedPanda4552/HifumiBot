@@ -143,6 +143,24 @@ public class EventLogging {
         Messaging.sendMessage(channelId, mb.build());
     }
 
+    public static void logMessageDeleteEvent(String channelMention, String messageId) {
+        String channelId = HifumiBot.getSelf().getConfig().channels.logging.messageDelete;
+
+        if (channelId == null || channelId.isBlank()) {
+            return;
+        }
+
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(Color.MAGENTA);
+        eb.setTitle("Message Deleted");
+        eb.addField("Channel", channelMention, true);
+        eb.addField("Message ID", messageId, true);
+
+        MessageCreateBuilder mb = new MessageCreateBuilder();
+        mb.setEmbeds(eb.build());
+        Messaging.sendMessage(channelId, mb.build());
+    }
+
     private static String getAgeString(Duration diff) {
         String ageStr = "";
 
