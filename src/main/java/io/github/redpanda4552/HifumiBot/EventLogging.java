@@ -136,7 +136,21 @@ public class EventLogging {
         eb.addField("User ID", user.getId(), true);
         eb.addField("Channel", HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId()).getAsMention(), true);
         eb.addField("Message Age", getAgeString(diff), true);
-        eb.addField("Message Content (Truncated to 512 chars)", "```\n" + StringUtils.truncate(entry.getMessageContent(), 512) + "\n```", false);
+        eb.addField("Message Content (Truncated to 512 chars)", StringUtils.truncate(entry.getMessageContent(), 512), false);
+
+        if (entry.referencedMessageLink != null) {
+            eb.addField("Replied to Message", entry.referencedMessageLink, false);
+        }
+
+        if (!entry.getAttachmentUrls().isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+
+            for (String attachmentUrl : entry.attachmentUrls) {
+                sb.append(attachmentUrl).append("\n");
+            }
+
+            eb.addField("Attachments", sb.toString().trim(), false);
+        }
 
         MessageCreateBuilder mb = new MessageCreateBuilder();
         mb.setEmbeds(eb.build());

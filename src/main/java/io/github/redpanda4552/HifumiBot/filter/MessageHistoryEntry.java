@@ -40,6 +40,7 @@ public class MessageHistoryEntry {
     public OffsetDateTime dateTime;
     public ArrayList<String> attachmentUrls;
     public int count;
+    public String referencedMessageLink;
     
     public MessageHistoryEntry(Message msg) {
         this.userId = msg.getAuthor().getId();
@@ -55,6 +56,12 @@ public class MessageHistoryEntry {
         }
 
         this.count = 1;
+        
+        Message ref = msg.getReferencedMessage();
+
+        if (ref != null) {
+            this.referencedMessageLink = ref.getJumpUrl();
+        }
     }
     
     public String getUserId() {
