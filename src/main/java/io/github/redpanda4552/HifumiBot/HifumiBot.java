@@ -34,6 +34,7 @@ import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
 import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
+import io.github.redpanda4552.HifumiBot.config.MessageHistoryStorage;
 import io.github.redpanda4552.HifumiBot.config.ServerMetrics;
 import io.github.redpanda4552.HifumiBot.config.WarezTracking;
 import io.github.redpanda4552.HifumiBot.event.EventListener;
@@ -43,7 +44,7 @@ import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
 import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
 import io.github.redpanda4552.HifumiBot.filter.KickHandler;
-import io.github.redpanda4552.HifumiBot.filter.MessageHistory;
+import io.github.redpanda4552.HifumiBot.filter.MessageHistoryManager;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -109,6 +110,7 @@ public class HifumiBot {
     private BuildCommitMap buildCommitMap;
     private ServerMetrics serverMetrics;
     private EmulogParserConfig emulogParserConfig;
+    private MessageHistoryStorage messageHistoryStorage;
     private final OkHttpClient http;
     
     private Scheduler scheduler;
@@ -119,7 +121,7 @@ public class HifumiBot {
     private PermissionManager permissionManager;
     private ChatFilter chatFilter;
     private HyperlinkCleaner hyperlinkCleaner;
-    private MessageHistory messageHistory;
+    private MessageHistoryManager messageHistoryManager;
     
     private EventListener eventListener;
     private MemberEventListener memberEventListener;
@@ -180,6 +182,10 @@ public class HifumiBot {
         ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
         emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
         ConfigManager.write(emulogParserConfig);
+        
+        ConfigManager.createConfigIfNotExists(ConfigType.MESSAGE_HISTORY);
+        messageHistoryStorage = (MessageHistoryStorage) ConfigManager.read(ConfigType.MESSAGE_HISTORY);
+        ConfigManager.write(messageHistoryStorage);
 
         Internet.init();
         deepL = new Translator(deepLKey);
@@ -191,7 +197,7 @@ public class HifumiBot {
         permissionManager = new PermissionManager(superuserId);
         chatFilter = new ChatFilter();
         hyperlinkCleaner = new HyperlinkCleaner();
-        messageHistory = new MessageHistory();
+        messageHistoryManager = new MessageHistoryManager();
         jda.addEventListener(eventListener = new EventListener(this));
         jda.addEventListener(memberEventListener = new MemberEventListener());
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
@@ -239,7 +245,8 @@ public class HifumiBot {
         }, 1000 * 60 * 60 * 6);
 
         scheduler.scheduleRepeating("hist", () -> {
-            messageHistory.flush();
+            messageHistoryManager.flush();
+            ConfigManager.write(messageHistoryStorage);
         }, 1000 * 60 * 15);
         
         updateStatus("New Game!");
@@ -261,6 +268,10 @@ public class HifumiBot {
     
     public EmulogParserConfig getEmulogParserConfig() {
         return emulogParserConfig;
+    }
+
+    public MessageHistoryStorage getMessageHistoryStorage() {
+        return messageHistoryStorage;
     }
     
     public OkHttpClient getHttpClient() {
@@ -307,8 +318,8 @@ public class HifumiBot {
         return hyperlinkCleaner;
     }
 
-    public MessageHistory getMessageHistory() {
-        return messageHistory;
+    public MessageHistoryManager getMessageHistoryManager() {
+        return messageHistoryManager;
     }
 
     public EventListener getEventListener() {
@@ -341,6 +352,9 @@ public class HifumiBot {
 
     public void shutdown(boolean reload) {
         this.getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
+        // Because the disk overhead would be insane, this does not get written in real time.
+        // Write it upon exiting.
+        ConfigManager.write(messageHistoryStorage);
         this.getScheduler().shutdown();
         jda.shutdown();
 

@@ -2,6 +2,7 @@ package io.github.redpanda4552.HifumiBot.filter;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,28 +13,26 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
-public class MessageHistory {
+public class MessageHistoryManager {
     
-    private ConcurrentHashMap<String, MessageHistoryEntry> history;
     // Map of User IDs to Message IDs, used to make accessing MessageHistoryEntries by user easier.
     private ConcurrentHashMap<String, String> duplicateMap;
 
-    public MessageHistory() {
-        this.history = new ConcurrentHashMap<String, MessageHistoryEntry>();
+    public MessageHistoryManager() {
         this.duplicateMap = new ConcurrentHashMap<String, String>();
     }
 
     public MessageHistoryEntry fetchMessage(String messageId) {
-        return this.history.get(messageId);
+        return HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.get(messageId);
     }
 
     public void removeMessage(String messageId) {
-        this.history.remove(messageId);
+        HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.remove(messageId);
     }
 
     public boolean storeAndCheckDuplicate(Message msg) {
         MessageHistoryEntry entry = new MessageHistoryEntry(msg);
-        this.history.put(msg.getId(), entry);
+        HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.put(msg.getId(), entry);
         
         // If it is a super short message, its probably just repeated emotes or acknowledgements.
         if (entry.getMessageContent().length() <= 16) {
@@ -42,7 +41,7 @@ public class MessageHistory {
 
         // If we have a prior entry, check it
         if (this.duplicateMap.containsKey(entry.getUserId())) {
-            MessageHistoryEntry oldEntry = this.history.get(this.duplicateMap.get(entry.getUserId()));
+            MessageHistoryEntry oldEntry = HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.get(this.duplicateMap.get(entry.getUserId()));
             
             if (checkMessage(oldEntry, entry) || checkAttachments(oldEntry, entry)) {
                 return true;
@@ -106,15 +105,15 @@ public class MessageHistory {
 
     public void flush() {
         // Yeah it's n^2, sue me
-        while (this.history.size() > 131072) {
+        while (HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.size() > 131072) {
             String oldestId = null;
-            Instant oldestTime = null;
+            OffsetDateTime oldestTime = null;
 
-            for (String messageId : this.history.keySet()) {
-                MessageHistoryEntry entry = this.history.get(messageId);
-                if (oldestId == null || entry.getInstant().isBefore(oldestTime)) {
+            for (String messageId : HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.keySet()) {
+                MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.get(messageId);
+                if (oldestId == null || entry.getDateTime().isBefore(oldestTime)) {
                     oldestId = messageId;
-                    oldestTime = entry.getInstant();
+                    oldestTime = entry.getDateTime();
                 }
             }
             
@@ -122,13 +121,13 @@ public class MessageHistory {
                 throw new IllegalStateException("Flush triggered sanity check");
             }
 
-            this.history.remove(oldestId);
+            HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.remove(oldestId);
         }
         
         for (String key : this.duplicateMap.keySet()) {
             String messageId = this.duplicateMap.get(key);
 
-            if (!this.history.containsKey(messageId)) {
+            if (!HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.containsKey(messageId)) {
                 this.duplicateMap.remove(key);
             }
         }

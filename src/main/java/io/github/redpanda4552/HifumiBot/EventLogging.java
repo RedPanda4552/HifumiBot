@@ -125,7 +125,7 @@ public class EventLogging {
         }
 
         OffsetDateTime now = OffsetDateTime.now();
-        Duration diff = Duration.between(entry.getInstant(), now);
+        Duration diff = Duration.between(entry.getDateTime(), now);
         User user = HifumiBot.getSelf().getJDA().getUserById(entry.getUserId());
 
         EmbedBuilder eb = new EmbedBuilder();

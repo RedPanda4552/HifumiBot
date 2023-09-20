@@ -30,7 +30,8 @@ public enum ConfigType {
     DYNCMD("./dyncmd-config.json", DynCmdConfig.class),
     BUILDMAP("./build-map.json", BuildCommitMap.class),
     SERVER_METRICS("./server-metrics.json", ServerMetrics.class),
-    EMULOG_PARSER("./emulog-parser.json", EmulogParserConfig.class);
+    EMULOG_PARSER("./emulog-parser.json", EmulogParserConfig.class),
+    MESSAGE_HISTORY("./message-history.json", MessageHistoryStorage.class);
     
     private String path;
     private Class<?> clazz;

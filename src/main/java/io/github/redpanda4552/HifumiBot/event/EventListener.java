@@ -93,7 +93,7 @@ public class EventListener extends ListenerAdapter {
             }
         }
 
-        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
+        if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
             HifumiBot.getSelf().getScheduler().runOnce(new FilterRunnable(event.getMessage(), now));
             
             if (Messaging.hasBotPing(event.getMessage())) {
@@ -114,11 +114,11 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onMessageDelete(MessageDeleteEvent event) {
-        MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistory().fetchMessage(event.getMessageId());
+        MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistoryManager().fetchMessage(event.getMessageId());
 
         if (entry != null) {
             EventLogging.logMessageDeleteEvent(entry);
-            HifumiBot.getSelf().getMessageHistory().removeMessage(event.getMessageId());
+            HifumiBot.getSelf().getMessageHistoryManager().removeMessage(event.getMessageId());
         } else {
             EventLogging.logMessageDeleteEvent(event.getGuildChannel().getAsMention(), event.getMessageId());
         }
@@ -127,11 +127,11 @@ public class EventListener extends ListenerAdapter {
     @Override 
     public void onMessageBulkDelete(MessageBulkDeleteEvent event) {
         for (String messageId : event.getMessageIds()) {
-            MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistory().fetchMessage(messageId);
+            MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistoryManager().fetchMessage(messageId);
 
             if (entry != null) {
                 EventLogging.logMessageDeleteEvent(entry);
-                HifumiBot.getSelf().getMessageHistory().removeMessage(messageId);
+                HifumiBot.getSelf().getMessageHistoryManager().removeMessage(messageId);
             } else {
                 EventLogging.logMessageDeleteEvent(event.getChannel().getAsMention(), messageId);
             }
