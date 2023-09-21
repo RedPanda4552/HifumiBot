@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.redpanda4552</groupId>
     <artifactId>HifumiBot</artifactId>
-    <version>3.24.2</version>
+    <version>3.24.3</version>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
