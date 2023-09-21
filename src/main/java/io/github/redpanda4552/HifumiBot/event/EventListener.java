@@ -99,6 +99,8 @@ public class EventListener extends ListenerAdapter {
             if (Messaging.hasBotPing(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
             } 
+        } else {
+            HifumiBot.getSelf().getMessageHistoryManager().store(event.getMessage());
         }
         
         if (event.getMember() != null && event.getMember().getRoles().isEmpty()) {
@@ -117,7 +119,10 @@ public class EventListener extends ListenerAdapter {
         MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistoryManager().fetchMessage(event.getMessageId());
 
         if (entry != null) {
-            EventLogging.logMessageDeleteEvent(entry);
+            if (!entry.getUserId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+                EventLogging.logMessageDeleteEvent(entry);
+            }
+
             HifumiBot.getSelf().getMessageHistoryManager().removeMessage(event.getMessageId());
         } else {
             EventLogging.logMessageDeleteEvent(event.getGuildChannel().getAsMention(), event.getMessageId());

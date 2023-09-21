@@ -167,7 +167,7 @@ public class EventLogging {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.MAGENTA);
         eb.setTitle("Message Deleted");
-        eb.setDescription("The message could not be located in the message history cache. Typical reasons:\n- Too old\n- Not logged due to the user having elevated permissions\n- The Discord API did not trigger an event when the message was first sent.");
+        eb.setDescription("The message could not be located in the message history cache. Typical reasons:\n- Message is too old and was not logged\n- The Discord API did not trigger an event when the message was first sent.");
         eb.addField("Channel", channelMention, true);
         eb.addField("Message ID", messageId, true);
 

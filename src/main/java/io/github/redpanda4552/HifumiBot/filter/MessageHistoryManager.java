@@ -30,6 +30,11 @@ public class MessageHistoryManager {
         HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.remove(messageId);
     }
 
+    public void store(Message msg) {
+        MessageHistoryEntry entry = new MessageHistoryEntry(msg);
+        HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.put(msg.getId(), entry);
+    }
+
     public boolean storeAndCheckDuplicate(Message msg) {
         MessageHistoryEntry entry = new MessageHistoryEntry(msg);
         HifumiBot.getSelf().getMessageHistoryStorage().messageHistory.put(msg.getId(), entry);
