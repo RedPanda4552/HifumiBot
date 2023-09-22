@@ -36,6 +36,10 @@ import net.dv8tion.jda.api.entities.User;
 public class EmbedUtil {
 
     public static Field prebuildField(String title, String value, boolean inline) {
+        if (value == null) {
+            value = "Unknown";
+        }
+
         if (title.length() > MessageEmbed.TITLE_MAX_LENGTH) {
             title = StringUtils.truncate(title, MessageEmbed.TITLE_MAX_LENGTH);
         }

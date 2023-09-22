@@ -160,6 +160,12 @@ public class GameIndex implements Refreshable {
         put(1, "Sprites/Triangles");
         put(2, "Blended Sprites/Triangles");
     }};
+
+    private static final HashMap<Integer, String> BILINEAR_DIRTY_UPSCALE = new HashMap<Integer, String>() {{
+        put(0, "Automatic (Default)");
+        put(1, "Force Bilinear");
+        put(2, "Force Nearest");
+    }};
     
     private boolean isInitialized = false;
     private Map<String, Object> map;
@@ -557,7 +563,7 @@ public class GameIndex implements Refreshable {
                     if (gsHWFixes.containsKey("bilinearUpscale")) {
                         eb.addField(EmbedUtil.prebuildField(
                             "Bilinear Dirty Upscale", 
-                            GENERIC_BOOLEAN.get((int) gsHWFixes.get("bilinearUpscale")), 
+                            BILINEAR_DIRTY_UPSCALE.get((int) gsHWFixes.get("bilinearUpscale")), 
                             true));
                     }
                 }
