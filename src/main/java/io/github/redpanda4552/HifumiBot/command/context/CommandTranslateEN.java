@@ -41,7 +41,6 @@ public class CommandTranslateEN extends AbstractMessageContextCommand {
     @Override
     protected void onExecute(MessageContextInteractionEvent event) {
         event.deferReply(true).queue();
-        String userId = event.getTarget().getAuthor().getId();
         String content = event.getTarget().getContentDisplay();
         event.getHook().editOriginal(":hourglass: Sending a translation request to Chat GPT... This may take a moment...").queue();
         

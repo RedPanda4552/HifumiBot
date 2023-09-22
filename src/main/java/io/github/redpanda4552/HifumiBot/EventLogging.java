@@ -5,8 +5,6 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
-import javax.swing.RowFilter.Entry;
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.filter.MessageHistoryEntry;
@@ -16,7 +14,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
-import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class EventLogging {
