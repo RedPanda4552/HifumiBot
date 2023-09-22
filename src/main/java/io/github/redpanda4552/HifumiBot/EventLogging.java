@@ -49,7 +49,7 @@ public class EventLogging {
         }
 
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
-        eb.addField("Username (Plain Text)", event.getUser().getName() + "#" + event.getUser().getDiscriminator(), true);
+        eb.addField("Username (Plain Text)", event.getUser().getName(), true);
         eb.addField("User ID", event.getUser().getId(), true);
         eb.addField("Account Age", getAgeString(diff), true);
         eb.addField("Current Display Name", event.getMember().getEffectiveName(), true);
@@ -81,7 +81,7 @@ public class EventLogging {
         eb.setTitle("Member Left");
         eb.setThumbnail(event.getUser().getAvatarUrl());
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
-        eb.addField("Username (Plain Text)", event.getUser().getName() + "#" + event.getUser().getDiscriminator(), true);
+        eb.addField("Username (Plain Text)", event.getUser().getName(), true);
         eb.addField("User ID", event.getUser().getId(), true);
         eb.addField("Account Age", getAgeString(diff), true);
 
@@ -108,7 +108,7 @@ public class EventLogging {
         eb.setColor(Color.RED);
         eb.setTitle("Member Banned");
         eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
-        eb.addField("Username (Plain Text)", event.getUser().getName() + "#" + event.getUser().getDiscriminator(), true);
+        eb.addField("Username (Plain Text)", event.getUser().getName(), true);
         eb.addField("User ID", event.getUser().getId(), true);
         eb.addField("Account Age", getAgeString(diff), true);
 
@@ -132,7 +132,7 @@ public class EventLogging {
         eb.setColor(Color.MAGENTA);
         eb.setTitle("Message Deleted");
         eb.addField("Username (As Mention)", user.getAsMention(), true);
-        eb.addField("Username (Plain Text)", user.getName() + "#" + user.getDiscriminator(), true);
+        eb.addField("Username (Plain Text)", user.getName(), true);
         eb.addField("User ID", user.getId(), true);
         eb.addField("Channel", HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId()).getAsMention(), true);
         eb.addField("Message Age", getAgeString(diff), true);

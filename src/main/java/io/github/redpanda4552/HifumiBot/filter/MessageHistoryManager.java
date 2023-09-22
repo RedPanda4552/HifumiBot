@@ -101,7 +101,7 @@ public class MessageHistoryManager {
         this.duplicateMap.remove(member.getId());
         
         Messaging.logInfo("ChatFilter", "applyFilters",
-                "Message from user " + member.getUser().getAsMention() + " (" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + ")"
+                "Message from user " + member.getUser().getAsMention() + " (" + member.getUser().getName() + ")"
                         + " was removed from channel `" + message.getChannel().getName() + "`.\n\nUser's message (formatting stripped, truncated to 500 chars):\n```\n"
                         + StringUtils.truncate(message.getContentStripped(), 500)
                         + "\n```\nThis message was a duplicate - user might be a bot. An automated job is also sweeping up any other matches, but might take a moment to finish."

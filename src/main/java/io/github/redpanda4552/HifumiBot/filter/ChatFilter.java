@@ -91,7 +91,7 @@ public class ChatFilter {
                     
                     User usr = message.getAuthor();
                     Messaging.logInfo("ChatFilter", "applyFilters",
-                            "Message from user " + usr.getAsMention() + " (" + usr.getName() + "#" + usr.getDiscriminator() + ")"
+                            "Message from user " + usr.getAsMention() + " (" + usr.getName() + ")"
                                     + " was filtered from channel `" + message.getChannel().getName() + "`.\n\nUser's message (formatting stripped):\n```\n"
                                     + message.getContentStripped()
                                     + "\n```\nMatched this regular expression in filter `" + filterName + "` :\n```\n"
