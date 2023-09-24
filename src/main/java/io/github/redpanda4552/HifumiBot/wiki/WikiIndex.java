@@ -24,6 +24,7 @@
 package io.github.redpanda4552.HifumiBot.wiki;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -58,7 +59,7 @@ public class WikiIndex implements Refreshable {
             this.clear();
 
             for (Element anchor : anchors) {
-                this.addGame(anchor.attr("title"), WikiPage.BASE_URL + anchor.attr("href"));
+                this.addGame(anchor.attr("title"), WikiPage.BASE_URL + URLDecoder.decode(anchor.attr("href"), "UTF8"));
             }
 
             this.isInitialized = true;
