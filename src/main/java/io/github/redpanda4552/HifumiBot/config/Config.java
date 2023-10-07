@@ -79,12 +79,14 @@ public class Config implements IConfig {
         public String memberLeave;
         public String memberBan;
         public String messageDelete;
+        public String messageUpdate;
 
         public Logging() {
             memberJoin = new String("");
             memberLeave = new String("");
             memberBan = new String("");
             messageDelete = new String("");
+            messageUpdate = new String("");
         }
     }
 

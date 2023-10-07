@@ -4,16 +4,19 @@ import java.awt.Color;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.filter.MessageHistoryEntry;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class EventLogging {
@@ -167,6 +170,61 @@ public class EventLogging {
         eb.setDescription("The message could not be located in the message history cache. Typical reasons:\n- Message is too old and was not logged\n- The Discord API did not trigger an event when the message was first sent.");
         eb.addField("Channel", channelMention, true);
         eb.addField("Message ID", messageId, true);
+
+        MessageCreateBuilder mb = new MessageCreateBuilder();
+        mb.setEmbeds(eb.build());
+        Messaging.sendMessage(channelId, mb.build());
+    }
+
+    public static void logMessageUpdateEvent(MessageUpdateEvent event, MessageHistoryEntry entry) {
+        String channelId = HifumiBot.getSelf().getConfig().channels.logging.messageUpdate;
+
+        if (channelId == null || channelId.isBlank()) {
+            return;
+        }
+
+        OffsetDateTime now = OffsetDateTime.now();
+        Duration diff = Duration.between(entry.getDateTime(), now);
+        User user = HifumiBot.getSelf().getJDA().getUserById(entry.getUserId());
+
+        String oldContent = entry.getMessageContent();
+        String newContent = event.getMessage().getContentRaw();
+
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(Color.CYAN);
+        eb.setTitle("Message Edited");
+        eb.addField("Username (As Mention)", user.getAsMention(), true);
+        eb.addField("Username (Plain Text)", user.getName(), true);
+        eb.addField("User ID", user.getId(), true);
+        eb.addField("Channel", HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId()).getAsMention(), true);
+        eb.addField("Message Age", getAgeString(diff), true);
+        eb.addField("Message Jump Link", event.getJumpUrl(), true);
+        eb.addField("Old Message Content (Truncated to 512 chars)", StringUtils.truncate(oldContent, 512), false);
+        eb.addField("New Message Content (Truncated to 512 chars)", StringUtils.truncate(newContent, 512), false);
+
+        if (entry.referencedMessageLink != null) {
+            eb.addField("Replied to Message", entry.referencedMessageLink, false);
+        }
+
+        if (!entry.getAttachmentUrls().isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+
+            for (String attachmentUrl : entry.attachmentUrls) {
+                sb.append(attachmentUrl).append("\n");
+            }
+
+            eb.addField("Old Attachments", sb.toString().trim(), false);
+        }
+
+        if (!event.getMessage().getAttachments().isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+
+            for (Attachment attachment : event.getMessage().getAttachments()) {
+                sb.append(attachment.getProxyUrl()).append("\n");
+            }
+
+            eb.addField("New Attachments", sb.toString().trim(), false);
+        }
 
         MessageCreateBuilder mb = new MessageCreateBuilder();
         mb.setEmbeds(eb.build());

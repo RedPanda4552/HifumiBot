@@ -53,6 +53,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class EventListener extends ListenerAdapter {
@@ -140,6 +141,16 @@ public class EventListener extends ListenerAdapter {
             } else {
                 EventLogging.logMessageDeleteEvent(event.getChannel().getAsMention(), messageId);
             }
+        }
+    }
+
+    @Override
+    public void onMessageUpdate(MessageUpdateEvent event) {
+        MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistoryManager().fetchMessage(event.getMessageId());
+
+        if (!entry.getUserId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+            EventLogging.logMessageUpdateEvent(event, entry);
+            HifumiBot.getSelf().getMessageHistoryManager().store(event.getMessage());
         }
     }
 
