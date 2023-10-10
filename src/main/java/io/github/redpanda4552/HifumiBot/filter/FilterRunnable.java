@@ -24,7 +24,7 @@ public class FilterRunnable implements Runnable {
                 HifumiBot.getSelf().getKickHandler().storeIncident(message.getMember(), instant);
             }
 
-            // If that comes back clean, store a history entry so we can check for duplicates.
+            // Regardless of if the above filtered or not, store it and run duplicate checks as well.
             HifumiBot.getSelf().getMessageHistoryManager().storeAndCheckDuplicate(message);
         } catch (Exception e) {
             Messaging.logException("FilterRunnable", "run", e);
