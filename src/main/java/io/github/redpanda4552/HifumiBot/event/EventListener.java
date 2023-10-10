@@ -123,8 +123,6 @@ public class EventListener extends ListenerAdapter {
             if (!entry.getUserId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
                 EventLogging.logMessageDeleteEvent(entry);
             }
-
-            HifumiBot.getSelf().getMessageHistoryManager().removeMessage(event.getMessageId());
         } else {
             EventLogging.logMessageDeleteEvent(event.getGuildChannel().getAsMention(), event.getMessageId());
         }
