@@ -59,7 +59,7 @@ public class CrashParser extends AbstractParser {
             while ((originalLine = reader.readLine()) != null) {
                 normalizedLine = originalLine.toLowerCase();
                 
-                if (normalizedLine.contains("ezfrd64.dll") || normalizedLine.contains("ez6401.dll")) {
+                if (normalizedLine.contains("fcvap32.dll") || normalizedLine.contains("fcvap64.dll") || normalizedLine.contains("ezfrd32.dll") || normalizedLine.contains("ezfrd64.dll") || normalizedLine.contains("ez6401.dll")) {
                     this.errors.add(
                         "[Fatal] Bad USB gamepad vibration driver. This driver is known to cause most 64 bit applications to crash without warning.\n" +
                         "Go to the file referenced below, and delete it from your PC:\n" +
