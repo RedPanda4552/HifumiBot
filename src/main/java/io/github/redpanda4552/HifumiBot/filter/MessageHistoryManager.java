@@ -4,13 +4,13 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringUtils;
-
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.MessageBulkDeleteTargetedRunnable;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class MessageHistoryManager {
     
@@ -88,22 +88,41 @@ public class MessageHistoryManager {
     }
 
     private void doCleanup(MessageHistoryEntry oldEntry, MessageHistoryEntry entry) {
-        Message oldMessage = HifumiBot.getSelf().getJDA().getTextChannelById(oldEntry.getChannelId()).retrieveMessageById(oldEntry.getMessageId()).complete();
-        Message message = HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId()).retrieveMessageById(entry.getMessageId()).complete();
-        Member member = oldMessage.getMember();
+        Guild server = HifumiBot.getSelf().getJDA().getGuildById(entry.getServerId());
+        Member member = server.retrieveMemberById(entry.getUserId()).complete();
+        TextChannel channel = server.getTextChannelById(entry.getChannelId());
 
         member.timeoutFor(Duration.ofHours(8)).complete();
-        oldMessage.delete().complete();
-        message.delete().complete();
+        
+        // Attempt to delete the messages, if they haven't already been.
+        try
+        {
+            Message oldMessage = HifumiBot.getSelf().getJDA().getTextChannelById(oldEntry.getChannelId()).retrieveMessageById(oldEntry.getMessageId()).complete();
+            oldMessage.delete().complete();
+        }
+        catch (Exception e)
+        {
+            // Squelch
+        }
+        
+        try
+        {
+            Message message = HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId()).retrieveMessageById(entry.getMessageId()).complete();
+            message.delete().complete();
+        }
+        catch (Exception e)
+        {
+            // Squelch
+        }
+
         MessageBulkDeleteTargetedRunnable runnable = new MessageBulkDeleteTargetedRunnable(entry.getServerId(), member.getId(), entry.getChannelId(), entry.getMessageContent(), 1);
         HifumiBot.getSelf().getScheduler().runOnce(runnable);
         this.duplicateMap.remove(member.getId());
         
         Messaging.logInfo("ChatFilter", "applyFilters",
-                "Message from user " + member.getUser().getAsMention() + " (" + member.getUser().getName() + ")"
-                        + " was removed from channel `" + message.getChannel().getName() + "`.\n\nUser's message (formatting stripped, truncated to 500 chars):\n```\n"
-                        + StringUtils.truncate(message.getContentStripped(), 500)
-                        + "\n```\nThis message was a duplicate - user might be a bot. An automated job is also sweeping up any other matches, but might take a moment to finish."
+                "Message from user " + member.getAsMention() + " (" + member.getEffectiveName() + ")"
+                        + " was removed from channel `" + channel.getAsMention() + "`. Check message logs for deleted messages."
+                        + "\n\nThis message was a duplicate - user might be a bot. An automated job is also sweeping up any other matches, but might take a moment to finish."
                         + "\n\nUser was automatically timed out for 8 hours; if this looks like a bot and they are still in the server, consider using `/spamkick` to kick them.");
     }
 
