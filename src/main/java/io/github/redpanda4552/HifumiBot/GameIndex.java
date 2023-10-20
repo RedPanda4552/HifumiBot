@@ -205,6 +205,14 @@ public class GameIndex implements Refreshable {
                 Map<String, Object> entry = (Map<String, Object>) map.get(key);
                 
                 eb.setTitle((String) entry.get("name"));
+
+                if (entry.containsKey("name-sort")) {
+                    eb.appendDescription("Sorting Name: " + (String) entry.get("name-sort") + "\n");
+                }
+
+                if (entry.containsKey("name-en")) {
+                    eb.appendDescription("English Name: " + (String) entry.get("name-en") + "\n");
+                }
                 
                 if (entry.containsKey("region")) {
                     eb.appendDescription("Region: " + (String) entry.get("region") + "\n");
