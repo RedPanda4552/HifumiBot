@@ -160,6 +160,16 @@ public class GameIndex implements Refreshable {
         put(1, "Sprites/Triangles");
         put(2, "Blended Sprites/Triangles");
     }};
+
+    private static final HashMap<Integer, String> EE_CYCLE_RATE = new HashMap<Integer, String>() {{
+        put(-3, "50%");
+        put(-2, "60%");
+        put(-1, "75%");
+        put(0, "100%");
+        put(1, "130%");
+        put(2, "180%");
+        put(3, "300%");
+    }};
     
     private boolean isInitialized = false;
     private Map<String, Object> map;
@@ -277,6 +287,13 @@ public class GameIndex implements Refreshable {
                         eb.addField(EmbedUtil.prebuildField(
                             "Multi-Threaded VU1 (MTVU)", 
                             GENERIC_BOOLEAN.get((int) speedhacks.get("MTVUSpeedHack")), 
+                            true));
+                    }
+
+                    if (speedhacks.containsKey("eeCycleRate")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "EE Cycle Rate", 
+                            EE_CYCLE_RATE.get((int) speedhacks.get("eeCycleRate")), 
                             true));
                     }
                 }
