@@ -40,8 +40,20 @@ public class Scheduler {
         this.threadPool = Executors.newScheduledThreadPool(4);
     }
 
+    /**
+     * Execute the supplied runnable once, as soon as resources are available.
+     * @param runnable
+     */
     public void runOnce(Runnable runnable) {
         this.threadPool.submit(runnable);
+    }
+
+    /**
+     * Execute the supplied runnable once, but wait at least one second before doing so.
+     * @param runnable
+     */
+    public void runOnceDelayed(Runnable runnable) {
+        this.threadPool.schedule(runnable, 1, TimeUnit.SECONDS);
     }
 
     /**
