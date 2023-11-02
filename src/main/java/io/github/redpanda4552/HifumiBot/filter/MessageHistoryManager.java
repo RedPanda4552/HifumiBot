@@ -126,7 +126,7 @@ public class MessageHistoryManager {
         
         Messaging.logInfo("ChatFilter", "applyFilters",
                 "Message from user " + member.getAsMention() + " (" + member.getEffectiveName() + ")"
-                        + " was removed from channel `" + channel.getAsMention() + "`. Check message logs for deleted messages."
+                        + " was removed from channel " + channel.getAsMention() + ". Check message logs for deleted messages."
                         + "\n\nThis message was a duplicate - user might be a bot. An automated job is also sweeping up any other matches, but might take a moment to finish."
                         + "\n\nUser was automatically timed out for 8 hours; if this looks like a bot and they are still in the server, consider using `/spamkick` to kick them.");
     }
