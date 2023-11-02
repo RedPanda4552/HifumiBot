@@ -28,7 +28,6 @@ public class MessageBulkDeleteTargetedRunnable implements Runnable {
 
     @Override
     public void run() {
-        OffsetDateTime now = OffsetDateTime.now();
         Guild server = HifumiBot.getSelf().getJDA().getGuildById(guildId);
         
         try {
@@ -40,7 +39,7 @@ public class MessageBulkDeleteTargetedRunnable implements Runnable {
                     list.stream().filter((m) -> 
                         m.getAuthor().getId().equals(userId)
                     ).filter((m) ->
-                        Duration.between(m.getTimeCreated(), now).toHours() < this.hours
+                        Duration.between(m.getTimeCreated(), OffsetDateTime.now()).toHours() < this.hours
                     ).filter((m) ->
                         m.getContentDisplay().contains(this.messageContent) || (!m.getEmbeds().isEmpty() && m.getEmbeds().get(0).getDescription().contains(this.messageContent))
                     ).collect(Collectors.toList())
