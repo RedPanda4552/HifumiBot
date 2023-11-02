@@ -115,8 +115,13 @@ public class MessageHistoryManager {
             // Squelch
         }
 
-        MessageBulkDeleteTargetedRunnable runnable = new MessageBulkDeleteTargetedRunnable(entry.getServerId(), member.getId(), entry.getChannelId(), entry.getMessageContent(), 1);
-        HifumiBot.getSelf().getScheduler().runOnce(runnable);
+        for (TextChannel publicChannel : server.getTextChannels()) {
+            if (server.getPublicRole().hasAccess(channel)) {
+                MessageBulkDeleteTargetedRunnable runnable = new MessageBulkDeleteTargetedRunnable(entry.getServerId(), member.getId(), publicChannel.getId(), entry.getMessageContent(), 1);
+                HifumiBot.getSelf().getScheduler().runOnceDelayed(runnable);
+            }
+        }
+
         this.duplicateMap.remove(member.getId());
         
         Messaging.logInfo("ChatFilter", "applyFilters",
