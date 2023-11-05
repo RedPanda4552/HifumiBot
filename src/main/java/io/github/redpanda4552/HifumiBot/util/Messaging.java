@@ -36,7 +36,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -262,6 +264,22 @@ public class Messaging {
         
         if (ref != null) {
             if (ref.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    public static boolean hasGhostPing(Message msg) {
+        if (msg == null) {
+            return false;
+        }
+        
+        for (User usr : msg.getMentions().getUsers()) {
+            try {
+                msg.getGuild().retrieveMemberById(usr.getId()).complete();
+            } catch (ErrorResponseException e) {
                 return true;
             }
         }

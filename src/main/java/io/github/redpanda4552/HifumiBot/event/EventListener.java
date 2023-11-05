@@ -100,9 +100,15 @@ public class EventListener extends ListenerAdapter {
             
             if (Messaging.hasBotPing(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
-            } 
+            }
         } else {
             HifumiBot.getSelf().getMessageHistoryManager().store(event.getMessage());
+        }
+
+        if (!event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+            if (Messaging.hasGhostPing(event.getMessage())) {
+                Messaging.sendMessage(event.getChannel(), ":information_source: The user you tried to mention has left the server.", event.getMessage(), false);
+            }
         }
         
         if (event.getMember() != null && event.getMember().getRoles().isEmpty()) {
