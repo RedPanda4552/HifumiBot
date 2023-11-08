@@ -89,10 +89,18 @@ public class MessageHistoryManager {
 
     private void doCleanup(MessageHistoryEntry oldEntry, MessageHistoryEntry entry) {
         Guild server = HifumiBot.getSelf().getJDA().getGuildById(entry.getServerId());
-        Member member = server.retrieveMemberById(entry.getUserId()).complete();
+        Member member = null;
         TextChannel channel = server.getTextChannelById(entry.getChannelId());
 
-        member.timeoutFor(Duration.ofHours(8)).complete();
+        try {
+            member = server.retrieveMemberById(entry.getUserId()).complete();
+        } catch (Exception e) {
+            // Squelch
+        }
+
+        if (member != null) {
+            member.timeoutFor(Duration.ofHours(8)).complete();
+        }
         
         // Attempt to delete the messages, if they haven't already been.
         try
@@ -115,20 +123,22 @@ public class MessageHistoryManager {
             // Squelch
         }
 
-        for (TextChannel publicChannel : server.getTextChannels()) {
-            if (server.getPublicRole().hasAccess(channel)) {
-                MessageBulkDeleteTargetedRunnable runnable = new MessageBulkDeleteTargetedRunnable(entry.getServerId(), member.getId(), publicChannel.getId(), entry.getMessageContent(), 1);
-                HifumiBot.getSelf().getScheduler().runOnceDelayed(runnable);
+        if (member != null) {
+            for (TextChannel publicChannel : server.getTextChannels()) {
+                if (server.getPublicRole().hasAccess(channel)) {
+                    MessageBulkDeleteTargetedRunnable runnable = new MessageBulkDeleteTargetedRunnable(entry.getServerId(), member.getId(), publicChannel.getId(), entry.getMessageContent(), 1);
+                    HifumiBot.getSelf().getScheduler().runOnceDelayed(runnable);
+                }
             }
-        }
-
-        this.duplicateMap.remove(member.getId());
+            
+            this.duplicateMap.remove(member.getId());
         
-        Messaging.logInfo("ChatFilter", "applyFilters",
-                "Message from user " + member.getAsMention() + " (" + member.getEffectiveName() + ")"
-                        + " was removed from channel " + channel.getAsMention() + ". Check message logs for deleted messages."
-                        + "\n\nThis message was a duplicate - user might be a bot. An automated job is also sweeping up any other matches, but might take a moment to finish."
-                        + "\n\nUser was automatically timed out for 8 hours; if this looks like a bot and they are still in the server, consider using `/spamkick` to kick them.");
+            Messaging.logInfo("MessageHistoryManager", "doCleanup",
+                    "Message from user " + member.getAsMention() + " (" + member.getEffectiveName() + ")"
+                            + " was removed from channel " + channel.getAsMention() + ". Check message logs for deleted messages."
+                            + "\n\nThis message was a duplicate - user might be a bot. An automated job is also sweeping up any other matches, but might take a moment to finish."
+                            + "\n\nUser was automatically timed out for 8 hours; if this looks like a bot and they are still in the server, consider using `/spamkick` to kick them.");
+        }
     }
 
     public void flush() {
