@@ -126,14 +126,24 @@ public class EventLogging {
 
         OffsetDateTime now = OffsetDateTime.now();
         Duration diff = Duration.between(entry.getDateTime(), now);
-        User user = HifumiBot.getSelf().getJDA().getUserById(entry.getUserId());
+        User user = null;
+
+        try {
+            user = HifumiBot.getSelf().getJDA().retrieveUserById(entry.getUserId()).complete();
+        } catch (Exception e) {
+            // Squelch
+        }
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.MAGENTA);
         eb.setTitle("Message Deleted");
-        eb.addField("Username (As Mention)", user.getAsMention(), true);
-        eb.addField("Username (Plain Text)", user.getName(), true);
-        eb.addField("User ID", user.getId(), true);
+
+        if (user != null) {
+            eb.addField("Username (As Mention)", user.getAsMention(), true);
+            eb.addField("Username (Plain Text)", user.getName(), true);
+        }
+        
+        eb.addField("User ID", entry.getUserId(), true);
         eb.addField("Channel", HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId()).getAsMention(), true);
         eb.addField("Message Age", getAgeString(diff), true);
         eb.addField("Message Content (Truncated to 512 chars)", StringUtils.truncate(entry.getMessageContent(), 512), false);
