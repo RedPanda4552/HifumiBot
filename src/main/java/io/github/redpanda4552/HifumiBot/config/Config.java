@@ -51,6 +51,7 @@ public class Config implements IConfig {
     public HashMap<String, Filter> filters;
     public long ninjaInterval;
     public FilterOptions filterOptions;
+    public MySQLOptions mysql;
 
     public Config() {
         useLocalDNSFiltering = false;
@@ -64,6 +65,7 @@ public class Config implements IConfig {
         filters = new HashMap<String, Filter>();
         filterOptions = new FilterOptions();
         ninjaInterval = 500;
+        mysql = new MySQLOptions();
     }
     
     public class Server {
@@ -177,6 +179,18 @@ public class Config implements IConfig {
             enableWarningMessages = true;
             warnMessage = new String("");
             kickMessage = new String("");
+        }
+    }
+
+    public class MySQLOptions {
+        public String url;
+        public String username;
+        public String password;
+
+        public MySQLOptions() {
+            url = new String("");
+            username = new String("");
+            password = new String("");
         }
     }
 }

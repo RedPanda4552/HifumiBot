@@ -112,6 +112,7 @@ public class HifumiBot {
     private EmulogParserConfig emulogParserConfig;
     private MessageHistoryStorage messageHistoryStorage;
     private final OkHttpClient http;
+    private MySQL mySQL;
     
     private Scheduler scheduler;
     private WikiIndex wikiIndex;
@@ -187,6 +188,7 @@ public class HifumiBot {
         messageHistoryStorage = (MessageHistoryStorage) ConfigManager.read(ConfigType.MESSAGE_HISTORY);
         ConfigManager.write(messageHistoryStorage);
 
+        mySQL = new MySQL();
         Internet.init();
         deepL = new Translator(deepLKey);
         scheduler = new Scheduler();
@@ -278,6 +280,10 @@ public class HifumiBot {
         return http;
     }
 
+    public MySQL getMySQL() {
+        return mySQL;
+    }
+
     public Scheduler getScheduler() {
         return scheduler;
     }
@@ -357,6 +363,7 @@ public class HifumiBot {
         ConfigManager.write(messageHistoryStorage);
         this.getScheduler().shutdown();
         jda.shutdown();
+        this.getMySQL().shutdown();
 
         if (reload)
             self = new HifumiBot();
