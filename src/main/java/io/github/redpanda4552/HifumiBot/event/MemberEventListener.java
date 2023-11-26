@@ -119,7 +119,7 @@ public class MemberEventListener extends ListenerAdapter {
         try {
             conn = HifumiBot.getSelf().getMySQL().getConnection();
             
-            PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+            PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
             insertUser.setLong(1, event.getUser().getIdLong());
             insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
             insertUser.setString(3, event.getUser().getName());
@@ -151,7 +151,7 @@ public class MemberEventListener extends ListenerAdapter {
         try {
             conn = HifumiBot.getSelf().getMySQL().getConnection();
 
-            PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+            PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
             insertUser.setLong(1, event.getUser().getIdLong());
             insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
             insertUser.setString(3, event.getUser().getName());
