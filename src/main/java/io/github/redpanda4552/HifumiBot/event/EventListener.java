@@ -23,6 +23,9 @@
  */
 package io.github.redpanda4552.HifumiBot.event;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -32,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.MySQL;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.FilterRunnable;
 import io.github.redpanda4552.HifumiBot.filter.MessageHistoryEntry;
@@ -161,11 +165,34 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
+        OffsetDateTime now = OffsetDateTime.now();
+
         for (Role role : event.getRoles()) {
-            if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)
-                    && !HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
-                HifumiBot.getSelf().getWarezTracking().warezUsers.put(event.getUser().getId(), OffsetDateTime.now());
-                ConfigManager.write(HifumiBot.getSelf().getWarezTracking());
+            if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)) {
+                Connection conn = null;
+
+                try {
+                    conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+                    PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+                    insertUser.setLong(1, event.getUser().getIdLong());
+                    insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
+                    insertUser.setString(3, event.getUser().getName());
+                    insertUser.executeUpdate();
+                    insertUser.close();
+
+                    PreparedStatement insertWarez = conn.prepareStatement("INSERT INTO warez_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
+                    insertWarez.setLong(1, now.toEpochSecond());
+                    insertWarez.setLong(2, event.getUser().getIdLong());
+                    insertWarez.setString(3, "add");
+                    insertWarez.executeUpdate();
+                    insertWarez.close();
+                } catch (SQLException e) {
+                    Messaging.logException("HifumiBot", "(constructor/warez-migration)", e);
+                } finally {
+                    MySQL.closeConnection(conn);
+                }
+
                 return;
             }
         }
@@ -173,10 +200,34 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
+        OffsetDateTime now = OffsetDateTime.now();
+
         for (Role role : event.getRoles()) {
             if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)) {
-                HifumiBot.getSelf().getWarezTracking().warezUsers.remove(event.getUser().getId());
-                ConfigManager.write(HifumiBot.getSelf().getWarezTracking());
+                Connection conn = null;
+
+                try {
+                    conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+                    PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+                    insertUser.setLong(1, event.getUser().getIdLong());
+                    insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
+                    insertUser.setString(3, event.getUser().getName());
+                    insertUser.executeUpdate();
+                    insertUser.close();
+
+                    PreparedStatement insertWarez = conn.prepareStatement("INSERT INTO warez_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
+                    insertWarez.setLong(1, now.toEpochSecond());
+                    insertWarez.setLong(2, event.getUser().getIdLong());
+                    insertWarez.setString(3, "remove");
+                    insertWarez.executeUpdate();
+                    insertWarez.close();
+                } catch (SQLException e) {
+                    Messaging.logException("HifumiBot", "(constructor/warez-migration)", e);
+                } finally {
+                    MySQL.closeConnection(conn);
+                }
+
                 return;
             }
         }

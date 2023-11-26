@@ -23,7 +23,11 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 
 import com.deepl.api.Translator;
 
@@ -53,6 +57,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import okhttp3.OkHttpClient;
@@ -250,6 +255,47 @@ public class HifumiBot {
             messageHistoryManager.flush();
             ConfigManager.write(messageHistoryStorage);
         }, 1000 * 60 * 15);
+
+        // Migrate warez JSON to SQL
+        scheduler.runOnce(() -> {
+            HashMap<String, OffsetDateTime> oldMap = HifumiBot.getSelf().warezTracking.warezUsers;
+
+            Connection conn = null;
+
+            try {
+                conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+                for (String userId : oldMap.keySet()) {
+                    OffsetDateTime timestamp = oldMap.get(userId);
+                    long epoch = timestamp.toEpochSecond();
+                    User user = HifumiBot.getSelf().getJDA().retrieveUserById(userId).complete();
+
+                    PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+                    insertUser.setLong(1, user.getIdLong());
+                    insertUser.setLong(2, user.getTimeCreated().toEpochSecond());
+                    insertUser.setString(3, user.getName());
+                    insertUser.executeUpdate();
+                    insertUser.close();
+
+                    PreparedStatement insertWarez = conn.prepareStatement("INSERT INTO warez_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
+                    insertWarez.setLong(1, epoch);
+                    insertWarez.setLong(2, Long.valueOf(userId));
+                    insertWarez.setString(3, "add");
+                    insertWarez.executeUpdate();
+                    insertWarez.close();
+
+                    try {
+                        Thread.sleep(200);
+                    } catch (Exception e) { }
+                }
+            } catch (SQLException e) {
+                Messaging.logException("HifumiBot", "(constructor/warez-migration)", e);
+            } finally {
+                MySQL.closeConnection(conn);
+            }
+
+            Messaging.logInfo("HifumiBot", "(constructor/warez-migration)", "Migration complete!");
+        });
         
         updateStatus("New Game!");
     }
