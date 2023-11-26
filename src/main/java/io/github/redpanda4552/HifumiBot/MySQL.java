@@ -1,6 +1,6 @@
 package io.github.redpanda4552.HifumiBot;
 
-import java.sql.PreparedStatement;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -10,6 +10,10 @@ import io.github.redpanda4552.HifumiBot.config.Config.MySQLOptions;
 
 public class MySQL {
     
+    public static void closeConnection(Connection conn) {
+        if (conn != null) { try { conn.close(); } catch (SQLException e) { } };
+    }
+
     private HikariDataSource ds;
 
     public MySQL() {
@@ -26,8 +30,8 @@ public class MySQL {
         this.ds = new HikariDataSource(conf);
     }
 
-    public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return ds.getConnection().prepareStatement(sql);
+    public Connection getConnection() throws SQLException {
+        return ds.getConnection();
     }
 
     public void shutdown() {
