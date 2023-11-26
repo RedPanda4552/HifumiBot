@@ -22,17 +22,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class MemberEventListener extends ListenerAdapter {
     
-    private boolean lockdown = false;
-
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        if (lockdown) {
-            if (event.getMember() != null) {
-                HifumiBot.getSelf().getKickHandler().doKickForBotJoin(event.getMember());
-                return;
-            }
-        }
-
         // Store user and join records, then check for the join-leave-join pattern
         Connection conn = null;
 
@@ -171,13 +162,5 @@ public class MemberEventListener extends ListenerAdapter {
         }
 
         EventLogging.logGuildBanEvent(event);
-    }
-
-    public void setLockdown(boolean lockdown) {
-        this.lockdown = lockdown;
-    }
-    
-    public boolean getLockdown() {
-        return lockdown;
     }
 }
