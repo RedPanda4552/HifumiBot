@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 

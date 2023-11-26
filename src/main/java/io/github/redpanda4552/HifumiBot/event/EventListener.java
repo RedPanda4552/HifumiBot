@@ -36,7 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.MySQL;
-import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.filter.FilterRunnable;
 import io.github.redpanda4552.HifumiBot.filter.MessageHistoryEntry;
 import io.github.redpanda4552.HifumiBot.parse.CrashParser;

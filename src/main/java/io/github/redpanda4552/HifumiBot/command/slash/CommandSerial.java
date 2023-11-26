@@ -28,7 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,8 +45,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandSerial extends AbstractSlashCommand {
 
-    private static final Pattern GAMEINDEX_SERIAL_PATTERN = Pattern.compile("^[A-Z]{4}-[0-9]{5}$");
-    
     @SuppressWarnings("unchecked")
     @Override
     protected void onExecute(SlashCommandInteractionEvent event) {
