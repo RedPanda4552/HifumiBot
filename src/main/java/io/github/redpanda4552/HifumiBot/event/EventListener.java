@@ -82,7 +82,7 @@ public class EventListener extends ListenerAdapter {
             return;
         }
 
-        // Store user, message, and event records
+        // Store user, channel, message, and event records
         Connection conn = null;
 
         try {
@@ -94,6 +94,12 @@ public class EventListener extends ListenerAdapter {
             insertUser.setString(3, event.getAuthor().getName());
             insertUser.executeUpdate();
             insertUser.close();
+
+            PreparedStatement insertChannel = conn.prepareStatement("INSERT INTO channel (discord_id, name) VALUES (?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+            insertChannel.setLong(1, event.getChannel().getIdLong());
+            insertChannel.setString(2, event.getChannel().getName());
+            insertChannel.executeUpdate();
+            insertChannel.close();
 
             PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?);");
             insertMessage.setLong(1, event.getMessageIdLong());
@@ -163,7 +169,7 @@ public class EventListener extends ListenerAdapter {
     public void onMessageDelete(MessageDeleteEvent event) {
         OffsetDateTime now = OffsetDateTime.now();
         
-        // Store message and event records
+        // Store channel, message and event records
         Connection conn = null;
         long userId = 0;
 
@@ -179,6 +185,12 @@ public class EventListener extends ListenerAdapter {
             }
             
             getUser.close();
+
+            PreparedStatement insertChannel = conn.prepareStatement("INSERT INTO channel (discord_id, name) VALUES (?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+            insertChannel.setLong(1, event.getChannel().getIdLong());
+            insertChannel.setString(2, event.getChannel().getName());
+            insertChannel.executeUpdate();
+            insertChannel.close();
 
             PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
             insertMessage.setLong(1, event.getMessageIdLong());
@@ -215,7 +227,7 @@ public class EventListener extends ListenerAdapter {
         OffsetDateTime now = OffsetDateTime.now();
         
         for (String messageId : event.getMessageIds()) {
-            // Store message and event records
+            // Store channel, message and event records
             Connection conn = null;
             long userId = 0;
 
@@ -231,6 +243,12 @@ public class EventListener extends ListenerAdapter {
                 }
                 
                 getUser.close();
+
+                PreparedStatement insertChannel = conn.prepareStatement("INSERT INTO channel (discord_id, name) VALUES (?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+                insertChannel.setLong(1, event.getChannel().getIdLong());
+                insertChannel.setString(2, event.getChannel().getName());
+                insertChannel.executeUpdate();
+                insertChannel.close();
 
                 PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
                 insertMessage.setLong(1, Long.valueOf(messageId));
@@ -264,7 +282,7 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onMessageUpdate(MessageUpdateEvent event) {
-        // Store user, message, and event records
+        // Store user, channel, message, and event records
         Connection conn = null;
 
         try {
@@ -276,6 +294,12 @@ public class EventListener extends ListenerAdapter {
             insertUser.setString(3, event.getAuthor().getName());
             insertUser.executeUpdate();
             insertUser.close();
+
+            PreparedStatement insertChannel = conn.prepareStatement("INSERT INTO channel (discord_id, name) VALUES (?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+            insertChannel.setLong(1, event.getChannel().getIdLong());
+            insertChannel.setString(2, event.getChannel().getName());
+            insertChannel.executeUpdate();
+            insertChannel.close();
 
             PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
             insertMessage.setLong(1, event.getMessageIdLong());
