@@ -25,6 +25,7 @@ package io.github.redpanda4552.HifumiBot.event;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
@@ -70,6 +71,8 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        Instant now = Instant.now();
+
         if (event.getChannelType() == ChannelType.PRIVATE) {
             if (!event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
                 Messaging.logInfo("EventListener", "onMessageReceived", "DM sent to Hifumi by user " + event.getAuthor().getAsMention() + " (" + event.getAuthor().getName() + ")\n\n```\n" + StringUtils.truncate(event.getMessage().getContentRaw(), 500) + "\n```\nMessage content displayed raw format, truncated to 500 chars. Original length: " + event.getMessage().getContentRaw().length());
@@ -78,8 +81,39 @@ public class EventListener extends ListenerAdapter {
             
             return;
         }
-        
-        Instant now = Instant.now();
+
+        // Store user, message, and event records
+        Connection conn = null;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+            PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+            insertUser.setLong(1, event.getAuthor().getIdLong());
+            insertUser.setLong(2, event.getAuthor().getTimeCreated().toEpochSecond());
+            insertUser.setString(3, event.getAuthor().getName());
+            insertUser.executeUpdate();
+            insertUser.close();
+
+            PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?);");
+            insertMessage.setLong(1, event.getMessageIdLong());
+            insertMessage.setLong(2, event.getChannel().getIdLong());
+            insertMessage.executeUpdate();
+            insertMessage.close();
+
+            PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO message_event (fk_user, fk_message, timestamp, action, content) VALUES (?, ?, ?, ?, ?)");
+            insertEvent.setLong(1, event.getAuthor().getIdLong());
+            insertEvent.setLong(2, event.getMessageIdLong());
+            insertEvent.setLong(3, event.getMessage().getTimeCreated().toEpochSecond());
+            insertEvent.setString(4, "send");
+            insertEvent.setString(5, event.getMessage().getContentRaw());
+            insertEvent.executeUpdate();
+            insertEvent.close();
+        } catch (SQLException e) {
+             Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
         
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
             if (Messaging.hasEmulog(event.getMessage())) {
@@ -127,6 +161,44 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onMessageDelete(MessageDeleteEvent event) {
+        OffsetDateTime now = OffsetDateTime.now();
+        
+        // Store message and event records
+        Connection conn = null;
+        long userId = 0;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+            PreparedStatement getUser = conn.prepareStatement("SELECT fk_user, fk_message FROM message_event WHERE fk_message = ? LIMIT 1;");
+            getUser.setLong(1, event.getMessageIdLong());
+            ResultSet res = getUser.executeQuery();
+
+            if (res.next()) {
+                userId = res.getLong("fk_user");
+            }
+            
+            getUser.close();
+
+            PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
+            insertMessage.setLong(1, event.getMessageIdLong());
+            insertMessage.setLong(2, event.getChannel().getIdLong());
+            insertMessage.executeUpdate();
+            insertMessage.close();
+
+            PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO message_event (fk_user, fk_message, timestamp, action) VALUES (?, ?, ?, ?)");
+            insertEvent.setLong(1, userId);
+            insertEvent.setLong(2, event.getMessageIdLong());
+            insertEvent.setLong(3, now.toEpochSecond());
+            insertEvent.setString(4, "delete");
+            insertEvent.executeUpdate();
+            insertEvent.close();
+        } catch (SQLException e) {
+             Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
+
         MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistoryManager().fetchMessage(event.getMessageId());
 
         if (entry != null) {
@@ -140,7 +212,45 @@ public class EventListener extends ListenerAdapter {
 
     @Override 
     public void onMessageBulkDelete(MessageBulkDeleteEvent event) {
+        OffsetDateTime now = OffsetDateTime.now();
+        
         for (String messageId : event.getMessageIds()) {
+            // Store message and event records
+            Connection conn = null;
+            long userId = 0;
+
+            try {
+                conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+                PreparedStatement getUser = conn.prepareStatement("SELECT fk_user, fk_message FROM message_event WHERE fk_message = ? LIMIT 1;");
+                getUser.setLong(1, Long.valueOf(messageId));
+                ResultSet res = getUser.executeQuery();
+
+                if (res.next()) {
+                    userId = res.getLong("fk_user");
+                }
+                
+                getUser.close();
+
+                PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
+                insertMessage.setLong(1, Long.valueOf(messageId));
+                insertMessage.setLong(2, event.getChannel().getIdLong());
+                insertMessage.executeUpdate();
+                insertMessage.close();
+
+                PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO message_event (fk_user, fk_message, timestamp, action) VALUES (?, ?, ?, ?)");
+                insertEvent.setLong(1, userId);
+                insertEvent.setLong(2, Long.valueOf(messageId));
+                insertEvent.setLong(3, now.toEpochSecond());
+                insertEvent.setString(4, "delete");
+                insertEvent.executeUpdate();
+                insertEvent.close();
+            } catch (SQLException e) {
+                Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+            } finally {
+                MySQL.closeConnection(conn);
+            }
+
             MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistoryManager().fetchMessage(messageId);
 
             if (entry != null) {
@@ -154,6 +264,39 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onMessageUpdate(MessageUpdateEvent event) {
+        // Store user, message, and event records
+        Connection conn = null;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+            PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+            insertUser.setLong(1, event.getAuthor().getIdLong());
+            insertUser.setLong(2, event.getAuthor().getTimeCreated().toEpochSecond());
+            insertUser.setString(3, event.getAuthor().getName());
+            insertUser.executeUpdate();
+            insertUser.close();
+
+            PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
+            insertMessage.setLong(1, event.getMessageIdLong());
+            insertMessage.setLong(2, event.getChannel().getIdLong());
+            insertMessage.executeUpdate();
+            insertMessage.close();
+
+            PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO message_event (fk_user, fk_message, timestamp, action, content) VALUES (?, ?, ?, ?, ?)");
+            insertEvent.setLong(1, event.getAuthor().getIdLong());
+            insertEvent.setLong(2, event.getMessageIdLong());
+            insertEvent.setLong(3, event.getMessage().getTimeEdited().toEpochSecond());
+            insertEvent.setString(4, "edit");
+            insertEvent.setString(5, event.getMessage().getContentRaw());
+            insertEvent.executeUpdate();
+            insertEvent.close();
+        } catch (SQLException e) {
+             Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
+
         MessageHistoryEntry entry = HifumiBot.getSelf().getMessageHistoryManager().fetchMessage(event.getMessageId());
 
         if (!entry.getUserId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
