@@ -101,7 +101,7 @@ public class EventListener extends ListenerAdapter {
             insertChannel.executeUpdate();
             insertChannel.close();
 
-            PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?);");
+            PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, fk_channel) VALUES (?, ?);");
             insertMessage.setLong(1, event.getMessageIdLong());
             insertMessage.setLong(2, event.getChannel().getIdLong());
             insertMessage.executeUpdate();
@@ -192,7 +192,7 @@ public class EventListener extends ListenerAdapter {
             insertChannel.executeUpdate();
             insertChannel.close();
 
-            PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
+            PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, fk_channel) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
             insertMessage.setLong(1, event.getMessageIdLong());
             insertMessage.setLong(2, event.getChannel().getIdLong());
             insertMessage.executeUpdate();
@@ -250,7 +250,7 @@ public class EventListener extends ListenerAdapter {
                 insertChannel.executeUpdate();
                 insertChannel.close();
 
-                PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
+                PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, fk_channel) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
                 insertMessage.setLong(1, Long.valueOf(messageId));
                 insertMessage.setLong(2, event.getChannel().getIdLong());
                 insertMessage.executeUpdate();
@@ -301,7 +301,7 @@ public class EventListener extends ListenerAdapter {
             insertChannel.executeUpdate();
             insertChannel.close();
 
-            PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, channel_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
+            PreparedStatement insertMessage = conn.prepareStatement("INSERT INTO message (message_id, fk_channel) VALUES (?, ?) ON DUPLICATE KEY UPDATE message_id=message_id;");
             insertMessage.setLong(1, event.getMessageIdLong());
             insertMessage.setLong(2, event.getChannel().getIdLong());
             insertMessage.executeUpdate();
