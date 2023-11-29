@@ -1,26 +1,3 @@
-/**
- * This file is part of HifumiBot, licensed under the MIT License (MIT)
- * 
- * Copyright (c) 2020 RedPanda4552 (https://github.com/RedPanda4552)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package io.github.redpanda4552.HifumiBot.event;
 
 import java.sql.Connection;
@@ -30,7 +7,6 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,30 +21,15 @@ import io.github.redpanda4552.HifumiBot.parse.PnachParser;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.PixivSourceFetcher;
-import io.github.redpanda4552.HifumiBot.wiki.RegionSet;
-import io.github.redpanda4552.HifumiBot.wiki.WikiPage;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class EventListener extends ListenerAdapter {
-
-    private HifumiBot hifumiBot;
-    private HashMap<String, Message> messages = new HashMap<String, Message>();
+public class MessageEventListener extends ListenerAdapter {
     
-    public EventListener(HifumiBot hifumiBot) {
-        this.hifumiBot = hifumiBot;
-    }
-
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         Instant now = Instant.now();
@@ -327,134 +288,5 @@ public class EventListener extends ListenerAdapter {
             EventLogging.logMessageUpdateEvent(event, entry);
             HifumiBot.getSelf().getMessageHistoryManager().store(event.getMessage());
         }
-    }
-
-    @Override
-    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
-        OffsetDateTime now = OffsetDateTime.now();
-
-        for (Role role : event.getRoles()) {
-            if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)) {
-                Connection conn = null;
-
-                try {
-                    conn = HifumiBot.getSelf().getMySQL().getConnection();
-
-                    PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
-                    insertUser.setLong(1, event.getUser().getIdLong());
-                    insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
-                    insertUser.setString(3, event.getUser().getName());
-                    insertUser.executeUpdate();
-                    insertUser.close();
-
-                    PreparedStatement insertWarez = conn.prepareStatement("INSERT INTO warez_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
-                    insertWarez.setLong(1, now.toEpochSecond());
-                    insertWarez.setLong(2, event.getUser().getIdLong());
-                    insertWarez.setString(3, "add");
-                    insertWarez.executeUpdate();
-                    insertWarez.close();
-                } catch (SQLException e) {
-                    Messaging.logException("HifumiBot", "(constructor/warez-migration)", e);
-                } finally {
-                    MySQL.closeConnection(conn);
-                }
-
-                return;
-            }
-        }
-    }
-
-    @Override
-    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
-        OffsetDateTime now = OffsetDateTime.now();
-
-        for (Role role : event.getRoles()) {
-            if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)) {
-                Connection conn = null;
-
-                try {
-                    conn = HifumiBot.getSelf().getMySQL().getConnection();
-
-                    PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
-                    insertUser.setLong(1, event.getUser().getIdLong());
-                    insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
-                    insertUser.setString(3, event.getUser().getName());
-                    insertUser.executeUpdate();
-                    insertUser.close();
-
-                    PreparedStatement insertWarez = conn.prepareStatement("INSERT INTO warez_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
-                    insertWarez.setLong(1, now.toEpochSecond());
-                    insertWarez.setLong(2, event.getUser().getIdLong());
-                    insertWarez.setString(3, "remove");
-                    insertWarez.executeUpdate();
-                    insertWarez.close();
-                } catch (SQLException e) {
-                    Messaging.logException("HifumiBot", "(constructor/warez-migration)", e);
-                } finally {
-                    MySQL.closeConnection(conn);
-                }
-
-                return;
-            }
-        }
-    }
-    
-    public void waitForMessage(String userId, Message msg) {
-        if (messages.containsKey(userId))
-            messages.get(userId).delete().complete();
-
-        messages.put(userId, msg);
-    }
-
-    public void finalizeMessage(Message msg, String gameName, String userId) {
-        WikiPage wikiPage = new WikiPage(hifumiBot.getWikiIndex().getWikiPageUrl(gameName));
-
-        if (msg.getChannel() instanceof TextChannel) {
-            msg.clearReactions().complete();
-        }
-
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(wikiPage.getTitle(), wikiPage.getWikiPageUrl());
-        eb.setThumbnail(wikiPage.getCoverArtUrl());
-
-        for (RegionSet regionSet : wikiPage.getRegionSets().values()) {
-            StringBuilder regionBuilder = new StringBuilder();
-
-            if (!regionSet.getCRC().isEmpty()) {
-                regionBuilder.append("\n**CRC:\n**").append(regionSet.getCRC().replace(" ", "\n"));
-            }
-
-            if (!regionSet.getWindowsStatus().isEmpty()) {
-                regionBuilder.append("\n**Windows Compatibility:\n**").append(regionSet.getWindowsStatus());
-            }
-
-            if (!regionSet.getLinuxStatus().isEmpty()) {
-                regionBuilder.append("\n**Linux Compatibility:\n**").append(regionSet.getLinuxStatus());
-            }
-
-            if (regionBuilder.toString().isEmpty())
-                regionBuilder.append("No information on this release.");
-
-            eb.addField("__" + regionSet.getRegion() + "__", regionBuilder.toString(), true);
-        }
-
-        StringBuilder issueList = new StringBuilder();
-
-        for (String knownIssue : wikiPage.getKnownIssues())
-            issueList.append(knownIssue).append("\n");
-
-        if (!issueList.toString().isEmpty())
-            eb.addField("__Known Issues:__", issueList.toString(), true);
-
-        StringBuilder fixedList = new StringBuilder();
-
-        for (String fixedIssue : wikiPage.getFixedIssues())
-            fixedList.append(fixedIssue).append("\n");
-
-        if (!fixedList.toString().isEmpty())
-            eb.addField("__Fixed Issues:__", fixedList.toString(), true);
-
-        Messaging.editMessageEmbed(msg, eb.build());
-        messages.remove(userId);
     }
 }

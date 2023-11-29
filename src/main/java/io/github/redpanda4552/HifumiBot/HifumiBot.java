@@ -37,9 +37,10 @@ import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
 import io.github.redpanda4552.HifumiBot.config.MessageHistoryStorage;
 import io.github.redpanda4552.HifumiBot.config.ServerMetrics;
 import io.github.redpanda4552.HifumiBot.config.WarezTracking;
-import io.github.redpanda4552.HifumiBot.event.EventListener;
+import io.github.redpanda4552.HifumiBot.event.RoleEventListener;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
+import io.github.redpanda4552.HifumiBot.event.MessageEventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
 import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
@@ -124,7 +125,8 @@ public class HifumiBot {
     private HyperlinkCleaner hyperlinkCleaner;
     private MessageHistoryManager messageHistoryManager;
     
-    private EventListener eventListener;
+    private RoleEventListener roleEventListener;
+    private MessageEventListener messageEventListener;
     private MemberEventListener memberEventListener;
     private SlashCommandListener slashCommandListener;
     private MessageContextCommandListener messageCommandListener;
@@ -200,7 +202,8 @@ public class HifumiBot {
         chatFilter = new ChatFilter();
         hyperlinkCleaner = new HyperlinkCleaner();
         messageHistoryManager = new MessageHistoryManager();
-        jda.addEventListener(eventListener = new EventListener(this));
+        jda.addEventListener(roleEventListener = new RoleEventListener());
+        jda.addEventListener(messageEventListener = new MessageEventListener());
         jda.addEventListener(memberEventListener = new MemberEventListener());
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
@@ -328,8 +331,12 @@ public class HifumiBot {
         return messageHistoryManager;
     }
 
-    public EventListener getEventListener() {
-        return eventListener;
+    public RoleEventListener getRoleEventListener() {
+        return roleEventListener;
+    }
+
+    public MessageEventListener getMessageEventListener() {
+        return messageEventListener;
     }
 
     public MemberEventListener getMemberEventListener() {
