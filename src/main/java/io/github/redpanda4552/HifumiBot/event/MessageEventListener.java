@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,6 +22,7 @@ import io.github.redpanda4552.HifumiBot.parse.PnachParser;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.PixivSourceFetcher;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
@@ -43,7 +45,7 @@ public class MessageEventListener extends ListenerAdapter {
             return;
         }
 
-        // Store user, channel, message, and event records
+        // Store user, channel, message, attachment, and event records
         Connection conn = null;
 
         try {
@@ -68,6 +70,24 @@ public class MessageEventListener extends ListenerAdapter {
             insertMessage.executeUpdate();
             insertMessage.close();
 
+            List<Attachment> attachments = event.getMessage().getAttachments();
+
+            if (!attachments.isEmpty()) {
+                PreparedStatement insertAttachment = conn.prepareStatement("INSERT INTO message_attachment (discord_id, timestamp, fk_message, content_type, proxy_url) VALUES (?, ?, ?, ?, ?);");
+
+                for (Attachment attachment : attachments) {
+                    insertAttachment.setLong(1, attachment.getIdLong());
+                    insertAttachment.setLong(2, attachment.getTimeCreated().toEpochSecond());
+                    insertAttachment.setLong(3, event.getMessageIdLong());
+                    insertAttachment.setString(4, attachment.getContentType());
+                    insertAttachment.setString(5, attachment.getProxyUrl());
+                    insertAttachment.addBatch();
+                }
+                
+                insertAttachment.executeBatch();
+                insertAttachment.close();
+            }
+            
             PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO message_event (fk_user, fk_message, timestamp, action, content) VALUES (?, ?, ?, ?, ?)");
             insertEvent.setLong(1, event.getAuthor().getIdLong());
             insertEvent.setLong(2, event.getMessageIdLong());
@@ -243,7 +263,7 @@ public class MessageEventListener extends ListenerAdapter {
 
     @Override
     public void onMessageUpdate(MessageUpdateEvent event) {
-        // Store user, channel, message, and event records
+        // Store user, channel, message, attachment, and event records
         Connection conn = null;
 
         try {
@@ -267,6 +287,24 @@ public class MessageEventListener extends ListenerAdapter {
             insertMessage.setLong(2, event.getChannel().getIdLong());
             insertMessage.executeUpdate();
             insertMessage.close();
+
+            List<Attachment> attachments = event.getMessage().getAttachments();
+
+            if (!attachments.isEmpty()) {
+                PreparedStatement insertAttachment = conn.prepareStatement("INSERT INTO message_attachment (discord_id, timestamp, fk_message, content_type, proxy_url) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
+
+                for (Attachment attachment : attachments) {
+                    insertAttachment.setLong(1, attachment.getIdLong());
+                    insertAttachment.setLong(2, attachment.getTimeCreated().toEpochSecond());
+                    insertAttachment.setLong(3, event.getMessageIdLong());
+                    insertAttachment.setString(4, attachment.getContentType());
+                    insertAttachment.setString(5, attachment.getProxyUrl());
+                    insertAttachment.addBatch();
+                }
+                
+                insertAttachment.executeBatch();
+                insertAttachment.close();
+            }
 
             PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO message_event (fk_user, fk_message, timestamp, action, content) VALUES (?, ?, ?, ?, ?)");
             insertEvent.setLong(1, event.getAuthor().getIdLong());
