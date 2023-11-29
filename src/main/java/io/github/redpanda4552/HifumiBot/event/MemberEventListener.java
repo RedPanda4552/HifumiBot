@@ -124,7 +124,7 @@ public class MemberEventListener extends ListenerAdapter {
             insertEvent.executeUpdate();
             insertEvent.close();
         } catch (SQLException e) {
-             Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+             Messaging.logException("MemberEventListener", "onGuildMemberRemove", e);
         } finally {
             MySQL.closeConnection(conn);
         }
@@ -156,7 +156,7 @@ public class MemberEventListener extends ListenerAdapter {
             insertEvent.executeUpdate();
             insertEvent.close();
         } catch (SQLException e) {
-             Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+             Messaging.logException("MemberEventListener", "onGuildBan", e);
         } finally {
             MySQL.closeConnection(conn);
         }

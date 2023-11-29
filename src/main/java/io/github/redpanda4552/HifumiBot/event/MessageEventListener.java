@@ -97,7 +97,7 @@ public class MessageEventListener extends ListenerAdapter {
             insertEvent.executeUpdate();
             insertEvent.close();
         } catch (SQLException e) {
-             Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+             Messaging.logException("MessageEventListener", "onMessageReceived", e);
         } finally {
             MySQL.closeConnection(conn);
         }
@@ -187,7 +187,7 @@ public class MessageEventListener extends ListenerAdapter {
             insertEvent.executeUpdate();
             insertEvent.close();
         } catch (SQLException e) {
-             Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+             Messaging.logException("MessageEventListener", "onMessageDelete", e);
         } finally {
             MySQL.closeConnection(conn);
         }
@@ -245,7 +245,7 @@ public class MessageEventListener extends ListenerAdapter {
                 insertEvent.executeUpdate();
                 insertEvent.close();
             } catch (SQLException e) {
-                Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+                Messaging.logException("MessageEventListener", "onMessageBulkDelete", e);
             } finally {
                 MySQL.closeConnection(conn);
             }
@@ -315,7 +315,7 @@ public class MessageEventListener extends ListenerAdapter {
             insertEvent.executeUpdate();
             insertEvent.close();
         } catch (SQLException e) {
-             Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+             Messaging.logException("MessageEventListener", "onMessageUpdate", e);
         } finally {
             MySQL.closeConnection(conn);
         }
