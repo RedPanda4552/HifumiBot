@@ -100,7 +100,7 @@ public class PnachParser extends AbstractParser {
                     int firstEquals = line.indexOf('=');
                     String lineStart = line.substring(0, firstEquals);
 
-                    if (lineStart.equals("author") || lineStart.equals("description")) {
+                    if (lineStart.equals("author") || lineStart.equals("description") || lineStart.equals("gametitle") || lineStart.equals("comment")) {
                         continue;
                     } else if (lineStart.equalsIgnoreCase("author") || lineStart.equalsIgnoreCase("description")) {
                         addError(PnachParserError.START_LOWERCASE, line);
