@@ -115,6 +115,7 @@ public class GameIndex implements Refreshable {
         put(1, "Normal (Vertex)");
         put(2, "Special (Texture)");
         put(3, "Special (Texture - Aggressive)");
+        put(4, "Align to Native");
     }};
     
     private static final HashMap<Integer, String> ROUND_SPRITE = new HashMap<Integer, String>() {{
