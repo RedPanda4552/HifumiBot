@@ -119,7 +119,7 @@ public class MemberEventListener extends ListenerAdapter {
 
             PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO member_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
             insertEvent.setLong(1, time.toEpochSecond());
-            insertEvent.setLong(2, event.getMember().getIdLong());
+            insertEvent.setLong(2, event.getUser().getIdLong());
             insertEvent.setString(3, "leave");
             insertEvent.executeUpdate();
             insertEvent.close();
