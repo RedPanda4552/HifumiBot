@@ -92,12 +92,32 @@ public class MemberEventListener extends ListenerAdapter {
         }
         
         // Reassign warez
-        if (HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
-            Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
-            event.getGuild().addRoleToMember(event.getMember(), role).queue();
-        }
+        boolean previousWarez = false;
 
-        EventLogging.logGuildMemberJoinEvent(event);
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+            PreparedStatement latestWarezEvent = conn.prepareStatement("SELECT action FROM warez_event WHERE fk_user = ? ORDER BY timestamp DESC LIMIT 1;");
+            latestWarezEvent.setLong(1, event.getUser().getIdLong());
+            ResultSet latestWarezEventRes = latestWarezEvent.executeQuery();
+
+            if (latestWarezEventRes.next()) {
+                String action = latestWarezEventRes.getString("action");
+
+                if (action.equals("add")) {
+                    Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
+                    event.getGuild().addRoleToMember(event.getMember(), role).queue();
+                }
+            }
+
+            latestWarezEvent.close();
+        } catch (SQLException e) {
+            Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
+        
+        EventLogging.logGuildMemberJoinEvent(event, previousWarez);
     }
 
     @Override 

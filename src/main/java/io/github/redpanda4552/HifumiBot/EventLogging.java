@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class EventLogging {
     
-    public static void logGuildMemberJoinEvent(GuildMemberJoinEvent event) {
+    public static void logGuildMemberJoinEvent(GuildMemberJoinEvent event, boolean previousWarez) {
         String channelId = HifumiBot.getSelf().getConfig().channels.logging.memberJoin;
 
         if (channelId == null || channelId.isBlank()) {
@@ -40,7 +40,7 @@ public class EventLogging {
             eb.setColor(Color.GREEN);
         }
 
-        if (HifumiBot.getSelf().getWarezTracking().warezUsers.containsKey(event.getUser().getId())) {
+        if (previousWarez) {
             String dateStr = HifumiBot.getSelf().getWarezTracking().warezUsers.get(event.getUser().getId())
                     .format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.appendDescription(":pirate_flag: This user was previously warez'd (" + dateStr + ")\n");
