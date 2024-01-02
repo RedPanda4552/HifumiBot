@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
@@ -95,7 +96,7 @@ public class ChatFilter {
                     Messaging.logInfo("ChatFilter", "applyFilters",
                             "Message from user " + usr.getAsMention() + " (" + usr.getName() + ")"
                                     + " was filtered from channel `" + message.getChannel().getName() + "`.\n\nUser's message (formatting stripped, first 512 chars):\n```\n"
-                                    + StringUtils.truncate(message.getContentStripped(), 512)
+                                    + StringUtils.truncate(message.getContentStripped().replaceAll("\s", " "), 3500)
                                     + "\n```\nMatched this regular expression in filter `" + filterName + "` :\n```\n"
                                     + p.pattern() + "\n```");
                     return true;
