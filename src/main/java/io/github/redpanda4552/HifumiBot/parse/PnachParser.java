@@ -29,7 +29,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
@@ -40,6 +42,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 public class PnachParser extends AbstractParser {
 
     private static final String CRC_FILE_NAME_PATTERN = "[A-Z]{4}-[0-9]{5}_[0-9a-fA-F]{8}.*\\.pnach";
+    private static final List<String> KEYWORDS = Arrays.asList("author", "description", "gametitle", "comment", "gsaspectratio");
 
     private final Message message;
     private Attachment attachment;
@@ -98,12 +101,10 @@ public class PnachParser extends AbstractParser {
                     }
                 } else if (line.contains("=")) {
                     int firstEquals = line.indexOf('=');
-                    String lineStart = line.substring(0, firstEquals);
+                    String lineStart = line.substring(0, firstEquals).toLowerCase();
 
-                    if (lineStart.equals("author") || lineStart.equals("description") || lineStart.equals("gametitle") || lineStart.equals("comment")) {
+                    if (KEYWORDS.contains(lineStart)) {
                         continue;
-                    } else if (lineStart.equalsIgnoreCase("author") || lineStart.equalsIgnoreCase("description")) {
-                        addError(PnachParserError.START_LOWERCASE, line);
                     } else if (lineStart.equals("patch")) {
                         int lastEquals = line.lastIndexOf('=');
 
