@@ -74,6 +74,13 @@ public class CrashParser extends AbstractParser {
                         normalizedLine
                     );
                 }
+
+                if (normalizedLine.contains("vulkan_dzn.dll")) {
+                    this.errors.add(
+                        "[Fatal] Vulkan Compatibility Pack detected. This app package uses a Vulkan on DX12 implementation which does not actually conform to Vulkan specifications. Using the Vulkan renderer or opening the Settings menu in PCSX2 will likely crash.\n" +
+                        "Open your Start menu, hit Settings, Apps, then find `OpenCL™, OpenGL®, and Vulkan® Compatibility Pack` in the list and uninstall. Once uninstalled, reboot your PC."
+                    );
+                }
             }
 
             reader.close();
