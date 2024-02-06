@@ -113,6 +113,11 @@ public class CommandSerial extends AbstractSlashCommand {
             }
 
             eb.addField(serial, sb.toString().trim(), true);
+
+            if (eb.getFields().size() >= 25) {
+                eb.setDescription("More than 25 results found. Consider using a more specific search term if what you need is not here.");
+                break;
+            }
         }
         
         MessageEmbed embed = null;
