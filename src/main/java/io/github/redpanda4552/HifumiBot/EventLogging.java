@@ -7,7 +7,9 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.redpanda4552.HifumiBot.filter.MessageHistoryEntry;
+import io.github.redpanda4552.HifumiBot.database.AttachmentObject;
+import io.github.redpanda4552.HifumiBot.database.Database;
+import io.github.redpanda4552.HifumiBot.database.MessageObject;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message.Attachment;
@@ -116,7 +118,7 @@ public class EventLogging {
         Messaging.sendMessage(channelId, mb.build());
     }
 
-    public static void logMessageDeleteEvent(MessageHistoryEntry entry) {
+    public static void logMessageDeleteEvent(MessageObject deletedMessage, String messageId) {
         String channelId = HifumiBot.getSelf().getConfig().channels.logging.messageDelete;
 
         if (channelId == null || channelId.isBlank()) {
@@ -124,13 +126,17 @@ public class EventLogging {
         }
 
         OffsetDateTime now = OffsetDateTime.now();
-        Duration diff = Duration.between(entry.getDateTime(), now);
+        Duration diff = null;
         User user = null;
+        
+        if (deletedMessage != null) {
+            diff = Duration.between(deletedMessage.getCreatedTime(), now);
 
-        try {
-            user = HifumiBot.getSelf().getJDA().retrieveUserById(entry.getUserId()).complete();
-        } catch (Exception e) {
-            // Squelch
+            try {
+                user = HifumiBot.getSelf().getJDA().retrieveUserById(deletedMessage.getAuthorId()).complete();
+            } catch (Exception e) {
+                // Squelch
+            }
         }
 
         EmbedBuilder eb = new EmbedBuilder();
@@ -140,52 +146,46 @@ public class EventLogging {
         if (user != null) {
             eb.addField("Username (As Mention)", user.getAsMention(), true);
             eb.addField("Username (Plain Text)", user.getName(), true);
-        }
-        
-        eb.addField("User ID", entry.getUserId(), true);
-        eb.addField("Channel", HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId()).getAsMention(), true);
-        eb.addField("Message Age", getAgeString(diff), true);
-        eb.addField("Message Content (Truncated to 512 chars)", StringUtils.truncate(entry.getMessageContent(), 512), false);
-
-        if (entry.referencedMessageLink != null) {
-            eb.addField("Replied to Message", entry.referencedMessageLink, false);
+            eb.addField("User ID", user.getId(), true);
         }
 
-        if (!entry.getAttachmentUrls().isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-
-            for (String attachmentUrl : entry.attachmentUrls) {
-                sb.append(attachmentUrl).append("\n");
-            }
-
-            eb.addField("Attachments", sb.toString().trim(), false);
-        }
-
-        MessageCreateBuilder mb = new MessageCreateBuilder();
-        mb.setEmbeds(eb.build());
-        Messaging.sendMessage(channelId, mb.build());
-    }
-
-    public static void logMessageDeleteEvent(String channelMention, String messageId) {
-        String channelId = HifumiBot.getSelf().getConfig().channels.logging.messageDelete;
-
-        if (channelId == null || channelId.isBlank()) {
-            return;
-        }
-
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setColor(Color.MAGENTA);
-        eb.setTitle("Message Deleted");
-        eb.setDescription("The message could not be located in the message history cache. Typical reasons:\n- Message is too old and was not logged\n- The Discord API did not trigger an event when the message was first sent.");
-        eb.addField("Channel", channelMention, true);
         eb.addField("Message ID", messageId, true);
 
+        if (diff != null) {
+            eb.addField("Message Age", getAgeString(diff), true);
+        }
+        
+        if (deletedMessage != null) {
+            eb.addField("Channel", HifumiBot.getSelf().getJDA().getTextChannelById(deletedMessage.getChannelId()).getAsMention(), true);
+            eb.addField("Message Content (Truncated to 512 chars)", StringUtils.truncate(deletedMessage.getBodyContent(), 512), false);
+
+            if (deletedMessage.getReferencedMessageId() != null) {
+                MessageObject referencedMessage = Database.getLatestMessage(deletedMessage.getReferencedMessageId());
+
+                if (referencedMessage != null) {
+                    eb.addField("Replied to Message", referencedMessage.getJumpUrl(), false);
+                }
+            }
+
+            if (!deletedMessage.getAttachments().isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+
+                for (AttachmentObject attachment : deletedMessage.getAttachments()) {
+                    sb.append(attachment.getProxyUrl()).append("\n");
+                }
+
+                eb.addField("Old Attachments", sb.toString().trim(), false);
+            }
+        } else {
+            eb.setDescription("Details could not be populated - deleted message was not found in database.");
+        }
+
         MessageCreateBuilder mb = new MessageCreateBuilder();
         mb.setEmbeds(eb.build());
         Messaging.sendMessage(channelId, mb.build());
     }
 
-    public static void logMessageUpdateEvent(MessageUpdateEvent event, MessageHistoryEntry entry) {
+    public static void logMessageUpdateEvent(MessageUpdateEvent event, MessageObject beforeEditMessage) {
         String channelId = HifumiBot.getSelf().getConfig().channels.logging.messageUpdate;
 
         if (channelId == null || channelId.isBlank()) {
@@ -193,10 +193,9 @@ public class EventLogging {
         }
 
         OffsetDateTime now = OffsetDateTime.now();
-        Duration diff = Duration.between(entry.getDateTime(), now);
-        User user = HifumiBot.getSelf().getJDA().getUserById(entry.getUserId());
+        Duration diff = Duration.between(event.getMessage().getTimeCreated(), now);
+        User user = event.getAuthor();
 
-        String oldContent = entry.getMessageContent();
         String newContent = event.getMessage().getContentRaw();
 
         EmbedBuilder eb = new EmbedBuilder();
@@ -205,24 +204,21 @@ public class EventLogging {
         eb.addField("Username (As Mention)", user.getAsMention(), true);
         eb.addField("Username (Plain Text)", user.getName(), true);
         eb.addField("User ID", user.getId(), true);
-        eb.addField("Channel", HifumiBot.getSelf().getJDA().getTextChannelById(entry.getChannelId()).getAsMention(), true);
+        eb.addField("Message ID", event.getMessageId(), true);
+        eb.addField("Channel", event.getChannel().getAsMention(), true);
         eb.addField("Message Age", getAgeString(diff), true);
         eb.addField("Message Jump Link", event.getJumpUrl(), true);
-        eb.addField("Old Message Content (Truncated to 512 chars)", StringUtils.truncate(oldContent, 512), false);
+
+        if (beforeEditMessage != null) {
+            eb.addField("Old Message Content (Truncated to 512 chars)", StringUtils.truncate(beforeEditMessage.getBodyContent(), 512), false);
+        } else {
+            eb.addField("Old Message Content (Not Found)", "Original message (or its last edit) were not found in database.", false);
+        }
+        
         eb.addField("New Message Content (Truncated to 512 chars)", StringUtils.truncate(newContent, 512), false);
 
-        if (entry.referencedMessageLink != null) {
-            eb.addField("Replied to Message", entry.referencedMessageLink, false);
-        }
-
-        if (!entry.getAttachmentUrls().isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-
-            for (String attachmentUrl : entry.attachmentUrls) {
-                sb.append(attachmentUrl).append("\n");
-            }
-
-            eb.addField("Old Attachments", sb.toString().trim(), false);
+        if (event.getMessage().getReferencedMessage() != null) {
+            eb.addField("Replied to Message", event.getMessage().getReferencedMessage().getJumpUrl(), false);
         }
 
         if (!event.getMessage().getAttachments().isEmpty()) {
@@ -232,7 +228,7 @@ public class EventLogging {
                 sb.append(attachment.getProxyUrl()).append("\n");
             }
 
-            eb.addField("New Attachments", sb.toString().trim(), false);
+            eb.addField("Current Attachments", sb.toString().trim(), false);
         }
 
         MessageCreateBuilder mb = new MessageCreateBuilder();

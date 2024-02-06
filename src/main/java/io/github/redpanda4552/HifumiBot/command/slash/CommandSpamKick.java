@@ -23,10 +23,17 @@
  */
 package io.github.redpanda4552.HifumiBot.command.slash;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
+import io.github.redpanda4552.HifumiBot.database.Database;
+import io.github.redpanda4552.HifumiBot.database.MessageObject;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -48,9 +55,33 @@ public class CommandSpamKick extends AbstractSlashCommand {
         Member member = opt.getAsMember();
         
         try {
-            HifumiBot.getSelf().getKickHandler().doKick(member);
+            long cooldownSeconds = HifumiBot.getSelf().getConfig().filterOptions.incidentCooldownMS / 1000;
+            OffsetDateTime cooldownSubtracted = OffsetDateTime.now().minusSeconds(cooldownSeconds);
+            long cooldownEpochSeconds = cooldownSubtracted.toEpochSecond();
+
+            HifumiBot.getSelf().getFilterHandler().kickUser(event.getGuild(), member.getIdLong());
+            ArrayList<MessageObject> allMessages = Database.getAllMessagesSinceTime(member.getIdLong(), cooldownEpochSeconds);
+
+            for (MessageObject message : allMessages) {
+                try {
+                    HifumiBot.getSelf().getJDA().getTextChannelById(message.getChannelId()).deleteMessageById(message.getMessageId()).queue();
+                } catch (Exception e) {
+                    // Squelch
+                }
+            }
+
+            User usr = member.getUser();
+
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setTitle("Command /spamkick Used");
+            eb.setDescription("Sent a private message to user warning them we think they are a bot and have been kicked from the server. Their recent messages are in the process of being deleted.");
+            eb.addField("User (As Mention)", usr.getAsMention(), true);
+            eb.addField("Username", usr.getName(), true);
+            eb.addField("User ID", usr.getId(), true);
+            eb.setFooter("This action was taken by " + event.getUser().getName() + ".");
+
+            Messaging.logInfoEmbed(eb.build());
             event.reply("Successfully messaged and kicked " + member.getUser().getAsMention()).setEphemeral(true).queue();
-            Messaging.logInfo("CommandSpamKick", "onExecute", "Sent a DM to user " + member.getAsMention() + " warning them that we think they are a bot, and kicked the user from the server.\n\nThis action was taken by " + event.getUser().getAsMention() + ".");
         } catch (Exception e) {
             Messaging.logException("CommandSpamKick", "onExecute", e);
             event.reply("An internal error occurred, check the bot logging channel").setEphemeral(true).queue();

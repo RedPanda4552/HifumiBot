@@ -29,7 +29,7 @@ import java.util.regex.PatternSyntaxException;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
-import io.github.redpanda4552.HifumiBot.filter.Filter;
+import io.github.redpanda4552.HifumiBot.filter.FilterObject;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -45,12 +45,13 @@ public class CommandFilter extends AbstractSlashCommand {
 
     @Override
     protected void onExecute(SlashCommandInteractionEvent event) {
-        event.deferReply().queue();
+        event.deferReply().setEphemeral(true).queue();
         EmbedBuilder eb = new EmbedBuilder();
-        Filter filter = null;
+        FilterObject filter = null;
         String filterName = null;
         String regexName = null;
         String regex = null;
+        boolean informational = false;
         
         switch (event.getSubcommandName()) {
         case "new":
@@ -61,8 +62,15 @@ public class CommandFilter extends AbstractSlashCommand {
                 return;
             }
 
-            filter = new Filter();
+            OptionMapping informationalOpt = event.getOption("informational");
+            
+            if (informationalOpt != null) {
+                informational = informationalOpt.getAsBoolean();
+            }
+
+            filter = new FilterObject();
             filter.name = filterName;
+            filter.informational = informational;
             HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
             ConfigManager.write(HifumiBot.getSelf().getConfig());
             event.getHook().sendMessage(":white_check_mark: Created empty filter '" + filter.name + "'.").queue();
@@ -88,7 +96,7 @@ public class CommandFilter extends AbstractSlashCommand {
             filter.regexes.put(regexName, regex);
             HifumiBot.getSelf().getConfig().filters.put(filterName, filter);
             ConfigManager.write(HifumiBot.getSelf().getConfig());
-            HifumiBot.getSelf().getChatFilter().compile();
+            HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Created regex '" + regexName + "' on filter '" + filter.name + "'.").queue();
             return;
         case "remove":
@@ -110,7 +118,7 @@ public class CommandFilter extends AbstractSlashCommand {
 
             HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
             ConfigManager.write(HifumiBot.getSelf().getConfig());
-            HifumiBot.getSelf().getChatFilter().compile();
+            HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Removed regex '" + regexName + "' from filter '" + filter.name + "'.").queue();
             return;
         case "reply":
@@ -144,7 +152,8 @@ public class CommandFilter extends AbstractSlashCommand {
             }
             
             eb.setTitle(filter.name);
-            eb.setDescription(filter.replyMessage.isBlank() ? "This filter has no reply message." : "Replies with:\n```\n" + filter.replyMessage + "\n```");
+            eb.addField("Reply Message", (filter.replyMessage.isBlank() ? "<not set>" : filter.replyMessage), true);
+            eb.addField("Informational (No Delete)", String.valueOf(filter.informational), true);
 
             for (String str : filter.regexes.keySet()) {
                 eb.addField(str, "`" + filter.regexes.get(str) + "`", false);
@@ -163,13 +172,13 @@ public class CommandFilter extends AbstractSlashCommand {
             
             HifumiBot.getSelf().getConfig().filters.remove(filter.name);
             ConfigManager.write(HifumiBot.getSelf().getConfig());
-            HifumiBot.getSelf().getChatFilter().compile();
+            HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Deleted filter '" + filter.name + "'.").queue();
             return;
         case "list":
             eb.setTitle("Filter List");
 
-            for (Filter f : HifumiBot.getSelf().getConfig().filters.values()) {
+            for (FilterObject f : HifumiBot.getSelf().getConfig().filters.values()) {
                 eb.addField(f.name, f.regexes.size() + " regular expressions // Reply Message = " + !f.replyMessage.isBlank(), false);
             }
 
@@ -180,7 +189,7 @@ public class CommandFilter extends AbstractSlashCommand {
             event.getHook().sendMessageEmbeds(eb.build()).queue();
             return;
         case "compile":
-            HifumiBot.getSelf().getChatFilter().compile();
+            HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Compiled all filter regular expressions.").queue();
             return;
         }
@@ -189,7 +198,8 @@ public class CommandFilter extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         SubcommandData newFilter = new SubcommandData("new", "Create a new, empty filter")
-                .addOption(OptionType.STRING, "filter-name", "Unique identifier for the filter", true);
+                .addOption(OptionType.STRING, "filter-name", "Unique identifier for the filter", true)
+                .addOption(OptionType.BOOLEAN, "informational", "Prevents deletion and sending DM.", false);
         SubcommandData add = new SubcommandData("add", "Add a regular expression")
                 .addOption(OptionType.STRING, "filter-name", "Unique identifier of the target filter to modify", true)
                 .addOption(OptionType.STRING, "regex-name", "Unique identifier for the regular expression", true)
