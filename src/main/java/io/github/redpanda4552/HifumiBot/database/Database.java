@@ -54,7 +54,9 @@ public class Database {
 
             // Check if the referenced message exists in the database; if not, try to add it first.
             if (message.getReferencedMessage() != null) {
-                Database.insertMessage(message.getReferencedMessage());
+                if (Database.getLatestMessage(message.getIdLong()) == null) {
+                    Database.insertMessage(message.getReferencedMessage());
+                }
             }
 
             PreparedStatement insertMessage = conn.prepareStatement("""

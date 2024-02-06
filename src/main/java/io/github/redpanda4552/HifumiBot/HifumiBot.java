@@ -156,28 +156,32 @@ public class HifumiBot {
         ConfigManager.write(config);
         // TODO - check vital fields and fail if they aren't set (all the channel and serverIds)
 
-        ConfigManager.createConfigIfNotExists(ConfigType.WAREZ);
-        warezTracking = (WarezTracking) ConfigManager.read(ConfigType.WAREZ);
-        ConfigManager.write(warezTracking);
+        try {
+            ConfigManager.createConfigIfNotExists(ConfigType.WAREZ);
+            warezTracking = (WarezTracking) ConfigManager.read(ConfigType.WAREZ);
+            ConfigManager.write(warezTracking);
 
-        ConfigManager.createConfigIfNotExists(ConfigType.DYNCMD);
-        dynCmdConfig = (DynCmdConfig) ConfigManager.read(ConfigType.DYNCMD);
-        ConfigManager.write(dynCmdConfig);
+            ConfigManager.createConfigIfNotExists(ConfigType.DYNCMD);
+            dynCmdConfig = (DynCmdConfig) ConfigManager.read(ConfigType.DYNCMD);
+            ConfigManager.write(dynCmdConfig);
 
-        ConfigManager.createConfigIfNotExists(ConfigType.BUILDMAP);
-        buildCommitMap = (BuildCommitMap) ConfigManager.read(ConfigType.BUILDMAP);
-        if (buildCommitMap != null) {
-            buildCommitMap.seedMap();
+            ConfigManager.createConfigIfNotExists(ConfigType.BUILDMAP);
+            buildCommitMap = (BuildCommitMap) ConfigManager.read(ConfigType.BUILDMAP);
+            if (buildCommitMap != null) {
+                buildCommitMap.seedMap();
+            }
+            ConfigManager.write(buildCommitMap);
+            
+            ConfigManager.createConfigIfNotExists(ConfigType.SERVER_METRICS);
+            serverMetrics = (ServerMetrics) ConfigManager.read(ConfigType.SERVER_METRICS);
+            ConfigManager.write(serverMetrics);
+            
+            ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
+            emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
+            ConfigManager.write(emulogParserConfig);
+        } catch (Exception e) {
+            Messaging.logException("HifumiBot", "(constructor)", e);
         }
-        ConfigManager.write(buildCommitMap);
-        
-        ConfigManager.createConfigIfNotExists(ConfigType.SERVER_METRICS);
-        serverMetrics = (ServerMetrics) ConfigManager.read(ConfigType.SERVER_METRICS);
-        ConfigManager.write(serverMetrics);
-        
-        ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
-        emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
-        ConfigManager.write(emulogParserConfig);
         
         mySQL = new MySQL();
         Internet.init();
