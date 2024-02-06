@@ -24,9 +24,9 @@
 package io.github.redpanda4552.HifumiBot.config;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
-import io.github.redpanda4552.HifumiBot.filter.Filter;
+import io.github.redpanda4552.HifumiBot.filter.FilterObject;
 
 public class Config implements IConfig {
     
@@ -48,7 +48,7 @@ public class Config implements IConfig {
     public Roles roles;
     public Integrations integrations;
     public Permissions permissions;
-    public HashMap<String, Filter> filters;
+    public ConcurrentHashMap<String, FilterObject> filters;
     public long ninjaInterval;
     public FilterOptions filterOptions;
     public MySQLOptions mysql;
@@ -62,7 +62,7 @@ public class Config implements IConfig {
         roles = new Roles();
         integrations = new Integrations();
         permissions = new Permissions();
-        filters = new HashMap<String, Filter>();
+        filters = new ConcurrentHashMap<String, FilterObject>();
         filterOptions = new FilterOptions();
         ninjaInterval = 500;
         mysql = new MySQLOptions();
@@ -169,15 +169,21 @@ public class Config implements IConfig {
     public class FilterOptions {
         public long incidentCooldownMS;
         public int maxIncidents;
-        public boolean enableWarningMessages;
-        public String warnMessage;
+        public long timeoutDurationMinutes;
+        public String filterMessage;
+        public String dnsMessage;
+        public String spamMessage;
+        public String timeoutMessage;
         public String kickMessage;
         
         public FilterOptions() {
-            incidentCooldownMS = 1000 * 10;
-            maxIncidents = 5;
-            enableWarningMessages = true;
-            warnMessage = new String("");
+            incidentCooldownMS = 1000 * 15;
+            maxIncidents = 3;
+            timeoutDurationMinutes = 60 * 8;
+            filterMessage = new String("");
+            dnsMessage = new String("");
+            spamMessage = new String("");
+            timeoutMessage = new String("");
             kickMessage = new String("");
         }
     }

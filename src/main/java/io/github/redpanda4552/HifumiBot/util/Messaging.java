@@ -47,6 +47,23 @@ public class Messaging {
     
     private static final Pattern FILE_NAME_PATTERN = Pattern.compile("crash-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{3}.txt");
 
+    public static Message sendPrivateMessageEmbed(User user, MessageEmbed embed) {
+        if (embed == null) {
+            return null;
+        }
+
+        Message ret = null;
+        
+        try {
+            PrivateChannel channel = user.openPrivateChannel().complete();
+            ret = channel.sendMessageEmbeds(embed).complete();
+        } catch (Exception e) {
+            Messaging.logException("Messaging", "sendPrivateMessage", e);
+        }
+         
+        return ret;
+    }
+
     public static Message sendPrivateMessage(User user, String str) {
         if (str == null || str.isBlank()) {
             return null;
@@ -66,8 +83,10 @@ public class Messaging {
         
         try {
             PrivateChannel channel = user.openPrivateChannel().complete();
-            channel.sendMessage(msg).complete();
-        } catch (Exception e) { }
+            ret = channel.sendMessage(msg).complete();
+        } catch (Exception e) {
+            Messaging.logException("Messaging", "sendPrivateMessage", e);
+        }
          
         return ret;
     }

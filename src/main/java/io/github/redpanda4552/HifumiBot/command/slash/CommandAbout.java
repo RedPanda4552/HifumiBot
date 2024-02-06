@@ -57,7 +57,6 @@ public class CommandAbout extends AbstractSlashCommand {
         storageBuilder.append("DynCmd: ").append((ConfigManager.getSizeBytes(ConfigType.DYNCMD) / 1024) + " KB | ");
         storageBuilder.append("BuildMap: ").append((ConfigManager.getSizeBytes(ConfigType.BUILDMAP) / 1024) + " KB | ");
         storageBuilder.append("Emulog: ").append((ConfigManager.getSizeBytes(ConfigType.EMULOG_PARSER) / 1024) + " KB | ");
-        storageBuilder.append("History: ").append((ConfigManager.getSizeBytes(ConfigType.MESSAGE_HISTORY) / 1024) + " KB | ");
         eb.addField("Storage Size", storageBuilder.toString(), false);
         StringBuilder runnableBuilder = new StringBuilder("| ");
 

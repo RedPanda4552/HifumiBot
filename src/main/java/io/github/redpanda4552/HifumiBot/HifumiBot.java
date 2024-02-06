@@ -34,18 +34,15 @@ import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
 import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
-import io.github.redpanda4552.HifumiBot.config.MessageHistoryStorage;
 import io.github.redpanda4552.HifumiBot.config.ServerMetrics;
 import io.github.redpanda4552.HifumiBot.config.WarezTracking;
-import io.github.redpanda4552.HifumiBot.event.RoleEventListener;
+import io.github.redpanda4552.HifumiBot.database.MySQL;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
 import io.github.redpanda4552.HifumiBot.event.MessageEventListener;
+import io.github.redpanda4552.HifumiBot.event.RoleEventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
-import io.github.redpanda4552.HifumiBot.filter.ChatFilter;
-import io.github.redpanda4552.HifumiBot.filter.HyperlinkCleaner;
-import io.github.redpanda4552.HifumiBot.filter.KickHandler;
-import io.github.redpanda4552.HifumiBot.filter.MessageHistoryManager;
+import io.github.redpanda4552.HifumiBot.filter.FilterHandler;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -111,7 +108,6 @@ public class HifumiBot {
     private BuildCommitMap buildCommitMap;
     private ServerMetrics serverMetrics;
     private EmulogParserConfig emulogParserConfig;
-    private MessageHistoryStorage messageHistoryStorage;
     private final OkHttpClient http;
     private MySQL mySQL;
     
@@ -121,9 +117,7 @@ public class HifumiBot {
     private GpuIndex gpuIndex;
     private CommandIndex commandIndex;
     private PermissionManager permissionManager;
-    private ChatFilter chatFilter;
-    private HyperlinkCleaner hyperlinkCleaner;
-    private MessageHistoryManager messageHistoryManager;
+    private FilterHandler chatFilter;
     
     private RoleEventListener roleEventListener;
     private MessageEventListener messageEventListener;
@@ -131,7 +125,6 @@ public class HifumiBot {
     private SlashCommandListener slashCommandListener;
     private MessageContextCommandListener messageCommandListener;
     
-    private KickHandler kickHandler;
     private GameIndex gameIndex;
     private Translator deepL;
 
@@ -186,10 +179,6 @@ public class HifumiBot {
         emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
         ConfigManager.write(emulogParserConfig);
         
-        ConfigManager.createConfigIfNotExists(ConfigType.MESSAGE_HISTORY);
-        messageHistoryStorage = (MessageHistoryStorage) ConfigManager.read(ConfigType.MESSAGE_HISTORY);
-        ConfigManager.write(messageHistoryStorage);
-
         mySQL = new MySQL();
         Internet.init();
         deepL = new Translator(deepLKey);
@@ -199,15 +188,12 @@ public class HifumiBot {
         gpuIndex = new GpuIndex();
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
-        chatFilter = new ChatFilter();
-        hyperlinkCleaner = new HyperlinkCleaner();
-        messageHistoryManager = new MessageHistoryManager();
+        chatFilter = new FilterHandler();
         jda.addEventListener(roleEventListener = new RoleEventListener());
         jda.addEventListener(messageEventListener = new MessageEventListener());
         jda.addEventListener(memberEventListener = new MemberEventListener());
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
-        kickHandler = new KickHandler();
         gameIndex = new GameIndex();
 
         scheduler.runOnce(() -> {
@@ -238,21 +224,12 @@ public class HifumiBot {
             HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
         }, 1000 * getConfig().slashCommands.timeoutSeconds);
         
-        scheduler.scheduleRepeating("fltr", () -> {
-            kickHandler.flush();
-        }, 1000 * 60 * 60);
-        
         scheduler.scheduleRepeating("pop", () -> {
             String serverId = HifumiBot.getSelf().getConfig().server.id;
             Guild server = HifumiBot.getSelf().getJDA().getGuildById(serverId);
             serverMetrics.populationSnaps.put(OffsetDateTime.now().toString(), server.getMemberCount());
             ConfigManager.write(serverMetrics);
         }, 1000 * 60 * 60 * 6);
-
-        scheduler.scheduleRepeating("hist", () -> {
-            messageHistoryManager.flush();
-            ConfigManager.write(messageHistoryStorage);
-        }, 1000 * 60 * 15);
 
         updateStatus("New Game!");
     }
@@ -275,10 +252,6 @@ public class HifumiBot {
         return emulogParserConfig;
     }
 
-    public MessageHistoryStorage getMessageHistoryStorage() {
-        return messageHistoryStorage;
-    }
-    
     public OkHttpClient getHttpClient() {
         return http;
     }
@@ -319,16 +292,8 @@ public class HifumiBot {
         return permissionManager;
     }
 
-    public ChatFilter getChatFilter() {
+    public FilterHandler getFilterHandler() {
         return chatFilter;
-    }
-
-    public HyperlinkCleaner getHyperlinkCleaner() {
-        return hyperlinkCleaner;
-    }
-
-    public MessageHistoryManager getMessageHistoryManager() {
-        return messageHistoryManager;
     }
 
     public RoleEventListener getRoleEventListener() {
@@ -351,10 +316,6 @@ public class HifumiBot {
         return messageCommandListener;
     }
     
-    public KickHandler getKickHandler() {
-        return kickHandler;
-    }
-    
     public GameIndex getGameIndex() {
         return gameIndex;
     }
@@ -365,9 +326,6 @@ public class HifumiBot {
 
     public void shutdown(boolean reload) {
         this.getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
-        // Because the disk overhead would be insane, this does not get written in real time.
-        // Write it upon exiting.
-        ConfigManager.write(messageHistoryStorage);
         this.getScheduler().shutdown();
         jda.shutdown();
         this.getMySQL().shutdown();

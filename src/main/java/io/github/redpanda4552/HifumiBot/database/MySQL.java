@@ -1,4 +1,4 @@
-package io.github.redpanda4552.HifumiBot;
+package io.github.redpanda4552.HifumiBot.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.Config.MySQLOptions;
 
 public class MySQL {

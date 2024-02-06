@@ -25,14 +25,17 @@ package io.github.redpanda4552.HifumiBot.filter;
 
 import java.util.HashMap;
 
-public class Filter {
+public class FilterObject {
+    
     public String name;
     public HashMap<String, String> regexes;
     public String replyMessage;
+    public boolean informational;
 
-    public Filter() {
+    public FilterObject() {
         this.name = new String("");
         this.regexes = new HashMap<String, String>();
         this.replyMessage = new String("");
+        this.informational = false;
     }
 }
