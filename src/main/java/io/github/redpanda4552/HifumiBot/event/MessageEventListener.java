@@ -41,7 +41,7 @@ public class MessageEventListener extends ListenerAdapter {
         }
 
         // Store all messages no matter what
-        Database.insertMessageReceivedEvent(event);
+        Database.insertMessage(event.getMessage());
 
         // If the sender was the bot, do not process any further.
         if (event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {

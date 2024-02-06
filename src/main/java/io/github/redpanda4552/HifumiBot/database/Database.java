@@ -12,10 +12,10 @@ import java.util.List;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 
 public class Database {
@@ -25,7 +25,7 @@ public class Database {
      * @param event
      * @return
      */
-    public static void insertMessageReceivedEvent(MessageReceivedEvent event) {
+    public static void insertMessage(Message message) {
         Connection conn = null;
 
         try {
@@ -36,9 +36,9 @@ public class Database {
                     VALUES (?, ?, ?)
                     ON DUPLICATE KEY UPDATE discord_id=discord_id;
                     """);
-            insertUser.setLong(1, event.getAuthor().getIdLong());
-            insertUser.setLong(2, event.getAuthor().getTimeCreated().toEpochSecond());
-            insertUser.setString(3, event.getAuthor().getName());
+            insertUser.setLong(1, message.getAuthor().getIdLong());
+            insertUser.setLong(2, message.getAuthor().getTimeCreated().toEpochSecond());
+            insertUser.setString(3, message.getAuthor().getName());
             insertUser.executeUpdate();
             insertUser.close();
 
@@ -47,26 +47,31 @@ public class Database {
                     VALUES (?, ?)
                     ON DUPLICATE KEY UPDATE discord_id=discord_id;
                     """);
-            insertChannel.setLong(1, event.getChannel().getIdLong());
-            insertChannel.setString(2, event.getChannel().getName());
+            insertChannel.setLong(1, message.getChannel().getIdLong());
+            insertChannel.setString(2, message.getChannel().getName());
             insertChannel.executeUpdate();
             insertChannel.close();
+
+            // Check if the referenced message exists in the database; if not, try to add it first.
+            if (message.getReferencedMessage() != null) {
+                Database.insertMessage(message.getReferencedMessage());
+            }
 
             PreparedStatement insertMessage = conn.prepareStatement("""
                     INSERT INTO message (message_id, fk_channel, jump_link, fk_reply_to_message, timestamp)
                     VALUES (?, ?, ?, ?, ?);
                     """);
-            insertMessage.setLong(1, event.getMessageIdLong());
-            insertMessage.setLong(2, event.getChannel().getIdLong());
-            insertMessage.setString(3, event.getMessage().getJumpUrl());
+            insertMessage.setLong(1, message.getIdLong());
+            insertMessage.setLong(2, message.getChannel().getIdLong());
+            insertMessage.setString(3, message.getJumpUrl());
 
-            if (event.getMessage().getReferencedMessage() != null) {
-                insertMessage.setLong(4, event.getMessage().getReferencedMessage().getIdLong());
+            if (message.getReferencedMessage() != null) {
+                insertMessage.setLong(4, message.getReferencedMessage().getIdLong());
             } else {
                 insertMessage.setNull(4, Types.BIGINT);
             }
             
-            insertMessage.setLong(5, event.getMessage().getTimeCreated().toEpochSecond());
+            insertMessage.setLong(5, message.getTimeCreated().toEpochSecond());
             insertMessage.executeUpdate();
             insertMessage.close();
 
@@ -74,16 +79,16 @@ public class Database {
                     INSERT INTO message_event (fk_user, fk_message, timestamp, action, content)
                     VALUES (?, ?, ?, ?, ?);
                     """);
-            insertEvent.setLong(1, event.getAuthor().getIdLong());
-            insertEvent.setLong(2, event.getMessageIdLong());
-            insertEvent.setLong(3, event.getMessage().getTimeCreated().toEpochSecond());
+            insertEvent.setLong(1, message.getAuthor().getIdLong());
+            insertEvent.setLong(2, message.getIdLong());
+            insertEvent.setLong(3, message.getTimeCreated().toEpochSecond());
             insertEvent.setString(4, "send");
-            insertEvent.setString(5, event.getMessage().getContentRaw());
+            insertEvent.setString(5, message.getContentRaw());
             insertEvent.executeUpdate();
             insertEvent.close();
             
             // Check if this message had any attachments. No need to continue if not.
-            List<Attachment> attachments = event.getMessage().getAttachments();
+            List<Attachment> attachments = message.getAttachments();
 
             if (!attachments.isEmpty()) {
                 PreparedStatement insertAttachments = conn.prepareStatement("""
@@ -94,7 +99,7 @@ public class Database {
                 for (Attachment attachment : attachments) {
                     insertAttachments.setLong(1, attachment.getIdLong());
                     insertAttachments.setLong(2, attachment.getTimeCreated().toEpochSecond());
-                    insertAttachments.setLong(3, event.getMessageIdLong());
+                    insertAttachments.setLong(3, message.getIdLong());
                     insertAttachments.setString(4, attachment.getContentType());
                     insertAttachments.setString(5, attachment.getProxyUrl());
                     insertAttachments.setString(6, attachment.getFileName());
