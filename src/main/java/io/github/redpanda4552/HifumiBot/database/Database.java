@@ -54,7 +54,7 @@ public class Database {
 
             // Check if the referenced message exists in the database; if not, try to add it first.
             if (message.getReferencedMessage() != null) {
-                if (Database.getLatestMessage(message.getIdLong()) == null) {
+                if (Database.getLatestMessage(message.getReferencedMessage().getIdLong()) == null) {
                     Database.insertMessage(message.getReferencedMessage());
                 }
             }
