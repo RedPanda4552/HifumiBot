@@ -193,6 +193,12 @@ public class FilterHandler {
     }
 
     public boolean reviewSpam(Message message, long timestamp) {
+        String rawContent = message.getContentRaw();
+
+        if (rawContent == null || rawContent.isEmpty()) {
+            return false;
+        }
+
         ArrayList<MessageObject> duplicates = Database.getIdenticalMessagesSinceTime(message.getContentRaw(), timestamp);
 
         if (duplicates == null || duplicates.isEmpty()) {
