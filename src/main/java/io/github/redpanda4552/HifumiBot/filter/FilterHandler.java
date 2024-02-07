@@ -98,12 +98,22 @@ public class FilterHandler {
                     if (!filter.informational) {
                         message.delete().complete();
 
-                        EmbedBuilder eb = new EmbedBuilder();
-                        eb.setTitle("Message Deleted in PCSX2 Server");
-                        eb.setDescription(HifumiBot.getSelf().getConfig().filterOptions.filterMessage);
-                        eb.setFooter(BOT_FOOTER);
-                        eb.setColor(Color.YELLOW);
-                        Messaging.sendPrivateMessageEmbed(message.getAuthor(), eb.build());
+                        // Before sending a private message, attempt to retrieve a member object for the user.
+                        // If they are still in the server this will succeed; if they have been kicked already
+                        // (and the bot is still trying to catch up on processing messages), this will fail with
+                        // an exception and silently skip the private message.
+                        try {
+                            message.getGuild().retrieveMemberById(message.getAuthor().getIdLong()).complete();
+
+                            EmbedBuilder eb = new EmbedBuilder();
+                            eb.setTitle("Message Deleted in PCSX2 Server");
+                            eb.setDescription(HifumiBot.getSelf().getConfig().filterOptions.filterMessage);
+                            eb.setFooter(BOT_FOOTER);
+                            eb.setColor(Color.YELLOW);
+                            Messaging.sendPrivateMessageEmbed(message.getAuthor(), eb.build());
+                        } catch (Exception e) {
+                            // Squelch
+                        }
                     }
 
                     if (!filter.replyMessage.isBlank()) {
