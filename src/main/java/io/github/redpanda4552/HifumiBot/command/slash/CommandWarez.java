@@ -27,7 +27,8 @@ import java.time.OffsetDateTime;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.config.ConfigManager;
+import io.github.redpanda4552.HifumiBot.database.Database;
+import io.github.redpanda4552.HifumiBot.database.WarezEventObject;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -60,9 +61,15 @@ public class CommandWarez extends AbstractSlashCommand {
                 User user = event.getOption("user").getAsUser();
 
                 if (member == null && user != null) {
-                    HifumiBot.getSelf().getWarezTracking().warezUsers.put(user.getId(), OffsetDateTime.now());
-                    ConfigManager.write(HifumiBot.getSelf().getWarezTracking());
-                    event.getHook().sendMessage("Warez record logged (User has already left the server)").queue();
+                    // Insert the warez to the database here, since the user isn't present to receive the role.
+                    WarezEventObject warezEvent = new WarezEventObject(OffsetDateTime.now().toEpochSecond(), user.getIdLong(), WarezEventObject.Action.ADD);
+                    
+                    if (Database.insertWarezEvent(warezEvent)) {
+                        event.getHook().sendMessage("Warez record logged (User has already left the server)").queue();
+                    } else {
+                        event.getHook().sendMessage("Warez record could not be stored (SQL error occurred, check logs for details)").queue();
+                    }
+                    
                     return;
                 } else if (user == null) {
                     event.getHook().sendMessage("Could not record warez; supplied user parameter did not match any actual users").queue();
@@ -73,6 +80,7 @@ public class CommandWarez extends AbstractSlashCommand {
                 
                 if (member != null && !HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, member)) {
                     try {
+                        // Add the role. The role event will then add to the database.
                         Role warezRole = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
                         event.getGuild().addRoleToMember(member, warezRole).queue();
                     } catch (InsufficientPermissionException e) {

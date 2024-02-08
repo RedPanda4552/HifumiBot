@@ -23,14 +23,11 @@
  */
 package io.github.redpanda4552.HifumiBot.event;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.time.OffsetDateTime;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.database.MySQL;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.database.Database;
+import io.github.redpanda4552.HifumiBot.database.WarezEventObject;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
@@ -44,30 +41,8 @@ public class RoleEventListener extends ListenerAdapter {
 
         for (Role role : event.getRoles()) {
             if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)) {
-                Connection conn = null;
-
-                try {
-                    conn = HifumiBot.getSelf().getMySQL().getConnection();
-
-                    PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
-                    insertUser.setLong(1, event.getUser().getIdLong());
-                    insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
-                    insertUser.setString(3, event.getUser().getName());
-                    insertUser.executeUpdate();
-                    insertUser.close();
-
-                    PreparedStatement insertWarez = conn.prepareStatement("INSERT INTO warez_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
-                    insertWarez.setLong(1, now.toEpochSecond());
-                    insertWarez.setLong(2, event.getUser().getIdLong());
-                    insertWarez.setString(3, "add");
-                    insertWarez.executeUpdate();
-                    insertWarez.close();
-                } catch (SQLException e) {
-                    Messaging.logException("HifumiBot", "(constructor/warez-migration)", e);
-                } finally {
-                    MySQL.closeConnection(conn);
-                }
-
+                WarezEventObject warezEvent = new WarezEventObject(now.toEpochSecond(), event.getUser().getIdLong(), WarezEventObject.Action.ADD);
+                Database.insertWarezEvent(warezEvent);
                 return;
             }
         }
@@ -79,30 +54,8 @@ public class RoleEventListener extends ListenerAdapter {
 
         for (Role role : event.getRoles()) {
             if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)) {
-                Connection conn = null;
-
-                try {
-                    conn = HifumiBot.getSelf().getMySQL().getConnection();
-
-                    PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
-                    insertUser.setLong(1, event.getUser().getIdLong());
-                    insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
-                    insertUser.setString(3, event.getUser().getName());
-                    insertUser.executeUpdate();
-                    insertUser.close();
-
-                    PreparedStatement insertWarez = conn.prepareStatement("INSERT INTO warez_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
-                    insertWarez.setLong(1, now.toEpochSecond());
-                    insertWarez.setLong(2, event.getUser().getIdLong());
-                    insertWarez.setString(3, "remove");
-                    insertWarez.executeUpdate();
-                    insertWarez.close();
-                } catch (SQLException e) {
-                    Messaging.logException("HifumiBot", "(constructor/warez-migration)", e);
-                } finally {
-                    MySQL.closeConnection(conn);
-                }
-
+                WarezEventObject warezEvent = new WarezEventObject(now.toEpochSecond(), event.getUser().getIdLong(), WarezEventObject.Action.REMOVE);
+                Database.insertWarezEvent(warezEvent);
                 return;
             }
         }
