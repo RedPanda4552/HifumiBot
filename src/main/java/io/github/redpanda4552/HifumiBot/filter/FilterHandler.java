@@ -132,7 +132,7 @@ public class FilterHandler {
                     eb.addField("User (As Mention)", usr.getAsMention(), true);
                     eb.addField("Username", usr.getName(), true);
                     eb.addField("User ID", usr.getId(), true);
-                    eb.setColor(Color.ORANGE);
+                    eb.setColor(Color.YELLOW);
 
                     Messaging.logInfoEmbed(eb.build());
                     return true;

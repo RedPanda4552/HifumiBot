@@ -41,7 +41,7 @@ public class FilterRunnable implements Runnable {
                         eb.addField("User (As Mention)", usr.getAsMention(), true);
                         eb.addField("Username", usr.getName(), true);
                         eb.addField("User ID", usr.getId(), true);
-                        eb.setColor(Color.YELLOW);
+                        eb.setColor(Color.ORANGE);
 
                         Messaging.logInfoEmbed(eb.build());
                     }
@@ -62,7 +62,7 @@ public class FilterRunnable implements Runnable {
                     eb.addField("User (As Mention)", usr.getAsMention(), true);
                     eb.addField("Username", usr.getName(), true);
                     eb.addField("User ID", usr.getId(), true);
-                    eb.setColor(Color.YELLOW);
+                    eb.setColor(Color.CYAN);
 
                     Messaging.logInfoEmbed(eb.build());
                 }
