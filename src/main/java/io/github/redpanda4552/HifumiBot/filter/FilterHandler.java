@@ -124,7 +124,7 @@ public class FilterHandler {
 
                     EmbedBuilder eb = new EmbedBuilder();
                     eb.setTitle("Filter Event");
-                    eb.setDescription(StringUtils.truncate(message.getContentRaw().replaceAll("\s", " "), 4000));
+                    eb.setDescription("**Message Content (Truncated to 3900 chars)**\n```\n" + StringUtils.truncate(message.getContentStripped().replaceAll("\s", " "), 3900) + "\n```");
                     eb.addField("Regular Expression", "`" + p.pattern() + "`", true);
                     eb.addField("Filter Name", filter.name, true);
                     eb.addField("Channel", message.getChannel().getAsMention(), true);
@@ -172,7 +172,7 @@ public class FilterHandler {
                         
                 eb = new EmbedBuilder();
                 eb.setTitle("DNS Block Event");
-                eb.setDescription(StringUtils.truncate(message.getContentRaw().replaceAll("\s", " "), 4000));
+                eb.setDescription("**Message Content (Truncated to 3900 chars)**\n```\n" + StringUtils.truncate(message.getContentStripped().replaceAll("\s", " "), 3900) + "\n```");
                 eb.addField("Flagged URL", url, true);
                 eb.addField("Channel", message.getChannel().getAsMention(), true);
                 eb.addField("User (As Mention)", usr.getAsMention(), true);
