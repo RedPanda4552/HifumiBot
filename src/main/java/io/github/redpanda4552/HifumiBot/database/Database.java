@@ -14,6 +14,7 @@ import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
@@ -658,6 +659,79 @@ public class Database {
             return ret;
         } catch (SQLException e) {
             Messaging.logException("Database", "getAllMessagesSinceTime", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
+        
+        return ret;
+    }
+
+    public static boolean insertWarezEvent(WarezEventObject warezEvent) {
+        Connection conn = null;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+            User usr = HifumiBot.getSelf().getJDA().getUserById(warezEvent.getUserId());
+
+            PreparedStatement insertUser = conn.prepareStatement("""
+                INSERT INTO user (discord_id, created_datetime, username)
+                VALUES (?, ?, ?)
+                ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                """);
+            insertUser.setLong(1, warezEvent.getUserId());
+            insertUser.setLong(2, usr.getTimeCreated().toEpochSecond());
+            insertUser.setString(3, usr.getName());
+            insertUser.executeUpdate();
+            insertUser.close();
+
+            PreparedStatement insertWarez = conn.prepareStatement("""
+                INSERT INTO warez_event (timestamp, fk_user, action)
+                VALUES (?, ?, ?);
+                """);
+            insertWarez.setLong(1, warezEvent.getTimestamp());
+            insertWarez.setLong(2, warezEvent.getUserId());
+            insertWarez.setString(3, warezEvent.getAction().stringValue);
+            insertWarez.executeUpdate();
+            insertWarez.close();
+
+            return true;
+        } catch (SQLException e) {
+            Messaging.logException("Database", "insertWarezEvent", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
+
+        return false;
+    }
+
+    public static WarezEventObject getLatestWarezAction(long userIdLong) {
+        WarezEventObject ret = null;
+        Connection conn = null;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+            PreparedStatement getWarezEvent = conn.prepareStatement("""
+                    SELECT timestamp, fk_user, action
+                    FROM warez_event
+                    WHERE fk_user = ?
+                    ORDER BY e.timestamp DESC
+                    LIMIT 1;
+                    """);
+            getWarezEvent.setLong(1, userIdLong);
+            ResultSet latestEvent = getWarezEvent.executeQuery();
+
+            if (latestEvent.next()) {
+                ret = new WarezEventObject(
+                    latestEvent.getLong("timestamp"), 
+                    latestEvent.getLong("fk_user"), 
+                    WarezEventObject.Action.valueOf(latestEvent.getString("action"))
+                );
+            }
+
+            getWarezEvent.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getLatestWarezAction", e);
         } finally {
             MySQL.closeConnection(conn);
         }

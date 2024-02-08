@@ -26,7 +26,6 @@ package io.github.redpanda4552.HifumiBot.config;
 public enum ConfigType {
 
     CORE("./hifumi-conf.json", Config.class),
-    WAREZ("./warez-tracking.json", WarezTracking.class),
     DYNCMD("./dyncmd-config.json", DynCmdConfig.class),
     BUILDMAP("./build-map.json", BuildCommitMap.class),
     SERVER_METRICS("./server-metrics.json", ServerMetrics.class),

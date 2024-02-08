@@ -35,7 +35,6 @@ import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
 import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
 import io.github.redpanda4552.HifumiBot.config.ServerMetrics;
-import io.github.redpanda4552.HifumiBot.config.WarezTracking;
 import io.github.redpanda4552.HifumiBot.database.MySQL;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
@@ -103,7 +102,6 @@ public class HifumiBot {
 
     private JDA jda;
     private Config config;
-    private WarezTracking warezTracking;
     private DynCmdConfig dynCmdConfig;
     private BuildCommitMap buildCommitMap;
     private ServerMetrics serverMetrics;
@@ -157,10 +155,6 @@ public class HifumiBot {
         // TODO - check vital fields and fail if they aren't set (all the channel and serverIds)
 
         try {
-            ConfigManager.createConfigIfNotExists(ConfigType.WAREZ);
-            warezTracking = (WarezTracking) ConfigManager.read(ConfigType.WAREZ);
-            ConfigManager.write(warezTracking);
-
             ConfigManager.createConfigIfNotExists(ConfigType.DYNCMD);
             dynCmdConfig = (DynCmdConfig) ConfigManager.read(ConfigType.DYNCMD);
             ConfigManager.write(dynCmdConfig);
@@ -240,10 +234,6 @@ public class HifumiBot {
 
     public Config getConfig() {
         return config;
-    }
-
-    public WarezTracking getWarezTracking() {
-        return warezTracking;
     }
 
     public DynCmdConfig getDynCmdConfig() {
