@@ -715,7 +715,7 @@ public class Database {
                     SELECT timestamp, fk_user, action
                     FROM warez_event
                     WHERE fk_user = ?
-                    ORDER BY e.timestamp DESC
+                    ORDER BY timestamp DESC
                     LIMIT 1;
                     """);
             getWarezEvent.setLong(1, userIdLong);
