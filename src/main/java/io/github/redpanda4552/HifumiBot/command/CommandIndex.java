@@ -34,7 +34,6 @@ import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandBuildNumber;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBulkDelete;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
@@ -108,7 +107,6 @@ public class CommandIndex {
         registerSlashCommand(new CommandCPU());
         registerSlashCommand(new CommandGPU());
         registerSlashCommand(new CommandDynCmd());
-        registerSlashCommand(new CommandBuildNumber());
         registerSlashCommand(new CommandSpamKick());
         registerSlashCommand(new CommandGameIndex());
         registerSlashCommand(new CommandEmulog());

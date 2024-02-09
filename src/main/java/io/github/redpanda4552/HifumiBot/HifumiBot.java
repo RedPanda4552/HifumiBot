@@ -23,18 +23,14 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
-import java.time.OffsetDateTime;
-
 import com.deepl.api.Translator;
 
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
-import io.github.redpanda4552.HifumiBot.config.BuildCommitMap;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
 import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
-import io.github.redpanda4552.HifumiBot.config.ServerMetrics;
 import io.github.redpanda4552.HifumiBot.database.MySQL;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
@@ -49,7 +45,6 @@ import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import okhttp3.OkHttpClient;
@@ -103,8 +98,6 @@ public class HifumiBot {
     private JDA jda;
     private Config config;
     private DynCmdConfig dynCmdConfig;
-    private BuildCommitMap buildCommitMap;
-    private ServerMetrics serverMetrics;
     private EmulogParserConfig emulogParserConfig;
     private final OkHttpClient http;
     private MySQL mySQL;
@@ -152,24 +145,12 @@ public class HifumiBot {
         // Write back the config so that if any new fields were added after an
         // update, they are written to disk
         ConfigManager.write(config);
-        // TODO - check vital fields and fail if they aren't set (all the channel and serverIds)
 
         try {
             ConfigManager.createConfigIfNotExists(ConfigType.DYNCMD);
             dynCmdConfig = (DynCmdConfig) ConfigManager.read(ConfigType.DYNCMD);
             ConfigManager.write(dynCmdConfig);
 
-            ConfigManager.createConfigIfNotExists(ConfigType.BUILDMAP);
-            buildCommitMap = (BuildCommitMap) ConfigManager.read(ConfigType.BUILDMAP);
-            if (buildCommitMap != null) {
-                buildCommitMap.seedMap();
-            }
-            ConfigManager.write(buildCommitMap);
-            
-            ConfigManager.createConfigIfNotExists(ConfigType.SERVER_METRICS);
-            serverMetrics = (ServerMetrics) ConfigManager.read(ConfigType.SERVER_METRICS);
-            ConfigManager.write(serverMetrics);
-            
             ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
             emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
             ConfigManager.write(emulogParserConfig);
@@ -222,13 +203,6 @@ public class HifumiBot {
             HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
         }, 1000 * getConfig().slashCommands.timeoutSeconds);
         
-        scheduler.scheduleRepeating("pop", () -> {
-            String serverId = HifumiBot.getSelf().getConfig().server.id;
-            Guild server = HifumiBot.getSelf().getJDA().getGuildById(serverId);
-            serverMetrics.populationSnaps.put(OffsetDateTime.now().toString(), server.getMemberCount());
-            ConfigManager.write(serverMetrics);
-        }, 1000 * 60 * 60 * 6);
-
         updateStatus("New Game!");
     }
 
@@ -240,8 +214,6 @@ public class HifumiBot {
         return dynCmdConfig;
     }
 
-    public BuildCommitMap getBuildCommitMap() { return buildCommitMap; }
-    
     public EmulogParserConfig getEmulogParserConfig() {
         return emulogParserConfig;
     }
