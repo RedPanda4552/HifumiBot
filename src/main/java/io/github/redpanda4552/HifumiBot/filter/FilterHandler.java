@@ -39,6 +39,7 @@ import io.github.redpanda4552.HifumiBot.database.MessageObject;
 import io.github.redpanda4552.HifumiBot.util.DNSQueryResult;
 import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.Strings;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -188,6 +189,56 @@ public class FilterHandler {
         return false;
     }
 
+    public boolean applyUrlCheck(Message message) {
+        if (message.getTimeCreated() == null || message.getTimeEdited() == null) {
+            return false;
+        }
+
+        Duration timeToEdit = Duration.between(message.getTimeCreated(), message.getTimeEdited());
+
+        if (timeToEdit.toMinutes() > HifumiBot.getSelf().getConfig().filterOptions.blockUrlEditsAfterMinutes) {
+            ArrayList<MessageObject> allMessageRevisions = Database.getAllMessageRevisions(message.getIdLong());
+
+            // We only care about the newest content and what came before it - check that at least two items exist,
+            // and disregard the rest. The Database class will have ordered them from newest first.
+            if (allMessageRevisions.size() < 2) {
+                return false;
+            }
+
+            MessageObject newest = allMessageRevisions.get(0);
+            MessageObject older = allMessageRevisions.get(1);
+
+            ArrayList<String> newestUrls = Strings.extractUrls(newest.getBodyContent());
+            ArrayList<String> olderUrls = Strings.extractUrls(older.getBodyContent());
+
+            String newestUrlsConcat = StringUtils.join(newestUrls, "\n");
+            String olderUrlsConcat = StringUtils.join(olderUrls, "\n");
+
+            if (!newestUrlsConcat.equals(olderUrlsConcat)) {
+                message.delete().complete();
+
+                User usr = message.getAuthor();
+
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setTitle("Hyperlink Edit Event");
+                eb.setDescription("**Message Content (Truncated to 3900 chars)**\n```\n" + StringUtils.truncate(message.getContentStripped().replaceAll("\s", " "), 3900) + "\n```");
+                eb.addField("Old Hyperlinks", StringUtils.abbreviate(olderUrlsConcat, 1000), true);
+                eb.addField("New Hyperlinks", StringUtils.abbreviate(newestUrlsConcat, 1000), true);
+                eb.addField("Channel", message.getChannel().getAsMention(), true);
+                eb.addField("User (As Mention)", usr.getAsMention(), true);
+                eb.addField("Username", usr.getName(), true);
+                eb.addField("User ID", usr.getId(), true);
+                eb.setColor(Color.YELLOW);
+
+                Messaging.logInfoEmbed(eb.build());
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public boolean reviewFilterEvents(long userIdLong, long timestamp) {
         ArrayList<FilterEventObject> filterEvents = Database.getFilterEventsSinceTime(userIdLong, timestamp);
 
@@ -253,7 +304,7 @@ public class FilterHandler {
                     eb.setTitle("Timed Out in PCSX2 Server");
                     eb.setDescription(HifumiBot.getSelf().getConfig().filterOptions.timeoutMessage);
                     eb.setFooter(BOT_FOOTER);
-                    eb.setColor(Color.ORANGE);
+                    eb.setColor(Color.RED);
                     Messaging.sendPrivateMessageEmbed(member.getUser(), eb.build());
                     return true;
                 }

@@ -57,8 +57,25 @@ public class FilterRunnable implements Runnable {
                 }
             }
 
-            // Do not execute past this point if the message event was an edit instead of a send
+            // Execute items specific to message edits. Return so that we do not execute items underneath this if statement
+            // (they are not relevant to edits)
             if (this.isEdit) {
+                if (handler.applyUrlCheck(message)) {
+                    if (handler.timeoutUser(message.getGuild(), message.getAuthor().getIdLong())) {
+                        User usr = message.getAuthor();
+                        
+                        EmbedBuilder eb = new EmbedBuilder();
+                        eb.setTitle("User Automatically Timed Out");
+                        eb.setDescription("User edited hyperlinks in an old message; they may be trying to quietly slide in malicious content. The message has been deleted, and the user timed out. Please review logs and take appropriate action.");
+                        eb.addField("User (As Mention)", usr.getAsMention(), true);
+                        eb.addField("Username", usr.getName(), true);
+                        eb.addField("User ID", usr.getId(), true);
+                        eb.setColor(Color.PINK);
+
+                        Messaging.logInfoEmbed(eb.build());
+                    }
+                }
+
                 return;
             }
 

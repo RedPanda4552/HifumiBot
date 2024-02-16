@@ -169,6 +169,7 @@ public class Config implements IConfig {
     public class FilterOptions {
         public long incidentCooldownMS;
         public int maxIncidents;
+        public long blockUrlEditsAfterMinutes;
         public long timeoutDurationMinutes;
         public String filterMessage;
         public String dnsMessage;
@@ -179,6 +180,7 @@ public class Config implements IConfig {
         public FilterOptions() {
             incidentCooldownMS = 1000 * 15;
             maxIncidents = 3;
+            blockUrlEditsAfterMinutes = 20;
             timeoutDurationMinutes = 60 * 8;
             filterMessage = new String("");
             dnsMessage = new String("");

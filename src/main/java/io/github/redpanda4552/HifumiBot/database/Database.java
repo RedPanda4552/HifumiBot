@@ -486,6 +486,81 @@ public class Database {
         return ret;
     }
 
+    public static ArrayList<MessageObject> getAllMessageRevisions(long messageIdLong) {
+        ArrayList<MessageObject> ret = new ArrayList<MessageObject>();
+        Connection conn = null;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+            // First get the latest revision of the message
+            PreparedStatement getMessageEvent = conn.prepareStatement("""
+                    SELECT
+                        e.id, e.fk_user, e.fk_message, e.content, e.timestamp, e.action,
+                        m.fk_channel, m.jump_link, m.fk_reply_to_message, m.timestamp
+                    FROM message_event e
+                    INNER JOIN message m ON e.fk_message = m.message_id
+                    WHERE e.fk_message = ?
+                    AND (
+                        e.action = 'send'
+                        OR e.action = 'edit'
+                    )
+                    ORDER BY e.timestamp DESC;
+                    """);
+            getMessageEvent.setLong(1, messageIdLong);
+            ResultSet latestEvent = getMessageEvent.executeQuery();
+
+            // If we got a hit...
+            while (latestEvent.next()) {
+                // ... then look for attachments
+                PreparedStatement getAttachments = conn.prepareStatement("""
+                        SELECT discord_id, timestamp, fk_message, content_type, proxy_url, filename
+                        FROM message_attachment
+                        WHERE fk_message = ?;
+                        """);
+                getAttachments.setLong(1, messageIdLong);
+                ResultSet attachments = getAttachments.executeQuery();
+
+                ArrayList<AttachmentObject> attachmentList = new ArrayList<AttachmentObject>();
+
+                while (attachments.next()) {
+                    AttachmentObject attachment = new AttachmentObject(
+                        String.valueOf(attachments.getLong("discord_id")),
+                        DateTimeUtils.longToOffsetDateTime(attachments.getLong("timestamp")), 
+                        String.valueOf(messageIdLong),
+                        attachments.getString("filename"),
+                        attachments.getString("content_type"),
+                        attachments.getString("proxy_url")
+                    );
+
+                    attachmentList.add(attachment);
+                }
+
+                String action = latestEvent.getString("e.action");
+
+                ret.add(new MessageObject(
+                    messageIdLong, 
+                    latestEvent.getLong("e.fk_user"), 
+                    DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("m.timestamp")),
+                    (action != null && action.equals("edit") ? DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("e.timestamp")) : null), 
+                    latestEvent.getLong("m.fk_channel"),
+                    latestEvent.getString("e.content"),
+                    latestEvent.getString("m.jump_link"), 
+                    latestEvent.getString("m.fk_reply_to_message"), 
+                    attachmentList
+                ));
+            }
+
+            getMessageEvent.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getAllMessageRevisions", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
+        
+        return ret;
+    }
+
     /**
      * Insert a filter event to the database. It is assumed the message and user are already present.
      * @param filterEvent
