@@ -130,5 +130,10 @@ public class MessageEventListener extends ListenerAdapter {
         if (!event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
             EventLogging.logMessageUpdateEvent(event, beforeEditMessage);
         }
+
+        // If the user is not considered privileged, then filter messages
+        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
+            HifumiBot.getSelf().getScheduler().runOnce(new FilterRunnable(event.getMessage(), event.getMessage().getTimeEdited(), true));   
+        }
     }
 }

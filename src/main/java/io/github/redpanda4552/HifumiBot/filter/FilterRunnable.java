@@ -13,10 +13,18 @@ public class FilterRunnable implements Runnable {
     
     private final Message message;
     private final OffsetDateTime eventTime;
+    private final boolean isEdit;
 
     public FilterRunnable(Message message, OffsetDateTime eventTime) {
         this.message = message;
         this.eventTime = eventTime;
+        this.isEdit = false;
+    }
+
+    public FilterRunnable(Message message, OffsetDateTime eventTime, boolean isEdit) {
+        this.message = message;
+        this.eventTime = eventTime;
+        this.isEdit = isEdit;
     }
 
     @Override 
@@ -47,6 +55,11 @@ public class FilterRunnable implements Runnable {
                     }
                     return;
                 }
+            }
+
+            // Do not execute past this point if the message event was an edit instead of a send
+            if (this.isEdit) {
+                return;
             }
 
             // If the user has spammed the same thing
