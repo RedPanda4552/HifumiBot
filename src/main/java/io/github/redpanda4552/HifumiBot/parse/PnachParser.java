@@ -89,9 +89,11 @@ public class PnachParser extends AbstractParser {
             String line;
 
             while ((line = reader.readLine()) != null) {
-                // Test the start of the line. Is it one of the accepted tags,
-                // a comment, or blank?
-                if (line.isBlank() || line.startsWith("//")) {
+                // Drop any comments
+                line = line.replaceAll("//.*", "");
+
+                // Test the start of the line. Is it one of the accepted tags, or blank?
+                if (line.isBlank()) {
                     continue;
                 } else if ((line.startsWith("["))) {
                     if (line.endsWith("]")) {
