@@ -145,7 +145,7 @@ public class FilterHandler {
     }
 
     public boolean applyDNSFilter(Message message) {
-        Matcher m = URL_PATTERN.matcher(message.getContentDisplay().toLowerCase());
+        Matcher m = URL_PATTERN.matcher(message.getContentRaw().toLowerCase());
 
         while (m.find()) {
             String url = m.group();
