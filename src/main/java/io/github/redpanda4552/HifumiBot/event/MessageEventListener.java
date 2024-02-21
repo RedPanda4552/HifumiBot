@@ -2,6 +2,7 @@ package io.github.redpanda4552.HifumiBot.event;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -133,7 +134,8 @@ public class MessageEventListener extends ListenerAdapter {
 
         // If the user is not considered privileged, then filter messages
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
-            HifumiBot.getSelf().getScheduler().runOnce(new FilterRunnable(event.getMessage(), event.getMessage().getTimeEdited(), true));   
+            OffsetDateTime editTime = (event.getMessage().getTimeEdited() != null ? event.getMessage().getTimeEdited() : OffsetDateTime.now());
+            HifumiBot.getSelf().getScheduler().runOnce(new FilterRunnable(event.getMessage(), editTime, true));   
         }
     }
 }
