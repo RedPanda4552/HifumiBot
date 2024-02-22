@@ -34,8 +34,8 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 
 public class Internet {
     public static void init() {
-        if (HifumiBot.getSelf().getVersion() != null && HifumiBot.getSelf().getConfig().useLocalDNSFiltering) {
-            System.setProperty("dns.server", "127.0.0.1");
+        if (HifumiBot.getSelf().getVersion() != null && HifumiBot.getSelf().getConfig().filterOptions.useLocalDNSFiltering) {
+            System.setProperty("dns.server", HifumiBot.getSelf().getConfig().filterOptions.localDNSFilterAddress);
         }
     }
 

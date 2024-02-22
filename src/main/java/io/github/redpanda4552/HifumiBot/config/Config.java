@@ -40,7 +40,6 @@ public class Config implements IConfig {
         return true;
     }
     
-    public boolean useLocalDNSFiltering;
     public Server server;
     public Channels channels;
     public SlashCommands slashCommands;
@@ -54,7 +53,6 @@ public class Config implements IConfig {
     public MySQLOptions mysql;
 
     public Config() {
-        useLocalDNSFiltering = false;
         server = new Server();
         channels = new Channels();
         slashCommands = new SlashCommands();
@@ -171,6 +169,8 @@ public class Config implements IConfig {
         public int maxIncidents;
         public long blockUrlEditsAfterMinutes;
         public long timeoutDurationMinutes;
+        public boolean useLocalDNSFiltering;
+        public String localDNSFilterAddress;
         public String filterMessage;
         public String dnsMessage;
         public String spamMessage;
@@ -182,6 +182,8 @@ public class Config implements IConfig {
             maxIncidents = 3;
             blockUrlEditsAfterMinutes = 20;
             timeoutDurationMinutes = 60 * 8;
+            useLocalDNSFiltering = false;
+            localDNSFilterAddress = new String("");
             filterMessage = new String("");
             dnsMessage = new String("");
             spamMessage = new String("");
