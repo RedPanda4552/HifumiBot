@@ -58,7 +58,7 @@ public class Messaging {
             PrivateChannel channel = user.openPrivateChannel().complete();
             ret = channel.sendMessageEmbeds(embed).complete();
         } catch (Exception e) {
-            Messaging.logException("Messaging", "sendPrivateMessage", e);
+            // Squelch
         }
          
         return ret;
@@ -85,7 +85,7 @@ public class Messaging {
             PrivateChannel channel = user.openPrivateChannel().complete();
             ret = channel.sendMessage(msg).complete();
         } catch (Exception e) {
-            Messaging.logException("Messaging", "sendPrivateMessage", e);
+            // Squelch
         }
          
         return ret;
