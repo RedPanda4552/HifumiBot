@@ -43,9 +43,7 @@ public class Config implements IConfig {
     public Server server;
     public Channels channels;
     public SlashCommands slashCommands;
-    public Dev dev;
     public Roles roles;
-    public Integrations integrations;
     public Permissions permissions;
     public ConcurrentHashMap<String, FilterObject> filters;
     public long ninjaInterval;
@@ -56,9 +54,7 @@ public class Config implements IConfig {
         server = new Server();
         channels = new Channels();
         slashCommands = new SlashCommands();
-        dev = new Dev();
         roles = new Roles();
-        integrations = new Integrations();
         permissions = new Permissions();
         filters = new ConcurrentHashMap<String, FilterObject>();
         filterOptions = new FilterOptions();
@@ -115,20 +111,6 @@ public class Config implements IConfig {
             timeoutSeconds = 60 * 15;
         }
     }
-    
-    public class Dev {
-        public boolean sendEmbeds;
-        public String windows;
-        public String ubuntu;
-        public String linux;
-        
-        public Dev() {
-            sendEmbeds = false;
-            windows = new String("");
-            ubuntu = new String("");
-            linux = new String("");
-        }
-    }
 
     public class Roles {
         public String autoAssignMemberRoleId;
@@ -139,14 +121,6 @@ public class Config implements IConfig {
             autoAssignMemberRoleId = new String("");
             autoAssignMemberTimeSeconds = 60 * 15;
             warezRoleId = new String("");
-        }
-    }
-
-    public class Integrations {
-        public String pastebinApiKey;
-
-        public Integrations() {
-            pastebinApiKey = new String("");
         }
     }
 
