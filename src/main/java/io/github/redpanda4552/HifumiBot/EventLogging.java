@@ -181,7 +181,7 @@ public class EventLogging {
                 eb.addField("Old Attachments", sb.toString().trim(), false);
             }
         } else {
-            eb.setDescription("Details could not be populated - deleted message was not found in database.");
+            return;
         }
 
         MessageCreateBuilder mb = new MessageCreateBuilder();
