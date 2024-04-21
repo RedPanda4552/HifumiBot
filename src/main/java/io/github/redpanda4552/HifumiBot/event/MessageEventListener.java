@@ -131,10 +131,10 @@ public class MessageEventListener extends ListenerAdapter {
         
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.ADMIN, event.getMember())) {
             Database.insertMessageUpdateEvent(event);
-        }
-
-        if (!event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
-            EventLogging.logMessageUpdateEvent(event, beforeEditMessage);
+            
+            if (!event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+                EventLogging.logMessageUpdateEvent(event, beforeEditMessage);
+            }
         }
 
         // If the user is not considered privileged, then filter messages
