@@ -41,8 +41,10 @@ public class MessageEventListener extends ListenerAdapter {
             return;
         }
 
-        // Store all messages no matter what
-        Database.insertMessage(event.getMessage());
+        // Store all messages, exclude highly privileged users
+        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.ADMIN, event.getMember())) {
+            Database.insertMessage(event.getMessage());
+        }
 
         // If the sender was the bot, do not process any further.
         if (event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
@@ -126,7 +128,10 @@ public class MessageEventListener extends ListenerAdapter {
     @Override
     public void onMessageUpdate(MessageUpdateEvent event) {
         MessageObject beforeEditMessage = Database.getLatestMessage(event.getMessageId());
-        Database.insertMessageUpdateEvent(event);
+        
+        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.ADMIN, event.getMember())) {
+            Database.insertMessageUpdateEvent(event);
+        }
 
         if (!event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
             EventLogging.logMessageUpdateEvent(event, beforeEditMessage);
