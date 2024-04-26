@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.util;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -83,5 +84,25 @@ public class EmbedUtil {
 
         sb.append(".");
         return eb.setFooter(sb.toString(), avatarUrl);
+    }
+
+    public static EmbedBuilder getDynamicCommandEmbedBuilder(DynamicChoice dyncmd) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle(dyncmd.getName());
+        eb.setDescription(dyncmd.getDescription());
+
+        if (dyncmd.getTitle() != null && !dyncmd.getTitle().isBlank()) {
+            eb.addField("Title", dyncmd.getTitle(), true);
+        }
+
+        if (dyncmd.getBody() != null && !dyncmd.getBody().isBlank()) {
+            eb.addField("Body", "```\n" + dyncmd.getBody() + "\n```", false);
+        }
+
+        if (dyncmd.getImageURL() != null && !dyncmd.getImageURL().isBlank()) {
+            eb.addField("Image URL", "<" + dyncmd.getImageURL() + ">", false);
+        }
+        
+        return eb;
     }
 }

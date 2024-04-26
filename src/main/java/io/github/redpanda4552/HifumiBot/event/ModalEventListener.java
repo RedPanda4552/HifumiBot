@@ -1,5 +1,6 @@
 package io.github.redpanda4552.HifumiBot.event;
 
+import io.github.redpanda4552.HifumiBot.modal.DyncmdHandler;
 import io.github.redpanda4552.HifumiBot.modal.PromptHandler;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -14,6 +15,10 @@ public class ModalEventListener extends ListenerAdapter {
         switch (modalId) {
             case "prompt": {
                 PromptHandler.handle(event);
+                break;
+            }
+            case "dyncmd": {
+                DyncmdHandler.handle(event);
                 break;
             }
             default: {
