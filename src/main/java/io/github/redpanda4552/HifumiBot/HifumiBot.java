@@ -35,6 +35,7 @@ import io.github.redpanda4552.HifumiBot.database.MySQL;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
 import io.github.redpanda4552.HifumiBot.event.MessageEventListener;
+import io.github.redpanda4552.HifumiBot.event.ModalEventListener;
 import io.github.redpanda4552.HifumiBot.event.RoleEventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.filter.FilterHandler;
@@ -115,6 +116,7 @@ public class HifumiBot {
     private MemberEventListener memberEventListener;
     private SlashCommandListener slashCommandListener;
     private MessageContextCommandListener messageCommandListener;
+    private ModalEventListener modalEventListener;
     
     private GameIndex gameIndex;
     private Translator deepL;
@@ -173,6 +175,7 @@ public class HifumiBot {
         jda.addEventListener(memberEventListener = new MemberEventListener());
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
+        jda.addEventListener(modalEventListener = new ModalEventListener());
         gameIndex = new GameIndex();
 
         scheduler.runOnce(() -> {
