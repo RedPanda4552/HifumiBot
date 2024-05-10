@@ -49,6 +49,7 @@ public class Config implements IConfig {
     public long ninjaInterval;
     public FilterOptions filterOptions;
     public MySQLOptions mysql;
+    public EntryBarrierOptions entryBarrierOptions;
 
     public Config() {
         server = new Server();
@@ -60,6 +61,7 @@ public class Config implements IConfig {
         filterOptions = new FilterOptions();
         ninjaInterval = 500;
         mysql = new MySQLOptions();
+        entryBarrierOptions = new EntryBarrierOptions();
     }
     
     public class Server {
@@ -113,11 +115,13 @@ public class Config implements IConfig {
     }
 
     public class Roles {
+        public boolean autoAssignMemberEnabled;
         public String autoAssignMemberRoleId;
         public long autoAssignMemberTimeSeconds;
         public String warezRoleId;
 
         public Roles() {
+            autoAssignMemberEnabled = false;
             autoAssignMemberRoleId = new String("");
             autoAssignMemberTimeSeconds = 60 * 15;
             warezRoleId = new String("");
@@ -175,6 +179,20 @@ public class Config implements IConfig {
             url = new String("");
             username = new String("");
             password = new String("");
+        }
+    }
+
+    public class EntryBarrierOptions {
+        public boolean enabled;
+        public String userInputChannelId;
+        public String expectedUserInput;
+        public String entryRoleId;
+
+        public EntryBarrierOptions() {
+            enabled = false;
+            userInputChannelId = new String("");
+            expectedUserInput = new String("");
+            entryRoleId = new String("");
         }
     }
 }

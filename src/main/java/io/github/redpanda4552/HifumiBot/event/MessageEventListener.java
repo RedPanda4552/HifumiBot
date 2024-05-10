@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.async.EntryBarrierRunnable;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.database.MessageObject;
 import io.github.redpanda4552.HifumiBot.filter.FilterRunnable;
@@ -50,6 +51,11 @@ public class MessageEventListener extends ListenerAdapter {
         if (event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
             return;
         }
+
+        // Do an entry barrier check
+        if (HifumiBot.getSelf().getConfig().entryBarrierOptions.enabled && event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().entryBarrierOptions.userInputChannelId)) {
+            HifumiBot.getSelf().getScheduler().runOnce(new EntryBarrierRunnable(event));
+        }
         
         // If the user has at least guest permissions (is not BLOCKED due to warez or other reasons),
         // then check for emulog/pnach/crash dump
@@ -85,7 +91,7 @@ public class MessageEventListener extends ListenerAdapter {
         }
         
         // If the user does not have member role yet and qualifies, give it to them.
-        if (event.getMember() != null && event.getMember().getRoles().isEmpty()) {
+        if (HifumiBot.getSelf().getConfig().roles.autoAssignMemberEnabled && event.getMember() != null && event.getMember().getRoles().isEmpty()) {
             Instant joinTime = event.getMember().getGuild().retrieveMemberById(event.getAuthor().getId()).complete().getTimeJoined().toInstant();
             
             if (Duration.between(joinTime, now).toSeconds() >= HifumiBot.getSelf().getConfig().roles.autoAssignMemberTimeSeconds) {
