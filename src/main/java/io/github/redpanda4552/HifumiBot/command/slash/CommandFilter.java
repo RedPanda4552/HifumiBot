@@ -72,7 +72,7 @@ public class CommandFilter extends AbstractSlashCommand {
             filter.name = filterName;
             filter.informational = informational;
             HifumiBot.getSelf().getFilterConfig().filters.put(filter.name, filter);
-            ConfigManager.write(HifumiBot.getSelf().getConfig());
+            ConfigManager.write(HifumiBot.getSelf().getFilterConfig());
             event.getHook().sendMessage(":white_check_mark: Created empty filter '" + filter.name + "'.").queue();
             break;
         case "add":
@@ -95,7 +95,7 @@ public class CommandFilter extends AbstractSlashCommand {
 
             filter.regexes.put(regexName, regex);
             HifumiBot.getSelf().getFilterConfig().filters.put(filterName, filter);
-            ConfigManager.write(HifumiBot.getSelf().getConfig());
+            ConfigManager.write(HifumiBot.getSelf().getFilterConfig());
             HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Created regex '" + regexName + "' on filter '" + filter.name + "'.").queue();
             return;
@@ -117,7 +117,7 @@ public class CommandFilter extends AbstractSlashCommand {
             }
 
             HifumiBot.getSelf().getFilterConfig().filters.put(filter.name, filter);
-            ConfigManager.write(HifumiBot.getSelf().getConfig());
+            ConfigManager.write(HifumiBot.getSelf().getFilterConfig());
             HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Removed regex '" + regexName + "' from filter '" + filter.name + "'.").queue();
             return;
@@ -139,7 +139,7 @@ public class CommandFilter extends AbstractSlashCommand {
             
             filter.replyMessage = reply;
             HifumiBot.getSelf().getFilterConfig().filters.put(filter.name, filter);
-            ConfigManager.write(HifumiBot.getSelf().getConfig());
+            ConfigManager.write(HifumiBot.getSelf().getFilterConfig());
             event.getHook().sendMessage(":white_check_mark: Set reply message on filter '" + filter.name + "'.").queue();
             return;
         case "get":
@@ -171,7 +171,7 @@ public class CommandFilter extends AbstractSlashCommand {
             }
             
             HifumiBot.getSelf().getFilterConfig().filters.remove(filter.name);
-            ConfigManager.write(HifumiBot.getSelf().getConfig());
+            ConfigManager.write(HifumiBot.getSelf().getFilterConfig());
             HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Deleted filter '" + filter.name + "'.").queue();
             return;
