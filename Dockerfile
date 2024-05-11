@@ -1,4 +1,4 @@
-FROM maven:3-amazoncorretto-17 as build_stage
+FROM maven:3-amazoncorretto-21 as build_stage
 
 COPY ./pom.xml ./pom.xml
 RUN mvn -B dependency:go-offline
@@ -7,7 +7,7 @@ COPY ./ ./
 RUN mvn -B package
 RUN mv ./target/HifumiBot*.jar ./hifumi.jar
 
-FROM amazoncorretto:17 as final_stage
+FROM amazoncorretto:21 as final_stage
 
 COPY --from=build_stage ./scripts/image/run_jar.sh /opt/run_jar.sh
 COPY --from=build_stage ./hifumi.jar /opt/hifumi.jar

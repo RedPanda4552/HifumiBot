@@ -25,7 +25,6 @@ package io.github.redpanda4552.HifumiBot;
 
 import com.deepl.api.Translator;
 
-import io.github.redpanda4552.HifumiBot.async.EntryBarrierRunnable;
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
 import io.github.redpanda4552.HifumiBot.config.Config;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;

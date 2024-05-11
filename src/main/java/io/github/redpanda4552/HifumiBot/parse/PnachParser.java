@@ -26,7 +26,7 @@ package io.github.redpanda4552.HifumiBot.parse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,8 +71,8 @@ public class PnachParser extends AbstractParser {
         URL url = null;
 
         try {
-            url = new URL(attachment.getUrl());
-        } catch (MalformedURLException e) {
+            url = new URI(attachment.getUrl()).toURL();
+        } catch (Exception e) {
             Messaging.sendMessage(message.getChannel(), ":x: The URL to your attachment was bad... Try uploading again or changing the file name?");
             return;
         }

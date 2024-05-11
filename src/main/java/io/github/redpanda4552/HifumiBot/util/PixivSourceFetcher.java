@@ -23,8 +23,8 @@
  */
 package io.github.redpanda4552.HifumiBot.util;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -63,7 +63,7 @@ public class PixivSourceFetcher {
             }
             
             try {
-                URL url = new URL(PIXIV_BASE_URL + m.group(1));
+                URL url = new URI(PIXIV_BASE_URL + m.group(1)).toURL();
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();
@@ -72,7 +72,7 @@ public class PixivSourceFetcher {
                     imageUrls.add(PIXIV_BASE_URL + m.group(1));
                     break;
                 }
-            } catch (IOException e) { }
+            } catch (Exception e) { }
         }
         
         for (int i = 0; i < imageUrls.size(); i++) {

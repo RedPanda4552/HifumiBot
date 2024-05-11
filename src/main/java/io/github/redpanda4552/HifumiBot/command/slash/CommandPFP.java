@@ -27,6 +27,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
@@ -44,12 +45,17 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandPFP extends AbstractSlashCommand {
     
-    private void setAvatar(String imageUrl) throws IOException, MalformedURLException {
-        URL url = new URL(imageUrl);
-        BufferedImage bImage = ImageIO.read(url);
-        ByteArrayOutputStream oStream = new ByteArrayOutputStream();
-        ImageIO.write(bImage, "png", oStream);
-        HifumiBot.getSelf().getJDA().getSelfUser().getManager().setAvatar(Icon.from(oStream.toByteArray())).complete();
+    private boolean setAvatar(String imageUrl) throws IOException, MalformedURLException {
+        try {
+            URL url = new URI(imageUrl).toURL();
+            BufferedImage bImage = ImageIO.read(url);
+            ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+            ImageIO.write(bImage, "png", oStream);
+            HifumiBot.getSelf().getJDA().getSelfUser().getManager().setAvatar(Icon.from(oStream.toByteArray())).complete();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
