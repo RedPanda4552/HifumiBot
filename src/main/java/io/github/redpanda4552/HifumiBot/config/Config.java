@@ -24,9 +24,6 @@
 package io.github.redpanda4552.HifumiBot.config;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
-
-import io.github.redpanda4552.HifumiBot.filter.FilterObject;
 
 public class Config implements IConfig {
     
@@ -45,7 +42,6 @@ public class Config implements IConfig {
     public SlashCommands slashCommands;
     public Roles roles;
     public Permissions permissions;
-    public ConcurrentHashMap<String, FilterObject> filters;
     public long ninjaInterval;
     public FilterOptions filterOptions;
     public MySQLOptions mysql;
@@ -57,7 +53,6 @@ public class Config implements IConfig {
         slashCommands = new SlashCommands();
         roles = new Roles();
         permissions = new Permissions();
-        filters = new ConcurrentHashMap<String, FilterObject>();
         filterOptions = new FilterOptions();
         ninjaInterval = 500;
         mysql = new MySQLOptions();

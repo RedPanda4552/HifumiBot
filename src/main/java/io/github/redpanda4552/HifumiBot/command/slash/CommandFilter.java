@@ -57,7 +57,7 @@ public class CommandFilter extends AbstractSlashCommand {
         case "new":
             filterName = event.getOption("filter-name").getAsString();
             
-            if (HifumiBot.getSelf().getConfig().filters.containsKey(filterName)) {
+            if (HifumiBot.getSelf().getFilterConfig().filters.containsKey(filterName)) {
                 event.getHook().sendMessage(":x: A filter already exists with this name.").queue();
                 return;
             }
@@ -71,7 +71,7 @@ public class CommandFilter extends AbstractSlashCommand {
             filter = new FilterObject();
             filter.name = filterName;
             filter.informational = informational;
-            HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
+            HifumiBot.getSelf().getFilterConfig().filters.put(filter.name, filter);
             ConfigManager.write(HifumiBot.getSelf().getConfig());
             event.getHook().sendMessage(":white_check_mark: Created empty filter '" + filter.name + "'.").queue();
             break;
@@ -79,7 +79,7 @@ public class CommandFilter extends AbstractSlashCommand {
             filterName = event.getOption("filter-name").getAsString();
             regexName = event.getOption("regex-name").getAsString();
             regex = event.getOption("regex").getAsString();
-            filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
+            filter = HifumiBot.getSelf().getFilterConfig().filters.get(filterName);
 
             if (filter == null) {
                 event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
@@ -94,7 +94,7 @@ public class CommandFilter extends AbstractSlashCommand {
             }
 
             filter.regexes.put(regexName, regex);
-            HifumiBot.getSelf().getConfig().filters.put(filterName, filter);
+            HifumiBot.getSelf().getFilterConfig().filters.put(filterName, filter);
             ConfigManager.write(HifumiBot.getSelf().getConfig());
             HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Created regex '" + regexName + "' on filter '" + filter.name + "'.").queue();
@@ -102,7 +102,7 @@ public class CommandFilter extends AbstractSlashCommand {
         case "remove":
             filterName = event.getOption("filter-name").getAsString();
             regexName = event.getOption("regex-name").getAsString();
-            filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
+            filter = HifumiBot.getSelf().getFilterConfig().filters.get(filterName);
             
             if (filter == null) {
                 event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
@@ -116,7 +116,7 @@ public class CommandFilter extends AbstractSlashCommand {
                 break;
             }
 
-            HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
+            HifumiBot.getSelf().getFilterConfig().filters.put(filter.name, filter);
             ConfigManager.write(HifumiBot.getSelf().getConfig());
             HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Removed regex '" + regexName + "' from filter '" + filter.name + "'.").queue();
@@ -130,7 +130,7 @@ public class CommandFilter extends AbstractSlashCommand {
                 reply = opt.getAsString();
             }
             
-            filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
+            filter = HifumiBot.getSelf().getFilterConfig().filters.get(filterName);
             
             if (filter == null) {
                 event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
@@ -138,13 +138,13 @@ public class CommandFilter extends AbstractSlashCommand {
             }
             
             filter.replyMessage = reply;
-            HifumiBot.getSelf().getConfig().filters.put(filter.name, filter);
+            HifumiBot.getSelf().getFilterConfig().filters.put(filter.name, filter);
             ConfigManager.write(HifumiBot.getSelf().getConfig());
             event.getHook().sendMessage(":white_check_mark: Set reply message on filter '" + filter.name + "'.").queue();
             return;
         case "get":
             filterName = event.getOption("filter-name").getAsString();
-            filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
+            filter = HifumiBot.getSelf().getFilterConfig().filters.get(filterName);
             
             if (filter == null) {
                 event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
@@ -163,14 +163,14 @@ public class CommandFilter extends AbstractSlashCommand {
             return;
         case "delete":
             filterName = event.getOption("filter-name").getAsString();
-            filter = HifumiBot.getSelf().getConfig().filters.get(filterName);
+            filter = HifumiBot.getSelf().getFilterConfig().filters.get(filterName);
             
             if (filter == null) {
                 event.getHook().sendMessage(String.format(NO_SUCH_FILTER, filterName)).queue();
                 return;
             }
             
-            HifumiBot.getSelf().getConfig().filters.remove(filter.name);
+            HifumiBot.getSelf().getFilterConfig().filters.remove(filter.name);
             ConfigManager.write(HifumiBot.getSelf().getConfig());
             HifumiBot.getSelf().getFilterHandler().compile();
             event.getHook().sendMessage(":white_check_mark: Deleted filter '" + filter.name + "'.").queue();
@@ -178,7 +178,7 @@ public class CommandFilter extends AbstractSlashCommand {
         case "list":
             eb.setTitle("Filter List");
 
-            for (FilterObject f : HifumiBot.getSelf().getConfig().filters.values()) {
+            for (FilterObject f : HifumiBot.getSelf().getFilterConfig().filters.values()) {
                 eb.addField(f.name, f.regexes.size() + " regular expressions // Reply Message = " + !f.replyMessage.isBlank(), false);
             }
 

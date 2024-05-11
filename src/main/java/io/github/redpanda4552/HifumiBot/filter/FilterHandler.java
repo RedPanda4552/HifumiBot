@@ -60,7 +60,7 @@ public class FilterHandler {
     public void compile() {
         patternMap.clear();
 
-        for (FilterObject filter : HifumiBot.getSelf().getConfig().filters.values()) {
+        for (FilterObject filter : HifumiBot.getSelf().getFilterConfig().filters.values()) {
             for (String regex : filter.regexes.values()) {
                 patternMap.put(regex, Pattern.compile(regex));
             }
@@ -77,7 +77,7 @@ public class FilterHandler {
      *         out, false otherwise.
      */
     public boolean applyFilters(Message message) {
-        for (FilterObject filter : HifumiBot.getSelf().getConfig().filters.values()) {
+        for (FilterObject filter : HifumiBot.getSelf().getFilterConfig().filters.values()) {
             for (String regexName : filter.regexes.keySet()) {
                 String regexValue = filter.regexes.get(regexName);
                 String filteredMessage = message.getContentDisplay().toLowerCase().replaceAll("[\n\r\t]", " ");
