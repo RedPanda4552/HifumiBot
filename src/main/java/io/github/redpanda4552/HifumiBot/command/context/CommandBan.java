@@ -3,8 +3,8 @@ package io.github.redpanda4552.HifumiBot.command.context;
 import java.util.concurrent.TimeUnit;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.async.MessageBulkDeleteRunnable;
 import io.github.redpanda4552.HifumiBot.command.AbstractUserContextCommand;
-import io.github.redpanda4552.HifumiBot.util.MessageBulkDeleteRunnable;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;

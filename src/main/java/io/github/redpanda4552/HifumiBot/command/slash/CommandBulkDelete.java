@@ -3,8 +3,8 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 import java.awt.Color;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.async.MessageBulkDeleteTargetedRunnable;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
-import io.github.redpanda4552.HifumiBot.util.MessageBulkDeleteTargetedRunnable;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;

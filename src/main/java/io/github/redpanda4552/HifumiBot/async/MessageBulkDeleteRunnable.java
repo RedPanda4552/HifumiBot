@@ -1,4 +1,4 @@
-package io.github.redpanda4552.HifumiBot.util;
+package io.github.redpanda4552.HifumiBot.async;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
