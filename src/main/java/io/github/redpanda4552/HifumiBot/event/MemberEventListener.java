@@ -2,7 +2,6 @@ package io.github.redpanda4552.HifumiBot.event;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
@@ -11,7 +10,10 @@ import java.util.ArrayList;
 
 import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.database.Database;
+import io.github.redpanda4552.HifumiBot.database.MemberEventObject;
 import io.github.redpanda4552.HifumiBot.database.MySQL;
+import io.github.redpanda4552.HifumiBot.database.WarezEventObject;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Role;
@@ -25,99 +27,42 @@ public class MemberEventListener extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         // Store user and join records, then check for the join-leave-join pattern
-        Connection conn = null;
+        Database.insertMemberJoinEvent(event);
+        ArrayList<MemberEventObject> events = Database.getRecentMemberEvents(event.getMember().getIdLong());
 
-        try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-            
-            PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
-            insertUser.setLong(1, event.getMember().getIdLong());
-            insertUser.setLong(2, event.getMember().getTimeCreated().toEpochSecond());
-            insertUser.setString(3, event.getUser().getName());
-            insertUser.executeUpdate();
-            insertUser.close();
+        if (events.size() >= 3) {
+            MemberEventObject latestEvent = events.get(0);
+            MemberEventObject secondEvent = events.get(1);
+            MemberEventObject thirdEvent = events.get(2);
 
-            PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO member_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
-            insertEvent.setLong(1, event.getGuild().retrieveMemberById(event.getMember().getId()).complete().getTimeJoined().toEpochSecond());
-            insertEvent.setLong(2, event.getMember().getIdLong());
-            insertEvent.setString(3, "join");
-            insertEvent.executeUpdate();
-            insertEvent.close();
+            if (latestEvent.getAction().equals(MemberEventObject.Action.JOIN) && secondEvent.getAction().equals(MemberEventObject.Action.LEAVE) && thirdEvent.getAction().equals(MemberEventObject.Action.JOIN)) {
+                Instant newestJoinTime = Instant.ofEpochSecond(latestEvent.getTimestamp());
+                Instant olderJoinTime = Instant.ofEpochSecond(latestEvent.getTimestamp());
+                long minutesBetween = Duration.between(olderJoinTime, newestJoinTime).toMinutes();
 
-            PreparedStatement eventCount = conn.prepareStatement("SELECT COUNT(timestamp) events FROM member_event WHERE fk_user = ? AND action = 'join';");
-            eventCount.setLong(1, event.getMember().getIdLong());
-            ResultSet eventCountRes = eventCount.executeQuery();
-            
-            if (eventCountRes.next()) {
-                if (eventCountRes.getInt("events") == 2) {
-                    PreparedStatement joinEvents = conn.prepareStatement("SELECT timestamp FROM member_event WHERE fk_user = ? AND action = 'join' ORDER BY timestamp ASC LIMIT 2;");
-                    joinEvents.setLong(1, event.getMember().getIdLong());
-                    ResultSet joinEventsRes = joinEvents.executeQuery();
-
-                    ArrayList<Instant> eventTimes = new ArrayList<Instant>();
-
-                    if (joinEventsRes.next()) {
-                        do {
-                            long epochSeconds = joinEventsRes.getLong("timestamp");
-                            Instant eventTime = Instant.ofEpochSecond(epochSeconds);
-                            eventTimes.add(eventTime);
-                        } while (joinEventsRes.next());
-                    }
-
-                    if (eventTimes.size() == 2) {
-                        long minutesBetween = Duration.between(eventTimes.get(0), eventTimes.get(1)).toMinutes();
-                        
-                        if (minutesBetween < 5) {
-                            EmbedBuilder eb = new EmbedBuilder();
-                            eb.setTitle("Fast Join-Leave-Join Detected");
-                            eb.setDescription("A join-leave-join pattern was detected within less than five minutes. This is often a sign that someone is trying to remove the 'new here' badge given to new server members. Check the <#" + HifumiBot.getSelf().getConfig().channels.logging.memberJoin + "> channel for details.");
-                            eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
-                            eb.addField("Username (Plain Text)", event.getUser().getName(), true);
-                            eb.addField("User ID", event.getUser().getId(), false);
-                            Messaging.logInfoEmbed(eb.build());
-                        }
-                    }
-
-                    joinEventsRes.close();
-                    joinEvents.close();
+                if (minutesBetween < 5) {
+                    EmbedBuilder eb = new EmbedBuilder();
+                    eb.setTitle("Fast Join-Leave-Join Detected");
+                    eb.setDescription("A join-leave-join pattern was detected within less than five minutes. This is often a sign that someone is trying to remove the 'new here' badge given to new server members. Check the <#" + HifumiBot.getSelf().getConfig().channels.logging.memberJoin + "> channel for details.");
+                    eb.addField("Username (As Mention)", event.getUser().getAsMention(), true);
+                    eb.addField("Username (Plain Text)", event.getUser().getName(), true);
+                    eb.addField("User ID", event.getUser().getId(), false);
+                    Messaging.logInfoEmbed(eb.build());
                 }
             }
-
-            eventCountRes.close();
-            eventCount.close();
-        } catch (SQLException e) {
-             Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
         
         // Reassign warez
-        boolean previousWarez = false;
+        WarezEventObject warezEvent = Database.getLatestWarezAction(event.getMember().getIdLong());
 
-        try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
-            PreparedStatement latestWarezEvent = conn.prepareStatement("SELECT action FROM warez_event WHERE fk_user = ? ORDER BY timestamp DESC LIMIT 1;");
-            latestWarezEvent.setLong(1, event.getUser().getIdLong());
-            ResultSet latestWarezEventRes = latestWarezEvent.executeQuery();
-
-            if (latestWarezEventRes.next()) {
-                String action = latestWarezEventRes.getString("action");
-
-                if (action.equals("add")) {
-                    Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
-                    event.getGuild().addRoleToMember(event.getMember(), role).queue();
-                }
+        if (warezEvent != null) {
+            if (warezEvent.getAction().equals(WarezEventObject.Action.ADD)) {
+                Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
+                event.getGuild().addRoleToMember(event.getMember(), role).queue();
             }
-
-            latestWarezEvent.close();
-        } catch (SQLException e) {
-            Messaging.logException("MemberEventListener", "onGuildMemberJoin", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
         
-        EventLogging.logGuildMemberJoinEvent(event, previousWarez);
+        EventLogging.logGuildMemberJoinEvent(event, warezEvent);
     }
 
     @Override 

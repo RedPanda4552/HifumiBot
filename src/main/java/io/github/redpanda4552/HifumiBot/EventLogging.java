@@ -11,6 +11,7 @@ import io.github.redpanda4552.HifumiBot.database.AttachmentObject;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.database.MessageObject;
 import io.github.redpanda4552.HifumiBot.database.WarezEventObject;
+import io.github.redpanda4552.HifumiBot.database.WarezEventObject.Action;
 import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -24,7 +25,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class EventLogging {
     
-    public static void logGuildMemberJoinEvent(GuildMemberJoinEvent event, boolean previousWarez) {
+    public static void logGuildMemberJoinEvent(GuildMemberJoinEvent event, WarezEventObject lastWarezEvent) {
         String channelId = HifumiBot.getSelf().getConfig().channels.logging.memberJoin;
 
         if (channelId == null || channelId.isBlank()) {
@@ -44,9 +45,7 @@ public class EventLogging {
             eb.setColor(Color.GREEN);
         }
 
-        WarezEventObject lastWarezEvent = Database.getLatestWarezAction(event.getUser().getIdLong());
-
-        if (lastWarezEvent != null) {
+        if (lastWarezEvent != null && lastWarezEvent.getAction().equals(Action.ADD)) {
             OffsetDateTime warezDate = DateTimeUtils.longToOffsetDateTime(lastWarezEvent.getTimestamp());
             String dateStr = warezDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.appendDescription(":pirate_flag: This user was previously warez'd (" + dateStr + ")\n");

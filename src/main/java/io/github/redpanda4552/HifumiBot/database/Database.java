@@ -15,6 +15,7 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
@@ -811,6 +812,74 @@ public class Database {
             MySQL.closeConnection(conn);
         }
         
+        return ret;
+    }
+
+    public static void insertMemberJoinEvent(GuildMemberJoinEvent event) {
+        Connection conn = null;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+            
+            PreparedStatement insertUser = conn.prepareStatement("""
+                INSERT INTO user (discord_id, created_datetime, username)
+                VALUES (?, ?, ?)
+                ON DUPLICATE KEY UPDATE discord_id=discord_id;
+            """);
+            insertUser.setLong(1, event.getMember().getIdLong());
+            insertUser.setLong(2, event.getMember().getTimeCreated().toEpochSecond());
+            insertUser.setString(3, event.getUser().getName());
+            insertUser.executeUpdate();
+            insertUser.close();
+
+            PreparedStatement insertEvent = conn.prepareStatement("""
+                INSERT INTO member_event (timestamp, fk_user, action)
+                VALUES (?, ?, ?);
+            """);
+            insertEvent.setLong(1, event.getGuild().retrieveMemberById(event.getMember().getId()).complete().getTimeJoined().toEpochSecond());
+            insertEvent.setLong(2, event.getMember().getIdLong());
+            insertEvent.setString(3, "join");
+            insertEvent.executeUpdate();
+            insertEvent.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "insertMemberJoinEvent", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
+    }
+
+    public static ArrayList<MemberEventObject> getRecentMemberEvents(long userId) {
+        ArrayList<MemberEventObject> ret = new ArrayList<MemberEventObject>();
+        Connection conn = null;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+            PreparedStatement events = conn.prepareStatement("""
+                SELECT timestamp, fk_user, action
+                FROM member_event
+                WHERE fk_user = ?
+                ORDER BY timestamp DESC
+                LIMIT 10;
+            """);
+            events.setLong(1, userId);
+            ResultSet eventsRes = events.executeQuery();
+
+            while (eventsRes.next()) {
+                MemberEventObject event = new MemberEventObject(
+                    eventsRes.getLong("timestamp"), 
+                    eventsRes.getLong("fk_user"), 
+                    MemberEventObject.Action.valueOf(eventsRes.getString("action").toUpperCase())
+                );
+                ret.add(event);
+            }
+
+            events.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getRecentMemberEvents", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
+
         return ret;
     }
 }
