@@ -25,13 +25,7 @@ public class WarezEventObject {
     }
 
     public enum Action {
-        ADD("add"),
-        REMOVE("remove");
-
-        public final String stringValue;
-
-        private Action(String action) {
-            this.stringValue = action;
-        }
+        ADD,
+        REMOVE;
     }
 }

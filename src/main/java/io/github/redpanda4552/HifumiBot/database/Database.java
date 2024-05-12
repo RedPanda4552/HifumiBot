@@ -765,7 +765,7 @@ public class Database {
                 """);
             insertWarez.setLong(1, warezEvent.getTimestamp());
             insertWarez.setLong(2, warezEvent.getUserId());
-            insertWarez.setString(3, warezEvent.getAction().stringValue);
+            insertWarez.setString(3, warezEvent.getAction().toString().toLowerCase());
             insertWarez.executeUpdate();
             insertWarez.close();
 
@@ -800,7 +800,7 @@ public class Database {
                 ret = new WarezEventObject(
                     latestEvent.getLong("timestamp"), 
                     latestEvent.getLong("fk_user"), 
-                    WarezEventObject.Action.valueOf(latestEvent.getString("action"))
+                    WarezEventObject.Action.valueOf(latestEvent.getString("action").toUpperCase())
                 );
             }
 
