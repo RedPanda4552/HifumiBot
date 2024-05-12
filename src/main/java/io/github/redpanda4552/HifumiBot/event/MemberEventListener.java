@@ -1,8 +1,5 @@
 package io.github.redpanda4552.HifumiBot.event;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -12,7 +9,6 @@ import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.database.MemberEventObject;
-import io.github.redpanda4552.HifumiBot.database.MySQL;
 import io.github.redpanda4552.HifumiBot.database.WarezEventObject;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -68,64 +64,16 @@ public class MemberEventListener extends ListenerAdapter {
     @Override 
     public void onGuildMemberRemove(GuildMemberRemoveEvent event) {
         OffsetDateTime time = OffsetDateTime.now();
-
         // Store user and leave records
-        Connection conn = null;
-
-        try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-            
-            PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
-            insertUser.setLong(1, event.getUser().getIdLong());
-            insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
-            insertUser.setString(3, event.getUser().getName());
-            insertUser.executeUpdate();
-            insertUser.close();
-
-            PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO member_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
-            insertEvent.setLong(1, time.toEpochSecond());
-            insertEvent.setLong(2, event.getUser().getIdLong());
-            insertEvent.setString(3, "leave");
-            insertEvent.executeUpdate();
-            insertEvent.close();
-        } catch (SQLException e) {
-             Messaging.logException("MemberEventListener", "onGuildMemberRemove", e);
-        } finally {
-            MySQL.closeConnection(conn);
-        }
-
+        Database.insertMemberRemoveEvent(event, time);
         EventLogging.logGuildMemberRemoveEvent(event);
     }
 
     @Override
     public void onGuildBan(GuildBanEvent event) {
         OffsetDateTime time = OffsetDateTime.now();
-
         // Store user and leave records
-        Connection conn = null;
-
-        try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
-            PreparedStatement insertUser = conn.prepareStatement("INSERT INTO user (discord_id, created_datetime, username) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;");
-            insertUser.setLong(1, event.getUser().getIdLong());
-            insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
-            insertUser.setString(3, event.getUser().getName());
-            insertUser.executeUpdate();
-            insertUser.close();
-
-            PreparedStatement insertEvent = conn.prepareStatement("INSERT INTO member_event (timestamp, fk_user, action) VALUES (?, ?, ?);");
-            insertEvent.setLong(1, time.toEpochSecond());
-            insertEvent.setLong(2, event.getUser().getIdLong());
-            insertEvent.setString(3, "ban");
-            insertEvent.executeUpdate();
-            insertEvent.close();
-        } catch (SQLException e) {
-             Messaging.logException("MemberEventListener", "onGuildBan", e);
-        } finally {
-            MySQL.closeConnection(conn);
-        }
-
+        Database.insertMemberBanEvent(event, time);
         EventLogging.logGuildBanEvent(event);
     }
 }

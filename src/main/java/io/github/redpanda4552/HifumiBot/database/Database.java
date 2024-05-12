@@ -15,6 +15,7 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
@@ -882,5 +883,70 @@ public class Database {
         }
 
         return ret;
+    }
+
+    public static void insertMemberRemoveEvent(GuildMemberRemoveEvent event, OffsetDateTime time) {
+        Connection conn = null;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+            
+            PreparedStatement insertUser = conn.prepareStatement("""
+                    INSERT INTO user (discord_id, created_datetime, username)
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    """);
+            insertUser.setLong(1, event.getUser().getIdLong());
+            insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
+            insertUser.setString(3, event.getUser().getName());
+            insertUser.executeUpdate();
+            insertUser.close();
+
+            PreparedStatement insertEvent = conn.prepareStatement("""
+                    INSERT INTO member_event (timestamp, fk_user, action)
+                    VALUES (?, ?, ?);
+                    """);
+            insertEvent.setLong(1, time.toEpochSecond());
+            insertEvent.setLong(2, event.getUser().getIdLong());
+            insertEvent.setString(3, "leave");
+            insertEvent.executeUpdate();
+            insertEvent.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "insertMemberRemoveEvent", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
+    }
+
+    public static void insertMemberBanEvent(GuildBanEvent event, OffsetDateTime time) {
+        Connection conn = null;
+
+        try {
+            conn = HifumiBot.getSelf().getMySQL().getConnection();
+
+            PreparedStatement insertUser = conn.prepareStatement("""
+                    INSERT INTO user (discord_id, created_datetime, username)
+                    VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    """);
+            insertUser.setLong(1, event.getUser().getIdLong());
+            insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
+            insertUser.setString(3, event.getUser().getName());
+            insertUser.executeUpdate();
+            insertUser.close();
+
+            PreparedStatement insertEvent = conn.prepareStatement("""
+                    INSERT INTO member_event (timestamp, fk_user, action)
+                    VALUES (?, ?, ?);
+                    """);
+            insertEvent.setLong(1, time.toEpochSecond());
+            insertEvent.setLong(2, event.getUser().getIdLong());
+            insertEvent.setString(3, "ban");
+            insertEvent.executeUpdate();
+            insertEvent.close();
+        } catch (SQLException e) {
+             Messaging.logException("Database", "insertMemberBanEvent", e);
+        } finally {
+            MySQL.closeConnection(conn);
+        }
     }
 }
