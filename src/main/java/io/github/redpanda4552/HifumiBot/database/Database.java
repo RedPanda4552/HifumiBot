@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
@@ -750,10 +751,10 @@ public class Database {
             User usr = HifumiBot.getSelf().getJDA().getUserById(warezEvent.getUserId());
 
             PreparedStatement insertUser = conn.prepareStatement("""
-                INSERT INTO user (discord_id, created_datetime, username)
-                VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE discord_id=discord_id;
-                """);
+                    INSERT INTO user (discord_id, created_datetime, username)
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    """);
             insertUser.setLong(1, warezEvent.getUserId());
             insertUser.setLong(2, usr.getTimeCreated().toEpochSecond());
             insertUser.setString(3, usr.getName());
@@ -761,9 +762,9 @@ public class Database {
             insertUser.close();
 
             PreparedStatement insertWarez = conn.prepareStatement("""
-                INSERT INTO warez_event (timestamp, fk_user, action)
-                VALUES (?, ?, ?);
-                """);
+                    INSERT INTO warez_event (timestamp, fk_user, action)
+                    VALUES (?, ?, ?);
+                    """);
             insertWarez.setLong(1, warezEvent.getTimestamp());
             insertWarez.setLong(2, warezEvent.getUserId());
             insertWarez.setString(3, warezEvent.getAction().toString().toLowerCase());
@@ -822,10 +823,10 @@ public class Database {
             conn = HifumiBot.getSelf().getMySQL().getConnection();
             
             PreparedStatement insertUser = conn.prepareStatement("""
-                INSERT INTO user (discord_id, created_datetime, username)
-                VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE discord_id=discord_id;
-            """);
+                    INSERT INTO user (discord_id, created_datetime, username)
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    """);
             insertUser.setLong(1, event.getMember().getIdLong());
             insertUser.setLong(2, event.getMember().getTimeCreated().toEpochSecond());
             insertUser.setString(3, event.getUser().getName());
@@ -833,9 +834,9 @@ public class Database {
             insertUser.close();
 
             PreparedStatement insertEvent = conn.prepareStatement("""
-                INSERT INTO member_event (timestamp, fk_user, action)
-                VALUES (?, ?, ?);
-            """);
+                    INSERT INTO member_event (timestamp, fk_user, action)
+                    VALUES (?, ?, ?);
+                    """);
             insertEvent.setLong(1, event.getGuild().retrieveMemberById(event.getMember().getId()).complete().getTimeJoined().toEpochSecond());
             insertEvent.setLong(2, event.getMember().getIdLong());
             insertEvent.setString(3, "join");
@@ -855,12 +856,12 @@ public class Database {
         try {
             conn = HifumiBot.getSelf().getMySQL().getConnection();
             PreparedStatement events = conn.prepareStatement("""
-                SELECT timestamp, fk_user, action
-                FROM member_event
-                WHERE fk_user = ?
-                ORDER BY timestamp DESC
-                LIMIT 10;
-            """);
+                    SELECT timestamp, fk_user, action
+                    FROM member_event
+                    WHERE fk_user = ?
+                    ORDER BY timestamp DESC
+                    LIMIT 10;
+                    """);
             events.setLong(1, userId);
             ResultSet eventsRes = events.executeQuery();
 
