@@ -32,7 +32,7 @@ import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
 import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
 import io.github.redpanda4552.HifumiBot.config.FilterConfig;
-import io.github.redpanda4552.HifumiBot.database.MySQL;
+import io.github.redpanda4552.HifumiBot.database.SQLite;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
 import io.github.redpanda4552.HifumiBot.event.MessageEventListener;
@@ -103,7 +103,7 @@ public class HifumiBot {
     private EmulogParserConfig emulogParserConfig;
     private FilterConfig filterConfig;
     private final OkHttpClient http;
-    private MySQL mySQL;
+    private SQLite sqlite;
     
     private Scheduler scheduler;
     private WikiIndex wikiIndex;
@@ -169,7 +169,7 @@ public class HifumiBot {
             Messaging.logException("HifumiBot", "(constructor)", e);
         }
         
-        mySQL = new MySQL();
+        sqlite = new SQLite();
         Internet.init();
         deepL = new Translator(deepLKey);
         scheduler = new Scheduler();
@@ -238,8 +238,8 @@ public class HifumiBot {
         return http;
     }
 
-    public MySQL getMySQL() {
-        return mySQL;
+    public SQLite getSQLite() {
+        return sqlite;
     }
 
     public Scheduler getScheduler() {
@@ -310,7 +310,7 @@ public class HifumiBot {
         this.getJDA().getPresence().setActivity(Activity.watching("Shutting Down..."));
         this.getScheduler().shutdown();
         jda.shutdown();
-        this.getMySQL().shutdown();
+        this.getSQLite().shutdown();
 
         if (reload)
             self = new HifumiBot();

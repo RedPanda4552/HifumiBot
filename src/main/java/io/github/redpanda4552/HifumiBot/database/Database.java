@@ -26,19 +26,15 @@ public class Database {
 
     /**
      * Store user, channel, message, attachment, and event records
-     * @param event
-     * @return
      */
-    public static void insertMessage(Message message) {
-        Connection conn = null;
+    public static void insertMessage(Message message, boolean skipEvent) {
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             PreparedStatement insertUser = conn.prepareStatement("""
                     INSERT INTO user (discord_id, created_datetime, username)
                     VALUES (?, ?, ?)
-                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertUser.setLong(1, message.getAuthor().getIdLong());
             insertUser.setLong(2, message.getAuthor().getTimeCreated().toEpochSecond());
@@ -49,7 +45,7 @@ public class Database {
             PreparedStatement insertChannel = conn.prepareStatement("""
                     INSERT INTO channel (discord_id, name)
                     VALUES (?, ?)
-                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertChannel.setLong(1, message.getChannel().getIdLong());
             insertChannel.setString(2, message.getChannel().getName());
@@ -59,7 +55,7 @@ public class Database {
             // Check if the referenced message exists in the database; if not, try to add it first.
             if (message.getReferencedMessage() != null) {
                 if (Database.getLatestMessage(message.getReferencedMessage().getIdLong()) == null) {
-                    Database.insertMessage(message.getReferencedMessage());
+                    Database.insertMessage(message.getReferencedMessage(), skipEvent);
                 }
             }
 
@@ -81,44 +77,44 @@ public class Database {
             insertMessage.executeUpdate();
             insertMessage.close();
 
-            PreparedStatement insertEvent = conn.prepareStatement("""
-                    INSERT INTO message_event (fk_user, fk_message, timestamp, action, content)
-                    VALUES (?, ?, ?, ?, ?);
-                    """);
-            insertEvent.setLong(1, message.getAuthor().getIdLong());
-            insertEvent.setLong(2, message.getIdLong());
-            insertEvent.setLong(3, message.getTimeCreated().toEpochSecond());
-            insertEvent.setString(4, "send");
-            insertEvent.setString(5, message.getContentRaw());
-            insertEvent.executeUpdate();
-            insertEvent.close();
-            
-            // Check if this message had any attachments. No need to continue if not.
-            List<Attachment> attachments = message.getAttachments();
-
-            if (!attachments.isEmpty()) {
-                PreparedStatement insertAttachments = conn.prepareStatement("""
-                        INSERT INTO message_attachment (discord_id, timestamp, fk_message, content_type, proxy_url, filename)
-                        VALUES (?, ?, ?, ?, ?, ?);
+            if (!skipEvent) {
+                PreparedStatement insertEvent = conn.prepareStatement("""
+                        INSERT INTO message_event (fk_user, fk_message, timestamp, action, content)
+                        VALUES (?, ?, ?, ?, ?);
                         """);
-
-                for (Attachment attachment : attachments) {
-                    insertAttachments.setLong(1, attachment.getIdLong());
-                    insertAttachments.setLong(2, attachment.getTimeCreated().toEpochSecond());
-                    insertAttachments.setLong(3, message.getIdLong());
-                    insertAttachments.setString(4, attachment.getContentType());
-                    insertAttachments.setString(5, attachment.getProxyUrl());
-                    insertAttachments.setString(6, attachment.getFileName());
-                    insertAttachments.addBatch();
-                }
+                insertEvent.setLong(1, message.getAuthor().getIdLong());
+                insertEvent.setLong(2, message.getIdLong());
+                insertEvent.setLong(3, message.getTimeCreated().toEpochSecond());
+                insertEvent.setString(4, "send");
+                insertEvent.setString(5, message.getContentRaw());
+                insertEvent.executeUpdate();
+                insertEvent.close();
                 
-                insertAttachments.executeBatch();
-                insertAttachments.close();
+                // Check if this message had any attachments. No need to continue if not.
+                List<Attachment> attachments = message.getAttachments();
+
+                if (!attachments.isEmpty()) {
+                    PreparedStatement insertAttachments = conn.prepareStatement("""
+                            INSERT INTO message_attachment (discord_id, timestamp, fk_message, content_type, proxy_url, filename)
+                            VALUES (?, ?, ?, ?, ?, ?);
+                            """);
+
+                    for (Attachment attachment : attachments) {
+                        insertAttachments.setLong(1, attachment.getIdLong());
+                        insertAttachments.setLong(2, attachment.getTimeCreated().toEpochSecond());
+                        insertAttachments.setLong(3, message.getIdLong());
+                        insertAttachments.setString(4, attachment.getContentType());
+                        insertAttachments.setString(5, attachment.getProxyUrl());
+                        insertAttachments.setString(6, attachment.getFileName());
+                        insertAttachments.addBatch();
+                    }
+                    
+                    insertAttachments.executeBatch();
+                    insertAttachments.close();
+                }
             }
         } catch (SQLException e) {
              Messaging.logException("Database", "insertMessageReceivedEvent", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
     }
 
@@ -132,7 +128,7 @@ public class Database {
         long userId = 0;
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
+            conn = HifumiBot.getSelf().getSQLite().getConnection();
 
             PreparedStatement getUser = conn.prepareStatement("""
                     SELECT fk_user, fk_message
@@ -152,7 +148,7 @@ public class Database {
             PreparedStatement insertChannel = conn.prepareStatement("""
                     INSERT INTO channel (discord_id, name)
                     VALUES (?, ?)
-                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertChannel.setLong(1, event.getChannel().getIdLong());
             insertChannel.setString(2, event.getChannel().getName());
@@ -162,7 +158,7 @@ public class Database {
             PreparedStatement insertMessage = conn.prepareStatement("""
                     INSERT INTO message (message_id, fk_channel)
                     VALUES (?, ?)
-                    ON DUPLICATE KEY UPDATE message_id=message_id;
+                    ON CONFLICT (message_id) DO NOTHING;
                     """);
             insertMessage.setLong(1, event.getMessageIdLong());
             insertMessage.setLong(2, event.getChannel().getIdLong());
@@ -181,8 +177,6 @@ public class Database {
             insertEvent.close();
         } catch (SQLException e) {
              Messaging.logException("Database", "insertMessageDeleteEvent", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
     }
 
@@ -198,7 +192,7 @@ public class Database {
             long userId = 0;
 
             try {
-                conn = HifumiBot.getSelf().getMySQL().getConnection();
+                conn = HifumiBot.getSelf().getSQLite().getConnection();
 
                 PreparedStatement getUser = conn.prepareStatement("""
                         SELECT fk_user, fk_message
@@ -218,7 +212,7 @@ public class Database {
                 PreparedStatement insertChannel = conn.prepareStatement("""
                         INSERT INTO channel (discord_id, name)
                         VALUES (?, ?)
-                        ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                        ON CONFLICT (discord_id) DO NOTHING;
                         """);
                 insertChannel.setLong(1, event.getChannel().getIdLong());
                 insertChannel.setString(2, event.getChannel().getName());
@@ -228,7 +222,7 @@ public class Database {
                 PreparedStatement insertMessage = conn.prepareStatement("""
                         INSERT INTO message (message_id, fk_channel)
                         VALUES (?, ?)
-                        ON DUPLICATE KEY UPDATE message_id=message_id;
+                        ON CONFLICT (message_id) DO NOTHING;
                         """);
                 insertMessage.setLong(1, Long.valueOf(messageId));
                 insertMessage.setLong(2, event.getChannel().getIdLong());
@@ -247,8 +241,6 @@ public class Database {
                 insertEvent.close();
             } catch (SQLException e) {
                 Messaging.logException("Database", "insertMessageBulkDeleteEvent", e);
-            } finally {
-                MySQL.closeConnection(conn);
             }
         }
     }
@@ -258,15 +250,13 @@ public class Database {
      * @param event
      */
     public static void insertMessageUpdateEvent(MessageUpdateEvent event) {
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             PreparedStatement insertUser = conn.prepareStatement("""
                     INSERT INTO user (discord_id, created_datetime, username)
                     VALUES (?, ?, ?)
-                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertUser.setLong(1, event.getAuthor().getIdLong());
             insertUser.setLong(2, event.getAuthor().getTimeCreated().toEpochSecond());
@@ -277,7 +267,7 @@ public class Database {
             PreparedStatement insertChannel = conn.prepareStatement("""
                     INSERT INTO channel (discord_id, name)
                     VALUES (?, ?)
-                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertChannel.setLong(1, event.getChannel().getIdLong());
             insertChannel.setString(2, event.getChannel().getName());
@@ -287,7 +277,7 @@ public class Database {
             PreparedStatement insertMessage = conn.prepareStatement("""
                     INSERT INTO message (message_id, fk_channel)
                     VALUES (?, ?)
-                    ON DUPLICATE KEY UPDATE message_id=message_id;
+                    ON CONFLICT (message_id) DO NOTHING;
                     """);
             insertMessage.setLong(1, event.getMessageIdLong());
             insertMessage.setLong(2, event.getChannel().getIdLong());
@@ -300,7 +290,7 @@ public class Database {
                 PreparedStatement insertAttachment = conn.prepareStatement("""
                         INSERT INTO message_attachment (discord_id, timestamp, fk_message, content_type, proxy_url)
                         VALUES (?, ?, ?, ?, ?)
-                        ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                        ON CONFLICT (discord_id) DO NOTHING;
                         """);
 
                 for (Attachment attachment : attachments) {
@@ -329,8 +319,6 @@ public class Database {
             insertEvent.close();
         } catch (SQLException e) {
              Messaging.logException("Database", "insertMessageUpdateEvent", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
     }
 
@@ -340,21 +328,19 @@ public class Database {
 
     public static MessageObject getOriginalMessage(long messageIdLong) {
         MessageObject ret = null;
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             // First get the original sent message
             PreparedStatement getSendEvent = conn.prepareStatement("""
                     SELECT
-                        e.id, e.fk_user, e.fk_message, e.content,
-                        m.fk_channel, m.jump_link, m.fk_reply_to_message, m.timestamp
-                    FROM message_event e
-                    INNER JOIN message m ON e.fk_message = m.message_id
-                    WHERE fk_message = ?
-                    AND action = 'send'
-                    ORDER BY timestamp DESC
+                        e.id, e.fk_user, e.fk_message, e.content, e.timestamp,
+                        m.fk_channel, m.jump_link, m.fk_reply_to_message
+                    FROM message_event AS e
+                    INNER JOIN message AS m ON e.fk_message = m.message_id
+                    WHERE e.fk_message = ?
+                    AND e.action = 'send'
+                    ORDER BY m.timestamp ASC
                     LIMIT 1;
                     """);
             getSendEvent.setLong(1, messageIdLong);
@@ -388,13 +374,13 @@ public class Database {
 
                 ret = new MessageObject(
                     messageIdLong, 
-                    originalSendEvent.getLong("e.fk_user"), 
-                    DateTimeUtils.longToOffsetDateTime(originalSendEvent.getLong("m.timestamp")), 
+                    originalSendEvent.getLong("fk_user"), 
+                    DateTimeUtils.longToOffsetDateTime(originalSendEvent.getLong("timestamp")), 
                     null, 
-                    originalSendEvent.getLong("m.fk_channel"),
-                    originalSendEvent.getString("e.content"),
-                    originalSendEvent.getString("m.jump_link"), 
-                    originalSendEvent.getString("m.fk_reply_to_message"), 
+                    originalSendEvent.getLong("fk_channel"),
+                    originalSendEvent.getString("content"),
+                    originalSendEvent.getString("jump_link"), 
+                    originalSendEvent.getString("fk_reply_to_message"), 
                     attachmentList
                 );
             }
@@ -402,8 +388,6 @@ public class Database {
             getSendEvent.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "getOriginalMessage", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
         
         return ret;
@@ -415,18 +399,16 @@ public class Database {
 
     public static MessageObject getLatestMessage(long messageIdLong) {
         MessageObject ret = null;
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             // First get the latest revision of the message
             PreparedStatement getMessageEvent = conn.prepareStatement("""
                     SELECT
                         e.id, e.fk_user, e.fk_message, e.content, e.timestamp, e.action,
-                        m.fk_channel, m.jump_link, m.fk_reply_to_message, m.timestamp
-                    FROM message_event e
-                    INNER JOIN message m ON e.fk_message = m.message_id
+                        m.fk_channel, m.jump_link, m.fk_reply_to_message
+                    FROM message_event AS e
+                    INNER JOIN message AS m ON e.fk_message = m.message_id
                     WHERE e.fk_message = ?
                     AND (
                         e.action = 'send'
@@ -464,17 +446,17 @@ public class Database {
                     attachmentList.add(attachment);
                 }
 
-                String action = latestEvent.getString("e.action");
+                String action = latestEvent.getString("action");
 
                 ret = new MessageObject(
                     messageIdLong, 
-                    latestEvent.getLong("e.fk_user"), 
-                    DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("m.timestamp")),
-                    (action != null && action.equals("edit") ? DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("e.timestamp")) : null), 
-                    latestEvent.getLong("m.fk_channel"),
-                    latestEvent.getString("e.content"),
-                    latestEvent.getString("m.jump_link"), 
-                    latestEvent.getString("m.fk_reply_to_message"), 
+                    latestEvent.getLong("fk_user"), 
+                    DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("timestamp")),
+                    (action != null && action.equals("edit") ? DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("timestamp")) : null), 
+                    latestEvent.getLong("fk_channel"),
+                    latestEvent.getString("content"),
+                    latestEvent.getString("jump_link"), 
+                    latestEvent.getString("fk_reply_to_message"), 
                     attachmentList
                 );
             }
@@ -482,8 +464,6 @@ public class Database {
             getMessageEvent.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "getLatestMessage", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
         
         return ret;
@@ -491,18 +471,16 @@ public class Database {
 
     public static ArrayList<MessageObject> getAllMessageRevisions(long messageIdLong) {
         ArrayList<MessageObject> ret = new ArrayList<MessageObject>();
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             // First get the latest revision of the message
             PreparedStatement getMessageEvent = conn.prepareStatement("""
                     SELECT
-                        e.id, e.fk_user, e.fk_message, e.content, e.timestamp, e.action,
-                        m.fk_channel, m.jump_link, m.fk_reply_to_message, m.timestamp
-                    FROM message_event e
-                    INNER JOIN message m ON e.fk_message = m.message_id
+                        e.id, e.fk_user, e.fk_message, e.content, e.timestamp AS e_timestamp, e.action,
+                        m.fk_channel, m.jump_link, m.fk_reply_to_message, m.timestamp AS m_timestamp
+                    FROM message_event AS e
+                    INNER JOIN message AS m ON e.fk_message = m.message_id
                     WHERE e.fk_message = ?
                     AND (
                         e.action = 'send'
@@ -539,17 +517,17 @@ public class Database {
                     attachmentList.add(attachment);
                 }
 
-                String action = latestEvent.getString("e.action");
+                String action = latestEvent.getString("action");
 
                 ret.add(new MessageObject(
                     messageIdLong, 
-                    latestEvent.getLong("e.fk_user"), 
-                    DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("m.timestamp")),
-                    (action != null && action.equals("edit") ? DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("e.timestamp")) : null), 
-                    latestEvent.getLong("m.fk_channel"),
-                    latestEvent.getString("e.content"),
-                    latestEvent.getString("m.jump_link"), 
-                    latestEvent.getString("m.fk_reply_to_message"), 
+                    latestEvent.getLong("fk_user"), 
+                    DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("m_timestamp")),
+                    (action != null && action.equals("edit") ? DateTimeUtils.longToOffsetDateTime(latestEvent.getLong("e_timestamp")) : null), 
+                    latestEvent.getLong("fk_channel"),
+                    latestEvent.getString("content"),
+                    latestEvent.getString("jump_link"), 
+                    latestEvent.getString("fk_reply_to_message"), 
                     attachmentList
                 ));
             }
@@ -557,8 +535,6 @@ public class Database {
             getMessageEvent.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "getAllMessageRevisions", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
         
         return ret;
@@ -569,11 +545,9 @@ public class Database {
      * @param filterEvent
      */
     public static void insertFilterEvent(FilterEventObject filterEvent) {
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             PreparedStatement insertFilterEvent = conn.prepareStatement("""
                     INSERT INTO filter_event (fk_user, fk_message, timestamp, filter_name, filter_regex_name, informational)
                     VALUES (?, ?, ?, ?, ?, ?);
@@ -588,23 +562,19 @@ public class Database {
             insertFilterEvent.close();
         } catch (SQLException e) {
              Messaging.logException("Database", "insertFilterEvent", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
     }
 
     public static ArrayList<FilterEventObject> getFilterEventsSinceTime(long userIdLong, long timestamp) {
         ArrayList<FilterEventObject> ret = new ArrayList<FilterEventObject>();
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             // First get the latest revision of the message
             PreparedStatement getFilterEvent = conn.prepareStatement("""
                     SELECT
                         f.fk_user, f.fk_message, f.timestamp, f.filter_name, f.filter_regex_name, f.informational
-                    FROM filter_event f
+                    FROM filter_event AS f
                     WHERE f.fk_user = ?
                     AND f.timestamp >= ?
                     AND f.informational = FALSE
@@ -616,12 +586,12 @@ public class Database {
 
             while (res.next()) {
                 FilterEventObject filterEvent = new FilterEventObject(
-                    res.getLong("f.fk_user"),
-                    res.getLong("f.fk_message"),
-                    res.getLong("f.timestamp"),
-                    res.getString("f.filter_name"),
-                    res.getString("f.filter_regex_name"),
-                    res.getBoolean("f.informational")
+                    res.getLong("fk_user"),
+                    res.getLong("fk_message"),
+                    res.getLong("timestamp"),
+                    res.getString("filter_name"),
+                    res.getString("filter_regex_name"),
+                    res.getBoolean("informational")
                 );
 
                 ret.add(filterEvent);
@@ -631,8 +601,6 @@ public class Database {
             return ret;
         } catch (SQLException e) {
             Messaging.logException("Database", "getFilterEventsSinceTime", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
         
         return ret;
@@ -640,18 +608,16 @@ public class Database {
 
     public static ArrayList<MessageObject> getIdenticalMessagesSinceTime(String contentRaw, long timestamp) {
         ArrayList<MessageObject> ret = new ArrayList<MessageObject>();
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             // First get the latest revision of the message
             PreparedStatement getMessageEvents = conn.prepareStatement("""
                     SELECT
                         e.id, e.fk_user, e.fk_message, e.content, e.timestamp,
-                        m.fk_channel, m.jump_link, m.fk_reply_to_message, m.timestamp, m.fk_user
-                    FROM message_event e
-                    INNER JOIN message m ON e.fk_message = m.message_id
+                        m.fk_channel, m.jump_link, m.fk_reply_to_message
+                    FROM message_event AS e
+                    INNER JOIN message AS m ON e.fk_message = m.message_id
                     WHERE e.content = ?
                     AND e.action = 'send'
                     AND e.timestamp >= ?
@@ -669,13 +635,13 @@ public class Database {
 
             while (res.next()) {
                 MessageObject messageObj = new MessageObject(
-                    res.getLong("e.fk_message"),
-                    res.getLong("m.fk_user"),
-                    DateTimeUtils.longToOffsetDateTime(res.getLong("e.timestamp")),
+                    res.getLong("fk_message"),
+                    res.getLong("fk_user"),
+                    DateTimeUtils.longToOffsetDateTime(res.getLong("timestamp")),
                     null,
-                    res.getLong("m.fk_channel"),
-                    res.getString("e.content"),
-                    res.getString("m.jump_link"),
+                    res.getLong("fk_channel"),
+                    res.getString("content"),
+                    res.getString("jump_link"),
                     null,
                     null
                 );
@@ -687,8 +653,6 @@ public class Database {
             return ret;
         } catch (SQLException e) {
             Messaging.logException("Database", "getIdenticalMessagesSinceTime", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
         
         return ret;
@@ -696,18 +660,16 @@ public class Database {
 
     public static ArrayList<MessageObject> getAllMessagesSinceTime(long userIdLong, long timestamp) {
         ArrayList<MessageObject> ret = new ArrayList<MessageObject>();
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             // First get the latest revision of the message
             PreparedStatement getMessageEvents = conn.prepareStatement("""
                     SELECT
                         e.id, e.fk_user, e.fk_message, e.content, e.timestamp,
-                        m.fk_channel, m.jump_link, m.fk_reply_to_message, m.timestamp, m.fk_user
-                    FROM message_event e
-                    INNER JOIN message m ON e.fk_message = m.message_id
+                        m.fk_channel, m.jump_link, m.fk_reply_to_message
+                    FROM message_event AS e
+                    INNER JOIN message AS m ON e.fk_message = m.message_id
                     WHERE e.fk_user = ?
                     AND e.action = 'send'
                     AND e.timestamp >= ?
@@ -719,13 +681,13 @@ public class Database {
 
             while (res.next()) {
                 MessageObject messageObj = new MessageObject(
-                    res.getLong("e.fk_message"),
-                    res.getLong("m.fk_user"),
-                    DateTimeUtils.longToOffsetDateTime(res.getLong("e.timestamp")),
+                    res.getLong("fk_message"),
+                    res.getLong("fk_user"),
+                    DateTimeUtils.longToOffsetDateTime(res.getLong("timestamp")),
                     null,
-                    res.getLong("m.fk_channel"),
-                    res.getString("e.content"),
-                    res.getString("m.jump_link"),
+                    res.getLong("fk_channel"),
+                    res.getString("content"),
+                    res.getString("jump_link"),
                     null,
                     null
                 );
@@ -737,24 +699,20 @@ public class Database {
             return ret;
         } catch (SQLException e) {
             Messaging.logException("Database", "getAllMessagesSinceTime", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
         
         return ret;
     }
 
     public static boolean insertWarezEvent(WarezEventObject warezEvent) {
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
-        try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-            User usr = HifumiBot.getSelf().getJDA().getUserById(warezEvent.getUserId());
+        try {            User usr = HifumiBot.getSelf().getJDA().getUserById(warezEvent.getUserId());
 
             PreparedStatement insertUser = conn.prepareStatement("""
                     INSERT INTO user (discord_id, created_datetime, username)
                     VALUES (?, ?, ?)
-                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertUser.setLong(1, warezEvent.getUserId());
             insertUser.setLong(2, usr.getTimeCreated().toEpochSecond());
@@ -775,8 +733,6 @@ public class Database {
             return true;
         } catch (SQLException e) {
             Messaging.logException("Database", "insertWarezEvent", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
 
         return false;
@@ -784,11 +740,9 @@ public class Database {
 
     public static WarezEventObject getLatestWarezAction(long userIdLong) {
         WarezEventObject ret = null;
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             PreparedStatement getWarezEvent = conn.prepareStatement("""
                     SELECT timestamp, fk_user, action
                     FROM warez_event
@@ -810,23 +764,19 @@ public class Database {
             getWarezEvent.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "getLatestWarezAction", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
         
         return ret;
     }
 
     public static void insertMemberJoinEvent(GuildMemberJoinEvent event) {
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
-        try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-            
+        try {            
             PreparedStatement insertUser = conn.prepareStatement("""
                     INSERT INTO user (discord_id, created_datetime, username)
                     VALUES (?, ?, ?)
-                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertUser.setLong(1, event.getMember().getIdLong());
             insertUser.setLong(2, event.getMember().getTimeCreated().toEpochSecond());
@@ -845,18 +795,14 @@ public class Database {
             insertEvent.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "insertMemberJoinEvent", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
     }
 
     public static ArrayList<MemberEventObject> getRecentMemberEvents(long userId) {
         ArrayList<MemberEventObject> ret = new ArrayList<MemberEventObject>();
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
-        try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-            PreparedStatement events = conn.prepareStatement("""
+        try {            PreparedStatement events = conn.prepareStatement("""
                     SELECT timestamp, fk_user, action
                     FROM member_event
                     WHERE fk_user = ?
@@ -878,23 +824,19 @@ public class Database {
             events.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "getRecentMemberEvents", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
 
         return ret;
     }
 
     public static void insertMemberRemoveEvent(GuildMemberRemoveEvent event, OffsetDateTime time) {
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
-        try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-            
+        try {            
             PreparedStatement insertUser = conn.prepareStatement("""
                     INSERT INTO user (discord_id, created_datetime, username)
                     VALUES (?, ?, ?)
-                    ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertUser.setLong(1, event.getUser().getIdLong());
             insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
@@ -913,20 +855,16 @@ public class Database {
             insertEvent.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "insertMemberRemoveEvent", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
     }
 
     public static void insertMemberBanEvent(GuildBanEvent event, OffsetDateTime time) {
-        Connection conn = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
-            conn = HifumiBot.getSelf().getMySQL().getConnection();
-
             PreparedStatement insertUser = conn.prepareStatement("""
                     INSERT INTO user (discord_id, created_datetime, username)
-                    VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE discord_id=discord_id;
+                    VALUES (?, ?, ?) ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertUser.setLong(1, event.getUser().getIdLong());
             insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
@@ -945,8 +883,6 @@ public class Database {
             insertEvent.close();
         } catch (SQLException e) {
              Messaging.logException("Database", "insertMemberBanEvent", e);
-        } finally {
-            MySQL.closeConnection(conn);
         }
     }
 }
