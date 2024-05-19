@@ -12,8 +12,9 @@ public class SQLite {
 
     public SQLite() {
         try {
+            Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection("jdbc:sqlite:hifumibot.db");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Messaging.logException("SQlite", "(constructor)", e);
         }
     }
