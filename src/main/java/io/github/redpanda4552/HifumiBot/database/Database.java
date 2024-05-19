@@ -61,7 +61,8 @@ public class Database {
 
             PreparedStatement insertMessage = conn.prepareStatement("""
                     INSERT INTO message (message_id, fk_channel, jump_link, fk_reply_to_message, timestamp)
-                    VALUES (?, ?, ?, ?, ?);
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT (discord_id) DO NOTHING;
                     """);
             insertMessage.setLong(1, message.getIdLong());
             insertMessage.setLong(2, message.getChannel().getIdLong());
