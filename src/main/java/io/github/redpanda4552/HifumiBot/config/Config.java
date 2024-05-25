@@ -47,7 +47,6 @@ public class Config implements IConfig {
     public AutoModOptions autoModOptions;
     public SpamOptions spamOptions;
     public UrlChangeOptions urlChangeOptions;
-    public MySQLOptions mysql;
     public EntryBarrierOptions entryBarrierOptions;
 
     public Config() {
@@ -61,7 +60,6 @@ public class Config implements IConfig {
         spamOptions = new SpamOptions();
         urlChangeOptions = new UrlChangeOptions();
         ninjaInterval = 500;
-        mysql = new MySQLOptions();
         entryBarrierOptions = new EntryBarrierOptions();
     }
     
@@ -184,18 +182,6 @@ public class Config implements IConfig {
         public UrlChangeOptions() {
             blockAfterMinutes = 30;
             message = new String("");
-        }
-    }
-
-    public class MySQLOptions {
-        public String url;
-        public String username;
-        public String password;
-
-        public MySQLOptions() {
-            url = new String("");
-            username = new String("");
-            password = new String("");
         }
     }
 
