@@ -114,7 +114,6 @@ public class HifumiBot {
     private MemberEventListener memberEventListener;
     private SlashCommandListener slashCommandListener;
     private MessageContextCommandListener messageCommandListener;
-    private ModalEventListener modalEventListener;
     
     private GameIndex gameIndex;
     private Translator deepL;
@@ -174,7 +173,7 @@ public class HifumiBot {
         jda.addEventListener(memberEventListener = new MemberEventListener());
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
-        jda.addEventListener(modalEventListener = new ModalEventListener());
+        jda.addEventListener(new ModalEventListener());
         jda.addEventListener(new AutoModEventListener());
         gameIndex = new GameIndex();
 
