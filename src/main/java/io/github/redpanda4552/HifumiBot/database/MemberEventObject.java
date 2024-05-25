@@ -26,6 +26,7 @@ public class MemberEventObject {
 
     public enum Action {
         JOIN,
-        LEAVE;
+        LEAVE,
+        BAN;
     }
 }
