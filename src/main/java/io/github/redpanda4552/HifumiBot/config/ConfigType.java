@@ -27,8 +27,7 @@ public enum ConfigType {
 
     CORE("./hifumi-conf.json", Config.class),
     DYNCMD("./dyncmd-config.json", DynCmdConfig.class),
-    EMULOG_PARSER("./emulog-parser.json", EmulogParserConfig.class),
-    FILTERS("./filters.json", FilterConfig.class);
+    EMULOG_PARSER("./emulog-parser.json", EmulogParserConfig.class);
     
     private String path;
     private Class<?> clazz;

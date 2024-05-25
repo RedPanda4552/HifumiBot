@@ -43,7 +43,10 @@ public class Config implements IConfig {
     public Roles roles;
     public Permissions permissions;
     public long ninjaInterval;
-    public FilterOptions filterOptions;
+    public ModActionOptions modActionOptions;
+    public AutoModOptions autoModOptions;
+    public SpamOptions spamOptions;
+    public UrlChangeOptions urlChangeOptions;
     public MySQLOptions mysql;
     public EntryBarrierOptions entryBarrierOptions;
 
@@ -53,7 +56,10 @@ public class Config implements IConfig {
         slashCommands = new SlashCommands();
         roles = new Roles();
         permissions = new Permissions();
-        filterOptions = new FilterOptions();
+        modActionOptions = new ModActionOptions();
+        autoModOptions = new AutoModOptions();
+        spamOptions = new SpamOptions();
+        urlChangeOptions = new UrlChangeOptions();
         ninjaInterval = 500;
         mysql = new MySQLOptions();
         entryBarrierOptions = new EntryBarrierOptions();
@@ -136,32 +142,48 @@ public class Config implements IConfig {
             blockedRoleIds = new ArrayList<String>();
         }
     }
-    
-    public class FilterOptions {
-        public long incidentCooldownMS;
-        public int maxIncidents;
-        public long blockUrlEditsAfterMinutes;
-        public long timeoutDurationMinutes;
-        public boolean useLocalDNSFiltering;
-        public String localDNSFilterAddress;
-        public String filterMessage;
-        public String dnsMessage;
-        public String spamMessage;
+
+    public class ModActionOptions {
+        public int timeoutDurationMinutes;
         public String timeoutMessage;
         public String kickMessage;
-        
-        public FilterOptions() {
-            incidentCooldownMS = 1000 * 15;
-            maxIncidents = 3;
-            blockUrlEditsAfterMinutes = 20;
+
+        public ModActionOptions() {
             timeoutDurationMinutes = 60 * 8;
-            useLocalDNSFiltering = false;
-            localDNSFilterAddress = new String("");
-            filterMessage = new String("");
-            dnsMessage = new String("");
-            spamMessage = new String("");
             timeoutMessage = new String("");
             kickMessage = new String("");
+        }
+    }
+
+    public class AutoModOptions {
+        public int cooldownSeconds;
+        public int maxMessages;
+
+        public AutoModOptions() {
+            cooldownSeconds = 30;
+            maxMessages = 3;
+        }
+    }
+
+    public class SpamOptions {
+        public int cooldownSeconds;
+        public int maxMessages;
+        public String message;
+
+        public SpamOptions() {
+            cooldownSeconds = 30;
+            maxMessages = 3;
+            message = new String("");
+        }
+    }
+
+    public class UrlChangeOptions {
+        public int blockAfterMinutes;
+        public String message;
+
+        public UrlChangeOptions() {
+            blockAfterMinutes = 30;
+            message = new String("");
         }
     }
 

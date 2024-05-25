@@ -30,6 +30,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.database.MessageObject;
+import io.github.redpanda4552.HifumiBot.moderation.ModActions;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -55,11 +56,11 @@ public class CommandSpamKick extends AbstractSlashCommand {
         Member member = opt.getAsMember();
         
         try {
-            long cooldownSeconds = HifumiBot.getSelf().getConfig().filterOptions.incidentCooldownMS / 1000;
+            long cooldownSeconds = HifumiBot.getSelf().getConfig().spamOptions.cooldownSeconds;
             OffsetDateTime cooldownSubtracted = OffsetDateTime.now().minusSeconds(cooldownSeconds);
             long cooldownEpochSeconds = cooldownSubtracted.toEpochSecond();
 
-            HifumiBot.getSelf().getFilterHandler().kickUser(event.getGuild(), member.getIdLong());
+            ModActions.kickAndNotifyUser(event.getGuild(), member.getIdLong());
             ArrayList<MessageObject> allMessages = Database.getAllMessagesSinceTime(member.getIdLong(), cooldownEpochSeconds);
 
             for (MessageObject message : allMessages) {

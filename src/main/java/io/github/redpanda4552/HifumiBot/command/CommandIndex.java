@@ -38,7 +38,6 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandBulkDelete;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandFilter;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGameIndex;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandPFP;
@@ -104,7 +103,6 @@ public class CommandIndex {
         registerSlashCommand(new CommandRun());
         registerSlashCommand(new CommandPFP());
         registerSlashCommand(new CommandPerms());
-        registerSlashCommand(new CommandFilter());
         registerSlashCommand(new CommandCPU());
         registerSlashCommand(new CommandGPU());
         registerSlashCommand(new CommandDynCmd());

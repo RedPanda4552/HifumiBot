@@ -14,7 +14,9 @@ import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.automod.AutoModResponse;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.automod.AutoModExecutionEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
@@ -541,72 +543,6 @@ public class Database {
         return ret;
     }
 
-    /**
-     * Insert a filter event to the database. It is assumed the message and user are already present.
-     * @param filterEvent
-     */
-    public static void insertFilterEvent(FilterEventObject filterEvent) {
-        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-
-        try {
-            PreparedStatement insertFilterEvent = conn.prepareStatement("""
-                    INSERT INTO filter_event (fk_user, fk_message, timestamp, filter_name, filter_regex_name, informational)
-                    VALUES (?, ?, ?, ?, ?, ?);
-                    """);
-            insertFilterEvent.setLong(1, filterEvent.getUserId());
-            insertFilterEvent.setLong(2, filterEvent.getMessageId());
-            insertFilterEvent.setLong(3, filterEvent.getTimestamp());
-            insertFilterEvent.setString(4, filterEvent.getFilterName());
-            insertFilterEvent.setString(5, filterEvent.getFilterRegexName());
-            insertFilterEvent.setBoolean(6, filterEvent.isInformational());
-            insertFilterEvent.executeUpdate();
-            insertFilterEvent.close();
-        } catch (SQLException e) {
-             Messaging.logException("Database", "insertFilterEvent", e);
-        }
-    }
-
-    public static ArrayList<FilterEventObject> getFilterEventsSinceTime(long userIdLong, long timestamp) {
-        ArrayList<FilterEventObject> ret = new ArrayList<FilterEventObject>();
-        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-
-        try {
-            // First get the latest revision of the message
-            PreparedStatement getFilterEvent = conn.prepareStatement("""
-                    SELECT
-                        f.fk_user, f.fk_message, f.timestamp, f.filter_name, f.filter_regex_name, f.informational
-                    FROM filter_event AS f
-                    WHERE f.fk_user = ?
-                    AND f.timestamp >= ?
-                    AND f.informational = FALSE
-                    ORDER BY f.timestamp DESC;
-                    """);
-            getFilterEvent.setLong(1, userIdLong);
-            getFilterEvent.setLong(2, timestamp);
-            ResultSet res = getFilterEvent.executeQuery();
-
-            while (res.next()) {
-                FilterEventObject filterEvent = new FilterEventObject(
-                    res.getLong("fk_user"),
-                    res.getLong("fk_message"),
-                    res.getLong("timestamp"),
-                    res.getString("filter_name"),
-                    res.getString("filter_regex_name"),
-                    res.getBoolean("informational")
-                );
-
-                ret.add(filterEvent);
-            }
-
-            getFilterEvent.close();
-            return ret;
-        } catch (SQLException e) {
-            Messaging.logException("Database", "getFilterEventsSinceTime", e);
-        }
-        
-        return ret;
-    }
-
     public static ArrayList<MessageObject> getIdenticalMessagesSinceTime(String contentRaw, long timestamp) {
         ArrayList<MessageObject> ret = new ArrayList<MessageObject>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
@@ -885,5 +821,99 @@ public class Database {
         } catch (SQLException e) {
              Messaging.logException("Database", "insertMemberBanEvent", e);
         }
+    }
+
+    /**
+     * Insert an automod event to the database.
+     * @param automodEvent
+     */
+    public static void insertAutoModEvent(AutoModExecutionEvent event, OffsetDateTime time) {
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            PreparedStatement insertAutoModEvent = conn.prepareStatement("""
+                    INSERT INTO automod_event (fk_user, fk_message, fk_channel, alert_message_id, rule_id, timestamp, trigger, content, matched_content, matched_keyword, response_type)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                    """);
+
+            insertAutoModEvent.setLong(1, event.getUserIdLong());
+            
+            if (event.getMessageIdLong() != 0) {
+                insertAutoModEvent.setLong(2, event.getMessageIdLong());
+            } else {
+                insertAutoModEvent.setNull(2, Types.BIGINT);
+            }
+            
+            if (event.getChannel() != null) {
+                insertAutoModEvent.setLong(3, event.getChannel().getIdLong());
+            } else {
+                insertAutoModEvent.setNull(3, Types.BIGINT);
+            }
+            
+            if (event.getAlertMessageIdLong() != 0) {
+                insertAutoModEvent.setLong(4, event.getAlertMessageIdLong());
+            } else {
+                insertAutoModEvent.setNull(4, Types.BIGINT);
+            }
+
+            insertAutoModEvent.setLong(5, event.getRuleIdLong());
+            insertAutoModEvent.setLong(6, time.toEpochSecond());
+            insertAutoModEvent.setString(7, event.getTriggerType().toString());
+            insertAutoModEvent.setString(8, event.getContent());
+            insertAutoModEvent.setString(9, event.getMatchedContent());
+            insertAutoModEvent.setString(10, event.getMatchedKeyword());
+            insertAutoModEvent.setString(11, event.getResponse().getType().toString());
+            insertAutoModEvent.executeUpdate();
+            insertAutoModEvent.close();
+        } catch (SQLException e) {
+             Messaging.logException("Database", "insertAutoModEvent", e);
+        }
+    }
+
+    public static ArrayList<AutoModEventObject> getAutoModEventsSinceTime(long userIdLong, OffsetDateTime time) {
+        ArrayList<AutoModEventObject> ret = new ArrayList<AutoModEventObject>();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            // First get the latest revision of the message
+            PreparedStatement getFilterEvent = conn.prepareStatement("""
+                    SELECT
+                    fk_user, fk_message, fk_channel, alert_message_id, rule_id, timestamp, trigger, content, matched_content, matched_keyword, response_type
+                    FROM automod_event
+                    WHERE fk_user = ?
+                    AND timestamp >= ?
+                    AND response_type = ?
+                    ORDER BY timestamp DESC;
+                    """);
+            getFilterEvent.setLong(1, userIdLong);
+            getFilterEvent.setLong(2, time.toEpochSecond());
+            getFilterEvent.setString(3, AutoModResponse.Type.BLOCK_MESSAGE.toString());
+            ResultSet res = getFilterEvent.executeQuery();
+
+            while (res.next()) {
+                AutoModEventObject autoModEventObject = new AutoModEventObject(
+                    res.getLong("fk_user"),
+                    res.getLong("fk_message"),
+                    res.getLong("fk_channel"),
+                    res.getLong("alert_message_id"),
+                    res.getLong("rule_id"),
+                    res.getLong("timestamp"),
+                    res.getString("trigger"),
+                    res.getString("content"),
+                    res.getString("matched_content"),
+                    res.getString("matched_keyword"),
+                    res.getString("response_type")
+                );
+
+                ret.add(autoModEventObject);
+            }
+
+            getFilterEvent.close();
+            return ret;
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getAutoModEventsSinceTime", e);
+        }
+        
+        return ret;
     }
 }

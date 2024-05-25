@@ -2,16 +2,16 @@ package io.github.redpanda4552.HifumiBot.event;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.async.EntryBarrierRunnable;
+import io.github.redpanda4552.HifumiBot.async.SpamReviewRunnable;
+import io.github.redpanda4552.HifumiBot.async.UrlChangeReviewRunnable;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.database.MessageObject;
-import io.github.redpanda4552.HifumiBot.filter.FilterRunnable;
 import io.github.redpanda4552.HifumiBot.parse.CrashParser;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
@@ -77,7 +77,7 @@ public class MessageEventListener extends ListenerAdapter {
 
         // If the user is not considered privileged, then filter messages and do bot ping nags
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
-            HifumiBot.getSelf().getScheduler().runOnce(new FilterRunnable(event.getMessage(), event.getMessage().getTimeCreated()));
+            HifumiBot.getSelf().getScheduler().runOnce(new SpamReviewRunnable(event.getMessage(), event.getMessage().getTimeCreated()));
             
             if (Messaging.hasBotPing(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
@@ -144,8 +144,7 @@ public class MessageEventListener extends ListenerAdapter {
 
         // If the user is not considered privileged, then filter messages
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
-            OffsetDateTime editTime = (event.getMessage().getTimeEdited() != null ? event.getMessage().getTimeEdited() : OffsetDateTime.now());
-            HifumiBot.getSelf().getScheduler().runOnce(new FilterRunnable(event.getMessage(), editTime, true));   
+            HifumiBot.getSelf().getScheduler().runOnce(new UrlChangeReviewRunnable(event.getMessage()));
         }
     }
 }

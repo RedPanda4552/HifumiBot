@@ -31,17 +31,15 @@ import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
 import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
-import io.github.redpanda4552.HifumiBot.config.FilterConfig;
 import io.github.redpanda4552.HifumiBot.database.SQLite;
+import io.github.redpanda4552.HifumiBot.event.AutoModEventListener;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
 import io.github.redpanda4552.HifumiBot.event.MessageEventListener;
 import io.github.redpanda4552.HifumiBot.event.ModalEventListener;
 import io.github.redpanda4552.HifumiBot.event.RoleEventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
-import io.github.redpanda4552.HifumiBot.filter.FilterHandler;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
-import io.github.redpanda4552.HifumiBot.util.Internet;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
@@ -101,7 +99,6 @@ public class HifumiBot {
     private Config config;
     private DynCmdConfig dynCmdConfig;
     private EmulogParserConfig emulogParserConfig;
-    private FilterConfig filterConfig;
     private final OkHttpClient http;
     private SQLite sqlite;
     
@@ -111,7 +108,6 @@ public class HifumiBot {
     private GpuIndex gpuIndex;
     private CommandIndex commandIndex;
     private PermissionManager permissionManager;
-    private FilterHandler chatFilter;
     
     private RoleEventListener roleEventListener;
     private MessageEventListener messageEventListener;
@@ -161,16 +157,11 @@ public class HifumiBot {
             ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
             emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
             ConfigManager.write(emulogParserConfig);
-
-            ConfigManager.createConfigIfNotExists(ConfigType.FILTERS);
-            filterConfig = (FilterConfig) ConfigManager.read(ConfigType.FILTERS);
-            ConfigManager.write(filterConfig);
         } catch (Exception e) {
             Messaging.logException("HifumiBot", "(constructor)", e);
         }
         
         sqlite = new SQLite();
-        Internet.init();
         deepL = new Translator(deepLKey);
         scheduler = new Scheduler();
         wikiIndex = new WikiIndex();
@@ -178,13 +169,13 @@ public class HifumiBot {
         gpuIndex = new GpuIndex();
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
-        chatFilter = new FilterHandler();
         jda.addEventListener(roleEventListener = new RoleEventListener());
         jda.addEventListener(messageEventListener = new MessageEventListener());
         jda.addEventListener(memberEventListener = new MemberEventListener());
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
         jda.addEventListener(modalEventListener = new ModalEventListener());
+        jda.addEventListener(new AutoModEventListener());
         gameIndex = new GameIndex();
 
         scheduler.runOnce(() -> {
@@ -230,10 +221,6 @@ public class HifumiBot {
         return emulogParserConfig;
     }
 
-    public FilterConfig getFilterConfig() {
-        return filterConfig;
-    }
-
     public OkHttpClient getHttpClient() {
         return http;
     }
@@ -272,10 +259,6 @@ public class HifumiBot {
 
     public PermissionManager getPermissionManager() {
         return permissionManager;
-    }
-
-    public FilterHandler getFilterHandler() {
-        return chatFilter;
     }
 
     public RoleEventListener getRoleEventListener() {
