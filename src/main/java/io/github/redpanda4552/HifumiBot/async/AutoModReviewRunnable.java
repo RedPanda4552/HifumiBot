@@ -31,17 +31,19 @@ public class AutoModReviewRunnable implements Runnable {
             User usr = HifumiBot.getSelf().getJDA().getUserById(this.userId);
 
             // Kick the user first
-            ModActions.kickAndNotifyUser(this.server, this.userId);
+            boolean wasKicked = ModActions.kickAndNotifyUser(this.server, this.userId);
 
             // Now report to staff
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setTitle("User Automatically Kicked");
-            eb.setDescription("User was automatically kicked from the server for repeated filter incidents.");
-            eb.addField("User (As Mention)", usr.getAsMention(), true);
-            eb.addField("Username", usr.getName(), true);
-            eb.addField("User ID", usr.getId(), true);
-            eb.setColor(Color.ORANGE);
-            Messaging.logInfoEmbed(eb.build());
+            if (wasKicked) {
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setTitle("User Automatically Kicked");
+                eb.setDescription("User was automatically kicked from the server for repeated filter incidents.");
+                eb.addField("User (As Mention)", usr.getAsMention(), true);
+                eb.addField("Username", usr.getName(), true);
+                eb.addField("User ID", usr.getId(), true);
+                eb.setColor(Color.ORANGE);
+                Messaging.logInfoEmbed(eb.build());
+            }
         }
     }
 
