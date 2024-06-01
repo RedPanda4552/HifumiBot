@@ -33,7 +33,7 @@ public class MemberEventListener extends ListenerAdapter {
 
             if (latestEvent.getAction().equals(MemberEventObject.Action.JOIN) && secondEvent.getAction().equals(MemberEventObject.Action.LEAVE) && thirdEvent.getAction().equals(MemberEventObject.Action.JOIN)) {
                 Instant newestJoinTime = Instant.ofEpochSecond(latestEvent.getTimestamp());
-                Instant olderJoinTime = Instant.ofEpochSecond(latestEvent.getTimestamp());
+                Instant olderJoinTime = Instant.ofEpochSecond(thirdEvent.getTimestamp());
                 long minutesBetween = Duration.between(olderJoinTime, newestJoinTime).toMinutes();
 
                 if (minutesBetween < 5) {
