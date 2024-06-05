@@ -708,7 +708,7 @@ public class Database {
         return ret;
     }
 
-    public static ArrayList<WarezChartData> getWarezAssignmentsMonth() {
+    public static ArrayList<WarezChartData> getWarezAssignmentsThisYear() {
         ArrayList<WarezChartData> ret = new ArrayList<WarezChartData>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
         OffsetDateTime oneYearAgo = OffsetDateTime.now(Clock.systemUTC()).minusDays(365);

@@ -20,7 +20,7 @@ public class WarezChartGenerator extends AbstractChartGenerator {
 
     @Override
     public byte[] build() {
-        ArrayList<WarezChartData> warezDataList = Database.getWarezAssignmentsMonth();
+        ArrayList<WarezChartData> warezDataList = Database.getWarezAssignmentsThisYear();
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
