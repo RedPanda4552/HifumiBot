@@ -36,6 +36,7 @@ import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandAbout;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandBulkDelete;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandCPU;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandChartGen;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandDynCmd;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandGPU;
@@ -113,6 +114,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandBulkDelete());
         registerSlashCommand(new CommandSerial());
         registerSlashCommand(new CommandPrompt());
+        registerSlashCommand(new CommandChartGen());
     }
     
     public void rebuildMessage() {

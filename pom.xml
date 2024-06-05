@@ -18,6 +18,7 @@
         <snakeyaml.version>2.2</snakeyaml.version> <!-- https://central.sonatype.com/artifact/org.yaml/snakeyaml -->
         <deepl.version>1.5.0</deepl.version> <!-- https://central.sonatype.com/artifact/com.deepl.api/deepl-java -->
         <sqlite.version>3.45.3.0</sqlite.version> <!-- https://central.sonatype.com/artifact/org.xerial/sqlite-jdbc -->
+        <jfreechart.version>1.5.4</jfreechart.version> <!-- https://central.sonatype.com/artifact/org.jfree/jfreechart -->
         
         <!-- Maven Plugin Versions -->
         <maven-jar-plugin.version>3.4.1</maven-jar-plugin.version> <!-- https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
@@ -128,6 +129,12 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>${sqlite.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>${jfreechart.version}</version>
         </dependency>
     </dependencies>
   

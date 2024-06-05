@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.charting.WarezChartData;
 import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.automod.AutoModResponse;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.automod.AutoModResponse;
 import net.dv8tion.jda.api.events.automod.AutoModExecutionEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -696,6 +697,39 @@ public class Database {
                     latestEvent.getLong("fk_user"), 
                     WarezEventObject.Action.valueOf(latestEvent.getString("action").toUpperCase())
                 );
+            }
+
+            getWarezEvent.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getLatestWarezAction", e);
+        }
+        
+        return ret;
+    }
+
+    public static ArrayList<WarezChartData> getWarezAssignmentsMonth() {
+        ArrayList<WarezChartData> ret = new ArrayList<WarezChartData>();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+        OffsetDateTime oneMonthAgo = OffsetDateTime.now().minusDays(365);
+        
+        try {
+            PreparedStatement getWarezEvent = conn.prepareStatement("""
+                    SELECT COUNT(timestamp) AS events, STRFTIME('%m', DATETIME(timestamp, 'unixepoch')) AS month
+                    FROM warez_event
+                    WHERE timestamp > ?
+                    AND action = ?
+                    GROUP BY STRFTIME('%m', DATETIME(timestamp, 'unixepoch'))
+                    ORDER BY timestamp ASC
+                    """);
+            getWarezEvent.setLong(1, oneMonthAgo.toEpochSecond());
+            getWarezEvent.setString(2, WarezEventObject.Action.ADD.toString().toLowerCase());
+            ResultSet latestEvent = getWarezEvent.executeQuery();
+
+            while (latestEvent.next()) {
+                WarezChartData data = new WarezChartData();
+                data.month = latestEvent.getInt("month");
+                data.events = latestEvent.getInt("events");
+                ret.add(data);
             }
 
             getWarezEvent.close();
