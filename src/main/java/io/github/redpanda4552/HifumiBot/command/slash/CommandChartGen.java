@@ -4,6 +4,7 @@ import io.github.redpanda4552.HifumiBot.charting.AbstractChartGenerator;
 import io.github.redpanda4552.HifumiBot.charting.WarezChartGenerator;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -50,7 +51,8 @@ public class CommandChartGen extends AbstractSlashCommand {
         }
 
         return Commands.slash("chartgen", "Generate a chart")
-                .addOptions(typeOption);
+                .addOptions(typeOption)
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
 
 }
