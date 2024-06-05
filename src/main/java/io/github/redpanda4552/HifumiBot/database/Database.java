@@ -710,24 +710,24 @@ public class Database {
     public static ArrayList<WarezChartData> getWarezAssignmentsMonth() {
         ArrayList<WarezChartData> ret = new ArrayList<WarezChartData>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        OffsetDateTime oneMonthAgo = OffsetDateTime.now().minusDays(365);
+        OffsetDateTime oneYearAgo = OffsetDateTime.now().minusDays(365);
         
         try {
             PreparedStatement getWarezEvent = conn.prepareStatement("""
-                    SELECT COUNT(timestamp) AS events, STRFTIME('%m', DATETIME(timestamp, 'unixepoch')) AS month
+                    SELECT COUNT(timestamp) AS events, STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')) AS month
                     FROM warez_event
                     WHERE timestamp > ?
                     AND action = ?
-                    GROUP BY STRFTIME('%m', DATETIME(timestamp, 'unixepoch'))
+                    GROUP BY STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch'))
                     ORDER BY timestamp ASC
                     """);
-            getWarezEvent.setLong(1, oneMonthAgo.toEpochSecond());
+            getWarezEvent.setLong(1, oneYearAgo.toEpochSecond());
             getWarezEvent.setString(2, WarezEventObject.Action.ADD.toString().toLowerCase());
             ResultSet latestEvent = getWarezEvent.executeQuery();
 
             while (latestEvent.next()) {
                 WarezChartData data = new WarezChartData();
-                data.month = latestEvent.getInt("month");
+                data.month = latestEvent.getString("month");
                 data.events = latestEvent.getInt("events");
                 ret.add(data);
             }

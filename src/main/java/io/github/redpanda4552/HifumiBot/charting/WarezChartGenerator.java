@@ -1,10 +1,7 @@
 package io.github.redpanda4552.HifumiBot.charting;
 
 import java.io.ByteArrayOutputStream;
-import java.time.Month;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
@@ -28,8 +25,7 @@ public class WarezChartGenerator extends AbstractChartGenerator {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
         for (WarezChartData data : warezDataList) {
-            String monthName = Month.of(data.month).getDisplayName(TextStyle.SHORT, Locale.US);
-            dataset.addValue(data.events, monthName, "events");
+            dataset.addValue(data.events, data.month, "events");
         }
 
         JFreeChart chart = ChartFactory.createBarChart("Warez Events This Year", "Month", "Warez Events", dataset, PlotOrientation.VERTICAL, true, true, false);
