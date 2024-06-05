@@ -1,7 +1,6 @@
 package io.github.redpanda4552.HifumiBot.command.slash;
 
-import io.github.redpanda4552.HifumiBot.charting.AbstractChartGenerator;
-import io.github.redpanda4552.HifumiBot.charting.WarezChartGenerator;
+import io.github.redpanda4552.HifumiBot.charting.ChartGenerator;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -24,12 +23,9 @@ public class CommandChartGen extends AbstractSlashCommand {
             return;
         }
 
-        AbstractChartGenerator.ChartType chartType = AbstractChartGenerator.ChartType.valueOf(typeOpt.getAsString());
-        
-        switch (chartType) {
-            case AbstractChartGenerator.ChartType.WAREZ: {
-                WarezChartGenerator generator = new WarezChartGenerator();
-                FileUpload file = FileUpload.fromData(generator.build(), "warez.png");
+        switch (typeOpt.getAsString()) {
+            case "warez": {
+                FileUpload file = FileUpload.fromData(ChartGenerator.buildWarezChart(), "warez.png");
                 MessageCreateBuilder mb = new MessageCreateBuilder();
                 mb.addFiles(file);
                 event.reply(mb.build()).queue();
@@ -45,10 +41,7 @@ public class CommandChartGen extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         OptionData typeOption = new OptionData(OptionType.STRING, "type", "Type of chart to generate", true);
-
-        for (AbstractChartGenerator.ChartType chartType : AbstractChartGenerator.ChartType.values()) {
-            typeOption.addChoice(chartType.toString().toLowerCase(), chartType.toString());
-        }
+        typeOption.addChoice("warez", "warez");
 
         return Commands.slash("chartgen", "Generate a chart")
                 .addOptions(typeOption)

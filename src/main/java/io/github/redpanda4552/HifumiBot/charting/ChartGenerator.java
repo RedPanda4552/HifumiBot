@@ -12,14 +12,9 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 
-public class WarezChartGenerator extends AbstractChartGenerator {
+public class ChartGenerator {
 
-    public WarezChartGenerator() {
-        
-    }
-
-    @Override
-    public byte[] build() {
+    public static byte[] buildWarezChart() {
         ArrayList<WarezChartData> warezDataList = Database.getWarezAssignmentsThisYear();
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -40,5 +35,4 @@ public class WarezChartGenerator extends AbstractChartGenerator {
         
         return null;
     }
-
 }
