@@ -30,7 +30,29 @@ public class ChartGenerator {
             ChartUtils.writeChartAsPNG(out, chart, 1280, 720);
             return out.toByteArray();
         } catch (Exception e) {
-            Messaging.logException("WarezChartGenerator", "build", e);
+            Messaging.logException("ChartGenerator", "buildWarezChart", e);
+        }
+        
+        return null;
+    }
+
+    public static byte[] buildMemberChart() {
+        ArrayList<MemberChartData> memberDataList = Database.getMemberEventsThisYear();
+
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        
+        for (MemberChartData data : memberDataList) {
+            dataset.addValue(data.events, data.action, data.month);
+        }
+
+        JFreeChart chart = ChartFactory.createBarChart("Member Events This Year", "Month", "Member Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
+        
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ChartUtils.writeChartAsPNG(out, chart, 1280, 720);
+            return out.toByteArray();
+        } catch (Exception e) {
+            Messaging.logException("ChartGenerator", "buildMemberChart", e);
         }
         
         return null;

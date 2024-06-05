@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.charting.MemberChartData;
 import io.github.redpanda4552.HifumiBot.charting.WarezChartData;
 import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -792,6 +793,38 @@ public class Database {
                     MemberEventObject.Action.valueOf(eventsRes.getString("action").toUpperCase())
                 );
                 ret.add(event);
+            }
+
+            events.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getRecentMemberEvents", e);
+        }
+
+        return ret;
+    }
+
+    public static ArrayList<MemberChartData> getMemberEventsThisYear() {
+        ArrayList<MemberChartData> ret = new ArrayList<MemberChartData>();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+        long epochSeconds = TimeUtils.getEpochSecondLastYear();
+
+        try {
+            PreparedStatement events = conn.prepareStatement("""
+                    SELECT COUNT(timestamp) AS events, STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')) AS month, action
+                    FROM member_event
+                    WHERE timestamp >= ?
+                    GROUP BY STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')), action
+                    ORDER BY timestamp ASC;
+                    """);
+            events.setLong(1, epochSeconds);
+            ResultSet eventsRes = events.executeQuery();
+
+            while (eventsRes.next()) {
+                MemberChartData data = new MemberChartData();
+                data.month = eventsRes.getString("month");
+                data.events = eventsRes.getInt("events");
+                data.action = eventsRes.getString("action");
+                ret.add(data);
             }
 
             events.close();
