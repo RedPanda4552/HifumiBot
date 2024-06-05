@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.charting.WarezChartData;
 import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.TimeUtils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.User;
@@ -711,10 +711,7 @@ public class Database {
     public static ArrayList<WarezChartData> getWarezAssignmentsThisYear() {
         ArrayList<WarezChartData> ret = new ArrayList<WarezChartData>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        OffsetDateTime oneYearAgo = OffsetDateTime.now(Clock.systemUTC()).minusDays(365);
-        OffsetDateTime adjustedToMonthStart = (oneYearAgo.getDayOfMonth() > 1 ? oneYearAgo.minusDays(oneYearAgo.getDayOfMonth() - 1) : oneYearAgo);
-        OffsetDateTime toMidnight = adjustedToMonthStart.minusHours(adjustedToMonthStart.getHour()).minusMinutes(adjustedToMonthStart.getMinute()).minusSeconds(adjustedToMonthStart.getSecond()).minusNanos(adjustedToMonthStart.getNano());
-        long epochSeconds = toMidnight.toEpochSecond();
+        long epochSeconds = TimeUtils.getEpochSecondLastYear();
         
         try {
             PreparedStatement getWarezEvent = conn.prepareStatement("""
@@ -777,7 +774,8 @@ public class Database {
         ArrayList<MemberEventObject> ret = new ArrayList<MemberEventObject>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
-        try {            PreparedStatement events = conn.prepareStatement("""
+        try {
+            PreparedStatement events = conn.prepareStatement("""
                     SELECT timestamp, fk_user, action
                     FROM member_event
                     WHERE fk_user = ?
