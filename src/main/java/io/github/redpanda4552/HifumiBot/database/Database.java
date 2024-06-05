@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -710,18 +711,21 @@ public class Database {
     public static ArrayList<WarezChartData> getWarezAssignmentsMonth() {
         ArrayList<WarezChartData> ret = new ArrayList<WarezChartData>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        OffsetDateTime oneYearAgo = OffsetDateTime.now().minusDays(365);
+        OffsetDateTime oneYearAgo = OffsetDateTime.now(Clock.systemUTC()).minusDays(365);
+        OffsetDateTime adjustedToMonthStart = (oneYearAgo.getDayOfMonth() > 1 ? oneYearAgo.minusDays(oneYearAgo.getDayOfMonth() - 1) : oneYearAgo);
+        OffsetDateTime toMidnight = adjustedToMonthStart.minusHours(adjustedToMonthStart.getHour()).minusMinutes(adjustedToMonthStart.getMinute()).minusSeconds(adjustedToMonthStart.getSecond()).minusNanos(adjustedToMonthStart.getNano());
+        long epochSeconds = toMidnight.toEpochSecond();
         
         try {
             PreparedStatement getWarezEvent = conn.prepareStatement("""
                     SELECT COUNT(timestamp) AS events, STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')) AS month
                     FROM warez_event
-                    WHERE timestamp > ?
+                    WHERE timestamp >= ?
                     AND action = ?
                     GROUP BY STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch'))
                     ORDER BY timestamp ASC
                     """);
-            getWarezEvent.setLong(1, oneYearAgo.toEpochSecond());
+            getWarezEvent.setLong(1, epochSeconds);
             getWarezEvent.setString(2, WarezEventObject.Action.ADD.toString().toLowerCase());
             ResultSet latestEvent = getWarezEvent.executeQuery();
 
