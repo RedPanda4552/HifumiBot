@@ -4,4 +4,5 @@ public class WarezChartData {
 
     public String month;
     public int events;
+    public String action;
 }

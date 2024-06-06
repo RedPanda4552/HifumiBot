@@ -716,21 +716,20 @@ public class Database {
         
         try {
             PreparedStatement getWarezEvent = conn.prepareStatement("""
-                    SELECT COUNT(timestamp) AS events, STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')) AS month
+                    SELECT COUNT(timestamp) AS events, STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')) AS month, action
                     FROM warez_event
                     WHERE timestamp >= ?
-                    AND action = ?
-                    GROUP BY STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch'))
+                    GROUP BY STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')), action
                     ORDER BY timestamp ASC
                     """);
             getWarezEvent.setLong(1, epochSeconds);
-            getWarezEvent.setString(2, WarezEventObject.Action.ADD.toString().toLowerCase());
             ResultSet latestEvent = getWarezEvent.executeQuery();
 
             while (latestEvent.next()) {
                 WarezChartData data = new WarezChartData();
                 data.month = latestEvent.getString("month");
                 data.events = latestEvent.getInt("events");
+                data.action = latestEvent.getString("action");
                 ret.add(data);
             }
 
