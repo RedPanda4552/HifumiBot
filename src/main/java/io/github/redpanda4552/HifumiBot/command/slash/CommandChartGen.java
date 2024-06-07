@@ -17,9 +17,11 @@ public class CommandChartGen extends AbstractSlashCommand {
     @Override
     protected void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping typeOpt = event.getOption("type");
+        OptionMapping timeUnitOpt = event.getOption("time-unit");
+        OptionMapping lengthOpt = event.getOption("length");
         
-        if (typeOpt == null) {
-            event.reply("Missing required option 'type'").setEphemeral(true).queue();
+        if (typeOpt == null || timeUnitOpt == null || lengthOpt == null) {
+            event.reply("Missing required options").setEphemeral(true).queue();
             return;
         }
 
@@ -27,15 +29,11 @@ public class CommandChartGen extends AbstractSlashCommand {
 
         switch (typeOpt.getAsString()) {
             case "warez": {
-                file = FileUpload.fromData(ChartGenerator.buildWarezChart(), "warez.png");
+                file = FileUpload.fromData(ChartGenerator.buildWarezChart(timeUnitOpt.getAsString(), lengthOpt.getAsLong()), "warez.png");
                 break;
             }
-            case "member-year": {
-                file = FileUpload.fromData(ChartGenerator.buildMemberChartYear(), "member.png"); 
-                break;
-            }
-            case "member-week": {
-                file = FileUpload.fromData(ChartGenerator.buildMemberChartWeek(), "member.png");
+            case "member": {
+                file = FileUpload.fromData(ChartGenerator.buildMemberChart(timeUnitOpt.getAsString(), lengthOpt.getAsLong()), "member.png"); 
                 break;
             }
             default: {
@@ -53,11 +51,20 @@ public class CommandChartGen extends AbstractSlashCommand {
     protected CommandData defineSlashCommand() {
         OptionData typeOption = new OptionData(OptionType.STRING, "type", "Type of chart to generate", true);
         typeOption.addChoice("warez", "warez");
-        typeOption.addChoice("member-week", "member-week");
-        typeOption.addChoice("member-year", "member-year");
+        typeOption.addChoice("member", "member");
+
+        OptionData timeUnitOption = new OptionData(OptionType.STRING, "time-unit", "What time unit to use", true);
+        timeUnitOption.addChoice("Days", "Days");
+        timeUnitOption.addChoice("Months", "Months");
+
+        OptionData lengthOption = new OptionData(OptionType.INTEGER, "length", "How far back in time to look", true);
+        lengthOption.addChoice("week", 7);
+        lengthOption.addChoice("month", 30);
+        lengthOption.addChoice("year", 365);
+
 
         return Commands.slash("chartgen", "Generate a chart")
-                .addOptions(typeOption)
+                .addOptions(typeOption, timeUnitOption, lengthOption)
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
 

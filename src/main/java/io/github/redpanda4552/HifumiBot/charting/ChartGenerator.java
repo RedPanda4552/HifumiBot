@@ -18,16 +18,16 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 
 public class ChartGenerator {
 
-    public static byte[] buildWarezChart() {
-        ArrayList<WarezChartData> warezDataList = Database.getWarezAssignmentsThisYear();
+    public static byte[] buildWarezChart(String timeUnit, long length) {
+        ArrayList<WarezChartData> warezDataList = Database.getWarezAssignmentsSince(timeUnit, length);
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
         for (WarezChartData data : warezDataList) {
-            dataset.addValue(data.events, data.action, data.month);
+            dataset.addValue(data.events, data.action, data.timeUnit);
         }
 
-        JFreeChart chart = ChartFactory.createBarChart("Warez Events This Year", "Month", "Warez Events", dataset, PlotOrientation.VERTICAL, true, true, false);
+        JFreeChart chart = ChartFactory.createBarChart("Warez Events (" + timeUnit + ")", timeUnit, "Warez Events", dataset, PlotOrientation.VERTICAL, true, true, false);
         CategoryPlot plot = (CategoryPlot) chart.getPlot();
         BarRenderer renderer = (BarRenderer) plot.getRenderer();
         renderer.setBarPainter(new StandardBarPainter());
@@ -46,8 +46,8 @@ public class ChartGenerator {
         return null;
     }
 
-    public static byte[] buildMemberChartYear() {
-        ArrayList<MemberChartData> memberDataList = Database.getMemberEventsThisYear();
+    public static byte[] buildMemberChart(String timeUnit, long length) {
+        ArrayList<MemberChartData> memberDataList = Database.getMemberEventsSince(timeUnit, length);
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
@@ -55,7 +55,7 @@ public class ChartGenerator {
             dataset.addValue(data.events, data.action, data.timeUnit);
         }
 
-        JFreeChart chart = ChartFactory.createBarChart("Member Events This Year", "Month", "Member Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
+        JFreeChart chart = ChartFactory.createBarChart("Member Events (" + timeUnit + ")", timeUnit, "Member Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
         CategoryPlot plot = (CategoryPlot) chart.getPlot();
         BarRenderer renderer = (BarRenderer) plot.getRenderer();
         renderer.setBarPainter(new StandardBarPainter());
@@ -69,36 +69,7 @@ public class ChartGenerator {
             ChartUtils.writeChartAsPNG(out, chart, 1280, 720);
             return out.toByteArray();
         } catch (Exception e) {
-            Messaging.logException("ChartGenerator", "buildMemberChartYear", e);
-        }
-        
-        return null;
-    }
-
-    public static byte[] buildMemberChartWeek() {
-        ArrayList<MemberChartData> memberDataList = Database.getMemberEventsThisWeek();
-
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        
-        for (MemberChartData data : memberDataList) {
-            dataset.addValue(data.events, data.action, data.timeUnit);
-        }
-
-        JFreeChart chart = ChartFactory.createBarChart("Member Events This Week", "Day", "Member Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
-        CategoryPlot plot = (CategoryPlot) chart.getPlot();
-        BarRenderer renderer = (BarRenderer) plot.getRenderer();
-        renderer.setBarPainter(new StandardBarPainter());
-        renderer.setDrawBarOutline(true);
-        renderer.setSeriesPaint(0, Color.GREEN);
-        renderer.setSeriesPaint(1, Color.YELLOW);
-        renderer.setSeriesPaint(2, Color.RED);
-        
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ChartUtils.writeChartAsPNG(out, chart, 1280, 720);
-            return out.toByteArray();
-        } catch (Exception e) {
-            Messaging.logException("ChartGenerator", "buildMemberChartWeek", e);
+            Messaging.logException("ChartGenerator", "buildMemberChart", e);
         }
         
         return null;

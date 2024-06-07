@@ -6,30 +6,35 @@ import java.time.OffsetDateTime;
 public class TimeUtils {
 
     /**
-     * Gets the current time, and removes 365 days giving roughly one year in the past.
-     * Then round that down to the first day of whatever month it landed in,
-     * finally shave off all hours minutes seconds and nanos. The result will always be
-     * the first day of the month at midnight UTC.
+     * Get a pretty epoch second value going back length days in time, and then flushing out to the nearest timeUnit.
+     * @param timeUnit
+     * @param length
      * @return
      */
-    public static long getEpochSecondLastYear() {
-        OffsetDateTime oneYearAgo = OffsetDateTime.now(Clock.systemUTC()).minusDays(365);
-        OffsetDateTime adjustedToMonthStart = (oneYearAgo.getDayOfMonth() > 1 ? oneYearAgo.minusDays(oneYearAgo.getDayOfMonth() - 1) : oneYearAgo);
-        OffsetDateTime toMidnight = adjustedToMonthStart.minusHours(adjustedToMonthStart.getHour()).minusMinutes(adjustedToMonthStart.getMinute()).minusSeconds(adjustedToMonthStart.getSecond()).minusNanos(adjustedToMonthStart.getNano());
+    public static long getEpochSecondStartOfUnit(String timeUnit, long length) {
+        OffsetDateTime daysSubtracted = OffsetDateTime.now(Clock.systemUTC()).minusDays(length);
+        OffsetDateTime adjustedToStart = daysSubtracted;
+
+        if (timeUnit.equals("Months")) {
+            adjustedToStart = (daysSubtracted.getDayOfMonth() > 1 ? daysSubtracted.minusDays(daysSubtracted.getDayOfMonth() - 1) : daysSubtracted);
+        }
+        
+        OffsetDateTime toMidnight = adjustedToStart.minusHours(adjustedToStart.getHour()).minusMinutes(adjustedToStart.getMinute()).minusSeconds(adjustedToStart.getSecond()).minusNanos(adjustedToStart.getNano());
         long epochSeconds = toMidnight.toEpochSecond();
         return epochSeconds;
     }
 
-    /**
-     * Gets the current time, and removes 7 days giving roughly one week in the past.
-     * Finally shave off all hours minutes seconds and nanos. The result will always be
-     * the first day of the month at midnight UTC.
-     * @return
-     */
-    public static long getEpochSecondLastWeek() {
-        OffsetDateTime oneWeekAgo = OffsetDateTime.now(Clock.systemUTC()).minusDays(7);
-        OffsetDateTime toMidnight = oneWeekAgo.minusHours(oneWeekAgo.getHour()).minusMinutes(oneWeekAgo.getMinute()).minusSeconds(oneWeekAgo.getSecond()).minusNanos(oneWeekAgo.getNano());
-        long epochSeconds = toMidnight.toEpochSecond();
-        return epochSeconds;
+    public static String getSQLFormatStringFromTimeUnit(String timeUnit) {
+        switch (timeUnit) {
+            case "Months": {
+                return "%Y-%m";
+            }
+            case "Days": {
+                return "%Y-%m-%d";
+            }
+            default: {
+                return "%Y-%m-%d";
+            }
+        }
     }
 }

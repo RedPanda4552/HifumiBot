@@ -709,25 +709,28 @@ public class Database {
         return ret;
     }
 
-    public static ArrayList<WarezChartData> getWarezAssignmentsThisYear() {
+    public static ArrayList<WarezChartData> getWarezAssignmentsSince(String timeUnit, long length) {
         ArrayList<WarezChartData> ret = new ArrayList<WarezChartData>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        long epochSeconds = TimeUtils.getEpochSecondLastYear();
+        long epochSeconds = TimeUtils.getEpochSecondStartOfUnit(timeUnit, length);
+        String formatStr = TimeUtils.getSQLFormatStringFromTimeUnit(timeUnit);
         
         try {
             PreparedStatement getWarezEvent = conn.prepareStatement("""
-                    SELECT COUNT(timestamp) AS events, STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')) AS month, action
+                    SELECT COUNT(timestamp) AS events, STRFTIME(?, DATETIME(timestamp, 'unixepoch')) AS timeUnit, action
                     FROM warez_event
                     WHERE timestamp >= ?
-                    GROUP BY STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')), action
+                    GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), action
                     ORDER BY timestamp ASC
                     """);
-            getWarezEvent.setLong(1, epochSeconds);
+            getWarezEvent.setString(1, formatStr);
+            getWarezEvent.setLong(2, epochSeconds);
+            getWarezEvent.setString(3, formatStr);
             ResultSet latestEvent = getWarezEvent.executeQuery();
 
             while (latestEvent.next()) {
                 WarezChartData data = new WarezChartData();
-                data.month = latestEvent.getString("month");
+                data.timeUnit = latestEvent.getString("timeUnit");
                 data.events = latestEvent.getInt("events");
                 data.action = latestEvent.getString("action");
                 ret.add(data);
@@ -802,25 +805,28 @@ public class Database {
         return ret;
     }
 
-    public static ArrayList<MemberChartData> getMemberEventsThisYear() {
+    public static ArrayList<MemberChartData> getMemberEventsSince(String timeUnit, long length) {
         ArrayList<MemberChartData> ret = new ArrayList<MemberChartData>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        long epochSeconds = TimeUtils.getEpochSecondLastYear();
+        long epochSeconds = TimeUtils.getEpochSecondStartOfUnit(timeUnit, length);
+        String formatStr = TimeUtils.getSQLFormatStringFromTimeUnit(timeUnit);
 
         try {
             PreparedStatement events = conn.prepareStatement("""
-                    SELECT COUNT(timestamp) AS events, STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')) AS month, action
+                    SELECT COUNT(timestamp) AS events, STRFTIME(?, DATETIME(timestamp, 'unixepoch')) AS timeUnit, action
                     FROM member_event
                     WHERE timestamp >= ?
-                    GROUP BY STRFTIME('%m-%Y', DATETIME(timestamp, 'unixepoch')), action
+                    GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), action
                     ORDER BY timestamp ASC;
                     """);
-            events.setLong(1, epochSeconds);
+            events.setString(1, formatStr);
+            events.setLong(2, epochSeconds);
+            events.setString(3, formatStr);
             ResultSet eventsRes = events.executeQuery();
 
             while (eventsRes.next()) {
                 MemberChartData data = new MemberChartData();
-                data.timeUnit = eventsRes.getString("month");
+                data.timeUnit = eventsRes.getString("timeUnit");
                 data.events = eventsRes.getInt("events");
                 data.action = eventsRes.getString("action");
                 ret.add(data);
@@ -828,39 +834,7 @@ public class Database {
 
             events.close();
         } catch (SQLException e) {
-            Messaging.logException("Database", "getRecentMemberEvents", e);
-        }
-
-        return ret;
-    }
-
-    public static ArrayList<MemberChartData> getMemberEventsThisWeek() {
-        ArrayList<MemberChartData> ret = new ArrayList<MemberChartData>();
-        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        long epochSeconds = TimeUtils.getEpochSecondLastWeek();
-
-        try {
-            PreparedStatement events = conn.prepareStatement("""
-                    SELECT COUNT(timestamp) AS events, STRFTIME('%Y-%m-%d', DATETIME(timestamp, 'unixepoch')) AS day, action
-                    FROM member_event
-                    WHERE timestamp >= ?
-                    GROUP BY STRFTIME('%Y-%m-%d', DATETIME(timestamp, 'unixepoch')), action
-                    ORDER BY timestamp ASC;
-                    """);
-            events.setLong(1, epochSeconds);
-            ResultSet eventsRes = events.executeQuery();
-
-            while (eventsRes.next()) {
-                MemberChartData data = new MemberChartData();
-                data.timeUnit = eventsRes.getString("day");
-                data.events = eventsRes.getInt("events");
-                data.action = eventsRes.getString("action");
-                ret.add(data);
-            }
-
-            events.close();
-        } catch (SQLException e) {
-            Messaging.logException("Database", "getRecentMemberEvents", e);
+            Messaging.logException("Database", "getMemberEventsSince", e);
         }
 
         return ret;
