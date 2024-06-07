@@ -32,6 +32,9 @@ public class TimeUtils {
             case "Days": {
                 return "%Y-%m-%d";
             }
+            case "Day-of-Week": {
+                return "%u";
+            }
             default: {
                 return "%Y-%m-%d";
             }

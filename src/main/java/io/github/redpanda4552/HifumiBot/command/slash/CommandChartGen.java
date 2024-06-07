@@ -56,6 +56,7 @@ public class CommandChartGen extends AbstractSlashCommand {
         OptionData timeUnitOption = new OptionData(OptionType.STRING, "time-unit", "What time unit to use", true);
         timeUnitOption.addChoice("Days", "Days");
         timeUnitOption.addChoice("Months", "Months");
+        timeUnitOption.addChoice("Day-of-Week", "Day-of-Week");
 
         OptionData lengthOption = new OptionData(OptionType.INTEGER, "length", "How far back in time to look", true);
         lengthOption.addChoice("week", 7);
