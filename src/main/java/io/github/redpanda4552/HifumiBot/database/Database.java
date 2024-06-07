@@ -721,7 +721,7 @@ public class Database {
                     FROM warez_event
                     WHERE timestamp >= ?
                     GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), action
-                    ORDER BY timestamp ASC, action ASC
+                    ORDER BY action ASC, timestamp ASC;
                     """);
             getWarezEvent.setString(1, formatStr);
             getWarezEvent.setLong(2, epochSeconds);
@@ -817,7 +817,12 @@ public class Database {
                     FROM member_event
                     WHERE timestamp >= ?
                     GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), action
-                    ORDER BY timestamp ASC, action ASC;
+                    ORDER BY CASE
+                        WHEN action = "join" THEN 1
+                        WHEN action = "leave" THEN 2
+                        WHEN action = "ban" THEN 3
+                        END ASC,
+                        timestamp ASC;
                     """);
             events.setString(1, formatStr);
             events.setLong(2, epochSeconds);
