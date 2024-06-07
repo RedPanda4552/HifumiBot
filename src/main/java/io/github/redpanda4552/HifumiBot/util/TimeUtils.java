@@ -19,4 +19,17 @@ public class TimeUtils {
         long epochSeconds = toMidnight.toEpochSecond();
         return epochSeconds;
     }
+
+    /**
+     * Gets the current time, and removes 7 days giving roughly one week in the past.
+     * Finally shave off all hours minutes seconds and nanos. The result will always be
+     * the first day of the month at midnight UTC.
+     * @return
+     */
+    public static long getEpochSecondLastWeek() {
+        OffsetDateTime oneWeekAgo = OffsetDateTime.now(Clock.systemUTC()).minusDays(7);
+        OffsetDateTime toMidnight = oneWeekAgo.minusHours(oneWeekAgo.getHour()).minusMinutes(oneWeekAgo.getMinute()).minusSeconds(oneWeekAgo.getSecond()).minusNanos(oneWeekAgo.getNano());
+        long epochSeconds = toMidnight.toEpochSecond();
+        return epochSeconds;
+    }
 }

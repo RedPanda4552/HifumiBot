@@ -30,8 +30,12 @@ public class CommandChartGen extends AbstractSlashCommand {
                 file = FileUpload.fromData(ChartGenerator.buildWarezChart(), "warez.png");
                 break;
             }
-            case "member": {
-                file = FileUpload.fromData(ChartGenerator.buildMemberChart(), "member.png");
+            case "member-year": {
+                file = FileUpload.fromData(ChartGenerator.buildMemberChartYear(), "member.png"); 
+                break;
+            }
+            case "member-week": {
+                file = FileUpload.fromData(ChartGenerator.buildMemberChartWeek(), "member.png");
                 break;
             }
             default: {
@@ -49,7 +53,8 @@ public class CommandChartGen extends AbstractSlashCommand {
     protected CommandData defineSlashCommand() {
         OptionData typeOption = new OptionData(OptionType.STRING, "type", "Type of chart to generate", true);
         typeOption.addChoice("warez", "warez");
-        typeOption.addChoice("member", "member");
+        typeOption.addChoice("member-week", "member-week");
+        typeOption.addChoice("member-year", "member-year");
 
         return Commands.slash("chartgen", "Generate a chart")
                 .addOptions(typeOption)
