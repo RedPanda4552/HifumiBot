@@ -66,8 +66,8 @@ public class Database {
             }
 
             PreparedStatement insertMessage = conn.prepareStatement("""
-                    INSERT INTO message (message_id, fk_channel, jump_link, fk_reply_to_message, timestamp)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO message (message_id, fk_channel, jump_link, fk_reply_to_message, timestamp, fk_user)
+                    VALUES (?, ?, ?, ?, ?, ?)
                     ON CONFLICT (message_id) DO NOTHING;
                     """);
             insertMessage.setLong(1, message.getIdLong());
@@ -81,6 +81,7 @@ public class Database {
             }
             
             insertMessage.setLong(5, message.getTimeCreated().toEpochSecond());
+            insertMessage.setLong(6, message.getAuthor().getIdLong());
             insertMessage.executeUpdate();
             insertMessage.close();
 
@@ -282,12 +283,13 @@ public class Database {
             insertChannel.close();
 
             PreparedStatement insertMessage = conn.prepareStatement("""
-                    INSERT INTO message (message_id, fk_channel)
-                    VALUES (?, ?)
+                    INSERT INTO message (message_id, fk_channel, fk_user)
+                    VALUES (?, ?, ?)
                     ON CONFLICT (message_id) DO NOTHING;
                     """);
             insertMessage.setLong(1, event.getMessageIdLong());
             insertMessage.setLong(2, event.getChannel().getIdLong());
+            insertMessage.setLong(3, event.getAuthor().getIdLong());
             insertMessage.executeUpdate();
             insertMessage.close();
 
