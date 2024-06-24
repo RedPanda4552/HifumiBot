@@ -171,6 +171,12 @@ public class GameIndex implements Refreshable {
         put(2, "180%");
         put(3, "300%");
     }};
+
+    private static final HashMap<Integer, String> NATIVE_SCALING = new HashMap<Integer, String>() {{
+        put(0, "Off");
+        put(1, "Normal");
+        put(2, "Aggressive");
+    }};
     
     private boolean isInitialized = false;
     private Map<String, Object> map;
@@ -584,6 +590,13 @@ public class GameIndex implements Refreshable {
                         eb.addField(EmbedUtil.prebuildField(
                             "Bilinear Dirty Upscale", 
                             GENERIC_BOOLEAN.get((int) gsHWFixes.get("bilinearUpscale")), 
+                            true));
+                    }
+
+                    if (gsHWFixes.containsKey("nativeScaling")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Native Scaling", 
+                            NATIVE_SCALING.get((int) gsHWFixes.get("nativeScaling")), 
                             true));
                     }
                 }
