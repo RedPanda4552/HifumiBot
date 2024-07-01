@@ -33,7 +33,7 @@ public class ChartGenerator {
             dataset.addValue(data.events, data.action, data.timeUnit);
         }
 
-        JFreeChart chart = ChartFactory.createBarChart("Warez Events (" + timeUnit + ", " + length + " days)", timeUnit, "Warez Events", dataset, PlotOrientation.VERTICAL, true, true, false);
+        JFreeChart chart = ChartFactory.createBarChart("Warez Events (" + timeUnit + ", " + length + " days)", timeUnit, "Warez Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
         CategoryPlot plot = (CategoryPlot) chart.getPlot();
         BarRenderer renderer = (BarRenderer) plot.getRenderer();
         renderer.setBarPainter(new StandardBarPainter());
