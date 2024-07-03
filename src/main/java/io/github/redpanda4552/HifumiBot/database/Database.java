@@ -1078,4 +1078,56 @@ public class Database {
         
         return ret;
     }
+
+    public static void insertCounter(String type, long timestamp, long value) {
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            PreparedStatement insertCounter = conn.prepareStatement("""
+                    INSERT INTO counter (type, timestamp, value)
+                    VALUES (?, ?, ?);
+                    """);
+
+            insertCounter.setString(1, type);
+            insertCounter.setLong(2, timestamp);
+            insertCounter.setLong(3, value);
+            insertCounter.executeUpdate();
+            insertCounter.close();
+        } catch (SQLException e) {
+             Messaging.logException("Database", "insertCounter", e);
+        }
+    }
+
+    public static CounterObject getLatestCounter(String type) {
+        CounterObject ret = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            // First get the latest revision of the message
+            PreparedStatement getCounter = conn.prepareStatement("""
+                    SELECT
+                    type, timestamp, value
+                    FROM counter
+                    WHERE type = ?
+                    ORDER BY timestamp DESC
+                    LIMIT 1;
+                    """);
+            getCounter.setString(1, type);
+            ResultSet res = getCounter.executeQuery();
+
+            if (res.next()) {
+                ret = new CounterObject(
+                    res.getString("type"),
+                    res.getLong("timestamp"),
+                    res.getLong("value")
+                );
+            }
+
+            getCounter.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getLatestCounter", e);
+        }
+        
+        return ret;
+    }
 }
