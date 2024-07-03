@@ -741,7 +741,7 @@ public class Database {
 
             getWarezEvent.close();
         } catch (SQLException e) {
-            Messaging.logException("Database", "getLatestWarezAction", e);
+            Messaging.logException("Database", "getWarezAssignmentsSince", e);
         }
         
         return ret;
@@ -781,7 +781,7 @@ public class Database {
 
             getWarezEvent.close();
         } catch (SQLException e) {
-            Messaging.logException("Database", "getLatestWarezAction", e);
+            Messaging.logException("Database", "getWarezAssignmentsByWeekday", e);
         }
         
         return ret;
