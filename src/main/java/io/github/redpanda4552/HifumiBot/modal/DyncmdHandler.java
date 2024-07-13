@@ -15,7 +15,7 @@ public class DyncmdHandler {
 
     public static void handle(ModalInteractionEvent event) {
         // Permissions check first
-        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.ADMIN, event.getMember())) {
+        if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
             Messaging.logInfo("DyncmdHandler", "handle", "User " + event.getUser().getAsMention() + " tried to send a modal interaction for dyncmd, but does not have permission.");
             event.reply("Permissions error, staff have been notified").setEphemeral(true).queue();
             return;
