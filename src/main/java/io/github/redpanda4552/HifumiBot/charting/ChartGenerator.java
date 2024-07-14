@@ -18,22 +18,15 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 
 public class ChartGenerator {
 
-    public static byte[] buildWarezChart(String timeUnit, long length) {
-        ArrayList<WarezChartData> warezDataList = null;
-        
-        if (timeUnit.equals("Day-of-Week")) {
-            warezDataList = Database.getWarezAssignmentsByWeekday(timeUnit, length);
-        } else {
-            warezDataList = Database.getWarezAssignmentsSince(timeUnit, length);
-        }
-
+    public static byte[] buildWarezChart(long startTimestamp, long endTimestamp, String timeUnit) {
+        ArrayList<WarezChartData> warezDataList = Database.getWarezAssignmentsBetween(startTimestamp, endTimestamp, timeUnit);
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
         for (WarezChartData data : warezDataList) {
             dataset.addValue(data.events, data.action, data.timeUnit);
         }
 
-        JFreeChart chart = ChartFactory.createBarChart("Warez Events (" + timeUnit + ", " + length + " days)", timeUnit, "Warez Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
+        JFreeChart chart = ChartFactory.createBarChart("Warez Events (by " + timeUnit + ")", timeUnit, "Warez Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
         CategoryPlot plot = (CategoryPlot) chart.getPlot();
         BarRenderer renderer = (BarRenderer) plot.getRenderer();
         renderer.setBarPainter(new StandardBarPainter());
@@ -52,23 +45,15 @@ public class ChartGenerator {
         return null;
     }
 
-    public static byte[] buildMemberChart(String timeUnit, long length) {
-        ArrayList<MemberChartData> memberDataList = null;
-        
-        if (timeUnit.equals("Day-of-Week")) {
-            memberDataList = Database.getMemberEventsByWeekday(timeUnit, length);
-        } else {
-            memberDataList = Database.getMemberEventsSince(timeUnit, length);
-        }
-        
-
+    public static byte[] buildMemberChart(long startTimestamp, long endTimestamp, String timeUnit) {
+        ArrayList<MemberChartData> memberDataList = Database.getMemberEventsBetween(startTimestamp, endTimestamp, timeUnit);
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
         for (MemberChartData data : memberDataList) {
             dataset.addValue(data.events, data.action, data.timeUnit);
         }
 
-        JFreeChart chart = ChartFactory.createBarChart("Member Events (" + timeUnit + ", " + length + " days)", timeUnit, "Member Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
+        JFreeChart chart = ChartFactory.createBarChart("Member Events (by " + timeUnit + ")", timeUnit, "Member Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
         CategoryPlot plot = (CategoryPlot) chart.getPlot();
         BarRenderer renderer = (BarRenderer) plot.getRenderer();
         renderer.setBarPainter(new StandardBarPainter());

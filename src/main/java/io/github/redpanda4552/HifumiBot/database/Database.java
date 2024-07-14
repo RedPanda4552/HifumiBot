@@ -712,10 +712,9 @@ public class Database {
         return ret;
     }
 
-    public static ArrayList<WarezChartData> getWarezAssignmentsSince(String timeUnit, long length) {
+    public static ArrayList<WarezChartData> getWarezAssignmentsBetween(long startTimestamp, long endTimestamp, String timeUnit) {
         ArrayList<WarezChartData> ret = new ArrayList<WarezChartData>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        long epochSeconds = TimeUtils.getEpochSecondStartOfUnit(timeUnit, length);
         String formatStr = TimeUtils.getSQLFormatStringFromTimeUnit(timeUnit);
         
         try {
@@ -723,12 +722,14 @@ public class Database {
                     SELECT COUNT(timestamp) AS events, STRFTIME(?, DATETIME(timestamp, 'unixepoch')) AS timeUnit, action
                     FROM warez_event
                     WHERE timestamp >= ?
+                    AND timestamp <= ?
                     GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), action
                     ORDER BY action ASC, timestamp ASC;
                     """);
             getWarezEvent.setString(1, formatStr);
-            getWarezEvent.setLong(2, epochSeconds);
-            getWarezEvent.setString(3, formatStr);
+            getWarezEvent.setLong(2, startTimestamp);
+            getWarezEvent.setLong(3, endTimestamp);
+            getWarezEvent.setString(4, formatStr);
             ResultSet latestEvent = getWarezEvent.executeQuery();
 
             while (latestEvent.next()) {
@@ -742,46 +743,6 @@ public class Database {
             getWarezEvent.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "getWarezAssignmentsSince", e);
-        }
-        
-        return ret;
-    }
-
-    public static ArrayList<WarezChartData> getWarezAssignmentsByWeekday(String timeUnit, long length) {
-        ArrayList<WarezChartData> ret = new ArrayList<WarezChartData>();
-        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        long epochSeconds = TimeUtils.getEpochSecondStartOfUnit(timeUnit, length);
-        String formatStr = TimeUtils.getSQLFormatStringFromTimeUnit(timeUnit);
-        
-        try {
-            PreparedStatement getWarezEvent = conn.prepareStatement("""
-                    SELECT COUNT(timestamp) AS events, STRFTIME(?, DATETIME(timestamp, 'unixepoch')) AS timeUnit, action
-                    FROM warez_event
-                    WHERE timestamp >= ?
-                    GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), action
-                    ORDER BY timeUnit ASC,
-                        CASE
-                            WHEN action = "join" THEN 1
-                            WHEN action = "leave" THEN 2
-                            WHEN action = "ban" THEN 3
-                        END ASC;
-                    """);
-            getWarezEvent.setString(1, formatStr);
-            getWarezEvent.setLong(2, epochSeconds);
-            getWarezEvent.setString(3, formatStr);
-            ResultSet latestEvent = getWarezEvent.executeQuery();
-
-            while (latestEvent.next()) {
-                WarezChartData data = new WarezChartData();
-                data.timeUnit = DayOfWeek.of(latestEvent.getInt("timeUnit")).toString();
-                data.events = latestEvent.getInt("events");
-                data.action = latestEvent.getString("action");
-                ret.add(data);
-            }
-
-            getWarezEvent.close();
-        } catch (SQLException e) {
-            Messaging.logException("Database", "getWarezAssignmentsByWeekday", e);
         }
         
         return ret;
@@ -848,10 +809,9 @@ public class Database {
         return ret;
     }
 
-    public static ArrayList<MemberChartData> getMemberEventsSince(String timeUnit, long length) {
+    public static ArrayList<MemberChartData> getMemberEventsBetween(long startTimestamp, long endTimestamp, String timeUnit) {
         ArrayList<MemberChartData> ret = new ArrayList<MemberChartData>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        long epochSeconds = TimeUtils.getEpochSecondStartOfUnit(timeUnit, length);
         String formatStr = TimeUtils.getSQLFormatStringFromTimeUnit(timeUnit);
 
         try {
@@ -859,6 +819,7 @@ public class Database {
                     SELECT COUNT(timestamp) AS events, STRFTIME(?, DATETIME(timestamp, 'unixepoch')) AS timeUnit, action
                     FROM member_event
                     WHERE timestamp >= ?
+                    AND timestamp <= ?
                     GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), action
                     ORDER BY CASE
                         WHEN action = "join" THEN 1
@@ -868,53 +829,14 @@ public class Database {
                         timestamp ASC;
                     """);
             events.setString(1, formatStr);
-            events.setLong(2, epochSeconds);
-            events.setString(3, formatStr);
+            events.setLong(2, startTimestamp);
+            events.setLong(3, endTimestamp);
+            events.setString(4, formatStr);
             ResultSet eventsRes = events.executeQuery();
 
             while (eventsRes.next()) {
                 MemberChartData data = new MemberChartData();
                 data.timeUnit = eventsRes.getString("timeUnit");
-                data.events = eventsRes.getInt("events");
-                data.action = eventsRes.getString("action");
-                ret.add(data);
-            }
-
-            events.close();
-        } catch (SQLException e) {
-            Messaging.logException("Database", "getMemberEventsSince", e);
-        }
-
-        return ret;
-    }
-
-    public static ArrayList<MemberChartData> getMemberEventsByWeekday(String timeUnit, long length) {
-        ArrayList<MemberChartData> ret = new ArrayList<MemberChartData>();
-        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
-        long epochSeconds = TimeUtils.getEpochSecondStartOfUnit(timeUnit, length);
-        String formatStr = TimeUtils.getSQLFormatStringFromTimeUnit(timeUnit);
-
-        try {
-            PreparedStatement events = conn.prepareStatement("""
-                    SELECT COUNT(timestamp) AS events, STRFTIME(?, DATETIME(timestamp, 'unixepoch')) AS timeUnit, action
-                    FROM member_event
-                    WHERE timestamp >= ?
-                    GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), action
-                    ORDER BY timeUnit ASC,
-                        CASE
-                            WHEN action = "join" THEN 1
-                            WHEN action = "leave" THEN 2
-                            WHEN action = "ban" THEN 3
-                        END ASC;
-                    """);
-            events.setString(1, formatStr);
-            events.setLong(2, epochSeconds);
-            events.setString(3, formatStr);
-            ResultSet eventsRes = events.executeQuery();
-
-            while (eventsRes.next()) {
-                MemberChartData data = new MemberChartData();
-                data.timeUnit = DayOfWeek.of(eventsRes.getInt("timeUnit")).toString();
                 data.events = eventsRes.getInt("events");
                 data.action = eventsRes.getString("action");
                 ret.add(data);

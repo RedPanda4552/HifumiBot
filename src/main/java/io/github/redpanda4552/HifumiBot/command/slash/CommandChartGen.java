@@ -1,5 +1,10 @@
 package io.github.redpanda4552.HifumiBot.command.slash;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 import io.github.redpanda4552.HifumiBot.charting.ChartGenerator;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -18,10 +23,32 @@ public class CommandChartGen extends AbstractSlashCommand {
     protected void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping typeOpt = event.getOption("type");
         OptionMapping timeUnitOpt = event.getOption("time-unit");
-        OptionMapping lengthOpt = event.getOption("length");
+        OptionMapping startDateOpt = event.getOption("start-date");
+        OptionMapping endDateOpt = event.getOption("end-date");
         
-        if (typeOpt == null || timeUnitOpt == null || lengthOpt == null) {
+        if (typeOpt == null || timeUnitOpt == null) {
             event.reply("Missing required options").setEphemeral(true).queue();
+            return;
+        }
+
+        OffsetDateTime startDate = OffsetDateTime.MIN;
+        OffsetDateTime endDate = OffsetDateTime.MAX;
+
+        try {
+            if (startDateOpt != null) {
+                startDate = OffsetDateTime.of(LocalDate.parse(startDateOpt.getAsString()), LocalTime.MIDNIGHT, ZoneOffset.UTC);
+            }
+        } catch (Exception e) {
+            event.reply("Invalid start date " + startDateOpt.getAsString()).setEphemeral(true).queue();
+            return;
+        }
+        
+        try {
+            if (endDateOpt != null) {
+                endDate = OffsetDateTime.of(LocalDate.parse(endDateOpt.getAsString()), LocalTime.MIDNIGHT, ZoneOffset.UTC);
+            }
+        } catch (Exception e) {
+            event.reply("Invalid end date " + endDateOpt.getAsString()).setEphemeral(true).queue();
             return;
         }
 
@@ -29,11 +56,11 @@ public class CommandChartGen extends AbstractSlashCommand {
 
         switch (typeOpt.getAsString()) {
             case "warez": {
-                file = FileUpload.fromData(ChartGenerator.buildWarezChart(timeUnitOpt.getAsString(), lengthOpt.getAsLong()), "warez.png");
+                file = FileUpload.fromData(ChartGenerator.buildWarezChart(startDate.toEpochSecond(), endDate.toEpochSecond(), timeUnitOpt.getAsString()), "warez.png");
                 break;
             }
             case "member": {
-                file = FileUpload.fromData(ChartGenerator.buildMemberChart(timeUnitOpt.getAsString(), lengthOpt.getAsLong()), "member.png"); 
+                file = FileUpload.fromData(ChartGenerator.buildMemberChart(startDate.toEpochSecond(), endDate.toEpochSecond(), timeUnitOpt.getAsString()), "member.png"); 
                 break;
             }
             default: {
@@ -53,19 +80,16 @@ public class CommandChartGen extends AbstractSlashCommand {
         typeOption.addChoice("warez", "warez");
         typeOption.addChoice("member", "member");
 
-        OptionData timeUnitOption = new OptionData(OptionType.STRING, "time-unit", "What time unit to use", true);
-        timeUnitOption.addChoice("Days", "Days");
-        timeUnitOption.addChoice("Months", "Months");
-        timeUnitOption.addChoice("Day-of-Week", "Day-of-Week");
+        OptionData timeUnit = new OptionData(OptionType.STRING, "time-unit", "Unit of time to display each data point as", true);
+        timeUnit.addChoice("day", "day");
+        timeUnit.addChoice("month", "month");
+        timeUnit.addChoice("year", "year");
 
-        OptionData lengthOption = new OptionData(OptionType.INTEGER, "length", "How far back in time to look", true);
-        lengthOption.addChoice("week", 7);
-        lengthOption.addChoice("month", 30);
-        lengthOption.addChoice("year", 365);
-
+        OptionData startDate = new OptionData(OptionType.STRING, "start-date", "YYYY-MM-DD formatted date (inclusive)", false);
+        OptionData endDate = new OptionData(OptionType.STRING, "end-date", "YYYY-MM-DD formatted date (exclusive)", false);
 
         return Commands.slash("chartgen", "Generate a chart")
-                .addOptions(typeOption, timeUnitOption, lengthOption)
+                .addOptions(typeOption, timeUnit, startDate, endDate)
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
 

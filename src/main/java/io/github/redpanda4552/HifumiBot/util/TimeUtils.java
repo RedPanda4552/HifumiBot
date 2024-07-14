@@ -26,14 +26,11 @@ public class TimeUtils {
 
     public static String getSQLFormatStringFromTimeUnit(String timeUnit) {
         switch (timeUnit) {
-            case "Months": {
+            case "month": {
                 return "%Y-%m";
             }
-            case "Days": {
+            case "day": {
                 return "%Y-%m-%d";
-            }
-            case "Day-of-Week": {
-                return "%u";
             }
             default: {
                 return "%Y-%m-%d";
