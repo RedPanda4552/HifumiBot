@@ -1,5 +1,6 @@
 package io.github.redpanda4552.HifumiBot.event;
 
+import io.github.redpanda4552.HifumiBot.modal.BanHandler;
 import io.github.redpanda4552.HifumiBot.modal.DyncmdHandler;
 import io.github.redpanda4552.HifumiBot.modal.PromptHandler;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
@@ -19,6 +20,10 @@ public class ModalEventListener extends ListenerAdapter {
             }
             case "dyncmd": {
                 DyncmdHandler.handle(event);
+                break;
+            }
+            case "ban": {
+                BanHandler.handle(event);
                 break;
             }
             default: {
