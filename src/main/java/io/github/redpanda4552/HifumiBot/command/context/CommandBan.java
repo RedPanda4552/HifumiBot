@@ -36,6 +36,6 @@ public class CommandBan extends AbstractUserContextCommand {
     @Override
     protected CommandData defineUserContextCommand() {
         return Commands.user("ban")
-                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS));
     }
 }
