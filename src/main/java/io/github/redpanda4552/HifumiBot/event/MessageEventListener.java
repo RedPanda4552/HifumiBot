@@ -42,12 +42,17 @@ public class MessageEventListener extends ListenerAdapter {
             return;
         }
 
+        // Make note of Hifumi's identity and elevation for later
+        String hifumiUserId = HifumiBot.getSelf().getJDA().getSelfUser().getId();
+        boolean hasElevatedPerms = HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.ADMIN, event.getMember());
+        boolean isHifumi = event.getAuthor().getId().equals(hifumiUserId);
+        
         // Store all messages, exclude highly privileged users
-        boolean skipEvent = HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.ADMIN, event.getMember());
+        boolean skipEvent = hasElevatedPerms || isHifumi;
         Database.insertMessage(event.getMessage(), skipEvent);
 
         // If the sender was the bot, do not process any further.
-        if (event.getAuthor().getId().equals(HifumiBot.getSelf().getJDA().getSelfUser().getId())) {
+        if (isHifumi) {
             return;
         }
 
