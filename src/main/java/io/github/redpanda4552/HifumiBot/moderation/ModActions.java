@@ -68,7 +68,7 @@ public class ModActions {
                 return true;
             }
         } catch (Exception e) {
-            // Squelch
+            Messaging.logException("asdf", "asdf", e);
         }
         
         return false;
