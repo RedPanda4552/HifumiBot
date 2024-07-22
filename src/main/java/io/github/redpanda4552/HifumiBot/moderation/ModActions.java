@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.database.MessageObject;
+import io.github.redpanda4552.HifumiBot.util.Log;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -54,23 +55,31 @@ public class ModActions {
     }
 
     public static synchronized boolean kickAndNotifyUser(Guild server, long userIdLong) {
+        Log.info("Kick and notify action start");
+
         try {
             Member member = server.retrieveMemberById(userIdLong).complete();
+            Log.info("Kick and notify member retrieved");
 
             if (member != null) {
+                Log.info("Kick and notify embed building");
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setTitle("Kicked From PCSX2 Server");
                 eb.setDescription(HifumiBot.getSelf().getConfig().modActionOptions.kickMessage);
                 eb.setFooter(BOT_FOOTER);
                 eb.setColor(Color.RED);
+                Log.info("Kick and notify sending dm");
                 Messaging.sendPrivateMessageEmbed(member.getUser(), eb.build());
+                Log.info("Kick and notify kicking user");
                 member.kick().complete();
+                Log.info("Kick and notify returning true");
                 return true;
             }
         } catch (Exception e) {
-            Messaging.logException("asdf", "asdf", e);
+            Log.error(e);
         }
         
+        Log.info("Kick and notify returning false");
         return false;
     }
 }

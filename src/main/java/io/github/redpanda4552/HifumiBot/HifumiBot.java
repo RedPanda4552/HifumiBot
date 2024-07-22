@@ -41,6 +41,7 @@ import io.github.redpanda4552.HifumiBot.event.RoleEventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.Log;
 import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -127,6 +128,9 @@ public class HifumiBot {
             return;
         }
 
+        Log.init();
+        Log.info("Initializing JDA instance");
+
         try {
             jda = JDABuilder.createDefault(discordBotToken)
                     .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
@@ -137,6 +141,7 @@ public class HifumiBot {
             Messaging.logException("HifumiBot", "(constructor)", e);
         }
 
+        Log.info("Setting status to Starting...");
         updateStatus("Starting...");
 
         // Load configurations. Main config file is essential, if something goes wrong,
@@ -144,22 +149,27 @@ public class HifumiBot {
         //
         // After loading any config, write it back immediately so that if any new fields
         // were added after an update, they are written to disk
+        Log.info("Initializing main config");
         ConfigManager.createConfigIfNotExists(ConfigType.CORE);
         config = (Config) ConfigManager.read(ConfigType.CORE);
         ConfigManager.write(config);
 
         try {
+            Log.info("Initializing dyncmd config");
             ConfigManager.createConfigIfNotExists(ConfigType.DYNCMD);
             dynCmdConfig = (DynCmdConfig) ConfigManager.read(ConfigType.DYNCMD);
             ConfigManager.write(dynCmdConfig);
 
+            Log.info("Initializing emulog config");
             ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
             emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
             ConfigManager.write(emulogParserConfig);
         } catch (Exception e) {
+            Log.error(e);
             Messaging.logException("HifumiBot", "(constructor)", e);
         }
         
+        Log.info("Calling constructors");
         sqlite = new SQLite();
         deepL = new Translator(deepLKey);
         scheduler = new Scheduler();
@@ -177,6 +187,7 @@ public class HifumiBot {
         jda.addEventListener(new AutoModEventListener());
         gameIndex = new GameIndex();
 
+        Log.info("Refreshing anything refreshable");
         scheduler.runOnce(() -> {
             wikiIndex.refresh();
             cpuIndex.refresh();
@@ -185,6 +196,8 @@ public class HifumiBot {
         });
 
         // Schedule repeating tasks
+        Log.info("Scheduling repeating tasks");
+
         scheduler.scheduleRepeating("wiki", () -> {
             HifumiBot.getSelf().getWikiIndex().refresh();
         }, 1000 * 60 * 60 * 24);
@@ -205,6 +218,7 @@ public class HifumiBot {
             HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
         }, 1000 * getConfig().slashCommands.timeoutSeconds);
         
+        Log.info("Setting status to New Game!");
         updateStatus("New Game!");
     }
 

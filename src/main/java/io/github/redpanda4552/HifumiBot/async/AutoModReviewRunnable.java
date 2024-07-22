@@ -8,6 +8,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.database.AutoModEventObject;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.moderation.ModActions;
+import io.github.redpanda4552.HifumiBot.util.Log;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -27,14 +28,21 @@ public class AutoModReviewRunnable implements Runnable {
 
     @Override
     public void run() {
+        Log.info("AutoMod review runnable started");
+
         if (this.reviewAutoMod()) {
+            Log.info("AutoMod event passed review step");
             User usr = HifumiBot.getSelf().getJDA().getUserById(this.userId);
+            Log.info("User retrieved (ID = " + usr.getId() + " )");
 
             // Kick the user first
+            Log.info("Kick attempt starting");
             boolean wasKicked = ModActions.kickAndNotifyUser(this.server, this.userId);
+            Log.info("Kick attempt returned " + wasKicked);
 
             // Now report to staff
             if (wasKicked) {
+                Log.info("Sending embed for admins");
                 EmbedBuilder eb = new EmbedBuilder();
                 eb.setTitle("User Automatically Kicked");
                 eb.setDescription("User was automatically kicked from the server for repeated filter incidents.");
@@ -42,7 +50,9 @@ public class AutoModReviewRunnable implements Runnable {
                 eb.addField("Username", usr.getName(), true);
                 eb.addField("User ID", usr.getId(), true);
                 eb.setColor(Color.ORANGE);
+                Log.info("Embed ready");
                 Messaging.logInfoEmbed(eb.build());
+                Log.info("Embed sent");
             }
         }
     }
@@ -53,13 +63,16 @@ public class AutoModReviewRunnable implements Runnable {
         ArrayList<AutoModEventObject> autoModEvents = Database.getAutoModEventsSinceTime(this.userId, cooldownSubtracted);
     
         if (autoModEvents == null || autoModEvents.isEmpty()) {
+            Log.info("AutoMod review found nothing, false");
             return false;
         }
 
         if (autoModEvents.size() >= HifumiBot.getSelf().getConfig().autoModOptions.maxMessages) {
+            Log.info("AutoMod review found exceeded threshold for AutoMod events, true");
             return true;
         }
 
+        Log.info("AutoMod review exiting without matching either criteria, false");
         return false;
     }
 }

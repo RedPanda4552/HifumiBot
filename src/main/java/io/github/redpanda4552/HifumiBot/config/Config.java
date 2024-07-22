@@ -37,6 +37,7 @@ public class Config implements IConfig {
         return true;
     }
     
+    public boolean enableTraceLogging;
     public Server server;
     public Channels channels;
     public SlashCommands slashCommands;
@@ -50,6 +51,7 @@ public class Config implements IConfig {
     public EntryBarrierOptions entryBarrierOptions;
 
     public Config() {
+        enableTraceLogging = false;
         server = new Server();
         channels = new Channels();
         slashCommands = new SlashCommands();
