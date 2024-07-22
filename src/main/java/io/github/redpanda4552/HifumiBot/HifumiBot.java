@@ -70,7 +70,7 @@ public class HifumiBot {
             }
 
             if (System.getenv().containsKey("HIFUMI_TRACE")) {
-                traceLogs = Boolean.valueOf(System.getenv("HIFUMI_TRACE"));
+                traceLogs = Boolean.parseBoolean(System.getenv("HIFUMI_TRACE").toLowerCase());
             }
         } else if (args.length < 2) {
             System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [deepl-key] [trace-logs]");
@@ -84,7 +84,7 @@ public class HifumiBot {
             }
 
             if (args.length >= 4) {
-                traceLogs = Boolean.valueOf(args[2]);
+                traceLogs = Boolean.parseBoolean(args[3].toLowerCase());
             }
             System.out.println("Parsed arguments from command line");
         }
