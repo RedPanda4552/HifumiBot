@@ -56,6 +56,7 @@ public class HifumiBot {
     private static String discordBotToken;
     private static String superuserId;
     private static String deepLKey;
+    private static boolean traceLogs = false;
 
     public static void main(String[] args) {
         // Run via environment variables first, if not, fall-back to args
@@ -67,8 +68,12 @@ public class HifumiBot {
             if (System.getenv().containsKey("DEEPL_KEY")) {
                 deepLKey = System.getenv("DEEPL_KEY");
             }
+
+            if (System.getenv().containsKey("HIFUMI_TRACE")) {
+                traceLogs = Boolean.valueOf(System.getenv("HIFUMI_TRACE"));
+            }
         } else if (args.length < 2) {
-            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [deepl-key]");
+            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [deepl-key] [trace-logs]");
             return;
         } else {
             discordBotToken = args[0];
@@ -76,6 +81,10 @@ public class HifumiBot {
 
             if (args.length >= 3) {
                 deepLKey = args[2];
+            }
+
+            if (args.length >= 4) {
+                traceLogs = Boolean.valueOf(args[2]);
             }
             System.out.println("Parsed arguments from command line");
         }
@@ -128,7 +137,10 @@ public class HifumiBot {
             return;
         }
 
-        Log.init();
+        if (traceLogs) {
+            Log.init();
+        }
+        
         Log.info("Initializing JDA instance");
 
         try {
