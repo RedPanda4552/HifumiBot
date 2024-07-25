@@ -142,8 +142,10 @@ public class MessageEventListener extends ListenerAdapter {
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.ADMIN, event.getMember())) {
             Database.insertMessageUpdateEvent(event);
             
-            // Don't log updates from bots
-            if (!event.getAuthor().isBot()) {
+            // Don't log updates from bots or without content changes
+            boolean contentChanged = event.getMessage().getContentRaw() != null && beforeEditMessage != null && !event.getMessage().getContentRaw().equals(beforeEditMessage.getBodyContent());
+
+            if (!event.getAuthor().isBot() && contentChanged) {
                 EventLogging.logMessageUpdateEvent(event, beforeEditMessage);
             }
         }
