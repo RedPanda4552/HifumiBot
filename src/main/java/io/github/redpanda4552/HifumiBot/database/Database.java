@@ -651,7 +651,8 @@ public class Database {
     public static boolean insertWarezEvent(WarezEventObject warezEvent) {
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
-        try {            User usr = HifumiBot.getSelf().getJDA().getUserById(warezEvent.getUserId());
+        try {
+            User usr = HifumiBot.getSelf().getJDA().retrieveUserById(warezEvent.getUserId()).complete();
 
             PreparedStatement insertUser = conn.prepareStatement("""
                     INSERT INTO user (discord_id, created_datetime, username)
