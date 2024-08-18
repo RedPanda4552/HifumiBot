@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 public class CommandBulkDelete extends AbstractSlashCommand {
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping userOpt = event.getOption("user");
         OptionMapping channelOpt = event.getOption("channel");
         OptionMapping messageContentOpt = event.getOption("message-content");

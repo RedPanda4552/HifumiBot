@@ -47,7 +47,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 public class CommandWiki extends AbstractSlashCommand {
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
         String query = event.getOption("game").getAsString();
         HashMap<String, Float> results = SimpleSearch.search(HifumiBot.getSelf().getWikiIndex().getAllTitles(), query);

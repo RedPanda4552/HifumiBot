@@ -70,7 +70,7 @@ public class CommandGPU extends AbstractSlashCommand {
     }
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         boolean isEphemeral = true;
         
         if (event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId) || HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {

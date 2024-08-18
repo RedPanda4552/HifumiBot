@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 public class CommandChartGen extends AbstractSlashCommand {
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping typeOpt = event.getOption("type");
         OptionMapping timeUnitOpt = event.getOption("time-unit");
         OptionMapping startDateOpt = event.getOption("start-date");

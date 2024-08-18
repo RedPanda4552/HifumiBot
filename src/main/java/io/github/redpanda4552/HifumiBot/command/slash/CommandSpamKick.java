@@ -45,7 +45,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 public class CommandSpamKick extends AbstractSlashCommand {
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping opt = event.getOption("user");
         
         if (opt == null) {

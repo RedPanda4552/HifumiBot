@@ -38,7 +38,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 public class CommandAbout extends AbstractSlashCommand {
     
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("About " + HifumiBot.getSelf().getJDA().getSelfUser().getName());
         eb.setDescription("A helper bot created for the PCSX2 Discord server.");

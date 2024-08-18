@@ -33,7 +33,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 public class CommandShutdown extends AbstractSlashCommand {
     
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         HifumiBot.getSelf().getScheduler().runOnce(() -> {
             if (HifumiBot.getSelf() != null)
                 HifumiBot.getSelf().shutdown(false);

@@ -48,7 +48,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal;
 public class CommandDynCmd extends AbstractSlashCommand {
     
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping commandOpt = event.getOption("command");
         OptionMapping subcommandOpt = event.getOption("subcommand");
         OptionMapping choiceOpt = event.getOption("choice");

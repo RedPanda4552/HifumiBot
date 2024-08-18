@@ -42,7 +42,7 @@ public class CommandGameIndex extends AbstractSlashCommand {
     private static final Pattern GAMEINDEX_SERIAL_PATTERN = Pattern.compile("^[A-Z]{4}-[0-9]{5}$");
     
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping opt = event.getOption("serial");
         
         if (opt == null) {

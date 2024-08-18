@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal;
 public class CommandPrompt extends AbstractSlashCommand {
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         TextInput titleInput = TextInput.create("title", "Set Title", TextInputStyle.SHORT)
                 .setMinLength(1)
                 .setMaxLength(MessageEmbed.TITLE_MAX_LENGTH)

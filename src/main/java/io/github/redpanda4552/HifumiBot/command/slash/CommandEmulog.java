@@ -56,7 +56,7 @@ public class CommandEmulog extends AbstractSlashCommand {
     }
     
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply(true).queue();
         
         if (CommandUtils.replyIfBadSubcommand(event, "browse", "new", "update", "delete")) {

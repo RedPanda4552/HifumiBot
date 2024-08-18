@@ -48,7 +48,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 public class CommandWarez extends AbstractSlashCommand {
     
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
         
         try {

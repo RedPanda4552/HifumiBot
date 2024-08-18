@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class CommandPride extends AbstractSlashCommand {
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(event.getUser());
 
         CounterObject prideCounter = Database.getLatestCounter("pride");

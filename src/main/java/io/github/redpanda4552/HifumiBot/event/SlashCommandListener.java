@@ -26,6 +26,7 @@ package io.github.redpanda4552.HifumiBot.event;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +37,8 @@ import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
+import io.github.redpanda4552.HifumiBot.database.CommandEventObject;
+import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.Permission;
@@ -53,14 +56,41 @@ public class SlashCommandListener extends ListenerAdapter {
     
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+        // First, abort if not in a server
         if (!event.isFromGuild()) {
             event.reply("Slash commands are disabled in DMs.").setEphemeral(true).queue();
             return;
         }
-        
+
+        // Fetch the last occurrence of this command, in this channel,
+        // from another user, within the ninja time, if available.
+        Optional<CommandEventObject> recentCommandInstance = Database.getLatestCommandEvent(event.getChannelIdLong(), event.getCommandIdLong(), event.getUser().getIdLong());
+
+        // Store this command event to database
+        Database.insertCommandEvent(
+            event.getCommandIdLong(), 
+            "slash", 
+            event.getName(), 
+            event.getSubcommandGroup(), 
+            event.getSubcommandName(), 
+            event.getIdLong(), 
+            event.getUser().getIdLong(),
+            event.getChannelIdLong(),
+            event.getTimeCreated().toEpochSecond(), 
+            recentCommandInstance.isPresent(),
+            event.getOptions()
+        );
+
+        // Now abort if it was a ninja
+        if (recentCommandInstance.isPresent()) {
+            event.reply(":ninja:").setEphemeral(true).queue();
+            return;
+        }
+
+        // Finally, try processing the command and pass along to the appropriate command to execute
         if (slashCommands.containsKey(event.getName())) {
             try {
-                slashCommands.get(event.getName()).executeIfPermission(event);
+                slashCommands.get(event.getName()).onExecute(event);
             } catch (Exception e) {
                 e.printStackTrace();
                 Messaging.logException("SlashCommandListener", "onSlashCommand", e);

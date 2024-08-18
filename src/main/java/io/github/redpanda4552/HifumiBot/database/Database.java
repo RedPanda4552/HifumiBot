@@ -5,10 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.time.DayOfWeek;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.charting.MemberChartData;
@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class Database {
 
@@ -1048,6 +1049,112 @@ public class Database {
             getCounter.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "getLatestCounter", e);
+        }
+        
+        return ret;
+    }
+
+    public static void insertCommandEvent(long commandIdLong, String type, String name, String group, String sub, long eventIdLong, long userIdLong, long channelIdLong, long timestamp, boolean ninja, List<OptionMapping> options) {
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            PreparedStatement insertCommand = conn.prepareStatement("""
+                    INSERT INTO command (discord_id, type, name, subgroup, subcmd)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT (discord_id) DO NOTHING;
+                    """);
+
+            insertCommand.setLong(1, commandIdLong);
+            insertCommand.setString(2, type);
+            insertCommand.setString(3, name);
+            insertCommand.setString(4, group);
+            insertCommand.setString(5, sub);
+            insertCommand.executeUpdate();
+            insertCommand.close();
+
+            PreparedStatement insertCommandEvent = conn.prepareStatement("""
+                    INSERT INTO command_event (discord_id, command_fk, user_fk, channel_fk, timestamp, ninja)
+                    VALUES (?, ?, ?, ?, ?, ?);
+                    """);
+
+            insertCommandEvent.setLong(1, eventIdLong);
+            insertCommandEvent.setLong(2, commandIdLong);
+            insertCommandEvent.setLong(3, userIdLong);
+            insertCommandEvent.setLong(4, channelIdLong);
+            insertCommandEvent.setLong(5, timestamp);
+            insertCommandEvent.setBoolean(6, ninja);
+            insertCommandEvent.executeUpdate();
+            insertCommandEvent.close();
+
+            if (options.isEmpty()) {
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder("""
+                    INSERT INTO command_event_option (command_event_fk, name, value_str)
+                    VALUES
+            """);
+
+            for (int i = 0; i < options.size(); i++) {
+                sb.append(" (?, ?, ?) ");
+            }
+
+            sb.append(";");
+
+            PreparedStatement insertOptions = conn.prepareStatement(sb.toString());
+            int counter = 1;
+
+            for (OptionMapping opt : options) {
+                insertOptions.setLong(counter++, commandIdLong);
+                insertOptions.setString(counter++, opt.getName());
+                insertOptions.setString(counter++, opt.getAsString());
+            }
+            
+            insertOptions.executeUpdate();
+            insertOptions.close();
+        } catch (SQLException e) {
+             Messaging.logException("Database", "insertCommandEvent", e);
+        }
+    }
+
+    public static Optional<CommandEventObject> getLatestCommandEvent(long channelIdLong, long commandIdLong, long userIdLong) {
+        Optional<CommandEventObject> ret = Optional.empty();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            // First get the latest revision of the message
+            PreparedStatement getCommandEvent = conn.prepareStatement("""
+                    SELECT e.discord_id, e.command_fk, e.user_fk, e.timestamp
+                    FROM command_event AS e
+                    INNER JOIN command AS c ON c.discord_id = e.command_fk
+                    WHERE e.channel_fk = ?
+                    AND e.command_fk = ?
+                    AND NOT e.user_fk = ?
+                    AND e.timestamp >= ?
+                    ORDER BY timestamp DESC
+                    LIMIT 1;
+                    """);
+            getCommandEvent.setLong(1, channelIdLong);
+            getCommandEvent.setLong(2, commandIdLong);
+            getCommandEvent.setLong(3, userIdLong);
+            OffsetDateTime now = OffsetDateTime.now().minusSeconds(HifumiBot.getSelf().getConfig().ninjaInterval);
+            getCommandEvent.setLong(4, now.toEpochSecond());
+            ResultSet res = getCommandEvent.executeQuery();
+
+            if (res.next()) {
+                CommandEventObject obj = new CommandEventObject(
+                    res.getLong("discord_id"),
+                    res.getLong("command_fk"),
+                    res.getLong("user_fk"),
+                    res.getLong("timestamp")
+                );
+                
+                ret = Optional.of(obj);
+            }
+
+            getCommandEvent.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getLatestCommandEventByChannel", e);
         }
         
         return ret;

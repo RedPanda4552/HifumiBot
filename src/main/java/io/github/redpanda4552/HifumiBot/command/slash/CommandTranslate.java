@@ -36,7 +36,7 @@ public class CommandTranslate extends AbstractSlashCommand {
     }
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping langOpt = event.getOption("lang");
         OptionMapping textOpt = event.getOption("text");
         OptionMapping userOpt = event.getOption("user");

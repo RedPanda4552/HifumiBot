@@ -43,7 +43,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class CommandPerms extends AbstractSlashCommand {
     
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
         OptionMapping optPermissionLevel = event.getOption("permission-level");
         PermissionLevel permissionLevel = null;

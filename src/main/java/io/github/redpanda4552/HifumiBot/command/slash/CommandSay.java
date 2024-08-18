@@ -39,7 +39,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class CommandSay extends AbstractSlashCommand {
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping stringOpt = event.getOption("string");
         OptionMapping messageLinkOpt = event.getOption("message-link");
         

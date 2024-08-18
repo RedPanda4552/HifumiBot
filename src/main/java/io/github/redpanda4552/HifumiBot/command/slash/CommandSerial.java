@@ -47,7 +47,7 @@ public class CommandSerial extends AbstractSlashCommand {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         OptionMapping opt = event.getOption("name");
         
         if (opt == null) {

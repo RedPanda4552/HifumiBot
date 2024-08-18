@@ -59,7 +59,7 @@ public class CommandPFP extends AbstractSlashCommand {
     }
 
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         event.deferReply().queue();
         
         try {

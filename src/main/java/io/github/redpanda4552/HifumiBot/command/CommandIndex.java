@@ -23,7 +23,6 @@
  */
 package io.github.redpanda4552.HifumiBot.command;
 
-import java.time.Instant;
 import java.util.HashMap;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
@@ -68,7 +67,6 @@ public class CommandIndex {
     private HashMap<String, AbstractSlashCommand> slashCommands;
     private HashMap<String, AbstractMessageContextCommand> messageCommands;
     private HashMap<String, AbstractUserContextCommand> userCommands;
-    private HashMap<String, HashMap<String, Instant>> history;
 
     /**
      * Create a new CommandIndex and invoke the {@link CommandIndex#rebuild
@@ -78,7 +76,6 @@ public class CommandIndex {
         slashCommands = new HashMap<String, AbstractSlashCommand>();
         messageCommands = new HashMap<String, AbstractMessageContextCommand>();
         userCommands = new HashMap<String, AbstractUserContextCommand>();
-        history = new HashMap<String, HashMap<String, Instant>>();
         rebuild();
     }
     
@@ -190,37 +187,5 @@ public class CommandIndex {
 
     public HashMap<String, AbstractUserContextCommand> getUserCommands() {
         return userCommands;
-    }
-
-    /**
-     * Check if this is a ninja command, update command history if not.
-     * @param newHistory
-     * @return True if ninja, false if not ninja and updated.
-     */
-    public boolean isNinja(String commandName, String channelId) {
-        if (channelId.equals(HifumiBot.getSelf().getConfig().channels.restrictedCommandChannelId)) {
-            return false;
-        }
-        
-        Instant now = Instant.now();
-        
-        if (!history.containsKey(commandName)) {
-            HashMap<String, Instant> subMap = new HashMap<String, Instant>();
-            subMap.put(channelId, now);
-            history.put(commandName, subMap);
-            return false;
-        } else {
-            HashMap<String, Instant> subMap = history.get(commandName);
-            
-            if (!subMap.containsKey(channelId)) {
-                subMap.put(channelId, now);
-                return false;
-            } else if (now.minusMillis(HifumiBot.getSelf().getConfig().ninjaInterval).isBefore(subMap.get(channelId))) {
-                return true;
-            } else {
-                subMap.put(channelId, now);
-                return false;
-            }
-        }
     }
 }

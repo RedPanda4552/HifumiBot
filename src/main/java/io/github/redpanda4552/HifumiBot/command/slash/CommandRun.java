@@ -35,7 +35,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 public class CommandRun extends AbstractSlashCommand {
     
     @Override
-    protected void onExecute(SlashCommandInteractionEvent event) {
+    public void onExecute(SlashCommandInteractionEvent event) {
         String runnableName = event.getOption("runnable").getAsString();
         boolean result = HifumiBot.getSelf().getScheduler().runScheduledNow(runnableName);
         
