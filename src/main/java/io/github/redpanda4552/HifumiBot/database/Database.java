@@ -1097,7 +1097,11 @@ public class Database {
             """);
 
             for (int i = 0; i < options.size(); i++) {
-                sb.append(" (?, ?, ?) ");
+                sb.append(" (?, ?, ?)");
+
+                if (i < options.size() - 1) {
+                    sb.append(",");
+                }
             }
 
             sb.append(";");
