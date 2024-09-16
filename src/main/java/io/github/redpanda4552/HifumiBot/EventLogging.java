@@ -16,6 +16,7 @@ import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
@@ -179,7 +180,7 @@ public class EventLogging {
                     sb.append(attachment.getProxyUrl()).append("\n");
                 }
 
-                eb.addField("Old Attachments", sb.toString().trim(), false);
+                eb.addField("Old Attachments", StringUtils.right(sb.toString().trim(), MessageEmbed.VALUE_MAX_LENGTH), false);
             }
         } else {
             return;
@@ -233,7 +234,7 @@ public class EventLogging {
                 sb.append(attachment.getProxyUrl()).append("\n");
             }
 
-            eb.addField("Current Attachments", sb.toString().trim(), false);
+            eb.addField("Current Attachments", StringUtils.right(sb.toString().trim(), MessageEmbed.VALUE_MAX_LENGTH), false);
         }
 
         MessageCreateBuilder mb = new MessageCreateBuilder();
