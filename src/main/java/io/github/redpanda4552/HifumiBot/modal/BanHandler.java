@@ -1,10 +1,12 @@
 package io.github.redpanda4552.HifumiBot.modal;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.async.MessageBulkDeleteRunnable;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.UserUtils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -19,12 +21,21 @@ public class BanHandler {
         }
 
         String userId = event.getValue("userid").getAsString();
-        User user = HifumiBot.getSelf().getJDA().getUserById(userId);
-
-        event.getGuild().ban(user, 0, TimeUnit.SECONDS).queue();
-        MessageBulkDeleteRunnable runnable = new MessageBulkDeleteRunnable(event.getGuild().getId(), user.getId());
-        HifumiBot.getSelf().getScheduler().runOnce(runnable);
-
-        event.reply("User " + user.getAsMention() + "(" + user.getName() + ") has been banned").setEphemeral(true).queue();
+        Optional<User> userOpt = UserUtils.getOrRetrieveUser(userId);
+        
+        try {
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                event.getGuild().ban(user, 0, TimeUnit.SECONDS).complete();
+                MessageBulkDeleteRunnable runnable = new MessageBulkDeleteRunnable(event.getGuild().getId(), user.getId());
+                HifumiBot.getSelf().getScheduler().runOnce(runnable);
+    
+                event.reply("User " + user.getAsMention() + "(" + user.getName() + ") has been banned").setEphemeral(true).queue();   
+            } else {
+                event.reply("User could not be retrieved; Discord might have already deleted them.").setEphemeral(true).queue();
+            }
+        } catch (Exception e) {
+            Messaging.logException("BanHandler", "handle", e);
+        }
     }
 }
