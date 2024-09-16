@@ -17,6 +17,7 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
@@ -159,7 +160,8 @@ public class EventLogging {
         }
         
         if (deletedMessage != null) {
-            eb.addField("Channel", HifumiBot.getSelf().getJDA().getTextChannelById(deletedMessage.getChannelId()).getAsMention(), true);
+            GuildChannel channel = HifumiBot.getSelf().getJDA().getGuildChannelById(deletedMessage.getChannelId());
+            eb.addField("Channel", channel.getAsMention(), true);
             eb.addField("Message Content (Truncated to 512 chars)", StringUtils.truncate(deletedMessage.getBodyContent(), 512), false);
 
             if (deletedMessage.getReferencedMessageId() != null) {
