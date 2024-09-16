@@ -1,6 +1,7 @@
 package io.github.redpanda4552.HifumiBot.event;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.async.AutoModReviewRunnable;
@@ -23,10 +24,10 @@ public class AutoModEventListener extends ListenerAdapter {
         Log.info("AutoMod event inserted to db");
 
         // If user has elevated permissions, don't do review
-        Member member = MemberUtils.getOrRetrieveMember(event.getGuild(), event.getUserIdLong());
+        Optional<Member> memberOpt = MemberUtils.getOrRetrieveMember(event.getGuild(), event.getUserIdLong());
         Log.info("AutoMod event member retrieved");
         
-        if (member != null && HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, member)) {
+        if (memberOpt.isPresent() && HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, memberOpt.get())) {
             Log.info("AutoMod event subject elevated permissions abort");
             return;
         }
