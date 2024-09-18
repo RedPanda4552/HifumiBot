@@ -296,7 +296,7 @@ public class Messaging {
         
         for (User usr : msg.getMentions().getUsers()) {
             try {
-                msg.getGuild().retrieveMemberById(usr.getId()).complete();
+                return msg.getGuild().retrieveMemberById(usr.getId()).complete() == null;
             } catch (ErrorResponseException e) {
                 return true;
             }
