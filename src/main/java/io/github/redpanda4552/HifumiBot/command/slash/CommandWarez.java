@@ -63,8 +63,8 @@ public class CommandWarez extends AbstractSlashCommand {
 
     @Override
     protected CommandData defineSlashCommand() {
-        return Commands.slash("warez", "Show a prompt about anti-piracy rules, with optional warez role assignment")
-                .addOption(OptionType.USER, "user", "Optional user to assign warez role to")
+        return Commands.slash("warez", "Show a prompt about anti-piracy rules and assign warez role")
+                .addOption(OptionType.USER, "user", "User to assign warez role to", true)
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
     }
 }
