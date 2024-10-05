@@ -64,7 +64,7 @@ public class SlashCommandListener extends ListenerAdapter {
 
         // Fetch the last occurrence of this command, in this channel,
         // from another user, within the ninja time, if available.
-        Optional<CommandEventObject> recentCommandInstance = Database.getLatestCommandEvent(event.getChannelIdLong(), event.getCommandIdLong(), event.getUser().getIdLong());
+        Optional<CommandEventObject> recentCommandInstance = Database.getLatestCommandEventNotFromUser(event.getChannelIdLong(), event.getCommandIdLong(), event.getUser().getIdLong());
 
         // Store this command event to database
         Database.insertCommandEvent(
@@ -74,7 +74,7 @@ public class SlashCommandListener extends ListenerAdapter {
             event.getSubcommandGroup(), 
             event.getSubcommandName(), 
             event.getIdLong(), 
-            event.getUser().getIdLong(),
+            event.getUser(),
             event.getChannelIdLong(),
             event.getTimeCreated().toEpochSecond(), 
             recentCommandInstance.isPresent(),

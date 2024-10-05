@@ -1058,10 +1058,21 @@ public class Database {
         return ret;
     }
 
-    public static void insertCommandEvent(long commandIdLong, String type, String name, String group, String sub, long eventIdLong, long userIdLong, long channelIdLong, long timestamp, boolean ninja, List<OptionMapping> options) {
+    public static void insertCommandEvent(long commandIdLong, String type, String name, String group, String sub, long eventIdLong, User user, long channelIdLong, long timestamp, boolean ninja, List<OptionMapping> options) {
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
+            PreparedStatement insertUser = conn.prepareStatement("""
+                    INSERT INTO user (discord_id, created_datetime, username)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT (discord_id) DO NOTHING;
+                    """);
+            insertUser.setLong(1, user.getIdLong());
+            insertUser.setLong(2, user.getTimeCreated().toEpochSecond());
+            insertUser.setString(3, user.getName());
+            insertUser.executeUpdate();
+            insertUser.close();
+
             PreparedStatement insertCommand = conn.prepareStatement("""
                     INSERT INTO command (discord_id, type, name, subgroup, subcmd)
                     VALUES (?, ?, ?, ?, ?)
@@ -1083,7 +1094,7 @@ public class Database {
 
             insertCommandEvent.setLong(1, eventIdLong);
             insertCommandEvent.setLong(2, commandIdLong);
-            insertCommandEvent.setLong(3, userIdLong);
+            insertCommandEvent.setLong(3, user.getIdLong());
             insertCommandEvent.setLong(4, channelIdLong);
             insertCommandEvent.setLong(5, timestamp);
             insertCommandEvent.setBoolean(6, ninja);
@@ -1125,7 +1136,15 @@ public class Database {
         }
     }
 
-    public static Optional<CommandEventObject> getLatestCommandEvent(long channelIdLong, long commandIdLong, long userIdLong) {
+    /**
+     * Get the latest command event to occur in a channel, for a given command,
+     * where the user is ANYONE EXCEPT the user specified, within the ninja interval from config.
+     * @param channelIdLong
+     * @param commandIdLong
+     * @param userIdLong
+     * @return
+     */
+    public static Optional<CommandEventObject> getLatestCommandEventNotFromUser(long channelIdLong, long commandIdLong, long userIdLong) {
         Optional<CommandEventObject> ret = Optional.empty();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
