@@ -62,7 +62,7 @@ public class WarezUtil {
                         Role warezRole = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
                         event.getGuild().addRoleToMember(member, warezRole).queue();
                     } catch (InsufficientPermissionException e) {
-                        Messaging.logInfo("CommandWarez", "execute", "Failed to assign role to " + member.getAsMention() + " (insufficient permissions)");                        
+                        Messaging.logInfo("WarezUtil", "applyWarez", "Failed to assign role to " + member.getAsMention() + " (insufficient permissions)");                        
                     }
                 }
                 
