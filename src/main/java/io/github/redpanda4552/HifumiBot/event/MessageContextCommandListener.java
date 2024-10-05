@@ -24,10 +24,13 @@
 package io.github.redpanda4552.HifumiBot.event;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractMessageContextCommand;
 import io.github.redpanda4552.HifumiBot.command.AbstractUserContextCommand;
+import io.github.redpanda4552.HifumiBot.database.CommandEventObject;
+import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
@@ -44,6 +47,29 @@ public class MessageContextCommandListener extends ListenerAdapter {
             event.reply("Message context commands are disabled in DMs.").setEphemeral(true).queue();
             return;
         }
+
+        // Fetch the last occurrence of this command, in this channel,
+        // from another user, within the ninja time, if available.
+        Optional<CommandEventObject> recentCommandInstance = Database.getLatestCommandEventNotFromUser(
+            event.getChannelIdLong(), 
+            event.getCommandIdLong(), 
+            event.getUser().getIdLong()
+        );
+
+        // Store this command event to database
+        Database.insertCommandEvent(
+            event.getCommandIdLong(), 
+            "message", 
+            event.getName(), 
+            event.getSubcommandGroup(), 
+            event.getSubcommandName(), 
+            event.getIdLong(), 
+            event.getUser(),
+            event.getChannelIdLong(),
+            event.getTimeCreated().toEpochSecond(), 
+            recentCommandInstance.isPresent(),
+            event.getOptions()
+        );
         
         if (messageCommands.containsKey(event.getName())) {
             try {
@@ -61,6 +87,29 @@ public class MessageContextCommandListener extends ListenerAdapter {
             event.reply("User context commands are disabled in DMs.").setEphemeral(true).queue();
             return;
         }
+
+        // Fetch the last occurrence of this command, in this channel,
+        // from another user, within the ninja time, if available.
+        Optional<CommandEventObject> recentCommandInstance = Database.getLatestCommandEventNotFromUser(
+            event.getChannelIdLong(), 
+            event.getCommandIdLong(), 
+            event.getUser().getIdLong()
+        );
+
+        // Store this command event to database
+        Database.insertCommandEvent(
+            event.getCommandIdLong(), 
+            "user", 
+            event.getName(), 
+            event.getSubcommandGroup(), 
+            event.getSubcommandName(), 
+            event.getIdLong(), 
+            event.getUser(),
+            event.getChannelIdLong(),
+            event.getTimeCreated().toEpochSecond(), 
+            recentCommandInstance.isPresent(),
+            event.getOptions()
+        );
         
         if (userCommands.containsKey(event.getName())) {
             try {
