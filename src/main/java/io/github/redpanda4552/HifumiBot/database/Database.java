@@ -683,13 +683,13 @@ public class Database {
         return false;
     }
 
-    public static WarezEventObject getLatestWarezAction(long userIdLong) {
-        WarezEventObject ret = null;
+    public static Optional<WarezEventObject> getLatestWarezAction(long userIdLong) {
+        Optional<WarezEventObject> ret = Optional.empty();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
             PreparedStatement getWarezEvent = conn.prepareStatement("""
-                    SELECT timestamp, fk_user, action
+                    SELECT timestamp, fk_user, action, fk_message
                     FROM warez_event
                     WHERE fk_user = ?
                     ORDER BY timestamp DESC
@@ -699,10 +699,13 @@ public class Database {
             ResultSet latestEvent = getWarezEvent.executeQuery();
 
             if (latestEvent.next()) {
-                ret = new WarezEventObject(
-                    latestEvent.getLong("timestamp"), 
-                    latestEvent.getLong("fk_user"), 
-                    WarezEventObject.Action.valueOf(latestEvent.getString("action").toUpperCase())
+                ret = Optional.of(
+                    new WarezEventObject(
+                        latestEvent.getLong("timestamp"), 
+                        latestEvent.getLong("fk_user"), 
+                        WarezEventObject.Action.valueOf(latestEvent.getString("action").toUpperCase()),
+                        latestEvent.getLong("fk_message")
+                    )
                 );
             }
 

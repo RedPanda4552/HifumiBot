@@ -48,6 +48,7 @@ public class Config implements IConfig {
     public SpamOptions spamOptions;
     public UrlChangeOptions urlChangeOptions;
     public EntryBarrierOptions entryBarrierOptions;
+    public WarezPrompt warezPrompt;
 
     public Config() {
         server = new Server();
@@ -61,6 +62,7 @@ public class Config implements IConfig {
         urlChangeOptions = new UrlChangeOptions();
         ninjaInterval = 500;
         entryBarrierOptions = new EntryBarrierOptions();
+        warezPrompt = new WarezPrompt();
     }
     
     public class Server {
@@ -196,6 +198,30 @@ public class Config implements IConfig {
             userInputChannelId = new String("");
             expectedUserInput = new String("");
             entryRoleId = new String("");
+        }
+    }
+
+    public class WarezPrompt {
+        public String title;
+        public String body;
+        public ArrayList<WarezPromptField> fields;
+
+        public WarezPrompt() {
+            title = new String("");
+            body = new String("");
+            fields = new ArrayList<WarezPromptField>();
+        }
+    }
+
+    public class WarezPromptField {
+        public String name;
+        public String value;
+        public boolean inline;
+
+        public WarezPromptField() {
+            name = new String("");
+            value = new String("");
+            inline = false;
         }
     }
 }

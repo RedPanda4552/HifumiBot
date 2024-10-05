@@ -29,6 +29,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.context.CommandBan;
 import io.github.redpanda4552.HifumiBot.command.context.CommandReverseImage;
 import io.github.redpanda4552.HifumiBot.command.context.CommandTranslateEN;
+import io.github.redpanda4552.HifumiBot.command.context.CommandWarezMsg;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
@@ -120,6 +121,7 @@ public class CommandIndex {
         messageCommands.clear();
         registerMessageCommand(new CommandTranslateEN());
         registerMessageCommand(new CommandReverseImage());
+        registerMessageCommand(new CommandWarezMsg());
     }
 
     public void rebuildUser() {

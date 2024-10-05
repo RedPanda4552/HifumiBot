@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
@@ -49,16 +50,16 @@ public class MemberEventListener extends ListenerAdapter {
         }
         
         // Reassign warez
-        WarezEventObject warezEvent = Database.getLatestWarezAction(event.getMember().getIdLong());
+        Optional<WarezEventObject> warezEventOpt = Database.getLatestWarezAction(event.getMember().getIdLong());
 
-        if (warezEvent != null) {
-            if (warezEvent.getAction().equals(WarezEventObject.Action.ADD)) {
+        if (warezEventOpt.isPresent()) {
+            if (warezEventOpt.get().getAction().equals(WarezEventObject.Action.ADD)) {
                 Role role = event.getGuild().getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
                 event.getGuild().addRoleToMember(event.getMember(), role).queue();
             }
         }
         
-        EventLogging.logGuildMemberJoinEvent(event, warezEvent);
+        EventLogging.logGuildMemberJoinEvent(event, warezEventOpt.get());
     }
 
     @Override 
