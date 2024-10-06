@@ -16,6 +16,7 @@ import io.github.redpanda4552.HifumiBot.charting.WarezChartData;
 import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.TimeUtils;
+import io.github.redpanda4552.HifumiBot.util.UserUtils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.User;
@@ -920,6 +921,38 @@ public class Database {
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
         try {
+            // First, try to fetch the user who triggered the event.
+            Optional<User> userOpt = UserUtils.getOrRetrieveUser(event.getUserIdLong());
+
+            // If we found them...
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+
+                // Log them first
+                PreparedStatement insertUser = conn.prepareStatement("""
+                        INSERT INTO user (discord_id, created_datetime, username)
+                        VALUES (?, ?, ?)
+                        ON CONFLICT (discord_id) DO NOTHING;
+                        """);
+                insertUser.setLong(1, user.getIdLong());
+                insertUser.setLong(2, user.getTimeCreated().toEpochSecond());
+                insertUser.setString(3, user.getName());
+                insertUser.executeUpdate();
+                insertUser.close();
+
+                // Then use that to also log the triggering message
+                PreparedStatement insertMessage = conn.prepareStatement("""
+                        INSERT INTO message (message_id, fk_channel, fk_user)
+                        VALUES (?, ?, ?)
+                        ON CONFLICT (message_id) DO NOTHING;
+                        """);
+                insertMessage.setLong(1, event.getMessageIdLong());
+                insertMessage.setLong(2, event.getChannel().getIdLong());
+                insertMessage.setLong(3, user.getIdLong());
+                insertMessage.executeUpdate();
+                insertMessage.close();
+            }
+
             PreparedStatement insertAutoModEvent = conn.prepareStatement("""
                     INSERT INTO automod_event (fk_user, fk_message, fk_channel, alert_message_id, rule_id, timestamp, trigger, content, matched_content, matched_keyword, response_type)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
