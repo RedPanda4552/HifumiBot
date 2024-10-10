@@ -59,7 +59,7 @@ public class MemberEventListener extends ListenerAdapter {
             }
         }
         
-        EventLogging.logGuildMemberJoinEvent(event, warezEventOpt.get());
+        EventLogging.logGuildMemberJoinEvent(event, warezEventOpt);
     }
 
     @Override 

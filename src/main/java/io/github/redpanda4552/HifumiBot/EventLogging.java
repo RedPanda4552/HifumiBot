@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,7 +28,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class EventLogging {
     
-    public static void logGuildMemberJoinEvent(GuildMemberJoinEvent event, WarezEventObject lastWarezEvent) {
+    public static void logGuildMemberJoinEvent(GuildMemberJoinEvent event, Optional<WarezEventObject> lastWarezEvent) {
         String channelId = HifumiBot.getSelf().getConfig().channels.logging.memberJoin;
 
         if (channelId == null || channelId.isBlank()) {
@@ -47,8 +48,8 @@ public class EventLogging {
             eb.setColor(Color.GREEN);
         }
 
-        if (lastWarezEvent != null && lastWarezEvent.getAction().equals(Action.ADD)) {
-            OffsetDateTime warezDate = DateTimeUtils.longToOffsetDateTime(lastWarezEvent.getTimestamp());
+        if (lastWarezEvent.isPresent() && lastWarezEvent.get().getAction().equals(Action.ADD)) {
+            OffsetDateTime warezDate = DateTimeUtils.longToOffsetDateTime(lastWarezEvent.get().getTimestamp());
             String dateStr = warezDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
             eb.appendDescription(":pirate_flag: This user was previously warez'd (" + dateStr + ")\n");
             eb.setColor(Color.GREEN);
