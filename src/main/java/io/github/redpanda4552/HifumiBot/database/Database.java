@@ -667,12 +667,19 @@ public class Database {
             insertUser.close();
 
             PreparedStatement insertWarez = conn.prepareStatement("""
-                    INSERT INTO warez_event (timestamp, fk_user, action)
-                    VALUES (?, ?, ?);
+                    INSERT INTO warez_event (timestamp, fk_user, action, fk_message)
+                    VALUES (?, ?, ?, ?);
                     """);
             insertWarez.setLong(1, warezEvent.getTimestamp());
             insertWarez.setLong(2, warezEvent.getUserId());
             insertWarez.setString(3, warezEvent.getAction().toString().toLowerCase());
+
+            if (warezEvent.getMessageId().isPresent()) {
+                insertWarez.setLong(4, warezEvent.getMessageId().get());
+            } else {
+                insertWarez.setNull(4, Types.BIGINT);
+            }
+            
             insertWarez.executeUpdate();
             insertWarez.close();
 
