@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -20,7 +21,7 @@ public class CommandWarezMsg extends AbstractMessageContextCommand {
     @Override
     protected void onExecute(MessageContextInteractionEvent event) {
         event.deferReply().queue();
-        
+
         Message msg = event.getTarget();
         User user = msg.getAuthor();
         Optional<Member> memberOpt = MemberUtils.getOrRetrieveMember(event.getGuild(), user.getIdLong());
@@ -29,7 +30,9 @@ public class CommandWarezMsg extends AbstractMessageContextCommand {
         WarezUtil.applyWarez(event, user, memberOpt, messageOpt);
 
         String appealsChannelId = HifumiBot.getSelf().getConfig().channels.appealsChannelId;
-        msg.forwardTo(HifumiBot.getSelf().getJDA().getTextChannelById(appealsChannelId)).queue();
+        TextChannel appealsChannel = HifumiBot.getSelf().getJDA().getTextChannelById(appealsChannelId);
+        Message forwardedMsg = msg.forwardTo(appealsChannel).complete();
+        forwardedMsg.reply(user.getAsMention()).queue();
     }
 
     @Override
