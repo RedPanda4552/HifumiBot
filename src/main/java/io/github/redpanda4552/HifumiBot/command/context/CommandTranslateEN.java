@@ -42,7 +42,7 @@ public class CommandTranslateEN extends AbstractMessageContextCommand {
     protected void onExecute(MessageContextInteractionEvent event) {
         event.deferReply(true).queue();
         String content = event.getTarget().getContentDisplay();
-        event.getHook().editOriginal(":hourglass: Sending a translation request to Chat GPT... This may take a moment...").queue();
+        event.getHook().editOriginal(":hourglass: Sending a translation request to DeepL... This may take a moment...").queue();
         
         TextResult res = null;
         
