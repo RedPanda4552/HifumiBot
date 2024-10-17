@@ -725,6 +725,43 @@ public class Database {
         return ret;
     }
 
+    public static ArrayList<WarezEventObject> getAllWarezActionsForUser(long userIdLong) {
+        ArrayList<WarezEventObject> ret = new ArrayList<WarezEventObject>();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            PreparedStatement getWarezEvents = conn.prepareStatement("""
+                    SELECT e.timestamp, e.fk_user, e.action, e.fk_message, m.content, m.action AS message_action, COUNT(a.discord_id) AS attachments
+                    FROM warez_event AS e
+                    LEFT JOIN message_event AS m ON e.fk_message = m.fk_message
+                    LEFT JOIN message_attachment AS a ON e.fk_message = a.fk_message
+                    WHERE e.fk_user = ?
+                    GROUP BY e.id
+                    ORDER BY e.timestamp DESC;
+                    """);
+            getWarezEvents.setLong(1, userIdLong);
+            ResultSet warezEvent = getWarezEvents.executeQuery();
+
+            while (warezEvent.next()) {
+                ret.add(new WarezEventObject(
+                    warezEvent.getLong("timestamp"), 
+                    warezEvent.getLong("fk_user"), 
+                    WarezEventObject.Action.valueOf(warezEvent.getString("action").toUpperCase()),
+                    warezEvent.getLong("fk_message"),
+                    warezEvent.getString("content"),
+                    warezEvent.getString("message_action"),
+                    warezEvent.getLong("attachments")
+                ));
+            }
+
+            getWarezEvents.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getLatestWarezAction", e);
+        }
+        
+        return ret;
+    }
+
     public static ArrayList<WarezChartData> getWarezAssignmentsBetween(long startTimestamp, long endTimestamp, String timeUnit) {
         ArrayList<WarezChartData> ret = new ArrayList<WarezChartData>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();

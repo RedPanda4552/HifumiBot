@@ -2,7 +2,11 @@ package io.github.redpanda4552.HifumiBot.util;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.Config.WarezPromptField;
@@ -12,6 +16,7 @@ import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -97,5 +102,54 @@ public class WarezUtil {
                 .queue();
             Messaging.logException("WarezUtil", "applyWarez", e);
         }
+    }
+
+    public static MessageEmbed createWarezHistoryEmbed(long userIdLong) {
+        ArrayList<WarezEventObject> events = Database.getAllWarezActionsForUser(userIdLong);
+
+        Optional<User> userOpt = UserUtils.getOrRetrieveUser(userIdLong);
+        String userDisplayName = userOpt.isPresent() ? userOpt.get().getEffectiveName() : "<@" + String.valueOf(userIdLong) + ">";
+
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setTitle("Warez History for " + userDisplayName);
+
+        if (events.isEmpty()) {
+            eb.setDescription("No warez events to report!");
+        } else {
+            eb.setDescription("Showing ");
+
+            for (WarezEventObject event : events) {
+                if (eb.getFields().size() >= MessageEmbed.MAX_FIELD_AMOUNT) {
+                    break;
+                }
+
+                OffsetDateTime dateTime = DateTimeUtils.longToOffsetDateTime(event.getTimestamp());
+                String titleStr = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                String bodyStr = String.format("Action: %s\n",
+                    event.getAction().toString()
+                );
+
+                if (event.getMessageAttachmentCount().isPresent() && event.getMessageAttachmentCount().get() > 0) {
+                    bodyStr += String.format("Message Attachments: %d\n",
+                        event.getMessageAttachmentCount().orElse(0L)
+                    );
+                }
+
+                if (event.getMessageAction().isPresent()) {
+                    bodyStr += String.format("Message Last Action: %s\n",
+                        event.getMessageAction().get()
+                    );
+                    bodyStr += String.format("```\n%s\n```",
+                        event.getMessageContent().isPresent() ? StringUtils.abbreviate(event.getMessageContent().get(), 256) : "<no message content>"
+                    );
+                }
+                
+                eb.addField(titleStr, bodyStr, false);
+            }
+
+            eb.appendDescription(eb.getFields().size() + " of " + events.size() + " warez events (all times UTC)");
+        }
+
+        return eb.build();
     }
 }
