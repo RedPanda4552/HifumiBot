@@ -33,6 +33,7 @@ import io.github.redpanda4552.HifumiBot.database.MessageObject;
 import io.github.redpanda4552.HifumiBot.moderation.ModActions;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -93,7 +94,7 @@ public class CommandSpamKick extends AbstractSlashCommand {
     protected CommandData defineSlashCommand() {
         return Commands.slash("spamkick", "Send a user a DM telling them their account is compromised and spamming, then kick the user")
                 .addOption(OptionType.USER, "user", "User to DM and kick", true)
-                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.KICK_MEMBERS));
     }
 
 }

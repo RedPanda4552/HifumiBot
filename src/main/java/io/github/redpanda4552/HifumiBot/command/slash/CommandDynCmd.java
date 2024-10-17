@@ -30,6 +30,7 @@ import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -202,6 +203,6 @@ public class CommandDynCmd extends AbstractSlashCommand {
                 );
         return Commands.slash("dyncmd", "Manage dynamic commands")
                 .addSubcommands(get, delete, newDyncmd, update)
-                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER));
     }
 }

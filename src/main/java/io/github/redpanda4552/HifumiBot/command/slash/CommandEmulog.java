@@ -32,6 +32,7 @@ import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig.Rule;
 import io.github.redpanda4552.HifumiBot.util.CommandUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -284,6 +285,6 @@ public class CommandEmulog extends AbstractSlashCommand {
                 .addOption(OptionType.STRING, "name", "Name of the emulog parser rule to delete", true);
         return Commands.slash("emulog", "Configure emulog parser rules")
                 .addSubcommands(browse, newRule, update, delete)
-                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER));
     }
 }

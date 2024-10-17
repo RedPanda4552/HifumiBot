@@ -1,6 +1,7 @@
 package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -36,7 +37,7 @@ public class CommandPrompt extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("prompt", "Open text inputs to generate a custom embed")
-                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER));
     }
 
 }

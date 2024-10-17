@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 
 import io.github.redpanda4552.HifumiBot.charting.ChartGenerator;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -90,7 +91,7 @@ public class CommandChartGen extends AbstractSlashCommand {
 
         return Commands.slash("chartgen", "Generate a chart")
                 .addOptions(typeOption, timeUnit, startDate, endDate)
-                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER));
     }
 
 }

@@ -10,6 +10,7 @@ import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -58,7 +59,7 @@ public class CommandPride extends AbstractSlashCommand {
         SubcommandData get = new SubcommandData("get", "Get the current ETA");
         return Commands.slash("pride", "For as long as there is the logo, there shall be carnage")
                 .addSubcommands(add, get)
-                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER));
     }
 
 }

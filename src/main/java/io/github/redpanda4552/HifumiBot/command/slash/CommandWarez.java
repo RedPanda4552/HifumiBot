@@ -28,6 +28,7 @@ import java.util.Optional;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.util.MemberUtils;
 import io.github.redpanda4552.HifumiBot.util.WarezUtil;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -65,6 +66,6 @@ public class CommandWarez extends AbstractSlashCommand {
     protected CommandData defineSlashCommand() {
         return Commands.slash("warez", "Show a prompt about anti-piracy rules and assign warez role")
                 .addOption(OptionType.USER, "user", "User to assign warez role to", true)
-                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_ROLES));
     }
 }

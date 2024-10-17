@@ -30,6 +30,7 @@ import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -75,6 +76,6 @@ public class CommandAbout extends AbstractSlashCommand {
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("about", "View general information about the bot and its health")
-                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER));
     }
 }
