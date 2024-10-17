@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -75,7 +76,19 @@ public class WarezUtil {
                 }
 
                 mb.setEmbeds(eb.build());
-                event.getHook().sendMessage(mb.build()).queue();
+                
+
+                String appealsChannelId = HifumiBot.getSelf().getConfig().channels.appealsChannelId;
+                TextChannel appealsChannel = HifumiBot.getSelf().getJDA().getTextChannelById(appealsChannelId);
+
+                if (messageOpt.isPresent()) {
+                    Message forwardedMsg = messageOpt.get().forwardTo(appealsChannel).complete();
+                    Message warezPrompt = forwardedMsg.reply(mb.build()).complete();
+                    event.getHook().sendMessage("Warez applied to user: " + warezPrompt.getJumpUrl()).queue();
+                } else {
+                    Message warezPrompt = appealsChannel.sendMessage(mb.build()).complete();
+                    event.getHook().sendMessage("Warez applied to user: " + warezPrompt.getJumpUrl()).queue();
+                }
             }
         } catch (Exception e) {
             event.getHook()
