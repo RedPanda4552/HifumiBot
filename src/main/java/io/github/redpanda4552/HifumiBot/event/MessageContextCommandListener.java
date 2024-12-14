@@ -110,6 +110,12 @@ public class MessageContextCommandListener extends ListenerAdapter {
             recentCommandInstance.isPresent(),
             event.getOptions()
         );
+
+        // Now abort if it was a ninja
+        if (recentCommandInstance.isPresent()) {
+            event.reply(":ninja:").setEphemeral(true).queue();
+            return;
+        }
         
         if (userCommands.containsKey(event.getName())) {
             try {
