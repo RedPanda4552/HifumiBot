@@ -282,18 +282,25 @@ public class GameIndex implements Refreshable {
                 
                 if (entry.containsKey("speedHacks")) {
                     Map<String, Object> speedhacks = (Map<String, Object>) entry.get("speedHacks");
-                    
-                    if (speedhacks.containsKey("InstantVU1SpeedHack")) {
+
+                    if (speedhacks.containsKey("mvuFlag")) {
                         eb.addField(EmbedUtil.prebuildField(
-                            "Instant VU1", 
-                            GENERIC_BOOLEAN.get((int) speedhacks.get("InstantVU1SpeedHack")), 
+                            "MicroVU Flag Hack", 
+                            GENERIC_BOOLEAN.get((int) speedhacks.get("mvuFlag")), 
                             true));
                     }
                     
-                    if (speedhacks.containsKey("MTVUSpeedHack")) {
+                    if (speedhacks.containsKey("instantVU1")) {
+                        eb.addField(EmbedUtil.prebuildField(
+                            "Instant VU1", 
+                            GENERIC_BOOLEAN.get((int) speedhacks.get("instantVU1")), 
+                            true));
+                    }
+                    
+                    if (speedhacks.containsKey("mtvu")) {
                         eb.addField(EmbedUtil.prebuildField(
                             "Multi-Threaded VU1 (MTVU)", 
-                            GENERIC_BOOLEAN.get((int) speedhacks.get("MTVUSpeedHack")), 
+                            GENERIC_BOOLEAN.get((int) speedhacks.get("mtvu")), 
                             true));
                     }
 
