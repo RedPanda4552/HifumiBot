@@ -3,6 +3,7 @@ package io.github.redpanda4552.HifumiBot.event;
 import io.github.redpanda4552.HifumiBot.modal.BanHandler;
 import io.github.redpanda4552.HifumiBot.modal.DyncmdHandler;
 import io.github.redpanda4552.HifumiBot.modal.PromptHandler;
+import io.github.redpanda4552.HifumiBot.modal.SayHandler;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -14,6 +15,10 @@ public class ModalEventListener extends ListenerAdapter {
         String modalId = event.getModalId();
 
         switch (modalId) {
+            case "say": {
+                SayHandler.handle(event);
+                break;
+            }
             case "prompt": {
                 PromptHandler.handle(event);
                 break;
