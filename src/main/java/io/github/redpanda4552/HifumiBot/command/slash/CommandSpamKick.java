@@ -55,6 +55,11 @@ public class CommandSpamKick extends AbstractSlashCommand {
         }
         
         Member member = opt.getAsMember();
+
+        if (member == null) {
+            event.reply("User has already left the server.").setEphemeral(true).queue();
+            return;
+        }
         
         try {
             long cooldownSeconds = HifumiBot.getSelf().getConfig().spamOptions.cooldownSeconds;
