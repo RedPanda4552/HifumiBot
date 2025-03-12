@@ -26,6 +26,9 @@ public class TimeUtils {
 
     public static String getSQLFormatStringFromTimeUnit(String timeUnit) {
         switch (timeUnit) {
+            case "year": {
+                return "%Y";
+            }
             case "month": {
                 return "%Y-%m";
             }
