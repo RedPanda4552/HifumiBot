@@ -1277,7 +1277,7 @@ public class Database {
                     WHERE timestamp >= ?
                     AND timestamp <= ?
                     GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), trigger
-                    ORDER BY trigger ASC, timestamp ASC;
+                    ORDER BY timestamp ASC, trigger ASC;
                     """);
             getAutomodEvents.setString(1, formatStr);
             getAutomodEvents.setLong(2, startTimestamp);
