@@ -64,6 +64,10 @@ public class CommandChartGen extends AbstractSlashCommand {
                 file = FileUpload.fromData(ChartGenerator.buildMemberChart(startDate.toEpochSecond(), endDate.toEpochSecond(), timeUnitOpt.getAsString()), "member.png"); 
                 break;
             }
+            case "automod": {
+                file = FileUpload.fromData(ChartGenerator.buildAutomodChart(startDate.toEpochSecond(), endDate.toEpochSecond(), timeUnitOpt.getAsString()), "auutomod.png"); 
+                break;
+            }
             default: {
                 event.reply("Unknown chart type").setEphemeral(true).queue();
                 return;
@@ -80,6 +84,7 @@ public class CommandChartGen extends AbstractSlashCommand {
         OptionData typeOption = new OptionData(OptionType.STRING, "type", "Type of chart to generate", true);
         typeOption.addChoice("warez", "warez");
         typeOption.addChoice("member", "member");
+        typeOption.addChoice("automod", "automod");
 
         OptionData timeUnit = new OptionData(OptionType.STRING, "time-unit", "Unit of time to display each data point as", true);
         timeUnit.addChoice("day", "day");

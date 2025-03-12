@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.charting.AutomodChartData;
 import io.github.redpanda4552.HifumiBot.charting.MemberChartData;
 import io.github.redpanda4552.HifumiBot.charting.WarezChartData;
 import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
@@ -1259,6 +1260,42 @@ public class Database {
             getCommandEvent.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "getLatestCommandEventByChannel", e);
+        }
+        
+        return ret;
+    }
+
+    public static ArrayList<AutomodChartData> getAutomodEventsBetween(long startTimestamp, long endTimestamp, String timeUnit) {
+        ArrayList<AutomodChartData> ret = new ArrayList<AutomodChartData>();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+        String formatStr = TimeUtils.getSQLFormatStringFromTimeUnit(timeUnit);
+        
+        try {
+            PreparedStatement getAutomodEvents = conn.prepareStatement("""
+                    SELECT COUNT(timestamp) AS events, STRFTIME(?, DATETIME(timestamp, 'unixepoch')) AS timeUnit, trigger
+                    FROM automod_event
+                    WHERE timestamp >= ?
+                    AND timestamp <= ?
+                    GROUP BY STRFTIME(?, DATETIME(timestamp, 'unixepoch')), trigger
+                    ORDER BY trigger ASC, timestamp ASC;
+                    """);
+            getAutomodEvents.setString(1, formatStr);
+            getAutomodEvents.setLong(2, startTimestamp);
+            getAutomodEvents.setLong(3, endTimestamp);
+            getAutomodEvents.setString(4, formatStr);
+            ResultSet latestEvent = getAutomodEvents.executeQuery();
+
+            while (latestEvent.next()) {
+                AutomodChartData data = new AutomodChartData();
+                data.timeUnit = latestEvent.getString("timeUnit");
+                data.events = latestEvent.getInt("events");
+                data.trigger = latestEvent.getString("trigger");
+                ret.add(data);
+            }
+
+            getAutomodEvents.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getAutomodEventsBetween", e);
         }
         
         return ret;

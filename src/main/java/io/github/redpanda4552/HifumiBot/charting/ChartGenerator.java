@@ -72,4 +72,29 @@ public class ChartGenerator {
         
         return null;
     }
+
+    public static byte[] buildAutomodChart(long startTimestamp, long endTimestamp, String timeUnit) {
+        ArrayList<AutomodChartData> automodDataList = Database.getAutomodEventsBetween(startTimestamp, endTimestamp, timeUnit);
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        
+        for (AutomodChartData data : automodDataList) {
+            dataset.addValue(data.events, data.trigger, data.timeUnit);
+        }
+
+        JFreeChart chart = ChartFactory.createBarChart("Automod Events (by " + timeUnit + ")", timeUnit, "Automod Events", dataset, PlotOrientation.HORIZONTAL, true, true, false);
+        CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+        renderer.setBarPainter(new StandardBarPainter());
+        renderer.setDrawBarOutline(true);
+        
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ChartUtils.writeChartAsPNG(out, chart, 1280, 720);
+            return out.toByteArray();
+        } catch (Exception e) {
+            Messaging.logException("ChartGenerator", "buildAutomodChart", e);
+        }
+        
+        return null;
+    }
 }
