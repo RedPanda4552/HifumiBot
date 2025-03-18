@@ -42,7 +42,6 @@ import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Log;
-import io.github.redpanda4552.HifumiBot.wiki.WikiIndex;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -113,7 +112,6 @@ public class HifumiBot {
     private SQLite sqlite;
     
     private Scheduler scheduler;
-    private WikiIndex wikiIndex;
     private CpuIndex cpuIndex;
     private GpuIndex gpuIndex;
     private CommandIndex commandIndex;
@@ -185,7 +183,6 @@ public class HifumiBot {
         sqlite = new SQLite();
         deepL = new Translator(deepLKey);
         scheduler = new Scheduler();
-        wikiIndex = new WikiIndex();
         cpuIndex = new CpuIndex();
         gpuIndex = new GpuIndex();
         commandIndex = new CommandIndex();
@@ -201,7 +198,6 @@ public class HifumiBot {
 
         Log.info("Refreshing anything refreshable");
         scheduler.runOnce(() -> {
-            wikiIndex.refresh();
             cpuIndex.refresh();
             gpuIndex.refresh();
             gameIndex.refresh();
@@ -209,10 +205,6 @@ public class HifumiBot {
 
         // Schedule repeating tasks
         Log.info("Scheduling repeating tasks");
-
-        scheduler.scheduleRepeating("wiki", () -> {
-            HifumiBot.getSelf().getWikiIndex().refresh();
-        }, 1000 * 60 * 60 * 24);
 
         scheduler.scheduleRepeating("cpu", () -> {
             HifumiBot.getSelf().getCpuIndex().refresh();
@@ -256,10 +248,6 @@ public class HifumiBot {
 
     public Scheduler getScheduler() {
         return scheduler;
-    }
-
-    public WikiIndex getWikiIndex() {
-        return wikiIndex;
     }
 
     public CpuIndex getCpuIndex() {

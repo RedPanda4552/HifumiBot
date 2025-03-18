@@ -36,7 +36,6 @@ import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
-import io.github.redpanda4552.HifumiBot.command.slash.CommandWiki;
 import io.github.redpanda4552.HifumiBot.database.CommandEventObject;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
@@ -210,14 +209,6 @@ public class SlashCommandListener extends ListenerAdapter {
         if (!selection.getUserId().equals(event.getUser().getId())) {
             event.reply("You did not send this original command; you are not allowed to interact with this selection.").setEphemeral(true).queue();
             return;
-        }
-        
-        switch (selection.getCommandName()) {
-        case "wiki":
-            event.deferEdit().queue();
-            CommandWiki commandWiki = (CommandWiki) slashCommands.get(selection.getCommandName());
-            commandWiki.onStringSelectEvent(event);
-            break;
         }
     }
     
