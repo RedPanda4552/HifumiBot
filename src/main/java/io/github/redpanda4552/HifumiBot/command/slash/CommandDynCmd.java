@@ -132,12 +132,12 @@ public class CommandDynCmd extends AbstractSlashCommand {
         TextInput.Builder titleInput = TextInput.create("title", "Title", TextInputStyle.SHORT)
                 .setMinLength(1)
                 .setMaxLength(MessageEmbed.TITLE_MAX_LENGTH)
-                .setRequired(true);
+                .setRequired(false);
         TextInput.Builder bodyInput = TextInput.create("body", "Body", TextInputStyle.PARAGRAPH)
                 .setMinLength(1)
                 .setMaxLength(4000)
-                .setRequired(true);
-        TextInput.Builder imageInput = TextInput.create("image", "Image URL (Optional)", TextInputStyle.SHORT)
+                .setRequired(false);
+        TextInput.Builder imageInput = TextInput.create("image", "Image URL", TextInputStyle.SHORT)
                 .setMinLength(12)
                 .setMaxLength(255)
                 .setRequired(false);
