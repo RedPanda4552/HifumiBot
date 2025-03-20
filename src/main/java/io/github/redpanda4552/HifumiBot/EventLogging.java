@@ -8,11 +8,11 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.redpanda4552.HifumiBot.database.AttachmentObject;
 import io.github.redpanda4552.HifumiBot.database.Database;
-import io.github.redpanda4552.HifumiBot.database.MessageObject;
-import io.github.redpanda4552.HifumiBot.database.WarezEventObject;
-import io.github.redpanda4552.HifumiBot.database.WarezEventObject.Action;
+import io.github.redpanda4552.HifumiBot.database.objects.AttachmentObject;
+import io.github.redpanda4552.HifumiBot.database.objects.MessageObject;
+import io.github.redpanda4552.HifumiBot.database.objects.WarezEventObject;
+import io.github.redpanda4552.HifumiBot.database.objects.WarezEventObject.Action;
 import io.github.redpanda4552.HifumiBot.util.DateTimeUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;

@@ -5,8 +5,8 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.database.AutoModEventObject;
 import io.github.redpanda4552.HifumiBot.database.Database;
+import io.github.redpanda4552.HifumiBot.database.objects.AutoModEventObject;
 import io.github.redpanda4552.HifumiBot.moderation.ModActions;
 import io.github.redpanda4552.HifumiBot.util.Log;
 import io.github.redpanda4552.HifumiBot.util.Messaging;

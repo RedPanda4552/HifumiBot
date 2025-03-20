@@ -1,4 +1,4 @@
-package io.github.redpanda4552.HifumiBot.database;
+package io.github.redpanda4552.HifumiBot.database.objects;
 
 import net.dv8tion.jda.api.entities.automod.AutoModResponse;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;

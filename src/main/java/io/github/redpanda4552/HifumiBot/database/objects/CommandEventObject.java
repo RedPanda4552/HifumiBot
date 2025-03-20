@@ -1,4 +1,4 @@
-package io.github.redpanda4552.HifumiBot.database;
+package io.github.redpanda4552.HifumiBot.database.objects;
 
 public class CommandEventObject {
 

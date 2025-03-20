@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.database.Database;
-import io.github.redpanda4552.HifumiBot.database.MessageObject;
+import io.github.redpanda4552.HifumiBot.database.objects.MessageObject;
 import io.github.redpanda4552.HifumiBot.moderation.ModActions;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Strings;

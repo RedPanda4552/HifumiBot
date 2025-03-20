@@ -11,7 +11,7 @@ import io.github.redpanda4552.HifumiBot.async.EntryBarrierRunnable;
 import io.github.redpanda4552.HifumiBot.async.SpamReviewRunnable;
 import io.github.redpanda4552.HifumiBot.async.UrlChangeReviewRunnable;
 import io.github.redpanda4552.HifumiBot.database.Database;
-import io.github.redpanda4552.HifumiBot.database.MessageObject;
+import io.github.redpanda4552.HifumiBot.database.objects.MessageObject;
 import io.github.redpanda4552.HifumiBot.parse.CrashParser;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;

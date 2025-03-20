@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.config.Config.WarezPromptField;
 import io.github.redpanda4552.HifumiBot.database.Database;
-import io.github.redpanda4552.HifumiBot.database.WarezEventObject;
+import io.github.redpanda4552.HifumiBot.database.objects.WarezEventObject;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;

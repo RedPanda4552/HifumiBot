@@ -28,7 +28,7 @@ import java.util.Optional;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.database.Database;
-import io.github.redpanda4552.HifumiBot.database.WarezEventObject;
+import io.github.redpanda4552.HifumiBot.database.objects.WarezEventObject;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
