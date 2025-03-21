@@ -152,8 +152,15 @@ public class CommandDynCmd extends AbstractSlashCommand {
             }
             
             descriptionInput.setValue(choice.getDescription());
-            titleInput.setValue(choice.getTitle());
-            bodyInput.setValue(choice.getBody());
+
+            if (choice.getTitle() != null && !choice.getTitle().isBlank()) {
+                titleInput.setValue(choice.getTitle());
+            }
+            
+            if (choice.getBody() != null && !choice.getBody().isBlank()) {
+                bodyInput.setValue(choice.getBody());
+            }
+            
             imageInput.setValue(choice.getImageURL());
         }
 
