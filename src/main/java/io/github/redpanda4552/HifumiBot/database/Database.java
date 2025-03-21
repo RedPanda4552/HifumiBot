@@ -36,6 +36,8 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateGlobalNameEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class Database {
@@ -1306,5 +1308,63 @@ public class Database {
         }
         
         return ret;
+    }
+
+    public static void insertUsernameChangeEvent(UserUpdateNameEvent event) {
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            PreparedStatement insertUser = conn.prepareStatement("""
+                    INSERT INTO user (discord_id, created_datetime, username)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT (discord_id) DO NOTHING;
+                    """);
+            insertUser.setLong(1, event.getUser().getIdLong());
+            insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
+            insertUser.setString(3, event.getUser().getName());
+            insertUser.executeUpdate();
+            insertUser.close();
+
+            PreparedStatement insertUsernameEvent = conn.prepareStatement("""
+                    INSERT INTO user_username_event (fk_user, old_username, new_username)
+                    VALUES (?, ?, ?);
+                    """);
+            insertUsernameEvent.setLong(1, event.getUser().getIdLong());
+            insertUsernameEvent.setString(2, event.getOldName());
+            insertUsernameEvent.setString(3, event.getNewName());
+            insertUsernameEvent.executeUpdate();
+            insertUsernameEvent.close();
+        } catch (SQLException e) {
+             Messaging.logException("Database", "insertUsernameChangeEvent", e);
+        }
+    }
+
+    public static void insertDisplayNameChangeEvent(UserUpdateGlobalNameEvent event) {
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            PreparedStatement insertUser = conn.prepareStatement("""
+                    INSERT INTO user (discord_id, created_datetime, username)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT (discord_id) DO NOTHING;
+                    """);
+            insertUser.setLong(1, event.getUser().getIdLong());
+            insertUser.setLong(2, event.getUser().getTimeCreated().toEpochSecond());
+            insertUser.setString(3, event.getUser().getName());
+            insertUser.executeUpdate();
+            insertUser.close();
+
+            PreparedStatement insertDisplayNameEvent = conn.prepareStatement("""
+                    INSERT INTO user_displayname_event (fk_user, old_username, new_username)
+                    VALUES (?, ?, ?);
+                    """);
+            insertDisplayNameEvent.setLong(1, event.getUser().getIdLong());
+            insertDisplayNameEvent.setString(2, event.getOldGlobalName());
+            insertDisplayNameEvent.setString(3, event.getNewGlobalName());
+            insertDisplayNameEvent.executeUpdate();
+            insertDisplayNameEvent.close();
+        } catch (SQLException e) {
+             Messaging.logException("Database", "insertDisplayNameChangeEvent", e);
+        }
     }
 }

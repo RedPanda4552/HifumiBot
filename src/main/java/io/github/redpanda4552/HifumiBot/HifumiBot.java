@@ -39,6 +39,7 @@ import io.github.redpanda4552.HifumiBot.event.MessageEventListener;
 import io.github.redpanda4552.HifumiBot.event.ModalEventListener;
 import io.github.redpanda4552.HifumiBot.event.RoleEventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
+import io.github.redpanda4552.HifumiBot.event.UserEventListener;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Log;
@@ -120,6 +121,7 @@ public class HifumiBot {
     private RoleEventListener roleEventListener;
     private MessageEventListener messageEventListener;
     private MemberEventListener memberEventListener;
+    private UserEventListener userEventListener;
     private SlashCommandListener slashCommandListener;
     private MessageContextCommandListener messageCommandListener;
     
@@ -190,6 +192,7 @@ public class HifumiBot {
         jda.addEventListener(roleEventListener = new RoleEventListener());
         jda.addEventListener(messageEventListener = new MessageEventListener());
         jda.addEventListener(memberEventListener = new MemberEventListener());
+        jda.addEventListener(userEventListener = new UserEventListener());
         jda.addEventListener(slashCommandListener = new SlashCommandListener());
         jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
         jda.addEventListener(new ModalEventListener());
@@ -284,6 +287,10 @@ public class HifumiBot {
 
     public MemberEventListener getMemberEventListener() {
         return memberEventListener;
+    }
+
+    public UserEventListener getUserEventListener() {
+        return userEventListener;
     }
     
     public SlashCommandListener getSlashCommandListener() {
