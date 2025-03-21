@@ -1355,7 +1355,7 @@ public class Database {
             insertUser.close();
 
             PreparedStatement insertDisplayNameEvent = conn.prepareStatement("""
-                    INSERT INTO user_displayname_event (fk_user, old_username, new_username)
+                    INSERT INTO user_displayname_event (fk_user, old_displayname, new_displayname)
                     VALUES (?, ?, ?);
                     """);
             insertDisplayNameEvent.setLong(1, event.getUser().getIdLong());
