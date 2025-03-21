@@ -53,7 +53,11 @@ public class DynamicChoice {
         }
         
         EmbedBuilder eb = EmbedUtil.newFootedEmbedBuilder(event.getMember());
-        eb.setTitle(title);
+        
+        if (title != null && !title.isBlank()) {
+            eb.setTitle(title);
+        }
+        
         eb.setDescription(body);
         eb.setImage(imageURL);
         
