@@ -23,6 +23,7 @@
  */
 package io.github.redpanda4552.HifumiBot.command.slash;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
@@ -36,6 +37,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -60,25 +62,39 @@ public class CommandSpamKick extends AbstractSlashCommand {
             event.reply("User has already left the server.").setEphemeral(true).queue();
             return;
         }
+
+        event.deferReply().setEphemeral(true).queue();
         
         try {
             long cooldownSeconds = HifumiBot.getSelf().getConfig().spamOptions.cooldownSeconds;
             OffsetDateTime cooldownSubtracted = OffsetDateTime.now().minusSeconds(cooldownSeconds);
             long cooldownEpochSeconds = cooldownSubtracted.toEpochSecond();
 
-            ModActions.kickAndNotifyUser(event.getGuild(), member.getIdLong());
+            // First, timeout the user to stop any spam
+            member.timeoutFor(Duration.ofHours(1)).complete();
+
+            // Now round up any messages and delete them. We have to do this first,
+            // because we (probably) need the member to still be live in order to check member.hasAccess
             ArrayList<MessageObject> allMessages = Database.getAllMessagesSinceTime(member.getIdLong(), cooldownEpochSeconds);
 
             for (MessageObject message : allMessages) {
                 try {
-                    HifumiBot.getSelf().getJDA().getTextChannelById(message.getChannelId()).deleteMessageById(message.getMessageId()).queue();
+                    TextChannel channel = HifumiBot.getSelf().getJDA().getTextChannelById(message.getChannelId());
+
+                    // Check hasAccess; should stop the automod notification messages from being deleted,
+                    // since the user won't have access to that channel.
+                    if (member.hasAccess(channel)) {
+                        HifumiBot.getSelf().getJDA().getTextChannelById(message.getChannelId()).deleteMessageById(message.getMessageId()).queue();
+                    }
                 } catch (Exception e) {
                     // Squelch
                 }
             }
 
-            User usr = member.getUser();
+            // Finally, DM and kick
+            ModActions.kickAndNotifyUser(event.getGuild(), member.getIdLong());
 
+            User usr = member.getUser();
             EmbedBuilder eb = new EmbedBuilder();
             eb.setTitle("Command /spamkick Used");
             eb.setDescription("Sent a private message to user warning them we think they are a bot and have been kicked from the server. Their recent messages are in the process of being deleted.");
@@ -88,10 +104,10 @@ public class CommandSpamKick extends AbstractSlashCommand {
             eb.setFooter("This action was taken by " + event.getUser().getName() + ".");
 
             Messaging.logInfoEmbed(eb.build());
-            event.reply("Successfully messaged and kicked " + member.getUser().getAsMention()).setEphemeral(true).queue();
+            event.getHook().editOriginal("Successfully messaged and kicked " + member.getUser().getAsMention()).queue();
         } catch (Exception e) {
             Messaging.logException("CommandSpamKick", "onExecute", e);
-            event.reply("An internal error occurred, check the bot logging channel").setEphemeral(true).queue();
+            event.getHook().editOriginal("An internal error occurred, check the bot logging channel").queue();
         }
     }
 
