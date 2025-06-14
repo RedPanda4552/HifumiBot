@@ -54,6 +54,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandSpamKick;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandTranslate;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarez;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWarezHistory;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandWhois;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -115,6 +116,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandChartGen());
         registerSlashCommand(new CommandPride());
         registerSlashCommand(new CommandWarezHistory());
+        registerSlashCommand(new CommandWhois());
     }
     
     public void rebuildMessage() {
