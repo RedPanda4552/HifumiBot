@@ -149,7 +149,8 @@ public class CommandWhois extends AbstractSlashCommand {
             for (AutoModEventObject autoModEvent : autoModEventList) {
                 OffsetDateTime time = DateTimeUtils.longToOffsetDateTime(autoModEvent.getTimestamp());
                 String formatStr = time.format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
-                autoModEventEmbedBuilder.addField(formatStr, autoModEvent.getMatchedContent(), false);
+                String value = (autoModEvent.getMatchedContent() != null ? autoModEvent.getMatchedContent() : autoModEvent.getContent());
+                autoModEventEmbedBuilder.addField(formatStr, value, false);
             }
 
             pages.add(autoModEventEmbedBuilder.build());
