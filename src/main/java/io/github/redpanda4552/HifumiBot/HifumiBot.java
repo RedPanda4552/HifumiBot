@@ -48,6 +48,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import okhttp3.OkHttpClient;
 
 public class HifumiBot {
@@ -145,8 +146,9 @@ public class HifumiBot {
 
         try {
             jda = JDABuilder.createDefault(discordBotToken)
-                    .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
+                    .enableIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .enableCache(CacheFlag.CLIENT_STATUS)
                     .setAutoReconnect(true)
                     .build().awaitReady();
         } catch (Exception e) {

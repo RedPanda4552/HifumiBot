@@ -1,5 +1,7 @@
 package io.github.redpanda4552.HifumiBot.util;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
@@ -24,5 +26,23 @@ public class UserUtils {
         }
 
         return Optional.empty();
+    }
+
+    public static String getAgeOfUserAsPrettyString(User user) {
+        OffsetDateTime now = OffsetDateTime.now();
+        Duration diff = Duration.between(user.getTimeCreated(), now);
+        String ageStr = "";
+
+        if (diff.toSeconds() < 60) {
+            ageStr = diff.toSeconds() + "s";
+        } else if (diff.toMinutes() < 60) {
+            ageStr = diff.toMinutes() + "m " + diff.toSecondsPart() + "s";
+        } else if (diff.toHours() < 24) {
+            ageStr = diff.toHours() + "h " + diff.toMinutesPart() + "m";
+        } else {
+            ageStr = diff.toDays() + "d " + diff.toHoursPart() + "h";
+        }
+
+        return ageStr;
     }
 }

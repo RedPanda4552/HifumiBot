@@ -766,7 +766,64 @@ public class Database {
 
             getWarezEvents.close();
         } catch (SQLException e) {
-            Messaging.logException("Database", "getLatestWarezAction", e);
+            Messaging.logException("Database", "getAllWarezActionsForUser", e);
+        }
+        
+        return ret;
+    }
+
+    public static ArrayList<ArrayList<WarezEventObject>> getAllWarezActionsForUserPaginated(long userIdLong) {
+        ArrayList<ArrayList<WarezEventObject>> ret = new ArrayList<ArrayList<WarezEventObject>>();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            boolean isEmpty = false;
+            long timestamp = OffsetDateTime.now().toEpochSecond();
+            int rowsReturned = 0;
+
+            do { 
+                PreparedStatement getWarezEvents = conn.prepareStatement("""
+                    SELECT e.timestamp, e.fk_user, e.action, e.fk_message, m.content, m.action AS message_action, COUNT(a.discord_id) AS attachments
+                    FROM warez_event AS e
+                    LEFT JOIN message_event AS m ON e.fk_message = m.fk_message
+                    LEFT JOIN message_attachment AS a ON e.fk_message = a.fk_message
+                    WHERE e.fk_user = ?
+                    AND e.timestamp < ?
+                    GROUP BY e.id
+                    ORDER BY e.timestamp DESC
+                    LIMIT 10
+                    OFFSET ?;
+                    """);
+                getWarezEvents.setLong(1, userIdLong);
+                getWarezEvents.setLong(2, timestamp);
+                getWarezEvents.setInt(3, rowsReturned);
+                ResultSet warezEvent = getWarezEvents.executeQuery();
+                ArrayList<WarezEventObject> warezEvents = new ArrayList<WarezEventObject>();
+
+                while (warezEvent.next()) {
+                    WarezEventObject event = new WarezEventObject(
+                        warezEvent.getLong("timestamp"), 
+                        warezEvent.getLong("fk_user"), 
+                        WarezEventObject.Action.valueOf(warezEvent.getString("action").toUpperCase()),
+                        warezEvent.getLong("fk_message"),
+                        warezEvent.getString("content"),
+                        warezEvent.getString("message_action"),
+                        warezEvent.getLong("attachments")
+                    );
+                    warezEvents.add(event);
+                }
+
+                getWarezEvents.close();
+                rowsReturned += warezEvents.size();
+
+                if (!warezEvents.isEmpty()) {
+                    ret.add(warezEvents);
+                } else {
+                    isEmpty = true;
+                }
+            } while (!isEmpty);
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getAllWarezActionsForUserPaginated", e);
         }
         
         return ret;
@@ -864,6 +921,56 @@ public class Database {
             events.close();
         } catch (SQLException e) {
             Messaging.logException("Database", "getRecentMemberEvents", e);
+        }
+
+        return ret;
+    }
+
+    public static ArrayList<ArrayList<MemberEventObject>> getAllMemberEventsPaginated(long userId) {
+        ArrayList<ArrayList<MemberEventObject>> ret = new ArrayList<ArrayList<MemberEventObject>>();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            boolean isEmpty = false;
+            long timestamp = OffsetDateTime.now().toEpochSecond();
+            int rowsReturned = 0;
+            
+            do {
+                PreparedStatement events = conn.prepareStatement("""
+                    SELECT timestamp, fk_user, action
+                    FROM member_event
+                    WHERE fk_user = ?
+                    AND timestamp < ?
+                    ORDER BY timestamp DESC
+                    LIMIT 10
+                    OFFSET ?;
+                    """);
+                events.setLong(1, userId);
+                events.setLong(2, timestamp);
+                events.setInt(3, rowsReturned);
+                ResultSet eventsRes = events.executeQuery();
+                ArrayList<MemberEventObject> memberEvents = new ArrayList<MemberEventObject>();
+
+                while (eventsRes.next()) {
+                    MemberEventObject event = new MemberEventObject(
+                        eventsRes.getLong("timestamp"), 
+                        eventsRes.getLong("fk_user"), 
+                        MemberEventObject.Action.valueOf(eventsRes.getString("action").toUpperCase())
+                    );
+                    memberEvents.add(event);
+                }
+
+                events.close();
+                rowsReturned += memberEvents.size();
+
+                if (!memberEvents.isEmpty()) {
+                    ret.add(memberEvents);
+                } else {
+                    isEmpty = true;
+                }
+            } while (!isEmpty);
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getAllMemberEventsPaginated", e);
         }
 
         return ret;
@@ -1088,6 +1195,121 @@ public class Database {
             return ret;
         } catch (SQLException e) {
             Messaging.logException("Database", "getAutoModEventsSinceTime", e);
+        }
+        
+        return ret;
+    }
+
+    public static ArrayList<AutoModEventObject> getAllAutoModEvents(long userIdLong) {
+        ArrayList<AutoModEventObject> ret = new ArrayList<AutoModEventObject>();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            // First get the latest revision of the message
+            PreparedStatement getFilterEvent = conn.prepareStatement("""
+                    SELECT
+                    fk_user, fk_message, fk_channel, alert_message_id, rule_id, timestamp, trigger, content, matched_content, matched_keyword, response_type
+                    FROM automod_event
+                    WHERE fk_user = ?
+                    AND (
+                        response_type = ?
+                        OR response_type = ?
+                    )
+                    ORDER BY timestamp DESC;
+                    """);
+            getFilterEvent.setLong(1, userIdLong);
+            getFilterEvent.setString(2, AutoModResponse.Type.BLOCK_MESSAGE.toString());
+            getFilterEvent.setString(3, AutoModResponse.Type.BLOCK_MEMBER_INTERACTION.toString());
+            ResultSet res = getFilterEvent.executeQuery();
+
+            while (res.next()) {
+                AutoModEventObject autoModEventObject = new AutoModEventObject(
+                    res.getLong("fk_user"),
+                    res.getLong("fk_message"),
+                    res.getLong("fk_channel"),
+                    res.getLong("alert_message_id"),
+                    res.getLong("rule_id"),
+                    res.getLong("timestamp"),
+                    res.getString("trigger"),
+                    res.getString("content"),
+                    res.getString("matched_content"),
+                    res.getString("matched_keyword"),
+                    res.getString("response_type")
+                );
+
+                ret.add(autoModEventObject);
+            }
+
+            getFilterEvent.close();
+            return ret;
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getAllAutoModEvents", e);
+        }
+        
+        return ret;
+    }
+
+    public static ArrayList<ArrayList<AutoModEventObject>> getAllAutoModEventsPaginated(long userIdLong) {
+        ArrayList<ArrayList<AutoModEventObject>> ret = new ArrayList<ArrayList<AutoModEventObject>>();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            boolean isEmpty = false;
+            long timestamp = OffsetDateTime.now().toEpochSecond();
+            int rowsReturned = 0;
+
+            do { 
+                PreparedStatement getAutoModEvents = conn.prepareStatement("""
+                        SELECT
+                        fk_user, fk_message, fk_channel, alert_message_id, rule_id, timestamp, trigger, content, matched_content, matched_keyword, response_type
+                        FROM automod_event
+                        WHERE fk_user = ?
+                        AND (
+                            response_type = ?
+                            OR response_type = ?
+                        )
+                        AND timestamp < ?
+                        ORDER BY timestamp DESC
+                        LIMIT 10
+                        OFFSET ?;
+                        """);
+                getAutoModEvents.setLong(1, userIdLong);
+                getAutoModEvents.setString(2, AutoModResponse.Type.BLOCK_MESSAGE.toString());
+                getAutoModEvents.setString(3, AutoModResponse.Type.BLOCK_MEMBER_INTERACTION.toString());
+                getAutoModEvents.setLong(4, timestamp);
+                getAutoModEvents.setInt(5, rowsReturned);
+                ResultSet res = getAutoModEvents.executeQuery();
+                ArrayList<AutoModEventObject> autoModEvents = new ArrayList<AutoModEventObject>();
+
+                while (res.next()) {
+                    AutoModEventObject autoModEventObject = new AutoModEventObject(
+                        res.getLong("fk_user"),
+                        res.getLong("fk_message"),
+                        res.getLong("fk_channel"),
+                        res.getLong("alert_message_id"),
+                        res.getLong("rule_id"),
+                        res.getLong("timestamp"),
+                        res.getString("trigger"),
+                        res.getString("content"),
+                        res.getString("matched_content"),
+                        res.getString("matched_keyword"),
+                        res.getString("response_type")
+                    );
+
+                    autoModEvents.add(autoModEventObject);
+                }
+
+                getAutoModEvents.close();
+                rowsReturned += autoModEvents.size();
+
+                if (!autoModEvents.isEmpty()) {
+                    ret.add(autoModEvents);
+                } else {
+                    isEmpty = true;
+                }
+            } while (!isEmpty);
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getAllAutoModEventsPaginated", e);
         }
         
         return ret;

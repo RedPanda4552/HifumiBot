@@ -36,6 +36,7 @@ import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicChoice;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicCommand;
 import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandWhois;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.database.objects.CommandEventObject;
 import io.github.redpanda4552.HifumiBot.event.ButtonInteractionElement.ButtonType;
@@ -133,6 +134,11 @@ public class SlashCommandListener extends ListenerAdapter {
         String reply = null;
 
         switch (parts[0]) {
+            case "whois":
+                CommandWhois commandWhois = (CommandWhois) slashCommands.get("whois");
+                event.deferEdit().queue();
+                commandWhois.handleButtonEvent(event);
+                break;
             case "emulog_prev":
             case "emulog_next":
                 CommandEmulog commandEmulog = (CommandEmulog) slashCommands.get("emulog");
