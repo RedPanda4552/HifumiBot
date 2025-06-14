@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.github.redpanda4552.HifumiBot.BrowsableEmbed;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.database.Database;
@@ -18,6 +20,7 @@ import io.github.redpanda4552.HifumiBot.util.UserUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -144,13 +147,13 @@ public class CommandWhois extends AbstractSlashCommand {
             EmbedBuilder autoModEventEmbedBuilder = new EmbedBuilder();
             autoModEventEmbedBuilder.setColor(Color.ORANGE);
             autoModEventEmbedBuilder.setTitle("AutoMod History (Page " + k++ + ")");
-            autoModEventEmbedBuilder.setFooter("Sorted most recent events first, 10 events per page.");
+            autoModEventEmbedBuilder.setFooter("Sorted most recent events first, 10 events per page. Content truncated to 1000 chars.");
 
             for (AutoModEventObject autoModEvent : autoModEventList) {
                 OffsetDateTime time = DateTimeUtils.longToOffsetDateTime(autoModEvent.getTimestamp());
                 String formatStr = time.format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC";
                 String value = (autoModEvent.getMatchedContent() != null ? autoModEvent.getMatchedContent() : autoModEvent.getContent());
-                autoModEventEmbedBuilder.addField(formatStr, value, false);
+                autoModEventEmbedBuilder.addField(formatStr, "```\n" + StringUtils.truncate(value, 1000) + "\n```", false);
             }
 
             pages.add(autoModEventEmbedBuilder.build());
