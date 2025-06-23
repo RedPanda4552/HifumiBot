@@ -83,13 +83,14 @@ public class MessageEventListener extends ListenerAdapter {
 
         // If the user is not considered privileged, then:
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
-            // Check if this is a single duplicate message from the last 5 minutes
-            MessageObject messageCopy = Database.getIdenticalMessageSinceTimeInOtherChannel(event.getAuthor().getIdLong(), event.getMessage().getContentRaw(), OffsetDateTime.now().minusMinutes(5).toEpochSecond(), event.getChannel().getIdLong());
+            // Check if this is a single duplicate message from the last 5 minutes, but ignore short messages which are probably just emotes or basic greetings, etc.
+            if (event.getMessage().getContentDisplay().length() > 10) {
+                MessageObject messageCopy = Database.getIdenticalMessageSinceTimeInOtherChannel(event.getAuthor().getIdLong(), event.getMessage().getContentRaw(), OffsetDateTime.now().minusMinutes(5).toEpochSecond(), event.getChannel().getIdLong());
 
-            if (messageCopy != null)
-            {
-                HifumiBot.getSelf().getJDA().getTextChannelById(messageCopy.getChannelId()).deleteMessageById(messageCopy.getMessageId()).queue();
-                Messaging.sendMessage(event.getChannel(), "It looks like you've re-posted the same message that you have already recently sent. Please avoid spamming multiple channels. I've gone ahead and deleted your previous message for you.", event.getMessage(), true);
+                if (messageCopy != null) {
+                    HifumiBot.getSelf().getJDA().getTextChannelById(messageCopy.getChannelId()).deleteMessageById(messageCopy.getMessageId()).queue();
+                    Messaging.sendMessage(event.getChannel(), "It looks like you've re-posted the same message that you have already recently sent. Please avoid spamming multiple channels. I've gone ahead and deleted your previous message for you.", event.getMessage(), true);
+                }
             }
 
             // Run through the general spam review
