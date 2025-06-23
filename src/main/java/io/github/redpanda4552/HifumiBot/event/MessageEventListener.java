@@ -107,8 +107,9 @@ public class MessageEventListener extends ListenerAdapter {
             Messaging.sendMessage(event.getChannel(), ":information_source: The user you tried to mention has left the server.", event.getMessage(), false);
         }
         
-        // If the user does not have member role yet and qualifies, give it to them.
-        if (HifumiBot.getSelf().getConfig().roles.autoAssignMemberEnabled && event.getMember() != null && event.getMember().getRoles().isEmpty()) {
+        // If role auto assignment is enabled, the user has no roles yet, and the message sent was genuinely by the user
+        // (checking if they have access to the channel will eliminate automod messages, which are credited to the user but sent in a privleged channel they do not have access to)
+        if (HifumiBot.getSelf().getConfig().roles.autoAssignMemberEnabled && event.getMember() != null && event.getMember().getRoles().isEmpty() && event.getMember().hasAccess(event.getGuildChannel())) {
             Instant joinTime = event.getMember().getGuild().retrieveMemberById(event.getAuthor().getId()).complete().getTimeJoined().toInstant();
             
             if (Duration.between(joinTime, now).toSeconds() >= HifumiBot.getSelf().getConfig().roles.autoAssignMemberTimeSeconds) {
