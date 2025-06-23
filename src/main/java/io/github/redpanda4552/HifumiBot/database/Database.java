@@ -613,6 +613,61 @@ public class Database {
         return ret;
     }
 
+    public static MessageObject getIdenticalMessageSinceTimeInOtherChannel(long userIdLong, String contentRaw, long timestamp, long channelIdLong) {
+        MessageObject ret = null;
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            // First get the latest revision of the message
+            PreparedStatement getMessageEvents = conn.prepareStatement("""
+                    SELECT
+                        e.id, e.fk_user, e.fk_message, e.content, e.timestamp,
+                        m.fk_channel, m.jump_link, m.fk_reply_to_message
+                    FROM message_event AS e
+                    INNER JOIN message AS m ON e.fk_message = m.message_id
+                    WHERE e.fk_user = ?
+                    AND e.content = ?
+                    AND e.action = 'send'
+                    AND e.timestamp >= ?
+                    AND e.fk_message NOT IN (
+                        SELECT fk_message
+                        FROM message_event
+                        WHERE fk_message = e.fk_message
+                        AND action = 'delete'
+                    )
+                    AND NOT m.fk_channel = ?
+                    ORDER BY e.timestamp DESC
+                    LIMIT 1;
+                    """);
+            getMessageEvents.setLong(1, userIdLong);
+            getMessageEvents.setString(2, contentRaw);
+            getMessageEvents.setLong(3, timestamp);
+            getMessageEvents.setLong(4, channelIdLong);
+            ResultSet res = getMessageEvents.executeQuery();
+
+            if (res.next()) {
+                ret = new MessageObject(
+                    res.getLong("fk_message"),
+                    res.getLong("fk_user"),
+                    DateTimeUtils.longToOffsetDateTime(res.getLong("timestamp")),
+                    null,
+                    res.getLong("fk_channel"),
+                    res.getString("content"),
+                    res.getString("jump_link"),
+                    null,
+                    null
+                );
+            }
+
+            getMessageEvents.close();
+            return ret;
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getIdenticalMessageSinceTimeInOtherChannel", e);
+        }
+        
+        return ret;
+    }
+
     public static ArrayList<MessageObject> getAllMessagesSinceTime(long userIdLong, long timestamp) {
         ArrayList<MessageObject> ret = new ArrayList<MessageObject>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();

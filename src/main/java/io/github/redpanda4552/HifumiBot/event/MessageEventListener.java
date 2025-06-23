@@ -2,6 +2,7 @@ package io.github.redpanda4552.HifumiBot.event;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,7 +61,7 @@ public class MessageEventListener extends ListenerAdapter {
         if (HifumiBot.getSelf().getConfig().entryBarrierOptions.enabled && event.getChannel().getId().equals(HifumiBot.getSelf().getConfig().entryBarrierOptions.userInputChannelId)) {
             HifumiBot.getSelf().getScheduler().runOnce(new EntryBarrierRunnable(event));
         }
-        
+
         // If the user has at least guest permissions (is not BLOCKED due to warez or other reasons),
         // then check for emulog/pnach/crash dump
         if (HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.GUEST, event.getMember())) {
@@ -80,10 +81,21 @@ public class MessageEventListener extends ListenerAdapter {
             }
         }
 
-        // If the user is not considered privileged, then filter messages and do bot ping nags
+        // If the user is not considered privileged, then:
         if (!HifumiBot.getSelf().getPermissionManager().hasPermission(PermissionLevel.MOD, event.getMember())) {
+            // Check if this is a single duplicate message from the last 5 minutes
+            MessageObject messageCopy = Database.getIdenticalMessageSinceTimeInOtherChannel(event.getAuthor().getIdLong(), event.getMessage().getContentRaw(), OffsetDateTime.now().minusMinutes(5).toEpochSecond(), event.getChannel().getIdLong());
+
+            if (messageCopy != null)
+            {
+                HifumiBot.getSelf().getJDA().getTextChannelById(messageCopy.getChannelId()).deleteMessageById(messageCopy.getMessageId()).queue();
+                Messaging.sendMessage(event.getChannel(), "It looks like you've re-posted the same message that you have already recently sent. Please avoid spamming multiple channels. I've gone ahead and deleted your previous message for you.", event.getMessage(), true);
+            }
+
+            // Run through the general spam review
             HifumiBot.getSelf().getScheduler().runOnce(new SpamReviewRunnable(event.getMessage(), event.getMessage().getTimeCreated()));
             
+            // Notify users if they are pinging the bot
             if (Messaging.hasBotPing(event.getMessage())) {
                 Messaging.sendMessage(event.getChannel(), "You are pinging a bot.", event.getMessage(), false);
             }
