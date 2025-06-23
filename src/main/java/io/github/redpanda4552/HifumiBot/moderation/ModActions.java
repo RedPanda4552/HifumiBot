@@ -19,7 +19,7 @@ public class ModActions {
     private static final String BOT_FOOTER = "Don't know why you are receiving this message? Please check that your Discord account is secure, someone might be using your account as a spam bot.";
 
     public static synchronized void deleteMessagesMatchingSince(Message message, long timestamp) {
-        ArrayList<MessageObject> duplicates = Database.getIdenticalMessagesSinceTime(message.getContentRaw(), timestamp);
+        ArrayList<MessageObject> duplicates = Database.getIdenticalMessagesSinceTime(message.getAuthor().getIdLong(), message.getContentRaw(), timestamp);
 
         for (MessageObject duplicate : duplicates) {
             try {

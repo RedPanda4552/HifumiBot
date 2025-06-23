@@ -66,7 +66,7 @@ public class SpamReviewRunnable implements Runnable {
         long cooldownSeconds = HifumiBot.getSelf().getConfig().autoModOptions.cooldownSeconds;
         OffsetDateTime cooldownSubtracted = this.time.minusSeconds(cooldownSeconds);
         long cooldownEpochSeconds = cooldownSubtracted.toEpochSecond();
-        ArrayList<MessageObject> duplicates = Database.getIdenticalMessagesSinceTime(this.message.getContentRaw(), cooldownEpochSeconds);
+        ArrayList<MessageObject> duplicates = Database.getIdenticalMessagesSinceTime(this.message.getAuthor().getIdLong(), this.message.getContentRaw(), cooldownEpochSeconds);
 
         if (duplicates == null || duplicates.isEmpty()) {
             return false;

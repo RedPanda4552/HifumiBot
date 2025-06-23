@@ -561,7 +561,7 @@ public class Database {
         return ret;
     }
 
-    public static ArrayList<MessageObject> getIdenticalMessagesSinceTime(String contentRaw, long timestamp) {
+    public static ArrayList<MessageObject> getIdenticalMessagesSinceTime(long userIdLong, String contentRaw, long timestamp) {
         ArrayList<MessageObject> ret = new ArrayList<MessageObject>();
         Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
 
@@ -573,7 +573,8 @@ public class Database {
                         m.fk_channel, m.jump_link, m.fk_reply_to_message
                     FROM message_event AS e
                     INNER JOIN message AS m ON e.fk_message = m.message_id
-                    WHERE e.content = ?
+                    WHERE e.fk_user = ?
+                    AND e.content = ?
                     AND e.action = 'send'
                     AND e.timestamp >= ?
                     AND e.fk_message NOT IN (
@@ -584,8 +585,9 @@ public class Database {
                     )
                     ORDER BY e.timestamp DESC;
                     """);
-            getMessageEvents.setString(1, contentRaw);
-            getMessageEvents.setLong(2, timestamp);
+            getMessageEvents.setLong(1, userIdLong);
+            getMessageEvents.setString(2, contentRaw);
+            getMessageEvents.setLong(3, timestamp);
             ResultSet res = getMessageEvents.executeQuery();
 
             while (res.next()) {
