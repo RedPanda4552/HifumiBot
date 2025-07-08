@@ -81,6 +81,13 @@ public class CrashParser extends AbstractParser {
                         "Open your Start menu, hit Settings, Apps, then find `OpenCL™, OpenGL®, and Vulkan® Compatibility Pack` in the list and uninstall. Once uninstalled, reboot your PC."
                     );
                 }
+
+                if (normalizedLine.contains("owclient.dll") || normalizedLine.contains("ow-graphics-vulkan.dll") || normalizedLine.contains("ow-graphics-hook64.dll")) {
+                    this.errors.add(
+                        "[Fatal] Overwolf detected. This program's overlay hooks often crash the GPU driver.\n" +
+                        "To avoid crashing, uninstall Overwolf."
+                    );
+                }
             }
 
             reader.close();
