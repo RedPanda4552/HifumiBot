@@ -577,12 +577,6 @@ public class Database {
                     AND e.content = ?
                     AND e.action = 'send'
                     AND e.timestamp >= ?
-                    AND e.fk_message NOT IN (
-                        SELECT fk_message
-                        FROM message_event
-                        WHERE fk_message = e.fk_message
-                        AND action = 'delete'
-                    )
                     ORDER BY e.timestamp DESC;
                     """);
             getMessageEvents.setLong(1, userIdLong);
