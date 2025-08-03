@@ -35,8 +35,10 @@ public class Log {
 
         StringBuilder sb = new StringBuilder();
 
-        for (StackTraceElement ste : e.getCause().getStackTrace()) {
-            sb.append(ste.toString()).append("\n");
+        if (e.getCause() != null) {
+            for (StackTraceElement ste : e.getCause().getStackTrace()) {
+                sb.append(ste.toString()).append("\n");
+            }
         }
 
         log.atError().log(sb.toString());
