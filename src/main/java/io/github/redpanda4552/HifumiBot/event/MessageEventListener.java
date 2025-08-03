@@ -16,6 +16,7 @@ import io.github.redpanda4552.HifumiBot.database.objects.MessageObject;
 import io.github.redpanda4552.HifumiBot.parse.CrashParser;
 import io.github.redpanda4552.HifumiBot.parse.EmulogParser;
 import io.github.redpanda4552.HifumiBot.parse.PnachParser;
+import io.github.redpanda4552.HifumiBot.parse.SettingsIniParser;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.PixivSourceFetcher;
@@ -78,6 +79,10 @@ public class MessageEventListener extends ListenerAdapter {
             if (Messaging.hasCrashLog(event.getMessage())) {
                 CrashParser crashp = new CrashParser(event.getMessage());
                 HifumiBot.getSelf().getScheduler().runOnce(crashp);
+            }
+
+            if (Messaging.hasIni(event.getMessage())) {
+                SettingsIniParser.init(event.getMessage());
             }
         }
 

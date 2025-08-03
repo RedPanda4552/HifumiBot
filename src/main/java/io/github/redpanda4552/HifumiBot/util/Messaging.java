@@ -258,6 +258,16 @@ public class Messaging {
 
         return false;
     }
+
+    public static boolean hasIni(Message msg) {
+        for (Attachment attachment : msg.getAttachments()) {
+            if (attachment.getFileExtension().equalsIgnoreCase("ini")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
     
     public static boolean hasBotPing(Message msg) {
         if (msg == null) {

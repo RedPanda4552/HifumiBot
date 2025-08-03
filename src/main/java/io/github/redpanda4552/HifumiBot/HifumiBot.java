@@ -31,6 +31,7 @@ import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.config.ConfigType;
 import io.github.redpanda4552.HifumiBot.config.DynCmdConfig;
 import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
+import io.github.redpanda4552.HifumiBot.config.SettingsIniParserConfig;
 import io.github.redpanda4552.HifumiBot.database.SQLite;
 import io.github.redpanda4552.HifumiBot.event.AutoModEventListener;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
@@ -41,8 +42,8 @@ import io.github.redpanda4552.HifumiBot.event.RoleEventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.event.UserEventListener;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
-import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Log;
+import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -110,6 +111,7 @@ public class HifumiBot {
     private Config config;
     private DynCmdConfig dynCmdConfig;
     private EmulogParserConfig emulogParserConfig;
+    private SettingsIniParserConfig settingsIniParserConfig;
     private final OkHttpClient http;
     private SQLite sqlite;
     
@@ -178,6 +180,11 @@ public class HifumiBot {
             ConfigManager.createConfigIfNotExists(ConfigType.EMULOG_PARSER);
             emulogParserConfig = (EmulogParserConfig) ConfigManager.read(ConfigType.EMULOG_PARSER);
             ConfigManager.write(emulogParserConfig);
+
+            Log.info("Initializing settings ini config");
+            ConfigManager.createConfigIfNotExists(ConfigType.SETTINGS_PARSER);
+            settingsIniParserConfig = (SettingsIniParserConfig) ConfigManager.read(ConfigType.SETTINGS_PARSER);
+            ConfigManager.write(settingsIniParserConfig);
         } catch (Exception e) {
             Log.error(e);
             Messaging.logException("HifumiBot", "(constructor)", e);
@@ -241,6 +248,10 @@ public class HifumiBot {
 
     public EmulogParserConfig getEmulogParserConfig() {
         return emulogParserConfig;
+    }
+
+    public SettingsIniParserConfig getSettingsIniParserConfig() {
+        return settingsIniParserConfig;
     }
 
     public OkHttpClient getHttpClient() {
