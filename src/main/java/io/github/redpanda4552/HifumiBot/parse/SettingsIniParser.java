@@ -83,10 +83,19 @@ public class SettingsIniParser extends AbstractParser {
         try {
             Ini iniFile = new Ini(url);
             this.ini = iniFile.entrySet().stream().collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+            this.safetyCheck();
             this.evaluate();
             this.displayErrors();
         } catch (IOException e) {
             Messaging.sendMessage(message.getChannel(), ":x: An I/O error occurred while processing " + attachment.getFileName());
+        }
+    }
+
+    private void safetyCheck() {
+        // Delete the original message if the ini contains an achievements token
+        if (ini.containsKey("Achievements") && ini.get("Achievements").containsKey("Token")) {
+            Messaging.sendPrivateMessage(this.message.getAuthor(), "The ini file you posted in the PCSX2 server contained your RetroAchievements login token inside. For your safety, your message was deleted so no one else can see it.");
+            this.message.delete().queue();
         }
     }
 
