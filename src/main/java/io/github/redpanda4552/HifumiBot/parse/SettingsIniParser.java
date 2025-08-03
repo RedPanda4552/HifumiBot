@@ -29,10 +29,18 @@ public class SettingsIniParser extends AbstractParser {
     private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[A-Za-z]{4}-[0-9]{5}_[A-Za-z0-9]{8}.ini");
 
     public static void init(Message message) {
+        int iniCounter = 0;
+
         for (Attachment att : message.getAttachments()) {
+            if (iniCounter >= 2) {
+                // Stop after the second file as not to spam the server
+                break;
+            }
+
             if (att.getFileName().equals(GLOBAL_SETTINGS_FILE_NAME)) {
                 SettingsIniParser globalParser = new SettingsIniParser(message, att);
                 HifumiBot.getSelf().getScheduler().runOnce(globalParser);
+                iniCounter++;
                 continue;
             }
 
@@ -41,6 +49,7 @@ public class SettingsIniParser extends AbstractParser {
             if (m.matches()) {
                 SettingsIniParser propertiesParser = new SettingsIniParser(message, att);
                 HifumiBot.getSelf().getScheduler().runOnce(propertiesParser);
+                iniCounter++;
             }
         }
     }
