@@ -46,7 +46,8 @@ public enum PnachParserError {
         FOURTH_LOWERCASE("(X) Fourth parameter must be all lower case."),
         FOURTH_TYPE("(X) Fourth parameter was not a valid data type. Options are `byte`, `short`, `word`, `double` or `extended`."),
         FIFTH_SCOPE("(!) Fifth parameter value exceeds scope of fourth parameter data type."),
-        FIFTH_VALUE("(X) Fifth parameter is not a valid hexadecimal value.");
+        FIFTH_VALUE("(X) Fifth parameter is not a valid hexadecimal value."),
+        BRACKET_WHITESPACE("(X) Leading or trailing whitespace in square brackets will prevent cheats from loading properly.");
 
         private String displayString;
 

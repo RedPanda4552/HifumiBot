@@ -96,10 +96,12 @@ public class PnachParser extends AbstractParser {
                 if (line.isBlank()) {
                     continue;
                 } else if ((line.startsWith("["))) {
-                    if (line.endsWith("]")) {
-                        continue;
-                    } else {
+                    if (!line.endsWith("]")) {
                         addError(PnachParserError.BAD_BRACKET, line);
+                    }
+
+                    if (line.contains("[ ") || line.contains(" ]")) {
+                        addError(PnachParserError.BRACKET_WHITESPACE, line);
                     }
                 } else if (line.contains("=")) {
                     int firstEquals = line.indexOf('=');
