@@ -195,6 +195,7 @@ public class HifumiBot {
         jda.addEventListener(new MessageEventListener());
         jda.addEventListener(new MemberEventListener());
         jda.addEventListener(new UserEventListener());
+        jda.addEventListener(new ButtonEventListener());
         jda.addEventListener(new SlashCommandListener());
         jda.addEventListener(new MessageContextCommandListener());
         jda.addEventListener(new ModalEventListener());
