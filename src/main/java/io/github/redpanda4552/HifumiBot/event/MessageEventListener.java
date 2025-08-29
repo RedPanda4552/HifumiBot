@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.EventLogging;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import io.github.redpanda4552.HifumiBot.async.AntiBotRunnable;
 import io.github.redpanda4552.HifumiBot.async.EntryBarrierRunnable;
 import io.github.redpanda4552.HifumiBot.async.SpamReviewRunnable;
 import io.github.redpanda4552.HifumiBot.async.UrlChangeReviewRunnable;
@@ -97,6 +98,9 @@ public class MessageEventListener extends ListenerAdapter {
                     Messaging.sendMessage(event.getChannel(), "It looks like you've re-posted the same message that you have already recently sent. Please avoid spamming multiple channels. I've gone ahead and deleted your previous message for you.", event.getMessage(), true);
                 }
             }
+
+            // Run through anti bot checks
+            HifumiBot.getSelf().getScheduler().runOnce(new AntiBotRunnable(event.getMessage()));
 
             // Run through the general spam review
             HifumiBot.getSelf().getScheduler().runOnce(new SpamReviewRunnable(event.getMessage(), event.getMessage().getTimeCreated()));
