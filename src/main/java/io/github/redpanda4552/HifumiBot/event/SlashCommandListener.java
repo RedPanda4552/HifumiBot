@@ -51,8 +51,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 public class SlashCommandListener extends ListenerAdapter {
 
     private HashMap<String, AbstractSlashCommand> slashCommands = HifumiBot.getSelf().getCommandIndex().getSlashCommands();
-    private HashMap<UUID, ButtonInteractionElement> buttonCache = new HashMap<UUID, ButtonInteractionElement>();
-    private HashMap<UUID, SelectionInteractionElement> selectionCache = new HashMap<UUID, SelectionInteractionElement>();
     
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
@@ -193,58 +191,4 @@ public class SlashCommandListener extends ListenerAdapter {
         }
     }
     
-    @Override 
-    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
-        UUID uuid = null;
-        
-        try {
-            uuid = UUID.fromString(event.getComponentId());
-        } catch (IllegalArgumentException e) {
-            Messaging.logException("SlashCommandListener", "onSelectionMenu", e);
-            event.reply("Selection tampering detected, admins have been notified.").setEphemeral(true).queue();
-            return;
-        }
-        
-        if (!selectionCache.containsKey(uuid)) {
-            event.reply("Whoops! This selection has expired. You'll need to run the command again to get an active selection.").setEphemeral(true).queue();
-            return;
-        }
-        
-        SelectionInteractionElement selection = selectionCache.get(uuid);
-        
-        if (!selection.getUserId().equals(event.getUser().getId())) {
-            event.reply("You did not send this original command; you are not allowed to interact with this selection.").setEphemeral(true).queue();
-            return;
-        }
-    }
-    
-    public synchronized ButtonInteractionElement newButton(String userId, String commandName, String label, ButtonType buttonType) {
-        ButtonInteractionElement button = new ButtonInteractionElement(userId, commandName, label, buttonType);
-        this.buttonCache.put(button.getUUID(), button);
-        return button;
-    }
-    
-    public synchronized void cleanInteractionElements() {
-        for (UUID key : this.buttonCache.keySet()) {
-            if (Duration.between(this.buttonCache.get(key).getCreatedInstant(), Instant.now()).toMillis() > HifumiBot.getSelf().getConfig().slashCommands.timeoutSeconds * 1000) {
-                this.buttonCache.remove(key);
-            }
-        }
-        
-        for (UUID key : this.selectionCache.keySet()) {
-            if (Duration.between(this.selectionCache.get(key).getCreatedInstant(), Instant.now()).toMillis() > HifumiBot.getSelf().getConfig().slashCommands.timeoutSeconds * 1000) {
-                this.selectionCache.remove(key);
-            }
-        }
-    }
-    
-    public synchronized SelectionInteractionElement newSelection(String userId, String commandName) {
-        SelectionInteractionElement selection = new SelectionInteractionElement(userId, commandName);
-        this.selectionCache.put(selection.getUUID(), selection);
-        return selection;
-    }
-    
-    public synchronized ButtonInteractionElement getButton(String uuidString) {
-        return buttonCache.get(UUID.fromString(uuidString));
-    }
 }

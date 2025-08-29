@@ -223,10 +223,6 @@ public class HifumiBot {
             HifumiBot.getSelf().getGameIndex().refresh();
         }, 1000 * 60 * 60 * 4);
 
-        scheduler.scheduleRepeating("ints", () -> {
-            HifumiBot.getSelf().getSlashCommandListener().cleanInteractionElements();
-        }, 1000 * getConfig().slashCommands.timeoutSeconds);
-        
         Log.info("Setting status to New Game!");
         updateStatus("New Game!");
     }
