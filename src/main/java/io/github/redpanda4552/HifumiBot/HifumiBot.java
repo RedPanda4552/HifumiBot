@@ -34,6 +34,7 @@ import io.github.redpanda4552.HifumiBot.config.EmulogParserConfig;
 import io.github.redpanda4552.HifumiBot.config.SettingsIniParserConfig;
 import io.github.redpanda4552.HifumiBot.database.SQLite;
 import io.github.redpanda4552.HifumiBot.event.AutoModEventListener;
+import io.github.redpanda4552.HifumiBot.event.ButtonEventListener;
 import io.github.redpanda4552.HifumiBot.event.MemberEventListener;
 import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
 import io.github.redpanda4552.HifumiBot.event.MessageEventListener;
