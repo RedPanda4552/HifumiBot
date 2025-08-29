@@ -38,7 +38,7 @@ public class AntiBotRunnable implements Runnable {
         String bodyContent = this.message.getContentRaw();
         ArrayList<String> links = Strings.extractUrls(bodyContent);
 
-        if (!links.isEmpty()) {
+        if (links.size() >= LINK_THRESHOLD) {
             long authorIdLong = this.message.getAuthor().getIdLong();
             OffsetDateTime currentTime = OffsetDateTime.now();
             OffsetDateTime ninetyDaysAgo = currentTime.minusDays(DAYS_SINCE_LAST_MESSAGE);
