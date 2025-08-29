@@ -121,13 +121,6 @@ public class HifumiBot {
     private CommandIndex commandIndex;
     private PermissionManager permissionManager;
     
-    private RoleEventListener roleEventListener;
-    private MessageEventListener messageEventListener;
-    private MemberEventListener memberEventListener;
-    private UserEventListener userEventListener;
-    private SlashCommandListener slashCommandListener;
-    private MessageContextCommandListener messageCommandListener;
-    
     private GameIndex gameIndex;
     private Translator deepL;
 
@@ -198,12 +191,12 @@ public class HifumiBot {
         gpuIndex = new GpuIndex();
         commandIndex = new CommandIndex();
         permissionManager = new PermissionManager(superuserId);
-        jda.addEventListener(roleEventListener = new RoleEventListener());
-        jda.addEventListener(messageEventListener = new MessageEventListener());
-        jda.addEventListener(memberEventListener = new MemberEventListener());
-        jda.addEventListener(userEventListener = new UserEventListener());
-        jda.addEventListener(slashCommandListener = new SlashCommandListener());
-        jda.addEventListener(messageCommandListener = new MessageContextCommandListener());
+        jda.addEventListener(new RoleEventListener());
+        jda.addEventListener(new MessageEventListener());
+        jda.addEventListener(new MemberEventListener());
+        jda.addEventListener(new UserEventListener());
+        jda.addEventListener(new SlashCommandListener());
+        jda.addEventListener(new MessageContextCommandListener());
         jda.addEventListener(new ModalEventListener());
         jda.addEventListener(new AutoModEventListener());
         gameIndex = new GameIndex();
@@ -288,30 +281,6 @@ public class HifumiBot {
 
     public PermissionManager getPermissionManager() {
         return permissionManager;
-    }
-
-    public RoleEventListener getRoleEventListener() {
-        return roleEventListener;
-    }
-
-    public MessageEventListener getMessageEventListener() {
-        return messageEventListener;
-    }
-
-    public MemberEventListener getMemberEventListener() {
-        return memberEventListener;
-    }
-
-    public UserEventListener getUserEventListener() {
-        return userEventListener;
-    }
-    
-    public SlashCommandListener getSlashCommandListener() {
-        return slashCommandListener;
-    }
-    
-    public MessageContextCommandListener getMessageCommandListener() {
-        return messageCommandListener;
     }
     
     public GameIndex getGameIndex() {
