@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandEmulog;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandServerMetadata;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandWhois;
 import io.github.redpanda4552.HifumiBot.moderation.ModActions;
 import io.github.redpanda4552.HifumiBot.util.MemberUtils;
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -42,6 +44,11 @@ public class ButtonEventListener extends ListenerAdapter {
         String reply = null;
 
         switch (parts[0]) {
+            case "server-metadata":
+                CommandServerMetadata commandServerMetadata = (CommandServerMetadata) slashCommands.get("server-metadata");
+                event.deferEdit().queue();
+                commandServerMetadata.handleButtonEvent(event);
+                break;
             case "whois":
                 CommandWhois commandWhois = (CommandWhois) slashCommands.get("whois");
                 event.deferEdit().queue();

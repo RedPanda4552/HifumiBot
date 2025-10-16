@@ -49,6 +49,7 @@ import io.github.redpanda4552.HifumiBot.command.slash.CommandReload;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandRun;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSay;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSerial;
+import io.github.redpanda4552.HifumiBot.command.slash.CommandServerMetadata;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandShutdown;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandSpamKick;
 import io.github.redpanda4552.HifumiBot.command.slash.CommandTranslate;
@@ -117,6 +118,7 @@ public class CommandIndex {
         registerSlashCommand(new CommandPride());
         registerSlashCommand(new CommandWarezHistory());
         registerSlashCommand(new CommandWhois());
+        registerSlashCommand(new CommandServerMetadata());
     }
     
     public void rebuildMessage() {
