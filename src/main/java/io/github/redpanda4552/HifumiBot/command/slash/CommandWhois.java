@@ -20,7 +20,6 @@ import io.github.redpanda4552.HifumiBot.util.UserUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -32,7 +31,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 public class CommandWhois extends AbstractSlashCommand {
 
@@ -159,11 +157,11 @@ public class CommandWhois extends AbstractSlashCommand {
             pages.add(autoModEventEmbedBuilder.build());
         }
         
-        BrowsableEmbed embed = new BrowsableEmbed(event.getIdLong(), event.getUser().getIdLong(), pages);
+        BrowsableEmbed embed = new BrowsableEmbed(this.defineSlashCommand().getName(), event.getIdLong(), event.getUser().getIdLong(), pages);
         Optional<MessageEmbed> firstPageOpt = embed.getCurrentPage();
 
         if (firstPageOpt.isPresent()) {
-            ArrayList<Button> buttons = refreshButtonOptions(embed);
+            ArrayList<Button> buttons = embed.refreshButtonOptions();
             BrowsableEmbed.embedCache.put(event.getIdLong(), embed);
             event.getHook().sendMessageEmbeds(firstPageOpt.get())
                     .addActionRow(buttons)
@@ -226,38 +224,10 @@ public class CommandWhois extends AbstractSlashCommand {
         }
 
         if (destinationPage.isPresent()) {
-            ArrayList<Button> buttons = refreshButtonOptions(existingBrowsableEmbed);
+            ArrayList<Button> buttons = existingBrowsableEmbed.refreshButtonOptions();
             event.getHook().editOriginalEmbeds(destinationPage.get())
                 .setActionRow(buttons)
                 .queue();
         }
-    }
-
-    private ArrayList<Button> refreshButtonOptions(BrowsableEmbed embed) {
-        ArrayList<Button> buttons = new ArrayList<Button>();
-        Optional<MessageEmbed> prevPreview = embed.previewPreviousPage();
-        Optional<MessageEmbed> nextPreview = embed.previewNextPage();
-        
-        if (prevPreview.isPresent()) {
-            buttons.add(
-                Button.of(ButtonStyle.SECONDARY, "whois:prev:" + embed.getEventIdLong() + ":" + embed.getUserIdLong(), prevPreview.get().getTitle())
-            );
-        } else {
-            buttons.add(
-                Button.of(ButtonStyle.SECONDARY, "whois:prev:" + embed.getEventIdLong() + ":" + embed.getUserIdLong(), "(no previous page)").asDisabled()
-            );
-        }
-
-        if (nextPreview.isPresent()) {
-            buttons.add(
-                Button.of(ButtonStyle.PRIMARY, "whois:next:" + embed.getEventIdLong() + ":" + embed.getUserIdLong(), nextPreview.get().getTitle())
-            );
-        } else {
-            buttons.add(
-                Button.of(ButtonStyle.PRIMARY, "whois:next:" + embed.getEventIdLong() + ":" + embed.getUserIdLong(), "(no next page)").asDisabled()
-            );
-        }
-
-        return buttons;
     }
 }

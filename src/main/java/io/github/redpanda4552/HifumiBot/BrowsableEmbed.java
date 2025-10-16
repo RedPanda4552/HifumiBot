@@ -6,18 +6,22 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 public class BrowsableEmbed {
 
     public static ConcurrentHashMap<Long, BrowsableEmbed> embedCache = new ConcurrentHashMap<Long, BrowsableEmbed>();
     
+    private String sourceSlug;
     private long eventIdLong;
     private long userIdLong;
     private long createdTimestamp;
     private ArrayList<MessageEmbed> pages;
     private int currentPage;
     
-    public BrowsableEmbed(long eventIdLong, long userIdLong, ArrayList<MessageEmbed> embeds) {
+    public BrowsableEmbed(String sourceSlug, long eventIdLong, long userIdLong, ArrayList<MessageEmbed> embeds) {
+        this.sourceSlug = sourceSlug;
         this.eventIdLong = eventIdLong;
         this.userIdLong = userIdLong;
         this.createdTimestamp = OffsetDateTime.now().toEpochSecond();
@@ -100,5 +104,33 @@ public class BrowsableEmbed {
         }
 
         return this.getCurrentPage();
+    }
+
+    public ArrayList<Button> refreshButtonOptions() {
+        ArrayList<Button> buttons = new ArrayList<Button>();
+        Optional<MessageEmbed> prevPreview = this.previewPreviousPage();
+        Optional<MessageEmbed> nextPreview = this.previewNextPage();
+        
+        if (prevPreview.isPresent()) {
+            buttons.add(
+                Button.of(ButtonStyle.SECONDARY, sourceSlug + ":prev:" + this.getEventIdLong() + ":" + this.getUserIdLong(), prevPreview.get().getTitle())
+            );
+        } else {
+            buttons.add(
+                Button.of(ButtonStyle.SECONDARY, sourceSlug + ":prev:" + this.getEventIdLong() + ":" + this.getUserIdLong(), "(no previous page)").asDisabled()
+            );
+        }
+
+        if (nextPreview.isPresent()) {
+            buttons.add(
+                Button.of(ButtonStyle.PRIMARY, sourceSlug + ":next:" + this.getEventIdLong() + ":" + this.getUserIdLong(), nextPreview.get().getTitle())
+            );
+        } else {
+            buttons.add(
+                Button.of(ButtonStyle.PRIMARY, sourceSlug + ":next:" + this.getEventIdLong() + ":" + this.getUserIdLong(), "(no next page)").asDisabled()
+            );
+        }
+
+        return buttons;
     }
 }
