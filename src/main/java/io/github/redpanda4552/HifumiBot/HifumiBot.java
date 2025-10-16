@@ -23,6 +23,9 @@
  */
 package io.github.redpanda4552.HifumiBot;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import com.deepl.api.Translator;
 
 import io.github.redpanda4552.HifumiBot.command.CommandIndex;
@@ -224,6 +227,19 @@ public class HifumiBot {
         scheduler.scheduleRepeating("gdb", () -> {
             HifumiBot.getSelf().getGameIndex().refresh();
         }, 1000 * 60 * 60 * 4);
+
+        scheduler.scheduleRepeating("beb", () -> {
+            Instant currentTime = Instant.now();
+
+            for (Long eventIdLong : BrowsableEmbed.embedCache.keySet()) {
+                BrowsableEmbed embed = BrowsableEmbed.embedCache.get(eventIdLong);
+                Instant createdTime = Instant.ofEpochSecond(embed.getCreatedTimestamp());
+
+                if (Duration.between(createdTime, currentTime).toHours() > 6) {
+                    BrowsableEmbed.embedCache.remove(eventIdLong);
+                }
+            }
+        }, 1000 * 60 * 60 * 6);
 
         Log.info("Setting status to New Game!");
         updateStatus("New Game!");
