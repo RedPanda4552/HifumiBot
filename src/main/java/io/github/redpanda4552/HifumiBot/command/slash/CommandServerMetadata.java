@@ -11,6 +11,7 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -31,9 +32,21 @@ public class CommandServerMetadata extends AbstractSlashCommand {
         event.deferReply().setEphemeral(true).queue();
 
         ArrayList<MessageEmbed> pages = new ArrayList<MessageEmbed>();
+        Guild server = HifumiBot.getSelf().getJDA().getGuildById(event.getGuild().getIdLong());
+
+        // General info page
+        EmbedBuilder generalEmbedBuilder = new EmbedBuilder();
+        generalEmbedBuilder.setColor(Color.BLUE);
+        generalEmbedBuilder.setTitle("General Info");
+        generalEmbedBuilder.setImage(server.getIconUrl());
+        generalEmbedBuilder.addField("Server ID", server.getId(), true);
+        generalEmbedBuilder.addField("Server Name", server.getName(), true);
+        generalEmbedBuilder.addField("Created", server.getTimeCreated().format(DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm:ss")) + " UTC", true);
+        generalEmbedBuilder.addField("Members", String.valueOf(server.getMemberCount()), true);
+        pages.add(generalEmbedBuilder.build());
 
         // Channel list page
-        List<GuildChannel> channels = HifumiBot.getSelf().getJDA().getGuildById(event.getGuild().getIdLong()).getChannels();
+        List<GuildChannel> channels = server.getChannels();
 
         ArrayList<ArrayList<GuildChannel>> channelsPaginated = new ArrayList<ArrayList<GuildChannel>>();
         ArrayList<GuildChannel> buildingPage =  new ArrayList<GuildChannel>();
