@@ -31,9 +31,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class PixivSourceFetcher {
@@ -99,7 +100,7 @@ public class PixivSourceFetcher {
                 }
             }
             
-            mb.setActionRow(buttons);
+            mb.addComponents(ActionRow.of(buttons));
             message.reply(mb.build()).mentionRepliedUser(false).queue();
         }
     }

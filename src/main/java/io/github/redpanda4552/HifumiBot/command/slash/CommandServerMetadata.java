@@ -11,6 +11,8 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -19,12 +21,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
-/**
- *
- * @author pandubz
- */
 public class CommandServerMetadata extends AbstractSlashCommand {
 
     @Override 
@@ -35,7 +32,8 @@ public class CommandServerMetadata extends AbstractSlashCommand {
         Guild server = HifumiBot.getSelf().getJDA().getGuildById(event.getGuild().getIdLong());
 
         // General info page
-        EmbedBuilder generalEmbedBuilder = new EmbedBuilder();
+        EmbedBuilder generalEmbedBuilder;
+        generalEmbedBuilder = new EmbedBuilder();
         generalEmbedBuilder.setColor(Color.BLUE);
         generalEmbedBuilder.setTitle("General Info");
         generalEmbedBuilder.setImage(server.getIconUrl());
@@ -89,7 +87,7 @@ public class CommandServerMetadata extends AbstractSlashCommand {
             ArrayList<Button> buttons = embed.refreshButtonOptions();
             BrowsableEmbed.embedCache.put(event.getIdLong(), embed);
             event.getHook().sendMessageEmbeds(firstPageOpt.get())
-                    .addActionRow(buttons)
+                    .addComponents(ActionRow.of(buttons))
                     .queue();
         } else {
             event.getHook().editOriginal("Failed to generate embeds").queue();
@@ -150,7 +148,7 @@ public class CommandServerMetadata extends AbstractSlashCommand {
         if (destinationPage.isPresent()) {
             ArrayList<Button> buttons = existingBrowsableEmbed.refreshButtonOptions();
             event.getHook().editOriginalEmbeds(destinationPage.get())
-                .setActionRow(buttons)
+                .setComponents(ActionRow.of(buttons))
                 .queue();
         }
     }

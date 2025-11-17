@@ -31,6 +31,9 @@ import io.github.redpanda4552.HifumiBot.command.dynamic.DynamicSubcommand;
 import io.github.redpanda4552.HifumiBot.config.ConfigManager;
 import io.github.redpanda4552.HifumiBot.util.EmbedUtil;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -41,10 +44,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 
 public class CommandDynCmd extends AbstractSlashCommand {
     
@@ -124,20 +124,20 @@ public class CommandDynCmd extends AbstractSlashCommand {
         }
 
         // New and update should prompt the user to input new values
-        TextInput.Builder commandName = TextInput.create("command", "Command Name (DO NOT EDIT ME)", TextInputStyle.SHORT);
-        TextInput.Builder descriptionInput = TextInput.create("description", "Description", TextInputStyle.SHORT)
+        TextInput.Builder commandName = TextInput.create("command", TextInputStyle.SHORT);
+        TextInput.Builder descriptionInput = TextInput.create("description", TextInputStyle.SHORT)
                 .setMinLength(1)
                 .setMaxLength(SlashCommandData.MAX_DESCRIPTION_LENGTH)
                 .setRequired(true);
-        TextInput.Builder titleInput = TextInput.create("title", "Title", TextInputStyle.SHORT)
+        TextInput.Builder titleInput = TextInput.create("title", TextInputStyle.SHORT)
                 .setMinLength(1)
                 .setMaxLength(MessageEmbed.TITLE_MAX_LENGTH)
                 .setRequired(false);
-        TextInput.Builder bodyInput = TextInput.create("body", "Body", TextInputStyle.PARAGRAPH)
+        TextInput.Builder bodyInput = TextInput.create("body", TextInputStyle.PARAGRAPH)
                 .setMinLength(1)
                 .setMaxLength(4000)
                 .setRequired(false);
-        TextInput.Builder imageInput = TextInput.create("image", "Image URL", TextInputStyle.SHORT)
+        TextInput.Builder imageInput = TextInput.create("image", TextInputStyle.SHORT)
                 .setMinLength(12)
                 .setMaxLength(255)
                 .setRequired(false);
@@ -166,13 +166,19 @@ public class CommandDynCmd extends AbstractSlashCommand {
 
         commandName.setValue(commandStr + " " + subcommandStr + " " + choiceStr);
 
+        Label commandNameLabel = Label.of("Command Name (DO NOT EDIT ME)", commandName.build());
+        Label descriptionInputLabel = Label.of("Description", descriptionInput.build());
+        Label titleInputLabel = Label.of("Title", titleInput.build());
+        Label bodyInputLabel = Label.of("Body", bodyInput.build());
+        Label imageInputLabel = Label.of("Image URL", imageInput.build());
+        
         Modal.Builder modal = Modal.create("dyncmd", "Make a new prompt")
                 .addComponents(
-                    ActionRow.of(commandName.build()),
-                    ActionRow.of(descriptionInput.build()),
-                    ActionRow.of(titleInput.build()),
-                    ActionRow.of(bodyInput.build()),
-                    ActionRow.of(imageInput.build())
+                    commandNameLabel,
+                    descriptionInputLabel,
+                    titleInputLabel,
+                    bodyInputLabel,
+                    imageInputLabel
                 );
 
         event.replyModal(modal.build()).queue();

@@ -19,6 +19,8 @@ import io.github.redpanda4552.HifumiBot.util.MemberUtils;
 import io.github.redpanda4552.HifumiBot.util.UserUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
@@ -30,7 +32,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CommandWhois extends AbstractSlashCommand {
 
@@ -164,7 +165,7 @@ public class CommandWhois extends AbstractSlashCommand {
             ArrayList<Button> buttons = embed.refreshButtonOptions();
             BrowsableEmbed.embedCache.put(event.getIdLong(), embed);
             event.getHook().sendMessageEmbeds(firstPageOpt.get())
-                    .addActionRow(buttons)
+                    .addComponents(ActionRow.of(buttons))
                     .queue();
         } else {
             event.getHook().editOriginal("Failed to generate embeds").queue();
@@ -226,7 +227,7 @@ public class CommandWhois extends AbstractSlashCommand {
         if (destinationPage.isPresent()) {
             ArrayList<Button> buttons = existingBrowsableEmbed.refreshButtonOptions();
             event.getHook().editOriginalEmbeds(destinationPage.get())
-                .setActionRow(buttons)
+                .setComponents(ActionRow.of(buttons))
                 .queue();
         }
     }

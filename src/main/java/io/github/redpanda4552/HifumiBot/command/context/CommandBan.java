@@ -4,16 +4,16 @@ import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractUserContextCommand;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 
 public class CommandBan extends AbstractUserContextCommand {
     
@@ -33,20 +33,24 @@ public class CommandBan extends AbstractUserContextCommand {
         }
 
         if (user != null) {
-            TextInput.Builder userId = TextInput.create("userid", "User ID (DO NOT EDIT)", TextInputStyle.SHORT)
+            TextInput.Builder userId = TextInput.create("userid", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setValue(user.getId());
-            TextInput.Builder username = TextInput.create("username", "Username (DO NOT EDIT)", TextInputStyle.SHORT)
+            Label userIdLabel = Label.of("User ID (DO NOT EDIT)", userId.build());
+            TextInput.Builder username = TextInput.create("username", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setValue(user.getName());
-            TextInput.Builder displayName = TextInput.create("displayname", "Current Display Name (DO NOT EDIT)", TextInputStyle.SHORT)
+            Label usernameLabel = Label.of("Username (DO NOT EDIT)", username.build());
+            TextInput.Builder displayName = TextInput.create("displayname", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setValue(user.getEffectiveName());
-            Modal.Builder modal = Modal.create("ban", "Confirm Banning Member")
+            Label displayNameLabel = Label.of("Current Display Name (DO NOT EDIT)", displayName.build());
+            Modal.Builder modal;
+            modal = Modal.create("ban", "Confirm Banning Member")
                     .addComponents(
-                        ActionRow.of(userId.build()),
-                        ActionRow.of(username.build()),
-                        ActionRow.of(displayName.build())
+                            userIdLabel,
+                            usernameLabel,
+                            displayNameLabel
                     );
             event.replyModal(modal.build()).queue();
         }

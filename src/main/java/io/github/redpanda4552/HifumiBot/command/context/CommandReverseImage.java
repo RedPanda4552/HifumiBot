@@ -28,13 +28,14 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import io.github.redpanda4552.HifumiBot.command.AbstractMessageContextCommand;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CommandReverseImage extends AbstractMessageContextCommand {
 
@@ -62,7 +63,8 @@ public class CommandReverseImage extends AbstractMessageContextCommand {
                 }
             }
             
-            event.getHook().sendMessage("Generated Google Lens links for all images in this message!").addActionRow(buttons).queue();
+            event.getHook().sendMessage("Generated Google Lens links for all images in this message!")
+                    .addComponents(ActionRow.of(buttons)).queue();
         } catch (UnsupportedEncodingException e) {
             event.getHook().sendMessage("Could not prepare one or more Google Lens link for this message, perhaps there are some weird characters in one of the URLs?").queue();
         }

@@ -16,15 +16,14 @@ import io.github.redpanda4552.HifumiBot.util.MemberUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.UserUtils;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 public class ButtonEventListener extends ListenerAdapter {
 
@@ -50,10 +49,11 @@ public class ButtonEventListener extends ListenerAdapter {
                 commandServerMetadata.handleButtonEvent(event);
                 break;
             case "whois":
-                CommandWhois commandWhois = (CommandWhois) slashCommands.get("whois");
+                var commandWhois = (CommandWhois) slashCommands.get("whois");
                 event.deferEdit().queue();
                 commandWhois.handleButtonEvent(event);
                 break;
+
             case "emulog_prev":
             case "emulog_next":
                 CommandEmulog commandEmulog = (CommandEmulog) slashCommands.get("emulog");
@@ -122,7 +122,7 @@ public class ButtonEventListener extends ListenerAdapter {
                 switch (parts[1]) {
                     case "dospamkick" -> {
                         ModActions.kickAndNotifyUser(event.getGuild(), userIdLong);
-                        event.reply("Messaged user telling them we think they are a bot, and kicked them from the server.").setComponents(new ArrayList<LayoutComponent>()).setEphemeral(true).queue();
+                        event.reply("Messaged user telling them we think they are a bot, and kicked them from the server.").setComponents(new ArrayList<MessageTopLevelComponent>()).setEphemeral(true).queue();
                         Button button = Button.of(ButtonStyle.PRIMARY, "imagescam:resolved:" + userIdLong, "Resolved by " + event.getUser().getEffectiveName() + " (kicked user)");
                         ActionRow actionRow = ActionRow.of(button);
                         event.getHook().editMessageComponentsById(event.getMessageId(), actionRow).queue();

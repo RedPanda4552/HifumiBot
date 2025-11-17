@@ -33,6 +33,9 @@ import io.github.redpanda4552.HifumiBot.util.CommandUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -43,8 +46,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 public class CommandEmulog extends AbstractSlashCommand {
 
@@ -152,9 +153,11 @@ public class CommandEmulog extends AbstractSlashCommand {
                 currentPage = totalPages;
             }
             
-            event.getHook().editOriginalEmbeds(rulePages.get((int) currentPage - 1)).setActionRow(
-                Button.of(ButtonStyle.SECONDARY, "emulog_prev:" + event.getMember().getId(), "Previous"),
-                Button.of(ButtonStyle.PRIMARY, "emulog_next:" + event.getMember().getId(), "Next")
+            event.getHook().editOriginalEmbeds(rulePages.get((int) currentPage - 1)).setComponents(
+                ActionRow.of(
+                    Button.of(ButtonStyle.SECONDARY, "emulog_prev:" + event.getMember().getId(), "Previous"),
+                    Button.of(ButtonStyle.PRIMARY, "emulog_next:" + event.getMember().getId(), "Next")
+                )
             ).queue();
         } catch (Exception e) {
             event.getHook().editOriginal("An internal error occurred, aborting.").queue();
@@ -171,9 +174,11 @@ public class CommandEmulog extends AbstractSlashCommand {
     }
     
     private void browse(SlashCommandInteractionEvent event) {
-        event.getHook().sendMessageEmbeds(rulePages.get(0)).addActionRow(
-            Button.of(ButtonStyle.SECONDARY, "emulog_prev:" + event.getMember().getId(), "Previous"),
-            Button.of(ButtonStyle.PRIMARY, "emulog_next:" + event.getMember().getId(), "Next")
+        event.getHook().sendMessageEmbeds(rulePages.get(0)).setComponents(
+            ActionRow.of(
+                Button.of(ButtonStyle.SECONDARY, "emulog_prev:" + event.getMember().getId(), "Previous"),
+                Button.of(ButtonStyle.PRIMARY, "emulog_next:" + event.getMember().getId(), "Next")
+            )
         ).queue();
     }
 

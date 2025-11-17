@@ -2,33 +2,34 @@ package io.github.redpanda4552.HifumiBot.command.slash;
 
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 
 public class CommandPrompt extends AbstractSlashCommand {
 
     @Override
     public void onExecute(SlashCommandInteractionEvent event) {
-        TextInput titleInput = TextInput.create("title", "Set Title", TextInputStyle.SHORT)
+        TextInput titleInput = TextInput.create("title", TextInputStyle.SHORT)
                 .setMinLength(1)
                 .setMaxLength(MessageEmbed.TITLE_MAX_LENGTH)
                 .setRequired(true)
                 .build();
-        TextInput bodyInput = TextInput.create("body", "Set Body Content", TextInputStyle.PARAGRAPH)
+        Label titleInputLabel = Label.of("Set Title", titleInput);
+        TextInput bodyInput = TextInput.create("body", TextInputStyle.PARAGRAPH)
                 .setMinLength(1)
                 .setMaxLength(4000)
                 .setRequired(true)
                 .build();
-
+        Label bodyInputLabel = Label.of("Set Body Content", bodyInput);
         Modal modal = Modal.create("prompt", "Make a new prompt")
-                .addComponents(ActionRow.of(titleInput), ActionRow.of(bodyInput))
+                .addComponents(titleInputLabel, bodyInputLabel)
                 .build();
 
         event.replyModal(modal).queue();

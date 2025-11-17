@@ -11,11 +11,12 @@ import io.github.redpanda4552.HifumiBot.moderation.ModActions;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 import io.github.redpanda4552.HifumiBot.util.Strings;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 public class AntiBotRunnable implements Runnable {
@@ -80,10 +81,10 @@ public class AntiBotRunnable implements Runnable {
 
                     MessageCreateBuilder mb = new MessageCreateBuilder();
                     mb.addEmbeds(eb.build());
-                    mb.addActionRow(
+                    mb.addComponents(ActionRow.of(
                         Button.of(ButtonStyle.DANGER, "imagescam:dospamkick:" + authorIdLong, "Looks like a bot scam, kick user"), 
                         Button.of(ButtonStyle.SUCCESS, "imagescam:clear:" + authorIdLong, "Looks innocent, remove timeout")
-                    );
+                    ));
                     Messaging.sendMessage(HifumiBot.getSelf().getConfig().channels.systemOutputChannelId, mb.build());
                     return true;
                 } else {
