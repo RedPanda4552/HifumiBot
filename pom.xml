@@ -22,12 +22,30 @@
         <ini4j.version>0.5.4</ini4j.version> <!-- https://central.sonatype.com/artifact/org.ini4j/ini4j -->
         
         <!-- Maven Plugin Versions -->
+        <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version> <!-- https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-dependency-plugin -->
         <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version> <!-- https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
         <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version> <!-- https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
     </properties>
     
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven-dependency-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>sources</goal>
+                            <goal>resolve</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>javadoc</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Handles Manifest -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
