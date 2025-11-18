@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class ButtonEventListener extends ListenerAdapter {
 
-    private HashMap<String, AbstractSlashCommand> slashCommands = HifumiBot.getSelf().getCommandIndex().getSlashCommands();
+    private final HashMap<String, AbstractSlashCommand> slashCommands = HifumiBot.getSelf().getCommandIndex().getSlashCommands();
     
     public void onButtonInteraction(ButtonInteractionEvent event) {
         String componentId = event.getComponentId();
