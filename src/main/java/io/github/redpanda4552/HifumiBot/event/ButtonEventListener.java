@@ -35,7 +35,7 @@ public class ButtonEventListener extends ListenerAdapter {
         String[] parts = componentId.split(":");
 
         if (parts.length < 2) {
-            Messaging.logInfo("SlashCommandListener", "onButtonInteraction", "Received a button click event, but got a malformed button ID. Received:\n```\n" + componentId + "\n```");
+            Messaging.logInfo("ButtonEventListener", "onButtonInteraction", "Received a button click event, but got a malformed button ID. Received:\n```\n" + componentId + "\n```");
             event.reply("Something went wrong with this button. Admins have been notified.").setEphemeral(true).queue();
             return;
         }
