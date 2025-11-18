@@ -68,7 +68,7 @@ public class CommandGameIndex extends AbstractSlashCommand {
         }
         
         if (searchOpt == null) {
-            Messaging.logInfo("CommandGameIndex", "onExecute", "Command tampering? Missing option 'serial' (user = " + event.getUser().getAsMention() + ")");
+            Messaging.logInfo("CommandGameIndex", "onExecute", "Command tampering? Missing option 'search' (user = " + event.getUser().getAsMention() + ")");
             event.reply("Invalid option detected, admins have been alerted.").setEphemeral(true).queue();
             return;
         }
