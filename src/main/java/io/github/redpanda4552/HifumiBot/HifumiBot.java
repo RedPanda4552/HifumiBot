@@ -43,6 +43,7 @@ import io.github.redpanda4552.HifumiBot.event.MessageContextCommandListener;
 import io.github.redpanda4552.HifumiBot.event.MessageEventListener;
 import io.github.redpanda4552.HifumiBot.event.ModalEventListener;
 import io.github.redpanda4552.HifumiBot.event.RoleEventListener;
+import io.github.redpanda4552.HifumiBot.event.SelectMenuEventListener;
 import io.github.redpanda4552.HifumiBot.event.SlashCommandListener;
 import io.github.redpanda4552.HifumiBot.event.UserEventListener;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
@@ -200,6 +201,7 @@ public class HifumiBot {
         jda.addEventListener(new MemberEventListener());
         jda.addEventListener(new UserEventListener());
         jda.addEventListener(new ButtonEventListener());
+        jda.addEventListener(new SelectMenuEventListener());
         jda.addEventListener(new SlashCommandListener());
         jda.addEventListener(new MessageContextCommandListener());
         jda.addEventListener(new ModalEventListener());

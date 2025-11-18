@@ -23,14 +23,30 @@
  */
 package io.github.redpanda4552.HifumiBot.command.slash;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.FuzzyScore;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
 import io.github.redpanda4552.HifumiBot.command.AbstractSlashCommand;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.selections.SelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -43,9 +59,15 @@ public class CommandGameIndex extends AbstractSlashCommand {
     
     @Override
     public void onExecute(SlashCommandInteractionEvent event) {
-        OptionMapping opt = event.getOption("serial");
+        OptionMapping searchOpt = event.getOption("search");
+        OptionMapping preferEnglishOpt = event.getOption("prefer-english");
+        boolean preferEnglish = false;
+
+        if (preferEnglishOpt != null) {
+            preferEnglish = preferEnglishOpt.getAsBoolean();
+        }
         
-        if (opt == null) {
+        if (searchOpt == null) {
             Messaging.logInfo("CommandGameIndex", "onExecute", "Command tampering? Missing option 'serial' (user = " + event.getUser().getAsMention() + ")");
             event.reply("Invalid option detected, admins have been alerted.").setEphemeral(true).queue();
             return;
@@ -56,24 +78,152 @@ public class CommandGameIndex extends AbstractSlashCommand {
             return;
         }
         
-        String normalized = opt.getAsString().toUpperCase();
+        String normalized = searchOpt.getAsString().toUpperCase();
         Matcher m = GAMEINDEX_SERIAL_PATTERN.matcher(normalized);
         
-        if (!m.matches()) {
-            event.reply("Invalid serial detected; serial numbers follow this format: `SLUS-12345`").setEphemeral(true).queue();
-            return;
+        if (m.matches()) {
+            MessageEmbed embed = HifumiBot.getSelf().getGameIndex().present(normalized);
+            event.replyEmbeds(embed).queue();
+        } else {
+            event.deferReply().queue();
+            event.getHook().editOriginal(":information_source: Checking GameIndex.yaml for game by name, this might take a moment...").queue();
+            FuzzyScore fuzz = new FuzzyScore(Locale.US);
+
+            HashMap<String, Integer> highScores = new HashMap<String, Integer>();
+
+            Map<String, Object> mainGameIndexMap = HifumiBot.getSelf().getGameIndex().getMap();
+
+            for (String serial : mainGameIndexMap.keySet()) {
+                Map<String, Object> gameEntry = (Map<String, Object>) mainGameIndexMap.get(serial);
+                String name = (String) gameEntry.get("name");            
+                Integer nameScore = fuzz.fuzzyScore(normalized, name.toUpperCase());
+                
+                // Compare name-en if present
+                if (gameEntry.containsKey("name-en")) {
+                    String nameEnglish = (String) gameEntry.get("name-en");
+                    Integer nameEnglishScore = fuzz.fuzzyScore(normalized, nameEnglish);
+
+                    // If name-en was better, use it instead.
+                    if (nameEnglishScore > nameScore) {
+                        nameScore = nameEnglishScore;
+                    }
+                }
+
+                // If score is horribly low, move on.
+                if (nameScore < 10) {
+                    continue;
+                }
+
+                // If at capacity already, compare scores. If higher score, make room. Else, skip.
+                if (highScores.size() >= SelectMenu.OPTIONS_MAX_AMOUNT) {
+                    String lowestSerial = null;
+                    Integer lowestScore = Integer.MAX_VALUE;
+
+                    for (String serialAgain : highScores.keySet()) {
+                        Integer thisScore = highScores.get(serialAgain);
+
+                        if (thisScore < lowestScore) {
+                            lowestSerial = serialAgain;
+                            lowestScore = thisScore;
+                        }
+                    }
+
+                    if (nameScore > lowestScore) {
+                        highScores.remove(lowestSerial);
+                    } else {
+                        continue;
+                    }
+                }
+
+                highScores.put(serial, nameScore);
+            }
+
+            if (highScores.isEmpty()) {
+                event.getHook().sendMessage("No results found, please check spelling and refine your search, or use a serial number to search by.").queue();
+                return;
+            }
+
+            // Sort the high scores so we can present them from closest to farthest.
+            ArrayList<Entry<String, Integer>> entryList = new ArrayList<Entry<String, Integer>>(highScores.entrySet());
+            entryList.sort(Entry.comparingByValue(Comparator.reverseOrder()));
+            LinkedHashMap<String, Integer> sortedHighScores = new LinkedHashMap<String, Integer>();
+
+            for (Entry<String, Integer> entry : entryList) {
+                sortedHighScores.put(entry.getKey(), entry.getValue());
+            }
+
+            // Cull anything that isn't at least half the score of the highest result
+            Iterator<Entry<String, Integer>> iter = sortedHighScores.entrySet().iterator();
+            Integer highestScore = iter.next().getValue();
+
+            while (iter.hasNext()) {
+                Entry<String, Integer> entry = iter.next();
+                Integer score = entry.getValue();
+
+                if (score < Math.ceil(highestScore / 2)) {
+                    iter.remove();
+                }
+            }
+
+            StringSelectMenu.Builder selectMenu = StringSelectMenu.create("gameindex:select:" + event.getId() + ":" + event.getUser().getId());
+            
+            for (String serial : sortedHighScores.keySet()) {
+                Map<String, Object> gameEntry = (Map<String, Object>) mainGameIndexMap.get(serial);
+                String label = serial + " / ";
+
+                if (gameEntry.containsKey("name-en") && preferEnglish) {
+                    label += StringUtils.abbreviate((String) gameEntry.get("name-en"), 80);
+                } else {
+                    label += StringUtils.abbreviate(((String) gameEntry.get("name")), 80);
+                }
+
+                selectMenu.addOption(label, serial);
+            }
+
+            selectMenu.setPlaceholder("Select a game");
+            event.getHook().editOriginal("Search results are below; select the entry which matches the desired game and region:")
+                .setComponents(ActionRow.of(selectMenu.build()))
+                .queue();
         }
-        
-        event.deferReply().queue();
-        event.getHook().editOriginal(":information_source: Checking GameIndex.yaml for serial `" + normalized + "`, this might take a moment...").queue();
-        MessageEmbed embed = HifumiBot.getSelf().getGameIndex().present(normalized);
-        event.getHook().editOriginalEmbeds(embed).queue();
     }
 
     @Override
     protected CommandData defineSlashCommand() {
         return Commands.slash("gameindex", "Look up information stored in GameIndex.yaml (otherwise known as 'GameDB')")
-                .addOption(OptionType.STRING, "serial", "Serial number to search for (e.g. 'SLUS-12345')", true)
+                .addOption(OptionType.STRING, "search", "Serial number or name to search for (e.g. 'SLUS-12345' or 'my game name')", true)
+                .addOption(OptionType.BOOLEAN, "prefer-english", "(Default false) Prefer English names for non-English results, when available", false)
                 .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
+    }
+
+    @Override 
+    public void handleStringSelectEvent(StringSelectInteractionEvent event) {
+        String componentId = event.getComponentId();
+        String[] parts = componentId.split(":");
+
+        if (parts.length != 4) {
+            Messaging.logInfo("CommandGameIndex", "handleStringSelectEvent", "Received a string select menu event, but got a malformed string select menu ID. Received:\n```\n" + componentId + "\n```");
+            event.getHook().sendMessage("Malformed select menu, admins have been notified").setEphemeral(true).queue();
+            return;
+        }
+
+        String userId = parts[3];
+
+        if (!event.getUser().getId().equals(userId)) {
+            event.getHook().sendMessage("You are not allowed to use someone else's select menu").setEphemeral(true).queue();
+            return;
+        }
+
+        if (event.getSelectedOptions().size() != 1) {
+            event.getHook().sendMessage("Illegal selection size").setEphemeral(true).queue();
+            return;
+        }
+
+        SelectOption opt = event.getSelectedOptions().get(0);
+        MessageEmbed embed = HifumiBot.getSelf().getGameIndex().present(opt.getValue());
+        StringSelectMenu newSelectMenu = event.getSelectMenu().createCopy().setDefaultOptions(opt).build();
+        event.getHook().editOriginal("Showing " + opt.getValue() + "; use the select menu again to view another.")
+            .setEmbeds(embed)
+            .setComponents(ActionRow.of(newSelectMenu))
+            .queue();
     }
 }
