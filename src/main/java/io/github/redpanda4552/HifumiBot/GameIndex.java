@@ -177,6 +177,8 @@ public class GameIndex implements Refreshable {
         put(0, "Off");
         put(1, "Normal");
         put(2, "Aggressive");
+        put(3, "Normal (Maintain Upscale)");
+        put(4, "Aggressive (Maintain Upscale)");
     }};
     
     private boolean isInitialized = false;
