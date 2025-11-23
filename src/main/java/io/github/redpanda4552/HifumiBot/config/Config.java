@@ -48,7 +48,7 @@ public class Config implements IConfig {
     public SpamOptions spamOptions;
     public UrlChangeOptions urlChangeOptions;
     public EntryBarrierOptions entryBarrierOptions;
-    public WarezPrompt warezPrompt;
+    public SerializedEmbed warezPrompt;
 
     public Config() {
         server = new Server();
@@ -62,7 +62,7 @@ public class Config implements IConfig {
         urlChangeOptions = new UrlChangeOptions();
         ninjaInterval = 500;
         entryBarrierOptions = new EntryBarrierOptions();
-        warezPrompt = new WarezPrompt();
+        warezPrompt = new SerializedEmbed();
     }
     
     public class Server {
@@ -201,24 +201,24 @@ public class Config implements IConfig {
         }
     }
 
-    public class WarezPrompt {
+    public class SerializedEmbed {
         public String title;
         public String body;
-        public ArrayList<WarezPromptField> fields;
+        public ArrayList<SerializedEmbedField> fields;
 
-        public WarezPrompt() {
+        public SerializedEmbed() {
             title = new String("");
             body = new String("");
-            fields = new ArrayList<WarezPromptField>();
+            fields = new ArrayList<SerializedEmbedField>();
         }
     }
 
-    public class WarezPromptField {
+    public class SerializedEmbedField {
         public String name;
         public String value;
         public boolean inline;
 
-        public WarezPromptField() {
+        public SerializedEmbedField() {
             name = new String("");
             value = new String("");
             inline = false;

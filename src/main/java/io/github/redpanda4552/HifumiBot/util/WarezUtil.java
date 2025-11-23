@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import io.github.redpanda4552.HifumiBot.HifumiBot;
-import io.github.redpanda4552.HifumiBot.config.Config.WarezPromptField;
+import io.github.redpanda4552.HifumiBot.config.Config.SerializedEmbedField;
 import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.database.objects.WarezEventObject;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionLevel;
@@ -76,7 +76,7 @@ public class WarezUtil {
                 eb.setDescription(HifumiBot.getSelf().getConfig().warezPrompt.body);
                 eb.setColor(Color.RED);
                 
-                for (WarezPromptField field : HifumiBot.getSelf().getConfig().warezPrompt.fields) {
+                for (SerializedEmbedField field : HifumiBot.getSelf().getConfig().warezPrompt.fields) {
                     eb.addField(field.name, field.value, field.inline);
                 }
 
