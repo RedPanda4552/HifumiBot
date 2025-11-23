@@ -49,7 +49,7 @@ public class ButtonEventListener extends ListenerAdapter {
                 commandServerMetadata.handleButtonEvent(event);
                 break;
             case "whois":
-                var commandWhois = (CommandWhois) slashCommands.get("whois");
+                CommandWhois commandWhois = (CommandWhois) slashCommands.get("whois");
                 event.deferEdit().queue();
                 commandWhois.handleButtonEvent(event);
                 break;
