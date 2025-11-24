@@ -53,7 +53,10 @@ public class ButtonEventListener extends ListenerAdapter {
                 event.deferEdit().queue();
                 commandWhois.handleButtonEvent(event);
                 break;
-
+            case "unwarez":
+                event.deferEdit().queue();
+                slashCommands.get("unwarez").handleButtonEvent(event);
+                break;
             case "emulog_prev":
             case "emulog_next":
                 CommandEmulog commandEmulog = (CommandEmulog) slashCommands.get("emulog");

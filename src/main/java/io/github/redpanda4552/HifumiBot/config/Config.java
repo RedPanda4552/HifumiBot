@@ -49,6 +49,7 @@ public class Config implements IConfig {
     public UrlChangeOptions urlChangeOptions;
     public EntryBarrierOptions entryBarrierOptions;
     public SerializedEmbed warezPrompt;
+    public SerializedEmbed unwarezPrompt;
 
     public Config() {
         server = new Server();
@@ -63,6 +64,7 @@ public class Config implements IConfig {
         ninjaInterval = 500;
         entryBarrierOptions = new EntryBarrierOptions();
         warezPrompt = new SerializedEmbed();
+        unwarezPrompt = new SerializedEmbed();
     }
     
     public class Server {
