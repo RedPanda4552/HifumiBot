@@ -58,7 +58,7 @@ public class ButtonEventListener extends ListenerAdapter {
             case "emulog_next":
                 CommandEmulog commandEmulog = (CommandEmulog) slashCommands.get("emulog");
                 event.deferEdit().queue();
-                commandEmulog.onButtonEvent(event);
+                commandEmulog.handleButtonEvent(event);
                 break;
             case "timeout":
                 try {

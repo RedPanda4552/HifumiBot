@@ -34,7 +34,7 @@ public abstract class AbstractSlashCommand {
     }
     
     public abstract void onExecute(SlashCommandInteractionEvent event);
-    public void onButtonEvent(ButtonInteractionEvent event) { }
+    public void handleButtonEvent(ButtonInteractionEvent event) { }
     public void handleStringSelectEvent(StringSelectInteractionEvent event) { }
     protected abstract CommandData defineSlashCommand();
 }

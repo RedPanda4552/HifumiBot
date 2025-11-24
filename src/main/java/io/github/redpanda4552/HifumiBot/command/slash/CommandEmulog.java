@@ -105,7 +105,7 @@ public class CommandEmulog extends AbstractSlashCommand {
     }
     
     @Override
-    public void onButtonEvent(ButtonInteractionEvent event) {
+    public void handleButtonEvent(ButtonInteractionEvent event) {
         try {
             if (event.getMessage().getEmbeds().isEmpty()) {
                 event.getHook().sendMessage("It looks like the emulog rules embed was deleted. Try using the emulog command again.").setEphemeral(true).queue();
