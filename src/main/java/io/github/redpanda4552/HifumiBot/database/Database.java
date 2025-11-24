@@ -18,6 +18,7 @@ import io.github.redpanda4552.HifumiBot.database.objects.AttachmentObject;
 import io.github.redpanda4552.HifumiBot.database.objects.AutoModEventObject;
 import io.github.redpanda4552.HifumiBot.database.objects.CommandEventObject;
 import io.github.redpanda4552.HifumiBot.database.objects.CounterObject;
+import io.github.redpanda4552.HifumiBot.database.objects.InteractionEventObject;
 import io.github.redpanda4552.HifumiBot.database.objects.MemberEventObject;
 import io.github.redpanda4552.HifumiBot.database.objects.MessageObject;
 import io.github.redpanda4552.HifumiBot.database.objects.WarezEventObject;
@@ -1639,5 +1640,57 @@ public class Database {
         } catch (SQLException e) {
              Messaging.logException("Database", "insertDisplayNameChangeEvent", e);
         }
+    }
+
+    public static void insertInteractionEvent(long eventId, long timestamp, long userId) {
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            PreparedStatement insertInteractionEvent = conn.prepareStatement("""
+                    INSERT INTO interaction_event (id, timestamp, user_fk)
+                    VALUES (?, ?, ?);
+                    """);
+            insertInteractionEvent.setLong(1, eventId);
+            insertInteractionEvent.setLong(2, timestamp);
+            insertInteractionEvent.setLong(3, userId);
+            insertInteractionEvent.executeUpdate();
+            insertInteractionEvent.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "insertInteractionEvent", e);
+        }   
+    }
+
+    public static Optional<InteractionEventObject> getInteractionEvent(long eventId, long userId) {
+        Optional<InteractionEventObject> ret = Optional.empty();
+        Connection conn = HifumiBot.getSelf().getSQLite().getConnection();
+
+        try {
+            // First get the latest revision of the message
+            PreparedStatement getInteractionEvent = conn.prepareStatement("""
+                    SELECT id, timestamp, user_fk
+                    FROM interaction_event
+                    WHERE id = ?
+                    AND user_fk = ?
+                    ORDER BY timestamp DESC
+                    LIMIT 1;
+                    """);
+            getInteractionEvent.setLong(1, eventId);
+            getInteractionEvent.setLong(2, userId);
+            ResultSet res = getInteractionEvent.executeQuery();
+
+            if (res.next()) {
+                ret = Optional.of(new InteractionEventObject(
+                    res.getLong("id"),
+                    res.getLong("timestamp"),
+                    res.getLong("user_fk")
+                ));
+            }
+
+            getInteractionEvent.close();
+        } catch (SQLException e) {
+            Messaging.logException("Database", "getInteractionEvent", e);
+        }
+        
+        return ret;
     }
 }
