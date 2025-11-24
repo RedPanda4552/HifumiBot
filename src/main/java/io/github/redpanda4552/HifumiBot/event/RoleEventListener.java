@@ -71,13 +71,20 @@ public class RoleEventListener extends ListenerAdapter {
 
         for (Role role : event.getRoles()) {
             if (role.getId().equals(HifumiBot.getSelf().getConfig().roles.warezRoleId)) {
-                WarezEventObject warezEvent = new WarezEventObject(
-                    now.toEpochSecond(),
-                    event.getUser().getIdLong(),
-                    WarezEventObject.Action.REMOVE,
-                    null
-                );
-                Database.insertWarezEvent(warezEvent);
+                // Check the latest warez event for the user
+                Optional<WarezEventObject> lastWarezOpt = Database.getLatestWarezAction(event.getUser().getIdLong());
+
+                // Same criteria as above, just this time for the removal.
+                if (lastWarezOpt.isEmpty() || lastWarezOpt.get().getAction().equals(WarezEventObject.Action.ADD)) {
+                    WarezEventObject warezEvent = new WarezEventObject(
+                        now.toEpochSecond(), 
+                        event.getUser().getIdLong(), 
+                        WarezEventObject.Action.REMOVE,
+                        null
+                    );
+                    Database.insertWarezEvent(warezEvent);    
+                }
+                
                 return;
             }
         }
