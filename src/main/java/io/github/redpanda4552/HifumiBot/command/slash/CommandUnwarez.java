@@ -16,6 +16,7 @@ import io.github.redpanda4552.HifumiBot.database.Database;
 import io.github.redpanda4552.HifumiBot.database.objects.InteractionEventObject;
 import io.github.redpanda4552.HifumiBot.util.MemberUtils;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.RoleUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -139,9 +140,15 @@ public class CommandUnwarez extends AbstractSlashCommand {
 
         Guild server = event.getGuild();
         Member member = event.getMember();
+        String warezRoleId = HifumiBot.getSelf().getConfig().roles.warezRoleId;
+        
+        if (RoleUtils.memberHasRole(member, warezRoleId)) {
+            event.getHook().sendMessage("You do not have the warez role.").setEphemeral(true).queue();
+            return;
+        }
 
         if (server != null && member != null) {
-            Role warezRole = server.getRoleById(HifumiBot.getSelf().getConfig().roles.warezRoleId);
+            Role warezRole = server.getRoleById(warezRoleId);
 
             if (warezRole != null) {
                 server.removeRoleFromMember(member, warezRole).queue();
