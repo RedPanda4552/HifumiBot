@@ -4,16 +4,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import io.github.redpanda4552.HifumiBot.util.Log;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
 
 public class SQLite {
 
     private Connection connection;
 
-    public SQLite() {
+    public SQLite(String dataDirectory) {
         try {
-            Class.forName("org.sqlite.JDBC");
-            this.connection = DriverManager.getConnection("jdbc:sqlite:hifumibot.db");
+            // NOTE: this shouldn't be needed for modern versions of java, it should just dynamically look
+            // at the classpath for you, but leaving it here incase im wrong
+            // Class.forName("org.sqlite.JDBC");
+            var jbdcString = String.format("jdbc:sqlite:{}/hifumibot.db", dataDirectory);
+            Log.info("Opening database with JBDC string: " + jbdcString);
+            this.connection = DriverManager.getConnection(jbdcString);
         } catch (Exception e) {
             Messaging.logException("SQlite", "(constructor)", e);
         }

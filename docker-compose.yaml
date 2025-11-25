@@ -1,0 +1,16 @@
+services:
+  hifumi:
+    image: ghcr.io/RedPanda4552/HifumiBot:latest
+    container_name: hifumi
+    restart: unless-stopped
+    environment:
+      # Required environment variables
+      DISCORD_BOT_TOKEN: "${DISCORD_BOT_TOKEN}"
+      SUPERUSER_ID: "${SUPERUSER_ID}"
+      DEEPL_KEY: "${DEEPL_KEY}"
+      DATA_DIRECTORY: "/opt/data"
+
+      # Optional: enable trace logs if HIFUMI_TRACE is set
+      HIFUMI_TRACE: "${HIFUMI_TRACE:-false}"
+    volumes:
+      - ./data:/opt/data
