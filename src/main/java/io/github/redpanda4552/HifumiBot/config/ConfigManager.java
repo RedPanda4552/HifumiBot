@@ -25,7 +25,6 @@ package io.github.redpanda4552.HifumiBot.config;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -38,9 +37,23 @@ import io.github.redpanda4552.HifumiBot.util.Messaging;
 
 public class ConfigManager {
 
+    // static is evil, to avoid having to change all these signatures / propagating the directory everywhere
+    // we'll just make sure this value is initialized or we'll log a message
+
+    public static String dataDirectory = null;
+
+    private static String getConfigFilePath(ConfigType configType) {
+        if (dataDirectory == null) {
+            throw new RuntimeException("Data Directory was not initialized in the config manager singleton");
+        }
+        return String.format("{}/{}", dataDirectory, configType.getFileName());
+    }
+
+
     public static void createConfigIfNotExists(ConfigType configType) {
         try {
-            File file = new File(configType.getPath());
+            var filePath = getConfigFilePath(configType);
+            File file = new File(filePath);
             if (!file.exists() && file.createNewFile()) {
                 FileOutputStream oStream = new FileOutputStream(file);
                 // Fragile, but if the config system reads an empty file it initializes the config to null!
@@ -48,14 +61,15 @@ public class ConfigManager {
                 oStream.flush();
                 oStream.close();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Messaging.logException("ConfigManager", "createConfigIfNotExists", e);
         }
     }
 
     public static IConfig read(ConfigType configType) {
         try {
-            File file = new File(configType.getPath());
+            var filePath = getConfigFilePath(configType);
+            File file = new File(filePath);
             InputStream iStream = Files.newInputStream(file.toPath());
             String json = new String(iStream.readAllBytes());
             iStream.close();
@@ -74,7 +88,8 @@ public class ConfigManager {
             return;
         }
         try {
-            File file = new File(config.getConfigType().getPath());
+            var filePath = getConfigFilePath(config.getConfigType());
+            File file = new File(filePath);
             OutputStream oStream = Files.newOutputStream(file.toPath());
             GsonBuilder builder = new GsonBuilder();
             builder.serializeNulls();
@@ -83,14 +98,15 @@ public class ConfigManager {
             oStream.write(json.getBytes());
             oStream.flush();
             oStream.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Messaging.logException("ConfigManager", "write", e);
         }
     }
     
     public static long getSizeBytes(ConfigType configType) {
         try {
-            File file = new File(configType.getPath());
+            var filePath = getConfigFilePath(configType);
+            File file = new File(filePath);
             return file.length();
         } catch (Exception e) {
             Messaging.logException("ConfigManager", "getSizeBytes", e);

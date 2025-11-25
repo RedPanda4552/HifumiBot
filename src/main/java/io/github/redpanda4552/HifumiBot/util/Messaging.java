@@ -192,11 +192,13 @@ public class Messaging {
             e.printStackTrace();
             return;
         }
-        
-        String messageContent = e.getMessage();
-        
-        if (messageContent == null) {
-            messageContent = "(message was null)";
+
+        String messageContent = "(exception was null)";
+        if (e != null) {
+            messageContent = e.getMessage();
+            if (messageContent == null) {
+                messageContent = "(message was null)";
+            }
         }
 
         EmbedBuilder eb = new EmbedBuilder();

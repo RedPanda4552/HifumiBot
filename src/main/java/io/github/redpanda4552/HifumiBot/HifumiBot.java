@@ -49,6 +49,7 @@ import io.github.redpanda4552.HifumiBot.event.UserEventListener;
 import io.github.redpanda4552.HifumiBot.permissions.PermissionManager;
 import io.github.redpanda4552.HifumiBot.util.Log;
 import io.github.redpanda4552.HifumiBot.util.Messaging;
+import io.github.redpanda4552.HifumiBot.util.Strings;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -63,37 +64,19 @@ public class HifumiBot {
     private static String discordBotToken;
     private static String superuserId;
     private static String deepLKey;
+    private static String dataDirectory;
     private static boolean traceLogs = false;
 
     public static void main(String[] args) {
-        // Run via environment variables first, if not, fall-back to args
-        if (System.getenv().containsKey("DISCORD_BOT_TOKEN") && System.getenv().containsKey("SUPERUSER_ID")) {
-            System.out.println("Found environment variables, using those instead of cli-args!");
-            discordBotToken = System.getenv("DISCORD_BOT_TOKEN");
-            superuserId = System.getenv("SUPERUSER_ID");
+        // Just commit to using env-vars, we're the only hoster!
+        discordBotToken = Strings.getEnvVarOrPanic("DISCORD_BOT_TOKEN");
+        superuserId = Strings.getEnvVarOrPanic("SUPERUSER_ID");
+        deepLKey = Strings.getEnvVarOrPanic("DEEPL_KEY");
+        dataDirectory = Strings.getEnvVarOrPanic("DATA_DIRECTORY");
+        ConfigManager.dataDirectory = dataDirectory;
 
-            if (System.getenv().containsKey("DEEPL_KEY")) {
-                deepLKey = System.getenv("DEEPL_KEY");
-            }
-
-            if (System.getenv().containsKey("HIFUMI_TRACE")) {
-                traceLogs = Boolean.parseBoolean(System.getenv("HIFUMI_TRACE").toLowerCase());
-            }
-        } else if (args.length < 2) {
-            System.out.println("Usage: java -jar HifumiBot-x.y.z.jar <discord-bot-token> <superuser-id> [deepl-key] [trace-logs]");
-            return;
-        } else {
-            discordBotToken = args[0];
-            superuserId = args[1];
-
-            if (args.length >= 3) {
-                deepLKey = args[2];
-            }
-
-            if (args.length >= 4) {
-                traceLogs = Boolean.parseBoolean(args[3].toLowerCase());
-            }
-            System.out.println("Parsed arguments from command line");
+        if (System.getenv().containsKey("HIFUMI_TRACE")) {
+            traceLogs = Boolean.parseBoolean(System.getenv("HIFUMI_TRACE").toLowerCase());
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -189,7 +172,7 @@ public class HifumiBot {
         }
         
         Log.info("Calling constructors");
-        sqlite = new SQLite();
+        sqlite = new SQLite(dataDirectory);
         deepL = new Translator(deepLKey);
         scheduler = new Scheduler();
         cpuIndex = new CpuIndex();
