@@ -15,5 +15,6 @@ mvn install
 - Get Docker (not the place to explain how to do this)
 - Build the container locally:
   - `docker build -t hifumi:local .`
+- Put your files (db file / json files) in `data/`
 - Run it via docker-compose:
   - `DISCORD_BOT_TOKEN=TOKEN_HERE SUPERUSER_ID=ID_HERE DEEPL_KEY=KEY_HERE docker compose -f ./docker-compose.local.yaml up`
