@@ -1,4 +1,4 @@
-name: 📦 Publish Docker Image
+name: Java CI
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-and-push:
+    name: 📦 Publish Docker Image
     runs-on: ubuntu-latest
 
     permissions:
