@@ -25,21 +25,21 @@ package io.github.redpanda4552.HifumiBot.config;
 
 public enum ConfigType {
 
-    CORE("./hifumi-conf.json", Config.class),
-    DYNCMD("./dyncmd-config.json", DynCmdConfig.class),
-    EMULOG_PARSER("./emulog-parser.json", EmulogParserConfig.class),
-    SETTINGS_PARSER("./settings-ini-parser.json", SettingsIniParserConfig.class);
+    CORE("hifumi-conf.json", Config.class),
+    DYNCMD("dyncmd-config.json", DynCmdConfig.class),
+    EMULOG_PARSER("emulog-parser.json", EmulogParserConfig.class),
+    SETTINGS_PARSER("settings-ini-parser.json", SettingsIniParserConfig.class);
     
-    private String path;
+    private String fileName;
     private Class<?> clazz;
     
-    private ConfigType(String path, Class<?> clazz) {
-        this.path = path;
+    private ConfigType(String fileName, Class<?> clazz) {
+        this.fileName = fileName;
         this.clazz = clazz;
     }
     
-    public String getPath() {
-        return path;
+    public String getFileName() {
+        return fileName;
     }
     
     public Class<?> getConfigClass() {
