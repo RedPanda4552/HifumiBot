@@ -1,5 +1,8 @@
 package io.github.redpanda4552.HifumiBot.database;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,9 +22,42 @@ public class SQLite {
             var jbdcString = String.format("jdbc:sqlite:%s/hifumibot.db", dataDirectory);
             Log.info("Opening database with JBDC string: " + jbdcString);
             this.connection = DriverManager.getConnection(jbdcString);
-            // TODO - ensure database migrations have been committed
+            ensureDatabaseIsInitialized();
         } catch (Exception e) {
             Messaging.logException("SQlite", "(constructor)", e);
+        }
+    }
+
+    // NOTE: order is potentially important here
+    // each file should contain a single valid SQL statement
+    private String[] schemaMigrations = {
+        "000-create-table.sql"
+    };
+
+    private void ensureDatabaseIsInitialized() {
+        var conn = this.connection;
+        try {
+            conn.setAutoCommit(false); // begin transaction
+            for (var migrationFile : schemaMigrations) {
+                var resourcePath = String.format("db/migrations/%s", migrationFile);
+                var is = SQLite.class.getClassLoader().getResourceAsStream(resourcePath);
+                if (is == null) {
+                    throw new RuntimeException("Resource not found: " + resourcePath);
+                }
+                String sql = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                try (var statement = conn.createStatement()) {
+                    statement.execute(sql.trim());
+                }
+            }
+
+            conn.commit(); // commit all statements
+        } catch (Exception e) {
+            try {
+                conn.rollback(); // rollback if anything fails
+            } catch (SQLException rollbackEx) {
+                e.addSuppressed(rollbackEx); // don't lose original exception
+            }
+            throw new RuntimeException("Unable to ensure database is initialized properly", e);
         }
     }
 
