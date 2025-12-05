@@ -31,7 +31,23 @@ public class SQLite {
     // NOTE: order is potentially important here
     // each file should contain a single valid SQL statement
     private String[] schemaMigrations = {
-        "000-create-table.sql"
+        "000-create-user-table.sql",
+        "001-create-channel-table.sql",
+        "002-create-message-table.sql",
+        "003-create-message-attachment-table.sql",
+        "004-create-message-embed-table.sql",
+        "005-create-message-event-table.sql",
+        "006-create-user-displayname-event-table.sql",
+        "007-create-user-username-event-table.sql",
+        "008-create-warez-event-table.sql",
+        "009-create-member-event-table.sql",
+        "010-create-interaction-event-table.sql",
+        "011-create-filter-event-table.sql",
+        "012-create-counter-table.sql",
+        "013-create-command-table.sql",
+        "014-create-command-event-table.sql",
+        "015-create-command-event-option-table.sql",
+        "016-create-automod-event-table.sql"
     };
 
     private void ensureDatabaseIsInitialized() {

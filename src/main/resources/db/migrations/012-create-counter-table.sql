@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS
+  "counter" (
+    "id" INTEGER NOT NULL UNIQUE,
+    "type" TEXT NOT NULL,
+    "timestamp" INTEGER NOT NULL,
+    "value" INTEGER NOT NULL,
+    PRIMARY KEY ("id" AUTOINCREMENT)
+  );
