@@ -71,9 +71,11 @@ public class HifumiBot {
         // Just commit to using env-vars, we're the only hoster!
         discordBotToken = Strings.getEnvVarOrPanic("DISCORD_BOT_TOKEN");
         superuserId = Strings.getEnvVarOrPanic("SUPERUSER_ID");
-        deepLKey = Strings.getEnvVarOrPanic("DEEPL_KEY");
         dataDirectory = Strings.getEnvVarOrPanic("DATA_DIRECTORY");
+        deepLKey = Strings.getEnvVarOrPanic("DEEPL_KEY");
         ConfigManager.dataDirectory = dataDirectory;
+
+        System.setProperty("org.slf4j.simpleLogger.logFile", String.format("%s/trace.log", dataDirectory));
 
         if (System.getenv().containsKey("HIFUMI_TRACE")) {
             traceLogs = Boolean.parseBoolean(System.getenv("HIFUMI_TRACE").toLowerCase());

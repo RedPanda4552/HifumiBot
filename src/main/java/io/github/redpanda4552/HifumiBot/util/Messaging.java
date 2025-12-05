@@ -188,7 +188,7 @@ public class Messaging {
     }
 
     public static void logException(String className, String methodName, Exception e) {
-        if (HifumiBot.getSelf().getJDA() == null) {
+        if (HifumiBot.getSelf().getJDA() == null || HifumiBot.getSelf().getConfig() == null || HifumiBot.getSelf().getConfig().channels.systemOutputChannelId.isEmpty()) {
             e.printStackTrace();
             return;
         }

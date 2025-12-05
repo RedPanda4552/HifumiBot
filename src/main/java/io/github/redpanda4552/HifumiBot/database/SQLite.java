@@ -16,9 +16,10 @@ public class SQLite {
             // NOTE: this shouldn't be needed for modern versions of java, it should just dynamically look
             // at the classpath for you, but leaving it here incase im wrong
             // Class.forName("org.sqlite.JDBC");
-            var jbdcString = String.format("jdbc:sqlite:{}/hifumibot.db", dataDirectory);
+            var jbdcString = String.format("jdbc:sqlite:%s/hifumibot.db", dataDirectory);
             Log.info("Opening database with JBDC string: " + jbdcString);
             this.connection = DriverManager.getConnection(jbdcString);
+            // TODO - ensure database migrations have been committed
         } catch (Exception e) {
             Messaging.logException("SQlite", "(constructor)", e);
         }

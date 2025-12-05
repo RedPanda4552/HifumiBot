@@ -7,8 +7,8 @@ services:
       # Required environment variables
       DISCORD_BOT_TOKEN: "${DISCORD_BOT_TOKEN}"
       SUPERUSER_ID: "${SUPERUSER_ID}"
-      DEEPL_KEY: "${DEEPL_KEY}"
       DATA_DIRECTORY: "/opt/data"
+      DEEPL_KEY: "${DEEPL_KEY}"
 
       # Optional: enable trace logs if HIFUMI_TRACE is set
       HIFUMI_TRACE: "${HIFUMI_TRACE:-false}"

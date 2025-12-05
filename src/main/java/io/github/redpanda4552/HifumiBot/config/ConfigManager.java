@@ -46,7 +46,7 @@ public class ConfigManager {
         if (dataDirectory == null) {
             throw new RuntimeException("Data Directory was not initialized in the config manager singleton");
         }
-        return String.format("{}/{}", dataDirectory, configType.getFileName());
+        return String.format("%s/%s", dataDirectory, configType.getFileName());
     }
 
 
