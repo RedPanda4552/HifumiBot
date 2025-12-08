@@ -32,6 +32,7 @@ jobs:
         with:
           context: .
           push: true
+          # FIXME: replace these when transitioning repo ownership
           tags: |
-            ghcr.io/${{ github.repository_owner }}/hifumibot:latest
-            ghcr.io/${{ github.repository_owner }}/hifumibot:${{ github.ref_name }}
+            ghcr.io/redpanda4552/hifumibot:latest
+            ghcr.io/redpanda4552/hifumibot:${{ github.ref_name }}
