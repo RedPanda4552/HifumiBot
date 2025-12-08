@@ -33,5 +33,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/HifumiBot:latest
-            ghcr.io/${{ github.repository_owner }}/HifumiBot:${{ github.ref_name }}
+            ghcr.io/${{ github.repository_owner }}/hifumibot:latest
+            ghcr.io/${{ github.repository_owner }}/hifumibot:${{ github.ref_name }}
