@@ -1,22 +1,30 @@
-FROM maven:3-amazoncorretto-21 as build_stage
+# ===== BUILD STAGE =====
+FROM maven:3-amazoncorretto-25 AS build_stage
 
-COPY ./pom.xml ./pom.xml
+WORKDIR /build
+
+COPY pom.xml .
 RUN mvn -B dependency:go-offline
 
-COPY ./ ./
+COPY . .
 RUN mvn -B package
-RUN mv ./target/HifumiBot*.jar ./hifumi.jar
 
-FROM amazoncorretto:21 as final_stage
+# Normalize jar name
+RUN mv target/HifumiBot*.jar /build/hifumi.jar
 
-COPY --from=build_stage ./scripts/image/run_jar.sh /opt/run_jar.sh
-COPY --from=build_stage ./hifumi.jar /opt/hifumi.jar
-RUN chmod +x /opt/run_jar.sh
+# ===== FINAL STAGE =====
+FROM amazoncorretto:25-alpine AS final_stage
 
-# get latest security package updates
-RUN yum update -y --security
+# Update Alpine security packages
+RUN apk update && apk upgrade --no-cache
 
-# non-root user
-USER 1000
-CMD ["sh", "/opt/run_jar.sh"]
-# CMD tail -f /dev/null # debugging
+# Create non-root user
+RUN addgroup -S app && adduser -S app -G app
+
+WORKDIR /opt
+
+COPY --from=build_stage /build/hifumi.jar ./hifumi.jar
+
+USER app
+
+CMD ["java", "-XX:MaxRAMPercentage=80", "-jar", "/opt/hifumi.jar"]

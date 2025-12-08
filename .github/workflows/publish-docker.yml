@@ -1,0 +1,37 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ "master" ]
+    tags: [ "*" ]
+
+jobs:
+  build-and-push:
+    name: 📦 Publish Docker Image
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      # needed so GitHub Actions can authenticate to GHCR
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & Push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/HifumiBot:latest
+            ghcr.io/${{ github.repository_owner }}/HifumiBot:${{ github.ref_name }}

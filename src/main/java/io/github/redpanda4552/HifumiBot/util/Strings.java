@@ -49,4 +49,12 @@ public class Strings {
 
         return urls;
     }
+
+    public static String getEnvVarOrPanic(String envVar) {
+        var value = System.getenv().getOrDefault(envVar, null);
+        if (value == null) {
+            throw new RuntimeException(String.format("Did not provide env-var: '%s'", envVar));
+        }
+        return value;
+    }
 }
